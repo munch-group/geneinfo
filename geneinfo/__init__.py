@@ -8,7 +8,7 @@ import numpy as np
 
 mg = mygene.MyGeneInfo()
 
-def gene_info(query):
+def geneinfo(query):
     
     if type(query) is str:
         query = [query]
@@ -102,7 +102,7 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax):
     ax.text(txstart, offset+.5, name, horizontalalignment='right', verticalalignment='center', fontsize=10)#, transform=ax.transAxes)
 
 
-def gene_plot(chrom, start, end, hg19=False):
+def geneplot(chrom, start, end, hg19=False):
     "Specifying hg19 gives gene coordintes in hg19, but give chrom, start and end are still assumed to be 38"
     
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(18, 6),sharex='col', sharey='row')
