@@ -1,10 +1,10 @@
 
-from IPython.display import Markdown, display
 
+from IPython.display import Markdown, display
 import matplotlib.pyplot as plt
+import numpy as np
 
 import mygene
-import numpy as np
 
 mg = mygene.MyGeneInfo()
 
@@ -116,4 +116,10 @@ def geneplot(chrom, start, end, hg19=False):
 
     points = ax2.plot(txstart, offset+.5, 'o', ms=25, alpha=0, zorder=10)
 
-    return ax1        
+    return ax1
+
+
+def geneinfo_region(, start, end, hg19=False):
+    
+    for gene in mg.query(f'q={chrom}:{start}-{end}', species='human', fetch_all=True):
+        geneinfo(gene['symbol'])
