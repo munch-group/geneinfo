@@ -119,7 +119,7 @@ def geneplot(chrom, start, end, hg19=False):
     return ax1
 
 
-def geneinfo_region(, start, end, hg19=False):
+def geneinfo_region(chrom, start, end, hg19=False):
     
     for gene in mg.query(f'q={chrom}:{start}-{end}', species='human', fetch_all=True):
         geneinfo(gene['symbol'])
