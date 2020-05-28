@@ -4,9 +4,12 @@ from IPython.display import Markdown, display
 import matplotlib.pyplot as plt
 import numpy as np
 
-import mygene
+mg = None
 
-mg = mygene.MyGeneInfo()
+def connect_mygene(mygene_connection):
+    global mg
+    mg = mygene_connection
+
 
 def geneinfo(query):
     
@@ -90,10 +93,10 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax):
     
     line = ax.plot([txstart, txend], [offset, offset], color=color)
 
-    arrowpoints = np.arange(txstart, txend, 5000)
-    y = np.full_like(arrowpoints, offset)
-    arrowline = ax.plot(arrowpoints, y, color=color)[0]    
-    [add_arrow(arrowline, position=x) for x in arrowpoints[:-1]]
+    # arrowpoints = np.arange(txstart, txend, 5000)
+    # y = np.full_like(arrowpoints, offset)
+    # arrowline = ax.plot(arrowpoints, y, color=color)[0]    
+    # [add_arrow(arrowline, position=x) for x in arrowpoints[:-1]]
 
     for start, end in exons:
         line = ax.plot([start, end], [offset, offset], linewidth=10, color=color)
@@ -102,17 +105,17 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax):
     ax.text(txstart, offset+.5, name, horizontalalignment='right', verticalalignment='center', fontsize=10)#, transform=ax.transAxes)
 
 
-def geneplot(chrom, start, end, hg19=False):
+def geneplot(chrom, start, end, hg19=False, figsize=None):
     "Specifying hg19 gives gene coordintes in hg19, but give chrom, start and end are still assumed to be 38"
     
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(18, 6),sharex='col', sharey='row')
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize, sharex='col', sharey='row')
     plt.subplots_adjust(wspace=0, hspace=0)
 
     for offset, (name, txstart, txend, strand, exons, gene_type) in enumerate(get_genes(chrom, start, end, hg19=hg19)):
         plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax=ax2)
 
     ax2.get_yaxis().set_visible(False)
-    ax2.set_ylim(-1, offset+1)
+    ax2.set_ylim(-1, offset+3)
 
     points = ax2.plot(txstart, offset+.5, 'o', ms=25, alpha=0, zorder=10)
 
