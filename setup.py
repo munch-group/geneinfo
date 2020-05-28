@@ -19,7 +19,7 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=[
           'jupyter',
-          'matplotlib',
+          'matplotlib>=3.0',
           'mygene',
-          'numpy',
+          'numpy>=1.1',
     ])
