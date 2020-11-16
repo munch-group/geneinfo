@@ -75,7 +75,7 @@ def get_genes(chrom, start, end, hg19=False):
                 yield gene['symbol'], first_transcript['txstart'], first_transcript['txend'], first_transcript['strand'], first_transcript['position'], tophit['type_of_gene']
 
 
-def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax):
+def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax, clip_on=True):
 
     if gene_type == 'protein-coding':
         if strand == 1:
@@ -102,12 +102,12 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax):
         line = ax.plot([start, end], [offset, offset], linewidth=10, color=color)
         line[0].set_solid_capstyle('butt')
         
-    ax.text(txstart, offset+.5, name, horizontalalignment='right', verticalalignment='center', fontsize=8)#, transform=ax.transAxes)
+    ax.text(txstart, offset+.5, name, horizontalalignment='right', verticalalignment='center', fontsize=8, clip_on=clip_on)#, transform=ax.transAxes)
 
 
 CACHE = dict()
 
-def geneplot(chrom, start, end, hg19=False, figsize=None):
+def geneplot(chrom, start, end, hg19=False, figsize=None, clip_on=True):
     "Specifying hg19 gives gene coordintes in hg19, but give chrom, start and end are still assumed to be 38"
     
     global CACHE
@@ -124,7 +124,7 @@ def geneplot(chrom, start, end, hg19=False, figsize=None):
     offset = 0 # incase of no genes
 
     for offset, (name, txstart, txend, strand, exons, gene_type) in enumerate(genes):
-        plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax=ax2)
+        plot_gene(name, txstart, txend, strand, exons, gene_type, offset, ax=ax2, clip_on=clip_on)
 
     ax2.get_yaxis().set_visible(False)
     ax2.set_ylim(-1, offset+3)
