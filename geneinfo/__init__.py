@@ -61,6 +61,8 @@ def geneinfo(query):
 def get_genes(chrom, start, end, hg19=False):
     query = 'q={}:{}-{}'.format(chrom, start, end)
     for gene in mg.query(query, species='human', fetch_all=True):
+        if 'symbol' not in gene:
+            continue
         if hg19:
             tophit = mg.query(gene['symbol'], species='human', scopes='hgnc',
                            fields='exons_hg19,type_of_gene')['hits'][0]
