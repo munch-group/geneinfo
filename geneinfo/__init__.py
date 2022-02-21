@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
 
+from .intervals import *
+
 mg = None
 
 def connect_mygene(mygene_connection):
