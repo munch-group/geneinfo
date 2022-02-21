@@ -60,7 +60,12 @@ def geneinfo(query):
         display(Markdown(tmpl.format(**top_hit)))
 
 
-def get_genes(chrom, start, end, hg19=False):
+def get_genes(chrom, start, end, hg19=False, as_dataframe=False):
+
+    if as_dataframe:
+        genes = get_genes(chrom, start, end, hg19=hg19)
+        return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
+
     query = 'q={}:{}-{}'.format(chrom, start, end)
     for gene in mg.query(query, species='human', fetch_all=True):
         if 'symbol' not in gene:
