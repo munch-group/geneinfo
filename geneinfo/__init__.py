@@ -63,11 +63,11 @@ def geneinfo(query):
 def get_genes(chrom, start, end, hg19=False, as_dataframe=False):
 
     if as_dataframe:
-	try:
-	    import pandas as pd
-	except ImportError:
-	    print("pandas required for returning as data frame")
-	    return
+        try:
+            import pandas as pd
+        except ImportError:
+            print("pandas required for returning as data frame")
+            return
         genes = get_genes(chrom, start, end, hg19=hg19)
         return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
 
