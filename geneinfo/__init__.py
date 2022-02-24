@@ -59,17 +59,7 @@ def geneinfo(query):
 
         display(Markdown(tmpl.format(**top_hit)))
 
-
-def get_genes(chrom, start, end, hg19=False, as_dataframe=False):
-
-    if as_dataframe:
-        try:
-            import pandas as pd
-        except ImportError:
-            print("pandas required for returning as data frame")
-            return
-        genes = get_genes(chrom, start, end, hg19=hg19)
-        return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
+def get_genes(chrom, start, end, hg19=False):
 
     query = 'q={}:{}-{}'.format(chrom, start, end)
     for gene in mg.query(query, species='human', fetch_all=True):
@@ -88,6 +78,14 @@ def get_genes(chrom, start, end, hg19=False, as_dataframe=False):
                 first_transcript = tophit['exons'][0]
                 yield gene['symbol'], first_transcript['txstart'], first_transcript['txend'], first_transcript['strand'], first_transcript['position'], tophit['type_of_gene']
 
+def get_genes_dataframe(chrom, start, end, hg19=False)
+    try:
+        import pandas as pd
+    except ImportError:
+        print("pandas must be installed to return data frame")
+        return
+    genes = get_genes(chrom, start, end, hg19=hg19)
+    return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
 
 def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width, font_size, ax, highlight=False, clip_on=True):
 
