@@ -174,6 +174,8 @@ def geneplot(chrom, start, end, highlight=[], hg19=False, figsize=None, clip_on=
 
     points = ax2.plot(txstart, offset+.5, 'o', ms=25, alpha=0, zorder=10)
 
+    ax1.set_xlim(ax2.get_xlim())
+
     return ax1
 
 
