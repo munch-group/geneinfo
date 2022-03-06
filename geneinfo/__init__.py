@@ -1,17 +1,20 @@
 
-from IPython.display import Markdown, display
+from IPython.display import Markdown, display, Image, SVG, HTML
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
+import requests
+import io
 
 from .intervals import *
 
-mg = None
-
-def connect_mygene(mygene_connection):
-    global mg
-    mg = mygene_connection
-
+def mygene_query(query, species='human', scopes='hgnc', fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
+    api_url = f"http://mygene.info/v3/query"
+    data = {'species': species, 'scopes': scopes, 'fetch_all': 1, 'fields': fields}    
+    data['q'] = query
+    response = requests.get(api_url, headers={'content-type': 'application/x-www-form-urlencoded'}, data=data)
+    assert response.ok, response.status_code
+    return response.json()
 
 def geneinfo(query):
     
@@ -20,8 +23,11 @@ def geneinfo(query):
         
     for gene in query:
 
-        top_hit = mg.query(gene, species='human', scopes='hgnc',
+        # top_hit = mg.query(gene, species='human', scopes='hgnc',
+        #                    fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')['hits'][0]
+        top_hit = mygene_query(gene, species='human', scopes='hgnc',
                            fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')['hits'][0]
+
 
         tmpl = "**Symbol:** **_{symbol}_** "
 
@@ -59,26 +65,64 @@ def geneinfo(query):
 
         display(Markdown(tmpl.format(**top_hit)))
 
-def get_genes(chrom, start, end, hg19=False):
 
-    query = 'q={}:{}-{}'.format(chrom, start, end)
-    for gene in mg.query(query, species='human', fetch_all=True):
-        if 'symbol' not in gene:
-            continue
-        if hg19:
-            tophit = mg.query(gene['symbol'], species='human', scopes='hgnc',
-                           fields='exons_hg19,type_of_gene')['hits'][0]
-            if 'exons_hg19' in tophit:
-                first_transcript = tophit['exons_hg19'][0]
-                yield gene['symbol'], first_transcript['txstart'], first_transcript['txend'], first_transcript['strand'], first_transcript['position'], tophit['type_of_gene']
+def ensembl_get_features(chrom, window_start, window_end, features=['gene', 'exon'], assembly=None, species='human'):
+    if chrom.startswith('chr'):
+        chrom = chrom[3:]
+    window_start, window_end = int(window_start), int(window_end)
+    genes = {}    
+    for start in range(window_start, window_end, 500000):
+        end = min(start+500000, window_end)
+        param_str = ';'.join([f"feature={f}" for f in features])
+        if assembly:
+            api_url = f"https://{assembly.lower()}.rest.ensembl.org/overlap/region/{species}/{chrom}:{start}-{end}?{param_str}"
         else:
-            tophit = mg.query(gene['symbol'], species='human', scopes='hgnc',
-                           fields='exons,type_of_gene')['hits'][0]            
-            if 'exons' in tophit:
-                first_transcript = tophit['exons'][0]
-                yield gene['symbol'], first_transcript['txstart'], first_transcript['txend'], first_transcript['strand'], first_transcript['position'], tophit['type_of_gene']
+            api_url = f"http://rest.ensembl.org/overlap/region/{species}/{chrom}:{start}-{end}?{param_str}"
+        response = requests.get(api_url, headers={'content-type': 'application/json'})
+        assert response.ok, response.status_code
+        data = response.json()
 
-def get_genes_dataframe(chrom, start, end, hg19=False)
+        for gene in data:
+            genes[gene['id']] = gene
+            
+    return genes
+  
+def ensembl_get_genes(chrom, window_start, window_end, assembly=None, species='human'):
+    
+    gene_info = ensembl_get_features(chrom, window_start, window_end, features=['gene'], assembly=assembly, species=species)
+    exon_info = ensembl_get_features(chrom, window_start, window_end, features=['exon'], assembly=assembly, species=species)
+
+    exons = defaultdict(list)
+    for key, info in exon_info.items():
+        exons[info['Parent']].append((info['start'], info['end']))
+
+    for key in gene_info:
+        gene_info[key]['exons'] = []
+        if 'canonical_transcript' in gene_info[key]:
+            transcript = gene_info[key]['canonical_transcript'].split('.')[0]
+            if transcript in exons:
+                gene_info[key]['exons'] = sorted(exons[transcript])
+
+    return gene_info
+
+def get_genes(chrom, window_start, window_end, hg19=False, species='human'):
+
+    if hg19:
+        assembly='GRCh37'
+    else:
+        assembly=None
+
+    genes = []
+    gene_info = ensembl_get_genes(chrom, window_start, window_end, assembly=assembly, species=species)
+    for gene in gene_info.values():
+        if 'external_name' in gene:
+            name = gene['external_name']
+        else:
+            name = gene['id']
+        genes.append((name, gene['start'], gene['end'], gene['strand'], gene['exons'], gene['biotype']))
+    return genes
+
+def get_genes_dataframe(chrom, start, end, hg19=False):
     try:
         import pandas as pd
     except ImportError:
@@ -89,16 +133,10 @@ def get_genes_dataframe(chrom, start, end, hg19=False)
 
 def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width, font_size, ax, highlight=False, clip_on=True):
 
-    if gene_type == 'protein-coding':
-        if strand == 1:
-            color='black'
-        else:
-            color='grey'
-    elif gene_type == 'ncRNA':
-        if strand == 1:
-            color='red'
-        else:
-            color='pink'
+    if gene_type == 'protein_coding':
+        color='black'
+    elif gene_type == 'ncrna':
+        color='blue'
     else:
         color='green'
 
@@ -122,7 +160,6 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width
 CACHE = dict()
 
 def geneplot(chrom, start, end, highlight=[], hg19=False, figsize=None, clip_on=True):
-    "Specifying hg19 gives gene coordintes in hg19, but give chrom, start and end are still assumed to be 38"
     
     global CACHE
 
@@ -183,18 +220,87 @@ def geneinfo_region(chrom, start, end, hg19=False):
         geneinfo(gene['symbol'])
 
 
+def map_interval(chrom, start, end, strand, map_from, map_to, species='human'):
+    if chrom.startswith('chr'):
+        chrom = chrom[3:]
+    start, end = int(start), int(end)    
+    api_url = f"http://rest.ensembl.org/map/{species}/{map_from}/{chrom}:{start}..{end}:{strand}/{map_to}"
+    params = {'content-type': 'application/json'}
+    response = requests.get(api_url, data=params)
+    assert response.ok
+    #null = '' # json may include 'null' variables 
+    return response.json()#eval(response.content.decode())
+
+
+def _get_string_ids(my_genes):
+    string_api_url = "https://string-db.org/api"
+    output_format = "tsv-no-header"
+    method = "get_string_ids"
+    params = {
+        "identifiers" : "\r".join(my_genes), # your protein list
+        "species" : 9606, # species NCBI identifier 
+        "limit" : 1, # only one (best) identifier per input protein
+        "echo_query" : 1, # see your input identifiers in the output
+        "caller_identity" : "geneinfo" # your app name
+    }
+    request_url = "/".join([string_api_url, output_format, method])
+    results = requests.post(request_url, data=params)
+    string_identifiers = []
+    for line in results.text.strip().split("\n"):
+        l = line.split("\t")
+        input_identifier, string_identifier = l[0], l[2]
+        string_identifiers.append(string_identifier)
+    return string_identifiers
+
+def show_string_network(my_genes, nodes=10):
+    string_identifiers = _get_string_ids(my_genes)
+    string_api_url = "https://string-db.org/api"
+    # string_api_url = "https://version-11-5.string-db.org/api"
+    output_format = "svg"
+    method = "network"
+    request_url = "/".join([string_api_url, output_format, method])
+    params = {
+        "identifiers" : "\r".join(string_identifiers), # your proteins
+        "species" : 9606, # species NCBI identifier 
+        "add_white_nodes": nodes, # add 15 white nodes to my protein 
+        "network_flavor": "confidence", # show confidence links
+        "caller_identity" : "geneinfo" # your app name
+    }
+    response = requests.post(request_url, data=params)
+    file_name = "network.svg"
+    with open(file_name, 'wb') as fh:
+        fh.write(response.content)
+    return SVG('network.svg') 
+
+def string_network_table(my_genes, nodes=10):
+    string_api_url = "https://string-db.org/api"
+    output_format = "tsv"
+    method = "network"
+    request_url = "/".join([string_api_url, output_format, method])
+    params = {
+        "identifiers" : "\r".join(my_genes), # your proteins
+        "species" : 9606, # species NCBI identifier 
+        "add_white_nodes": nodes, # add 15 white nodes to my protein 
+        "network_flavor": "confidence", # show confidence links
+        "caller_identity" : "geneinfo" # your app name
+    }
+    response = requests.post(request_url, data=params)
+    return pd.read_table(io.StringIO(response.content.decode()))
+
+
 if __name__ == "__main__":
 
-    import mygene
+    pass
+    # import mygene
 
-    mg = mygene.MyGeneInfo()
-    connect_mygene(mg)
+    # mg = mygene.MyGeneInfo()
+    # connect_mygene(mg)
 
-    chrom, start, end = 'chr3', 49500000, 50600000
-    ax = geneplot(chrom, start, end, figsize=(10, 5))
-    ax.plot(np.linspace(start, end, 1000), np.random.random(1000), 'o')
-    plt.savefig('tmp.pdf')
+    # chrom, start, end = 'chr3', 49500000, 50600000
+    # ax = geneplot(chrom, start, end, figsize=(10, 5))
+    # ax.plot(np.linspace(start, end, 1000), np.random.random(1000), 'o')
+    # plt.savefig('tmp.pdf')
 
-    ax = geneplot(chrom, start, end, figsize=(10, 5))
-    ax.plot(np.linspace(start, end, 1000), np.random.random(1000), 'o')
-    plt.savefig('tmp2.pdf')
+    # ax = geneplot(chrom, start, end, figsize=(10, 5))
+    # ax.plot(np.linspace(start, end, 1000), np.random.random(1000), 'o')
+    # plt.savefig('tmp2.pdf')
