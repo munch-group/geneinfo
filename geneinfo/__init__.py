@@ -9,10 +9,8 @@ import io
 from .intervals import *
 
 def mygene_query(query, species='human', scopes='hgnc', fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
-    api_url = f"http://mygene.info/v3/query"
-    data = {'species': species, 'scopes': scopes, 'fetch_all': 1, 'fields': fields}    
-    data['q'] = query
-    response = requests.get(api_url, headers={'content-type': 'application/x-www-form-urlencoded'}, data=data)
+    api_url = f"https://mygene.info/v3/query?content-type=appliation/x-www-form-urlencoded;q={query};scopes={scopes};species={species};fields={fields}"
+    response = requests.get(api_url)
     assert response.ok, response.status_code
     return response.json()
 
@@ -23,8 +21,6 @@ def geneinfo(query):
         
     for gene in query:
 
-        # top_hit = mg.query(gene, species='human', scopes='hgnc',
-        #                    fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')['hits'][0]
         top_hit = mygene_query(gene, species='human', scopes='hgnc',
                            fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')['hits'][0]
 
@@ -247,12 +243,15 @@ def _get_string_ids(my_genes):
     results = requests.post(request_url, data=params)
     string_identifiers = []
     for line in results.text.strip().split("\n"):
+        print(line)
         l = line.split("\t")
         input_identifier, string_identifier = l[0], l[2]
         string_identifiers.append(string_identifier)
     return string_identifiers
 
 def show_string_network(my_genes, nodes=10):
+    if type(my_genes) is str:
+        my_genes = list(my_genes)    
     string_identifiers = _get_string_ids(my_genes)
     string_api_url = "https://string-db.org/api"
     # string_api_url = "https://version-11-5.string-db.org/api"
@@ -273,6 +272,8 @@ def show_string_network(my_genes, nodes=10):
     return SVG('network.svg') 
 
 def string_network_table(my_genes, nodes=10):
+    if type(my_genes) is str:
+        my_genes = list(my_genes)
     string_api_url = "https://string-db.org/api"
     output_format = "tsv"
     method = "network"
