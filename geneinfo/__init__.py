@@ -148,14 +148,14 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width
         line[0].set_solid_capstyle('butt')
         
     if highlight:
-        ax.text(txstart, offset+.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, weight='bold', color='red', clip_on=clip_on)#, transform=ax.transAxes)
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, weight='bold', color='red', clip_on=clip_on)#, transform=ax.transAxes)
     else:
-        ax.text(txstart, offset+.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, clip_on=clip_on)#, transform=ax.transAxes)
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, clip_on=clip_on)#, transform=ax.transAxes)
 
 
 CACHE = dict()
 
-def geneplot(chrom, start, end, highlight=[], hg19=False, figsize=None, clip_on=True):
+def geneplot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=False, figsize=None, clip_on=True):
     
     global CACHE
 
@@ -172,6 +172,8 @@ def geneplot(chrom, start, end, highlight=[], hg19=False, figsize=None, clip_on=
         
     plotted_intervals = defaultdict(list)
     for name, txstart, txend, strand, exons, gene_type in genes:
+        if gene_type != 'protein_coding' and only_protein_coding:
+            continue
         gene_interval = [txstart-label_width, txend]
         max_gene_rows = 200
         for offset in range(1, max_gene_rows, 1):
@@ -199,6 +201,7 @@ def geneplot(chrom, start, end, highlight=[], hg19=False, figsize=None, clip_on=
 
     ax2.set_ylim(-1, offset+3)
     ax2.get_yaxis().set_visible(False)
+    ax2.invert_yaxis()
     ax2.spines['top'].set_visible(False)
     ax2.spines['right'].set_visible(False)
     ax2.spines['left'].set_visible(False)
