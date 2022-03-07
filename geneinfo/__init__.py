@@ -197,7 +197,10 @@ def geneplot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=Fa
                   highlight=name in highlight,
                   ax=ax2, clip_on=clip_on)
 
-    offset = max(plotted_intervals.keys())
+    if plotted_intervals:
+        offset = max(plotted_intervals.keys())
+    else:
+        offset = 1
 
     ax2.set_ylim(-1, offset+3)
     ax2.get_yaxis().set_visible(False)
