@@ -86,7 +86,12 @@ def ensembl_get_features(chrom, window_start, window_end, features=['gene', 'exo
 def ensembl_get_genes(chrom, window_start, window_end, assembly=None, species='human'):
     
     gene_info = ensembl_get_features(chrom, window_start, window_end, features=['gene'], assembly=assembly, species=species)
+    # transcript_info = ensembl_get_features(chrom, window_start, window_end, features=['transcript'], assembly=assembly, species=species)
     exon_info = ensembl_get_features(chrom, window_start, window_end, features=['exon'], assembly=assembly, species=species)
+
+    # transcripts = {}
+    # for key, info in transcript_info.items():
+    #     transcripts[info['Parent']] = info['transcript_id']
 
     exons = defaultdict(list)
     for key, info in exon_info.items():
@@ -127,7 +132,7 @@ def get_genes_dataframe(chrom, start, end, hg19=False):
     genes = get_genes(chrom, start, end, hg19=hg19)
     return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
 
-def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width, font_size, ax, highlight=False, clip_on=True):
+def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width, min_visible_width, font_size, ax, highlight=False, clip_on=True):
 
     if gene_type == 'protein_coding':
         color='black'
@@ -136,14 +141,19 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width
     else:
         color='green'
 
-    line = ax.plot([txstart, txend], [offset, offset], color=color, linewidth=line_width/10)
+    line = ax.plot([txstart, txend], [offset, offset], color=color, linewidth=line_width/5, alpha=0.5)
+    line[0].set_solid_capstyle('butt')
 
     # arrowpoints = np.arange(txstart, txend, 5000)
     # y = np.full_like(arrowpoints, offset)
     # arrowline = ax.plot(arrowpoints, y, color=color)[0]    
     # [add_arrow(arrowline, position=x) for x in arrowpoints[:-1]]
-
+#    print(name, txstart, txend, exons)
     for start, end in exons:
+        # line = ax.plot([start, end], [offset, offset], linewidth=line_width, color=color)
+        # line[0].set_solid_capstyle('butt')
+
+        end = max(start+min_visible_width, end)
         line = ax.plot([start, end], [offset, offset], linewidth=line_width, color=color)
         line[0].set_solid_capstyle('butt')
         
@@ -155,7 +165,7 @@ def plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width
 
 CACHE = dict()
 
-def geneplot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=False, figsize=None, clip_on=True):
+def geneplot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=False, hard_limits=False, exact_exons=False, figsize=None, clip_on=True):
     
     global CACHE
 
@@ -168,14 +178,29 @@ def geneplot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=Fa
         genes = list(get_genes(chrom, start, end, hg19=hg19))
         CACHE[(chrom, start, end, hg19)] = genes
 
-    label_width = (end - start) / 5
+    print(len(genes))
+    if len(genes) == 200:
+        print("Limit reached, make window smaller")
+        return
+
+    from math import log10
+    # line_width, font_size = min(12, int(12 / log10(len(genes))))-2, max(8, int(12 / log10(len(genes))))
+    # label_width = font_size * (end - start) / 100
+    line_width = max(6, int(50 / log10(end - start)))-2
+    font_size = max(6, int(50 / log10(end - start)))
+    label_width = font_size * (end - start) / 60
+    if exact_exons:
+        min_visible_exon_width = 0
+    else:
+        min_visible_exon_width = (end - start) / 1000
+    print(font_size, line_width)
         
     plotted_intervals = defaultdict(list)
     for name, txstart, txend, strand, exons, gene_type in genes:
         if gene_type != 'protein_coding' and only_protein_coding:
             continue
         gene_interval = [txstart-label_width, txend]
-        max_gene_rows = 200
+        max_gene_rows = 400
         for offset in range(1, max_gene_rows, 1):
             if not intersect([gene_interval], plotted_intervals[offset]) and \
                 not intersect([gene_interval], plotted_intervals[offset-1]) and \
@@ -190,10 +215,8 @@ def geneplot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=Fa
         else:
             plotted_intervals[offset] = [gene_interval]
     
-        from math import log10
-        line_width, font_size = min(12, int(12 / log10(len(genes))))-2, min(12, int(12 / log10(len(genes))))
         plot_gene(name, txstart, txend, strand, exons, gene_type, 
-                  offset, line_width, font_size, 
+                  offset, line_width, min_visible_exon_width, font_size, 
                   highlight=name in highlight,
                   ax=ax2, clip_on=clip_on)
 
@@ -202,7 +225,13 @@ def geneplot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=Fa
     else:
         offset = 1
 
-    ax2.set_ylim(-1, offset+3)
+    if hard_limits:
+        ax2.set_xlim(start, end)
+    else:
+        s, e = ax2.get_xlim()
+        ax2.set_xlim(min(s-label_width/2, start), max(e, end))
+
+    ax2.set_ylim(-2, offset+2)
     ax2.get_yaxis().set_visible(False)
     ax2.invert_yaxis()
     ax2.spines['top'].set_visible(False)
@@ -249,7 +278,6 @@ def _get_string_ids(my_genes):
     results = requests.post(request_url, data=params)
     string_identifiers = []
     for line in results.text.strip().split("\n"):
-        print(line)
         l = line.split("\t")
         input_identifier, string_identifier = l[0], l[2]
         string_identifiers.append(string_identifier)
