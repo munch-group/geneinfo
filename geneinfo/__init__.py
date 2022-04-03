@@ -24,7 +24,6 @@ from goatools.go_search import GoSearch
 
 import requests
 from Bio import Entrez
-import mygene
 
 from .intervals import *
 
