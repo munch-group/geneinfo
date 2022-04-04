@@ -407,19 +407,24 @@ gi.email("youremail@address.com)
 """, file=sys.stderr)
         return
 
-def download_ncbi_associations():
+def download_ncbi_associations(prt=sys.stdout):
+
     os.environ["ftp_proxy"] = "http://proxyserv:3128"
 
-    process = subprocess.Popen(['wget', '-O', 'gene2go.gz', 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
+    process = subprocess.Popen(['wget', '-nv', '-O', 'gene2go.gz', 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
                         stdout=subprocess.PIPE, 
                         stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
+    print(stdout.decode(), file=prt)
+    print(stderr.decode(), file=prt)
     assert not process.returncode
 
     process = subprocess.Popen(['gzip', '-f', '-d', 'gene2go.gz'],
                         stdout=subprocess.PIPE, 
                         stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
+    print(stdout.decode(), file=prt)
+    print(stderr.decode(), file=prt)    
     assert not process.returncode
     return 'gene2go'
 
@@ -464,7 +469,7 @@ def fetch_background_genes(taxid=9606):
                         pass
   
     
-def get_terms_for_go_regex(regex, taxid=9606, add_children=True):
+def get_terms_for_go_regex(regex, taxid=9606, add_children=False):
 
     try:
         taxid = int(taxid)
@@ -479,9 +484,7 @@ def get_terms_for_go_regex(regex, taxid=9606, add_children=True):
         gene2go = download_ncbi_associations(prt=null)
 
         objanno = Gene2GoReader("gene2go", taxids=[taxid], prt=null)
-        # go2geneids_human = objanno.get_id2gos(namespace='BP', go2geneids=True)
         go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
-
         srchhelp = GoSearch("go-basic.obo", go2items=go2geneids, log=null)
 
         results_all = re.compile(r'({})'.format(regex), flags=re.IGNORECASE)
@@ -493,7 +496,7 @@ def get_terms_for_go_regex(regex, taxid=9606, add_children=True):
         if add_children:
             gos = srchhelp.add_children_gos(gos)
 
-        return gos
+        return list(gos)
 
 def get_genes_for_go_regex(regex, taxid=9606):
 
@@ -507,8 +510,11 @@ def get_genes_for_go_regex(regex, taxid=9606):
         
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
-        gos_all_with_children = get_terms_for_go_regex(regex, taxid=taxid)
+        gos_all_with_children = get_terms_for_go_regex(regex, taxid=taxid, add_children=True)
 
+        objanno = Gene2GoReader("gene2go", taxids=[taxid], prt=null)
+        go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
+        srchhelp = GoSearch("go-basic.obo", go2items=go2geneids, log=null)
         geneids = srchhelp.get_items(gos_all_with_children)
 
         ncbi_tsv = f'{taxid}_protein_genes.txt'
@@ -771,7 +777,7 @@ def get_go_terms_for_genes(genes, taxid=9606, evidence=None):
     return list(sorted(df.GO_ID.unique().tolist()))
 
     
-def show_go_dag_for_terms(terms):
+def show_go_dag_for_terms(terms, add_relationships=True):
     
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
@@ -783,7 +789,11 @@ def show_go_dag_for_terms(terms):
         file_gene2go = download_ncbi_associations(prt=null)
 
         #Load Ontologies
-        obodag = GODag("go-basic.obo", optional_attrs=['relationship', 'def'], prt=null)
+        if add_relationships:
+            optional_attrs=['relationship', 'def']
+        else:
+            optional_attrs=['def']
+        obodag = GODag("go-basic.obo", optional_attrs=optional_attrs, prt=null)
 
         gosubdag = GoSubDag(terms, obodag, relationships=True)
         GoSubDagPlot(gosubdag).plt_dag('plot.png')
