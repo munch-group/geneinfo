@@ -882,9 +882,13 @@ def go_enrichment(gene_list, taxid=9606, background_chrom=None, terms=None):
         #Load Ontologies
         obodag = GODag("go-basic.obo", optional_attrs=['relationship', 'def'], prt=null)
 
-        # limit go dag to a sub graph including only specified terms
+        # limit go dag to a sub graph including only specified terms and their children
         if terms is not None:
-            obodag = GoSubDag(terms, obodag)
+
+            srchhelp = GoSearch("go-basic.obo", go2items=go2geneids, log=null)
+            terms_with_children = srchhelp.add_children_gos(terms)
+
+            obodag = GoSubDag(terms_with_children, obodag)
 
         # load associations
         # Read NCBI's gene2go. Store annotations in a list of namedtuples
