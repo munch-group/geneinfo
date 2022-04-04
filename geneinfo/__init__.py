@@ -113,6 +113,7 @@ def _ensembl_get_features_region(chrom, window_start, window_end, features=['gen
             
     return genes
 
+
 def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapiens'):
 
     if type(symbols) is not list:
@@ -217,7 +218,7 @@ def _plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_widt
     if highlight:
         ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, weight='bold', color='red', clip_on=clip_on)#, transform=ax.transAxes)
     else:
-        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, clip_on=clip_on)#, transform=ax.transAxes)
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, color=color, clip_on=clip_on)#, transform=ax.transAxes)
 
 
 def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=False, hard_limits=False, exact_exons=False, figsize=None, clip_on=True):
@@ -292,7 +293,7 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
     ax2.spines['right'].set_visible(False)
     ax2.spines['left'].set_visible(False)
 
-    points = ax2.plot(txstart, offset+.5, 'o', ms=25, alpha=0, zorder=10)
+    # points = ax2.plot(txstart, offset+.5, 'o', ms=25, alpha=0, zorder=10)
 
     ax1.set_xlim(ax2.get_xlim())
 
