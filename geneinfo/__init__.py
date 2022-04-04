@@ -856,34 +856,54 @@ Inferred from Electronic Annotation (IEA)
     display(Markdown(s))  
                     
         
+def  _write_go_hdf():
+
+    with open(os.devnull, 'w') as null, redirect_stdout(null):
+
+        if not os.path.exists('go-basic.h5'):
+
+            # Get http://geneontology.org/ontology/go-basic.obo
+            obo_fname = download_go_basic_obo(prt=null)
+
+            # Download Associations, if necessary
+            # Get ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz
+            file_gene2go = download_ncbi_associations(prt=null)
+
+            r = OBOReader(optional_attrs=['def'])
+            rows = [(e.id, e.name, e.defn) for e in OBOReader(optional_attrs=['def'])]
+            df = pd.DataFrame().from_records(rows, columns=['goterm', 'goname', 'description'])
+            df.to_hdf('go-basic.h5', key='df', format='table', data_columns=['goterm', 'goname'])
+
+
+def go_term2name(term):
+
+    _write_go_hdf()
+    with pd.HDFStore('go-basic.h5', 'r') as store:
+        entry = store.select("df", "goterm == %r" % term).iloc[0]
+    return entry.goterm
+
+
+def go_name2term(name):
+
+    _write_go_hdf()
+    with pd.HDFStore('go-basic.h5', 'r') as store:
+        entry = store.select("df", "goname == %r" % name.lower()).iloc[0]
+    return entry.goterm
+
+
 def go_info(terms):
             
     if type(terms) is not list:
         terms = [terms]
 
-    with open(os.devnull, 'w') as null, redirect_stdout(null):
+    _write_go_hdf()
 
-        # Get http://geneontology.org/ontology/go-basic.obo
-        obo_fname = download_go_basic_obo(prt=null)
-
-        # Download Associations, if necessary
-        # Get ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz
-        file_gene2go = download_ncbi_associations(prt=null)
-
-        if not os.path.exists('go-basic.h5'):
-
-            r = OBOReader(optional_attrs=['def'])
-            rows = [(e.id, e.name, e.defn) for e in OBOReader(optional_attrs=['def'])]
-            df = pd.DataFrame().from_records(rows, columns=['goterm', 'goname', 'description']).set_index('goterm')
-            df.to_hdf('go-basic.h5', key='df', format='table')
-
-    store = pd.HDFStore('go-basic.h5')
-
-    for term in terms:
-        entry = store.select("df", "index == %r" % term).iloc[0]
-        desc = re.search(r'"([^"]+)"', entry.description).group(1)
-        s = f'**<span style="color:gray;">{term}:</span>** **{entry.goname}**  \n {desc}    \n\n ----'        
-        display(Markdown(s))
+    with pd.HDFStore('go-basic.h5', 'r') as store:
+        for term in terms:
+            entry = store.select("df", "goterm == %r" % term.upper()).iloc[0]
+            desc = re.search(r'"([^"]+)"', entry.description).group(1)
+            s = f'**<span style="color:gray;">{term}:</span>** **{entry.goname}**  \n {desc}    \n\n ----'        
+            display(Markdown(s))
 
 
 def go_enrichment(gene_list, taxid=9606, background_chrom=None, terms=None):
