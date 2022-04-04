@@ -446,9 +446,7 @@ def fetch_background_genes(taxid=9606):
                         pass
   
     
-def get_genes_for_go_regex(regex, taxid=9606):
-
-    _assert_entrez_email()
+def get_terms_for_go_regex(regex, taxid=9606, add_children=True):
 
     try:
         taxid = int(taxid)
@@ -474,7 +472,25 @@ def get_genes_for_go_regex(regex, taxid=9606):
         gos_all = srchhelp.get_matching_gos(results_all, prt=null)
         gos_no = srchhelp.get_matching_gos(results_not, gos=gos_all)
         gos = gos_all.difference(gos_no)
-        gos_all_with_children = srchhelp.add_children_gos(gos)
+        if add_children:
+            gos = srchhelp.add_children_gos(gos)
+
+        return gos
+
+def get_genes_for_go_regex(regex, taxid=9606):
+
+    _assert_entrez_email()
+
+    try:
+        taxid = int(taxid)
+    except ValueError:
+        handle = Entrez.esearch(db="taxonomy", term=f'"{taxid}"[Scientific Name]')
+        taxid = int(Entrez.read(handle)['IdList'][0])
+        
+    with open(os.devnull, 'w') as null, redirect_stdout(null):
+
+        gos_all_with_children = get_terms_for_go_regex(regex, taxid=taxid)
+
         geneids = srchhelp.get_items(gos_all_with_children)
 
         ncbi_tsv = f'{taxid}_protein_genes.txt'
@@ -842,7 +858,7 @@ def go_info(terms):
         display(Markdown(s))
 
 
-def go_enrichment(gene_list, taxid=9606, background_chrom=None):
+def go_enrichment(gene_list, taxid=9606, background_chrom=None, terms=None):
 
     _assert_entrez_email()
 
@@ -865,6 +881,10 @@ def go_enrichment(gene_list, taxid=9606, background_chrom=None):
 
         #Load Ontologies
         obodag = GODag("go-basic.obo", optional_attrs=['relationship', 'def'], prt=null)
+
+        # limit go dag to a sub graph including only specified terms
+        if terms is not None:
+            obodag = GoSubDag(terms, obodag)
 
         # load associations
         # Read NCBI's gene2go. Store annotations in a list of namedtuples
