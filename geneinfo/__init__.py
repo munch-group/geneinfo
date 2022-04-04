@@ -10,10 +10,11 @@ import sys
 import os
 import re
 import json
+import subprocess
 import pandas as pd
 
 from goatools.base import download_go_basic_obo
-from goatools.base import download_ncbi_associations
+#from goatools.base import download_ncbi_associations
 from goatools.obo_parser import GODag, OBOReader
 from goatools.gosubdag.gosubdag import GoSubDag
 from goatools.gosubdag.plot.gosubdag_plot import GoSubDagPlot
@@ -405,6 +406,23 @@ import geneinfo as gi
 gi.email("youremail@address.com)
 """, file=sys.stderr)
         return
+
+def download_ncbi_associations():
+    os.environ["ftp_proxy"] = "http://proxyserv:3128"
+
+    process = subprocess.Popen(['wget', '-O', 'gene2go.gz', 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
+                        stdout=subprocess.PIPE, 
+                        stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    assert not process.returncode
+
+    process = subprocess.Popen(['gzip', '-f', '-d', 'gene2go.gz'],
+                        stdout=subprocess.PIPE, 
+                        stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    assert not process.returncode
+    return 'gene2go'
+
 
 def fetch_background_genes(taxid=9606):
     
