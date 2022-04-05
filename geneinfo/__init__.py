@@ -216,10 +216,17 @@ def _plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_widt
         line = ax.plot([start, end], [offset, offset], linewidth=line_width, color=color)
         line[0].set_solid_capstyle('butt')
         
-    if highlight:
-        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, weight='bold', color='red', clip_on=clip_on)#, transform=ax.transAxes)
+    if highlight is True:
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', 
+            fontsize=font_size, clip_on=clip_on,
+            weight='bold', color='red')
+    elif type(highlight) is dict:
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center',
+            fontsize=font_size, clip_on=clip_on, 
+            **hightlight)
     else:
-        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', fontsize=font_size, color=color, clip_on=clip_on)#, transform=ax.transAxes)
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', 
+            fontsize=font_size, color=color, clip_on=clip_on)
 
 
 def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=False, hard_limits=False, exact_exons=False, figsize=None, clip_on=True):
@@ -271,9 +278,16 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
         else:
             plotted_intervals[offset] = [gene_interval]
     
+        if type(highlight) is list or type(highlight) is set:
+            hl = name in highlight
+        elif type(highlight) is dict:
+            hl = highlight[name]
+        else:
+            hl = None
+
         _plot_gene(name, txstart, txend, strand, exons, gene_type, 
                   offset, line_width, min_visible_exon_width, font_size, 
-                  highlight=name in highlight,
+                  highlight=hl,
                   ax=ax2, clip_on=clip_on)
 
     if plotted_intervals:
@@ -779,6 +793,9 @@ def get_go_terms_for_genes(genes, taxid=9606, evidence=None):
     
 def show_go_dag_for_terms(terms, add_relationships=True):
     
+    if not terms:
+        return
+
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
         # Get http://geneontology.org/ontology/go-basic.obo
@@ -795,7 +812,7 @@ def show_go_dag_for_terms(terms, add_relationships=True):
             optional_attrs=['def']
         obodag = GODag("go-basic.obo", optional_attrs=optional_attrs, prt=null)
 
-        gosubdag = GoSubDag(terms, obodag, relationships=True)
+        gosubdag = GoSubDag(terms, obodag, relationships=add_relationships)
         GoSubDagPlot(gosubdag).plt_dag('plot.png')
 
     return Image('plot.png')    
