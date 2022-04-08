@@ -12,6 +12,7 @@ import re
 import json
 import subprocess
 import pandas as pd
+from math import log10
 
 from goatools.base import download_go_basic_obo
 #from goatools.base import download_ncbi_associations
@@ -20,8 +21,11 @@ from goatools.gosubdag.gosubdag import GoSubDag
 from goatools.gosubdag.plot.gosubdag_plot import GoSubDagPlot
 from goatools.cli.ncbi_gene_results_to_python import ncbi_tsv_to_py
 from goatools.goea.go_enrichment_ns import GOEnrichmentStudyNS
+from goatools.go_enrichment import GOEnrichmentRecord
 from goatools.anno.genetogo_reader import Gene2GoReader
 from goatools.go_search import GoSearch
+from goatools.godag.go_tasks import CurNHigher
+from goatools.godag_plot import plot_gos, plot_goid2goobj, plot_results, plt_goea_results
 
 import requests
 from Bio import Entrez
@@ -29,7 +33,6 @@ from Bio import Entrez
 from .intervals import *
 
 CACHE = dict()
-
 
 def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
     api_url = f"https://mygene.info/v3/query?content-type=appliation/x-www-form-urlencoded;q={query};scopes={scopes};species={species};fields={fields}"
@@ -151,6 +154,7 @@ def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, spe
 
     return gene_info
 
+
 def get_genes_region(chrom, window_start, window_end, only_protein_coding=True, hg19=False, species='human'):
 
     if hg19:
@@ -191,6 +195,7 @@ def get_genes_region_dataframe(chrom, start, end, hg19=False):
     genes = get_genes_region(chrom, start, end, hg19=hg19)
     return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
 
+
 def _plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width, min_visible_width, font_size, ax, highlight=False, clip_on=True):
 
     if gene_type == 'protein_coding':
@@ -203,15 +208,7 @@ def _plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_widt
     line = ax.plot([txstart, txend], [offset, offset], color=color, linewidth=line_width/5, alpha=0.5)
     line[0].set_solid_capstyle('butt')
 
-    # arrowpoints = np.arange(txstart, txend, 5000)
-    # y = np.full_like(arrowpoints, offset)
-    # arrowline = ax.plot(arrowpoints, y, color=color)[0]    
-    # [add_arrow(arrowline, position=x) for x in arrowpoints[:-1]]
-
     for start, end in exons:
-        # line = ax.plot([start, end], [offset, offset], linewidth=line_width, color=color)
-        # line[0].set_solid_capstyle('butt')
-
         end = max(start+min_visible_width, end)
         line = ax.plot([start, end], [offset, offset], linewidth=line_width, color=color)
         line[0].set_solid_capstyle('butt')
@@ -223,7 +220,7 @@ def _plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_widt
     elif type(highlight) is dict:
         ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center',
             fontsize=font_size, clip_on=clip_on, 
-            **hightlight)
+            **highlight)
     else:
         ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', 
             fontsize=font_size, color=color, clip_on=clip_on)
@@ -242,14 +239,10 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
         genes = list(get_genes_region(chrom, start, end, only_protein_coding=only_protein_coding, hg19=hg19))
         CACHE[(chrom, start, end, only_protein_coding, hg19)] = genes
 
-    # print(len(genes))
     if len(genes) == 200:
         print("Limit reached, make window smaller")
         return
 
-    from math import log10
-    # line_width, font_size = min(12, int(12 / log10(len(genes))))-2, max(8, int(12 / log10(len(genes))))
-    # label_width = font_size * (end - start) / 100
     line_width = max(6, int(50 / log10(end - start)))-2
     font_size = max(6, int(50 / log10(end - start)))
     label_width = font_size * (end - start) / 60
@@ -257,7 +250,6 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
         min_visible_exon_width = 0
     else:
         min_visible_exon_width = (end - start) / 1000
-    # print(font_size, line_width)
         
     plotted_intervals = defaultdict(list)
     for name, txstart, txend, strand, exons, gene_type in genes:
@@ -277,10 +269,10 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
             plotted_intervals[offset] = union(plotted_intervals[offset], [gene_interval])
         else:
             plotted_intervals[offset] = [gene_interval]
-    
+
         if type(highlight) is list or type(highlight) is set:
             hl = name in highlight
-        elif type(highlight) is dict:
+        elif type(highlight) is dict or type(highlight) is defaultdict:
             hl = highlight[name]
         else:
             hl = None
@@ -308,8 +300,6 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
     ax2.spines['right'].set_visible(False)
     ax2.spines['left'].set_visible(False)
 
-    # points = ax2.plot(txstart, offset+.5, 'o', ms=25, alpha=0, zorder=10)
-
     ax1.set_xlim(ax2.get_xlim())
 
     return ax1
@@ -330,7 +320,6 @@ def map_interval(chrom, start, end, strand, map_from, map_to, species='human'):
         response.raise_for_status()
     #null = '' # json may include 'null' variables 
     return response.json()#eval(response.content.decode())
-
 
 
 ##################################################################################
@@ -421,25 +410,25 @@ gi.email("youremail@address.com)
 """, file=sys.stderr)
         return
 
+
 def download_ncbi_associations(prt=sys.stdout):
 
-    os.environ["ftp_proxy"] = "http://proxyserv:3128"
+    if not os.path.exists('gene2go'):
+        process = subprocess.Popen(['wget', '-nv', '-O', 'gene2go.gz', 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
+                            stdout=subprocess.PIPE, 
+                            stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        print(stdout.decode(), file=prt)
+        print(stderr.decode(), file=prt)
+        assert not process.returncode
 
-    process = subprocess.Popen(['wget', '-nv', '-O', 'gene2go.gz', 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
-                        stdout=subprocess.PIPE, 
-                        stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-    print(stdout.decode(), file=prt)
-    print(stderr.decode(), file=prt)
-    assert not process.returncode
-
-    process = subprocess.Popen(['gzip', '-f', '-d', 'gene2go.gz'],
-                        stdout=subprocess.PIPE, 
-                        stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-    print(stdout.decode(), file=prt)
-    print(stderr.decode(), file=prt)    
-    assert not process.returncode
+        process = subprocess.Popen(['gzip', '-f', '-d', 'gene2go.gz'],
+                            stdout=subprocess.PIPE, 
+                            stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        print(stdout.decode(), file=prt)
+        print(stderr.decode(), file=prt)    
+        assert not process.returncode
     return 'gene2go'
 
 
@@ -447,14 +436,14 @@ def fetch_background_genes(taxid=9606):
     
     _assert_entrez_email()
 
+    output_file_name = f'{taxid}_protein_genes.txt'        
+
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
-        output_base_name = f'{taxid}_protein_genes'
-        
         handle = Entrez.esearch(db="gene", term=f'{taxid}[Taxonomy ID] AND alive[property] AND genetype protein coding[Properties]', retmax="1000000")
         records = Entrez.read(handle)
 
-        with open(f'{output_base_name}.txt', 'w') as f:
+        with open(output_file_name, 'w') as f:
             header = ['tax_id', 'Org_name', 'GeneID', 'CurrentID', 'Status', 'Symbol', 'Aliases', 
                   'description', 'other_designations', 'map_location', 'chromosome', 
                   'genomic_nucleotide_accession.version', 'start_position_on_the_genomic_accession', 
@@ -481,15 +470,62 @@ def fetch_background_genes(taxid=9606):
                     except Exception as e:
                         print(e)
                         pass
-  
-    
-def get_terms_for_go_regex(regex, taxid=9606, add_children=False):
 
+    # write mappings between symbol and ncbi id
+    symbol2ncbi_file = f'{taxid}_symbol2ncbi.h5'
+    df = pd.read_table(output_file_name)
+    df = df.loc[:, ['GeneID', 'Symbol']]
+    df.set_index('Symbol').GeneID.to_hdf(symbol2ncbi_file, key='symbol2ncbi')
+    df.set_index('GeneID').Symbol.to_hdf(symbol2ncbi_file, key='ncbi2symbol')
+
+def _cached_symbol2ncbi(symbols, taxid=9606):
+
+    symbol2ncbi_file = f'{taxid}_symbol2ncbi.h5'
+    symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'symbol2ncbi')
+    try:    
+        return symbol2ncbi.loc[symbols].tolist()
+    except KeyError:
+        geneids = []
+        for symbol in symbols:
+            try:
+                geneids.append(symbol2ncbi.loc[symbol])
+            except:
+                print(f'Could not map "{symbol}" to ncbi id', file=sys.stderr)
+        return geneids
+
+
+def _cached_ncbi2symbol(geneids, taxid=9606):
+
+    symbol2ncbi_file = f'{taxid}_symbol2ncbi.h5'
+    symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'ncbi2symbol')
+    try:
+        return symbol2ncbi.loc[geneids].tolist()
+    except KeyError:
+        symbols = []
+        for geneid in geneids:
+            try:
+                symbols.append(ncbi2symbol.loc[geneid])
+            except:
+                print(f'Could not map "{geneid}" to gene symbol', file=sys.stderr)
+        return symbols
+
+
+def _tidy_taxid(taxid):
     try:
         taxid = int(taxid)
     except ValueError:
         handle = Entrez.esearch(db="taxonomy", term=f'"{taxid}"[Scientific Name]')
-        taxid = int(Entrez.read(handle)['IdList'][0])
+        id_list = Entrez.read(handle)['IdList']
+        if id_list:
+            taxid = int(id_list[0])
+        else:
+            print(f'Could not find taxonomy id for "{taxid}"')
+    return taxid  
+    
+
+def get_terms_for_go_regex(regex, taxid=9606, add_children=False):
+
+    taxid = _tidy_taxid(taxid)
         
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
@@ -512,16 +548,13 @@ def get_terms_for_go_regex(regex, taxid=9606, add_children=False):
 
         return list(gos)
 
+
 def get_genes_for_go_regex(regex, taxid=9606):
 
     _assert_entrez_email()
 
-    try:
-        taxid = int(taxid)
-    except ValueError:
-        handle = Entrez.esearch(db="taxonomy", term=f'"{taxid}"[Scientific Name]')
-        taxid = int(Entrez.read(handle)['IdList'][0])
-        
+    taxid = _tidy_taxid(taxid)
+ 
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
         gos_all_with_children = get_terms_for_go_regex(regex, taxid=taxid, add_children=True)
@@ -541,92 +574,6 @@ def get_genes_for_go_regex(regex, taxid=9606):
         protein_genes = importlib.import_module(output_py.replace('.py', ''))
         GENEID2NT = protein_genes.GENEID2NT
 
-    #############################################################
-
-        # fetch_ids = []
-        # for geneid in geneids:
-        #     nt = GENEID2NT.get(geneid, None)
-        #     if nt is not None:
-        #         fetch_ids.append(nt.GeneID)
-
-
-    #     mg = mygene.MyGeneInfo()                
-    #     d = mg.getgenes(fetch_ids, species='human', scopes='hgnc', fields=['symbol', 'name', 'genomic_pos.chr', 'genomic_pos.start', 'genomic_pos.end', 'genomic_pos.strand'])
-
-
-    # records = []
-    # for entry in d:
-
-    #     if not 'genomic_pos' in entry:
-    #         print("No coordinates for:", entry['symbol'], file=sys.stderr)
-    #         continue
-    #     pos = entry['genomic_pos']
-    #     if type(pos) is list:
-    #         pos = pos[0]
-    #     records.append([entry['symbol'], entry['name'], 
-    #                     pos['chr'], pos['start'],
-    #                     pos['end'], pos['strand']])
-
-    # df = pd.DataFrame().from_records(records, columns=['symbol', 'name', 'chrom', 'start', 'end', 'strand'])
-
-    #############################################################
-
-    # fetch_ids = []
-    # for geneid in geneids:
-    #     nt = GENEID2NT.get(geneid, None)
-    #     if nt is not None:
-    #         fetch_ids.append(nt.Symbol)
-
-    # records = []
-    # batch_size = 1000
-    # found = []
-    # for i in range(0, len(fetch_ids), batch_size):
-    #     to_fetch = fetch_ids[i:i+batch_size]
-    #     result = ensembl_get_gene_info_by_symbol(to_fetch)
-    #     print(i, len(result))
-    #     for name, info in result.items():
-    #         print(info)
-    #         assert 0
-    #         records.append((info['display_name'], re.sub(r'\[.*\]', '', info['description']),
-    #                         info['seq_region_name'], info['start'], info['end'], info['strand'])
-    #                         )
-    #         found.append(name)
-    # missing = set(fetch_ids).difference(set(found))
-
-    # # use ensembl id instead to get it with a GET request ENSG00000138185
-
-    # # make a ensembl_get_gene_info function for that (maybe make return values the same as mygene_get_gene_info)
-
-    # # look in mygene for the rest:
-
-    # for symbol in missing:
-    #     print(symbol)
-    #     entry = mygene_get_gene_info(symbol)
-    #     if not 'genomic_pos' in entry:
-    #         print("No coordinates for:", entry['symbol'], file=sys.stderr)
-    #         continue
-    #     pos = entry['genomic_pos']
-    #     if type(pos) is list:
-    #         pos = pos[0]
-    #     records.append([entry['symbol'], entry['name'], 
-    #                     pos['chr'], pos['start'],
-    #                     pos['end'], pos['strand']])
-
-    # df = pd.DataFrame().from_records(records, columns=['symbol', 'name', 'chrom', 'start', 'end', 'strand'])
-
-    #############################################################
-
-
-    # TODO: Handle the case where geneid is not found in GENEID2NT (multiple instances in this file)
-    # fetch_ids = []
-    # for geneid in geneids:
-    #     nt = GENEID2NT.get(geneid, None)
-    #     if nt is not None:
-    #         fetch_ids.append(nt.GeneID)
-    #     else:
-    #         print(geneid, 'not found in GENEID2NT', file=sys.stderr)
-
-
     fetch_ids = geneids
 
     fetch_ids = list(map(str, fetch_ids))
@@ -649,12 +596,6 @@ def get_genes_for_go_regex(regex, taxid=9606):
     missing = set(fetch_ids).difference(set(found))
 
     df = pd.DataFrame().from_records(records, columns=['symbol', 'name', 'chrom', 'start', 'end'])
-
-    #############################################################
-
-
-
-
 
     return df.sort_values(by='start').reset_index(drop=True)
 
@@ -674,10 +615,6 @@ def get_genes_for_go_terms(terms, taxid=9606):
 
         geneids = srchhelp.get_items(terms)  
 
-#######################################################
-
-
-
         ncbi_tsv = f'{taxid}_protein_genes.txt' 
         if not os.path.exists(ncbi_tsv):
             fetch_background_genes(taxid)
@@ -687,15 +624,6 @@ def get_genes_for_go_terms(terms, taxid=9606):
 
     protein_genes = importlib.import_module(output_py.replace('.py', ''))
     GENEID2NT = protein_genes.GENEID2NT
-
-    # TODO: Handle the case where geneid is not found in GENEID2NT (multiple instances in this file)
-    # fetch_ids = []
-    # for geneid in geneids:
-    #     nt = GENEID2NT.get(geneid, None)
-    #     if nt is not None:
-    #         fetch_ids.append(nt.GeneID)
-    #     else:
-    #         print(geneid, 'not found in GENEID2NT', file=sys.stderr)
 
     fetch_ids = geneids
 
@@ -719,30 +647,6 @@ def get_genes_for_go_terms(terms, taxid=9606):
     missing = set(fetch_ids).difference(set(found))
 
     df = pd.DataFrame().from_records(records, columns=['symbol', 'name', 'chrom', 'start', 'end'])
-
-
-
-
-
-########################################################
-
-
-
-    # mg = mygene.MyGeneInfo()                
-    # d = mg.getgenes(geneids, species='human',  scopes='hgnc', fields=['symbol', 'name', 'genomic_pos.chr', 'genomic_pos.start', 'genomic_pos.end', 'genomic_pos.strand'])
-
-    # records = []
-    # for entry in d:
-    #     if not 'genomic_pos' in entry:
-    #         print("No coordinates for:", entry['symbol'])
-    #         continue
-    #     pos = entry['genomic_pos']
-    #     if type(pos) is list:
-    #         pos = pos[0]
-    #     records.append([entry['symbol'], entry['name'], 
-    #                     pos['chr'], pos['start'],
-    #                     pos['end'], pos['strand']])
-    # df = pd.DataFrame().from_records(records, columns=['symbol', 'name', 'chrom', 'start', 'end', 'strand'])
 
     return df.sort_values(by='start').reset_index(drop=True)
 
@@ -793,29 +697,45 @@ def get_go_terms_for_genes(genes, taxid=9606, evidence=None):
     
 def show_go_dag_for_terms(terms, add_relationships=True):
     
+    if type(terms) is pd.core.series.Series:
+        terms = terms.tolist()
+
     if not terms:
         return
 
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
-        # Get http://geneontology.org/ontology/go-basic.obo
         obo_fname = download_go_basic_obo(prt=null)
 
-        # Download Associations, if necessary
-        # Get ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz
         file_gene2go = download_ncbi_associations(prt=null)
 
-        #Load Ontologies
         if add_relationships:
             optional_attrs=['relationship', 'def']
         else:
             optional_attrs=['def']
         obodag = GODag("go-basic.obo", optional_attrs=optional_attrs, prt=null)
 
-        gosubdag = GoSubDag(terms, obodag, relationships=add_relationships)
+        gosubdag = GoSubDag(terms, obodag, relationships=add_relationships) 
         GoSubDagPlot(gosubdag).plt_dag('plot.png')
 
     return Image('plot.png')    
+
+# def show_go_dag_for_terms(terms, add_relationships=True):
+
+#     with open(os.devnull, 'w') as null, redirect_stdout(null):
+#         if add_relationships:
+#             optional_attrs=['relationship', 'def']
+#         else:
+#             optional_attrs=['def']
+#         obodag = GODag("go-basic.obo", optional_attrs=optional_attrs, prt=null)
+#         plot_gos('plot.png', terms, obodag)
+#     return Image('plot.png')  
+
+
+# https://github.com/tanghaibao/goatools/blob/main/notebooks/goea_nbt3102_group_results.ipynb
+
+
+
 
 
 def show_go_dag_for_gene(gene, taxid=9606, evidence=None):
@@ -869,7 +789,6 @@ No biological Data available (ND)
 Inferred from Electronic Annotation (IEA)
 
 """    
-
     display(Markdown(s))  
                     
         
@@ -910,6 +829,9 @@ def go_name2term(name):
 
 def go_info(terms):
             
+    if type(terms) is pd.core.series.Series:
+        terms = terms.tolist()
+
     if type(terms) is not list:
         terms = [terms]
 
@@ -923,47 +845,126 @@ def go_info(terms):
             display(Markdown(s))
 
 
-def go_enrichment(gene_list, taxid=9606, background_chrom=None, terms=None):
+class WrSubObo(object):
+    """Read a large GO-DAG from an obo file. Write a subset GO-DAG into a small obo file."""
+
+    def __init__(self, fin_obo=None, optional_attrs=None, load_obsolete=None):
+        self.fin_obo = fin_obo
+        self.godag = GODag(fin_obo, optional_attrs, load_obsolete) if fin_obo is not None else None
+        self.relationships = optional_attrs is not None and 'relationship' in optional_attrs
+
+    def wrobo(self, fout_obo, goid_sources):
+        """Write a subset obo file containing GO ID sources and their parents."""
+        goids_all = self._get_goids_all(goid_sources)
+        with open(fout_obo, 'w') as prt:
+            self._prt_info(prt, goid_sources, goids_all)
+            self.prt_goterms(self.fin_obo, goids_all, prt)
+
+    @staticmethod
+    def prt_goterms(fin_obo, goids, prt, b_prt=True):
+        """Print the specified GO terms for GO IDs in arg."""
+        b_trm = False
+        with open(fin_obo) as ifstrm:
+            for line in ifstrm:
+                if not b_trm:
+                    if line[:6] == "[Term]":
+                        b_trm = True
+                        b_prt = False
+                    elif line[:6] == "[Typedef]":
+                        b_prt = True
+                else:
+                    if line[:6] == 'id: GO':
+                        b_trm = False
+                        b_prt = line[4:14] in goids
+                        if b_prt:
+                            prt.write("[Term]\n")
+                if b_prt:
+                    prt.write(line)
+
+    @staticmethod
+    def get_goids(fin_obo, name):
+        """Get GO IDs whose name matches given name."""
+        goids = set()
+        # pylint: disable=unsubscriptable-object
+        goterm = None
+        with open(fin_obo) as ifstrm:
+            for line in ifstrm:
+                if goterm is not None:
+                    semi = line.find(':')
+                    if semi != -1:
+                        goterm[line[:semi]] = line[semi+2:].rstrip()
+                    else:
+                        if name in goterm['name']:
+                            goids.add(goterm['id'])
+                        goterm = None
+                elif line[:6] == "[Term]":
+                    goterm = {}
+        return goids
+
+    def _get_goids_all(self, go_sources):
+        """Given GO ID sources and optionally the relationship attribute, return all GO IDs."""
+        go2obj_user = {}
+        objrel = CurNHigher(self.relationships, self.godag)
+        objrel.get_id2obj_cur_n_high(go2obj_user, go_sources)
+        goids = set(go2obj_user)
+        for goterm in go2obj_user.values():
+            if goterm.alt_ids:
+                goids.update(goterm.alt_ids)
+        return goids
+
+    def _prt_info(self, prt, goid_sources, goids_all):
+        """Print information describing how this obo setset was created."""
+        prt.write("! Contains {N} GO IDs. Created using {M} GO sources:\n".format(
+            N=len(goids_all), M=len(goid_sources)))
+        for goid in goid_sources:
+            prt.write("!    {GO}\n".format(GO=str(self.godag.get(goid, ""))))
+        prt.write("\n")
+
+
+class My_GOEnrichemntRecord(GOEnrichmentRecord):
+
+    def __str__(self):
+        return f'<{self.GO}>'
+
+
+def go_enrichment(gene_list, taxid=9606, background_chrom=None, terms=None, list_study_genes=False):
+
+    if type(gene_list) is pd.core.series.Series:
+        gene_list = gene_list.tolist()
+    if type(terms) is pd.core.series.Series:
+        terms = terms.tolist()
 
     _assert_entrez_email()
 
     gene_list = list(gene_list)
     
-    try:
-        taxid = int(taxid)
-    except ValueError:
-        handle = Entrez.esearch(db="taxonomy", term=f'"{taxid}"[Scientific Name]')
-        taxid = int(Entrez.read(handle)['IdList'][0])
+    taxid = _tidy_taxid(taxid)
     
+    if not all(type(x) is int for x in gene_list):
+        gene_list = _cached_symbol2ncbi(gene_list, taxid=taxid)
+
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
-        # Get http://geneontology.org/ontology/go-basic.obo
         obo_fname = download_go_basic_obo(prt=null)
 
-        # Download Associations, if necessary
-        # Get ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz
         file_gene2go = download_ncbi_associations(prt=null)
 
-        #Load Ontologies
         obodag = GODag("go-basic.obo", optional_attrs=['relationship', 'def'], prt=null)
+
+        # read NCBI's gene2go. Store annotations in a list of namedtuples
+        objanno = Gene2GoReader(file_gene2go, taxids=[taxid])
+
+        # get associations for each branch of the GO DAG (BP, MF, CC)
+        ns2assoc = objanno.get_ns2assc()
 
         # limit go dag to a sub graph including only specified terms and their children
         if terms is not None:
+            sub_obo_name = str(hash(''.join(sorted(terms)).encode())) + '.obo'  
+            wrsobo = WrSubObo(obo_fname, optional_attrs=['relationship', 'def'])
+            wrsobo.wrobo(sub_obo_name, terms)    
+            obodag = GODag(sub_obo_name, optional_attrs=['relationship', 'def'], prt=null)
 
-            srchhelp = GoSearch("go-basic.obo", go2items=go2geneids, log=null)
-            terms_with_children = srchhelp.add_children_gos(terms)
-
-            obodag = GoSubDag(terms_with_children, obodag)
-
-        # load associations
-        # Read NCBI's gene2go. Store annotations in a list of namedtuples
-        objanno = Gene2GoReader(file_gene2go, taxids=[taxid])
-
-        # Get associations for each branch of the GO DAG (BP, MF, CC)
-        ns2assoc = objanno.get_ns2assc()
-
-        #Load Background gene set
-
+        # load background gene set
         ncbi_tsv = f'{taxid}_protein_genes.txt'
         if not os.path.exists(ncbi_tsv):
             fetch_background_genes(taxid)
@@ -988,41 +989,42 @@ def go_enrichment(gene_list, taxid=9606, background_chrom=None, terms=None):
                 obodag, # Ontologies
                 propagate_counts = False,
                 alpha = 0.05, # default significance cut-off
-                methods=['bonferroni', 'fdr_bh'],
+                methods=['fdr_bh'],
                 pvalcalc='fisher_scipy_stats') 
 
         goea_results_all = goeaobj.run_study(gene_list)
 
+
         rows = []
-        columns = ['namespace', 'term_id', 'e/p', 'pval_uncorr', 'Benjamimi/Hochberg', 
-                   'Bonferroni', 'study_ratio', 'population_ratio']
+        columns = ['namespace', 'term_id', 'e/p', 'pval_uncorr', 'p_fdr_bh', 
+                'ratio', 'bg_ratio', 'obj']
+        if list_study_genes:
+            columns.append('study_genes')
         for ntd in goea_results_all:
-            rows.append([ntd.NS, ntd.GO, ntd.enrichment, ntd.p_uncorrected,
-                         ntd.p_fdr_bh, ntd.p_bonferroni,
-                         ntd.ratio_in_study[0] / ntd.ratio_in_study[1],
-                         ntd.ratio_in_pop[0] /  ntd.ratio_in_pop[1]])
+
+            ntd.__class__ = My_GOEnrichemntRecord # Hack. Changes __class__ of all instances...
+
+            row = [ntd.NS, ntd.GO, ntd.enrichment, ntd.p_uncorrected,
+                        ntd.p_fdr_bh, 
+                        ntd.ratio_in_study[0] / ntd.ratio_in_study[1],
+                        ntd.ratio_in_pop[0] /  ntd.ratio_in_pop[1], ntd]
+
+            if list_study_genes:
+                row.append(_cached_ncbi2symbol(sorted(ntd.study_items)))
+            rows.append(row)
         df = (pd.DataFrame()
-         .from_records(rows, columns=columns)
-         .sort_values(by=['pval_uncorr', 'term_id'])
-         .reset_index(drop=True)
+        .from_records(rows, columns=columns)
+        .sort_values(by=['p_fdr_bh', 'ratio'])
+        .reset_index(drop=True)
         )
-        return df
-  
+        return df.loc[df.p_fdr_bh < 0.05]
 
 
-if __name__ == "__main__":
 
-    pass
-    # import mygene
-
-    # mg = mygene.MyGeneInfo()
-    # connect_mygene(mg)
-
-    # chrom, start, end = 'chr3', 49500000, 50600000
-    # ax = geneplot(chrom, start, end, figsize=(10, 5))
-    # ax.plot(np.linspace(start, end, 1000), np.random.random(1000), 'o')
-    # plt.savefig('tmp.pdf')
-
-    # ax = geneplot(chrom, start, end, figsize=(10, 5))
-    # ax.plot(np.linspace(start, end, 1000), np.random.random(1000), 'o')
-    # plt.savefig('tmp2.pdf')
+def plot_go_enrichment_results(results):
+    
+    if type(results) is pd.core.series.Series:
+        results = results.tolist()
+    with open(os.devnull, 'w') as null, redirect_stdout(null):
+        plot_results('plot.png', results)
+    return Image('plot.png')    
