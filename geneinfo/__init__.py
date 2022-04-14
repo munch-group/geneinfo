@@ -35,6 +35,52 @@ from .intervals import *
 
 CACHE = dict()
 
+class NotFound(Exception):
+    """query returned no result"""
+    pass
+
+
+def ensembl_id(name):
+    server = "https://rest.ensembl.org"
+    ext = f"/xrefs/symbol/homo_sapiens/{name}?"
+    r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+    if not r.ok:
+      r.raise_for_status()
+    decoded = r.json()
+    ensembl_ids = [x['id'] for x in decoded if x['type'] == 'gene']
+    if not len(ensembl_ids) == 1:
+        raise NotFound
+    return ensembl_ids[0]
+
+def ensembl2symbol(ensembl_id):
+    server = "https://rest.ensembl.org"
+    ext = f"/xrefs/id/{ensembl_id}?"
+    r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+    if not r.ok:
+        r.raise_for_status()
+    decoded = r.json()
+    symbols = [x['display_id'] for x in decoded if x['dbname'] == 'HGNC']
+    if not len(symbols) == 1:
+        raise NotFound
+    return symbols[0]
+
+def hgcn_symbol(name):
+    if type(name) is list or type(name) is set:
+        return [ensembl2symbol(ensembl_id(n)) for n in name]
+    else:
+        return ensembl2symbol(ensembl_id(name))
+
+def ensembl2ncbi(ensembl_id):
+    server = "https://rest.ensembl.org"
+    ext = f"/xrefs/id/{ensembl_id}?"
+    r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+    if not r.ok:
+      r.raise_for_status()
+    decoded = r.json()
+    ids = [x['primary_id'] for x in decoded if x['dbname'] == 'EntrezGene']
+    if not len(ids) == 1:
+        raise NotFound
+    return int(ids[0])
 
 def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
     api_url = f"https://mygene.info/v3/query?content-type=appliation/x-www-form-urlencoded;q={query};scopes={scopes};species={species};fields={fields}"
@@ -134,7 +180,6 @@ def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapien
     r = requests.post(server+ext, headers=headers, data=f'{{ "symbols": {json.dumps(symbols)} }}')
     if not r.ok:
         r.raise_for_status()
-        sys.exit()     
     return r.json()
 
 
@@ -535,8 +580,11 @@ def _cached_symbol2ncbi(symbols, taxid=9606):
         for symbol in symbols:
             try:
                 geneids.append(symbol2ncbi.loc[symbol])
-            except:
-                print(f'Could not map "{symbol}" to ncbi id', file=sys.stderr)
+            except KeyError:
+                try:
+                    geneids.append(ensembl2ncbi(get_ensembl_id(symbol2ncbi.loc[symbol])))
+                except NotFound:
+                    print(f'Could not map "{symbol}" to ncbi id', file=sys.stderr)
         return geneids
 
 
@@ -551,7 +599,7 @@ def _cached_ncbi2symbol(geneids, taxid=9606):
         for geneid in geneids:
             try:
                 symbols.append(ncbi2symbol.loc[geneid])
-            except:
+            except KeyError:
                 print(f'Could not map "{geneid}" to gene symbol', file=sys.stderr)
         return symbols
 
@@ -781,16 +829,13 @@ def show_go_dag_for_terms(terms, add_relationships=True):
 # https://github.com/tanghaibao/goatools/blob/main/notebooks/goea_nbt3102_group_results.ipynb
 
 
-
-
-
-def show_go_dag_for_gene(gene, taxid=9606, evidence=None):
+def show_go_dag_for_gene(gene, taxid=9606, evidence=None, add_relationships=True):
     # evidence codes: http://geneontology.org/docs/guide-go-evidence-codes/
     go_terms = get_go_terms_for_genes([gene], taxid=taxid, evidence=evidence)
     if not go_terms:
         print('No GO terms to show', file=sys.stderr)
         return
-    return show_go_dag_for_terms(go_terms)
+    return show_go_dag_for_terms(go_terms, add_relationships=add_relationships)
 
     
 def show_go_evidence_codes():   
@@ -973,7 +1018,8 @@ class My_GOEnrichemntRecord(GOEnrichmentRecord):
         return f'<{self.GO}>'
 
 
-def go_enrichment(gene_list, taxid=9606, background_chrom=None, background_genes=None, terms=None, list_study_genes=False):
+def go_enrichment(gene_list, taxid=9606, background_chrom=None, background_genes=None, 
+    terms=None, list_study_genes=False, alpha=0.05):
 
     if type(gene_list) is pd.core.series.Series:
         gene_list = gene_list.tolist()
@@ -1075,12 +1121,12 @@ def go_enrichment(gene_list, taxid=9606, background_chrom=None, background_genes
         .sort_values(by=['p_fdr_bh', 'ratio'])
         .reset_index(drop=True)
         )
-        return df.loc[df.p_fdr_bh < 0.05]
+        return df.loc[df.p_fdr_bh < alpha]
 
 
 
-def plot_go_enrichment_results(results):
-    
+def show_go_dag_enrichment_results(results):
+
     if type(results) is pd.core.series.Series:
         results = results.tolist()
     with open(os.devnull, 'w') as null, redirect_stdout(null):
