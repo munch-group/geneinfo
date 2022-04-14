@@ -582,7 +582,8 @@ def _cached_symbol2ncbi(symbols, taxid=9606):
                 geneids.append(symbol2ncbi.loc[symbol])
             except KeyError:
                 try:
-                    geneids.append(ensembl2ncbi(get_ensembl_id(symbol2ncbi.loc[symbol])))
+                    geneids.append(symbol2ncbi.loc[hgcn_symbol(symbol)])
+                    # geneids.append(ensembl2ncbi(ensembl_id(symbol)))
                 except NotFound:
                     print(f'Could not map "{symbol}" to ncbi id', file=sys.stderr)
         return geneids
