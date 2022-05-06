@@ -33,6 +33,8 @@ from Bio import Entrez
 
 from .intervals import *
 
+# sys.path.append('.')
+
 CACHE = dict()
 
 class NotFound(Exception):
@@ -1032,6 +1034,10 @@ def go_enrichment(gene_list, taxid=9606, background_chrom=None, background_genes
     gene_list = list(gene_list)
     
     taxid = _tidy_taxid(taxid)
+
+    ncbi_tsv = f'geneinfo_cache/{taxid}_protein_genes.txt'
+    if not os.path.exists(ncbi_tsv):
+        fetch_background_genes(taxid)
 
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
