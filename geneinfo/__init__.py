@@ -42,9 +42,9 @@ class NotFound(Exception):
     pass
 
 
-def ensembl_id(name):
+def ensembl_id(name, species='homo_sapiens'):
     server = "https://rest.ensembl.org"
-    ext = f"/xrefs/symbol/homo_sapiens/{name}?"
+    ext = f"/xrefs/symbol/{species}/{name}?"
     r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
     if not r.ok:
       r.raise_for_status()
@@ -104,8 +104,15 @@ def gene_info(query, species='human', scopes='hgnc'):
         
     for gene in query:
 
-        top_hit = mygene_get_gene_info(gene, species=species, scopes=scopes,
-                           fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')
+        for i in range(3):
+            try:
+                top_hit = mygene_get_gene_info(gene, species=species, scopes=scopes,
+                                fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')
+            except KeyError:
+                continue
+            else:
+                break
+
 
         tmpl = "**Symbol:** **_{symbol}_** "
 
@@ -144,7 +151,7 @@ def gene_info(query, species='human', scopes='hgnc'):
         display(Markdown(tmpl.format(**top_hit)))
 
 
-def _ensembl_get_features_region(chrom, window_start, window_end, features=['gene', 'exon'], assembly=None, species='human'):
+def _ensembl_get_features_region(chrom, window_start, window_end, features=['gene', 'exon'], assembly=None, species='homo_sapiens'):
     if chrom.startswith('chr'):
         chrom = chrom[3:]
     window_start, window_end = int(window_start), int(window_end)
@@ -185,7 +192,7 @@ def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapien
     return r.json()
 
 
-def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, species='human'):
+def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, species='homo_sapiens'):
     
     gene_info = _ensembl_get_features_region(chrom, window_start, window_end, features=['gene'], assembly=assembly, species=species)
     exon_info = _ensembl_get_features_region(chrom, window_start, window_end, features=['exon'], assembly=assembly, species=species)
@@ -204,55 +211,49 @@ def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, spe
     return gene_info
 
 
-def get_genes_region(chrom, window_start, window_end, only_protein_coding=True, hg19=False, species='human'):
+def get_genes_region(chrom, window_start, window_end, assembly='GRCh38', db='ncbiRefSeq'):
 
-    if hg19:
-        assembly='GRCh37'
-    else:
-        assembly=None
+    
+    api_url = f'https://api.genome.ucsc.edu/getData/track'
+    params = {'track': db,
+              'genome': assembly,
+              'chrom': chrom,
+              'start': window_start,
+              'end': window_end
+              }
+    response = requests.get(api_url, data=params)
+    if not response.ok:
+        response.raise_for_status()
 
     genes = []
-    gene_info = ensembl_get_genes_region(chrom, window_start, window_end, assembly=assembly, species=species)
-    for gene in gene_info.values():
+    for gene in response.json()[db]:
+        exon_starts = [int(x) for x in gene['exonStarts'].split(',') if x]
+        exon_ends = [int(x) for x in gene['exonEnds'].split(',') if x]
+        exons = list(zip(exon_starts, exon_ends))
+        genes.append((gene['name2'], gene['txStart'], gene['txEnd'], gene['strand'], exons))
 
-
-        if gene['biotype'] != 'protein_coding' and only_protein_coding:
-            continue
-
-        if 'external_name' in gene:
-            name = gene['external_name']
-        else:
-            name = gene['id']
-        genes.append((name, gene['start'], gene['end'], gene['strand'], gene['exons'], gene['biotype']))
     return genes
 
 
-def gene_info_region(chrom, window_start, window_end, only_protein_coding=True, hg19=False, species='human'):
-    # mg.query(f'q={chrom}:{start}-{end}', species='human', fetch_all=True):
-    
-    for gene in get_genes_region(chrom, window_start, window_end, 
-                                    only_protein_coding=only_protein_coding, hg19=hg19, species=species):
+def gene_info_region(chrom, window_start, window_end, assembly='GRCh38', db='ncbiRefSeq'):
+
+    for gene in get_genes_region(chrom, window_start, window_end, assembly, db):    
         gene_info(gene[0])
 
 
-def get_genes_region_dataframe(chrom, start, end, hg19=False):
+def get_genes_region_dataframe(chrom, start, end, assembly='GRCh38', db='ncbiRefSeq'):
     try:
         import pandas as pd
     except ImportError:
         print("pandas must be installed to return data frame")
         return
-    genes = get_genes_region(chrom, start, end, hg19=hg19)
+    genes = get_genes_region(chrom, start, end, assembly, db)
     return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
 
 
-def _plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_width, min_visible_width, font_size, ax, highlight=False, clip_on=True):
+def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, min_visible_width, font_size, ax, highlight=False, clip_on=True):
 
-    if gene_type == 'protein_coding':
-        color='black'
-    elif gene_type == 'ncrna':
-        color='blue'
-    else:
-        color='green'
+    color='black'
 
     line = ax.plot([txstart, txend], [offset, offset], color=color, linewidth=line_width/5, alpha=0.5)
     line[0].set_solid_capstyle('butt')
@@ -275,22 +276,32 @@ def _plot_gene(name, txstart, txend, strand, exons, gene_type, offset, line_widt
             fontsize=font_size, color=color, clip_on=clip_on)
 
 
-def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=False, hard_limits=False, exact_exons=False, figsize=None, clip_on=True):
+def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', collapse_splice_var=True, hard_limits=False, exact_exons=False, figsize=None, clip_on=True):
     
     global CACHE
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize, sharex='col', sharey='row')
     plt.subplots_adjust(wspace=0, hspace=0.05)
 
-    if (chrom, start, end, hg19) in CACHE:
-        genes = CACHE[(chrom, start, end, only_protein_coding, hg19)]
+    if (chrom, start, end, assembly) in CACHE:
+        genes = CACHE[(chrom, start, end, assembly)]
     else:
-        genes = list(get_genes_region(chrom, start, end, only_protein_coding=only_protein_coding, hg19=hg19))
-        CACHE[(chrom, start, end, only_protein_coding, hg19)] = genes
+        genes = list(get_genes_region(chrom, start, end, assembly, db))
+        CACHE[(chrom, start, end, assembly)] = genes
 
     if len(genes) == 200:
         print("Limit reached, make window smaller")
         return
+
+    if collapse_splice_var:
+        d = {}
+        for name, txstart, txend, strand, exons in genes:
+            if name not in d:
+                d[name] = [name, txstart, txend, strand, set(exons)]
+            else:
+                d[name][-1].update(exons)
+        genes = d.values()
+
 
     line_width = max(6, int(50 / log10(end - start)))-2
     font_size = max(6, int(50 / log10(end - start)))
@@ -301,7 +312,7 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
         min_visible_exon_width = (end - start) / 1000
         
     plotted_intervals = defaultdict(list)
-    for name, txstart, txend, strand, exons, gene_type in genes:
+    for name, txstart, txend, strand, exons in genes:
 
         gene_interval = [txstart-label_width, txend]
         max_gene_rows = 400
@@ -326,7 +337,7 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
         else:
             hl = None
 
-        _plot_gene(name, txstart, txend, strand, exons, gene_type, 
+        _plot_gene(name, txstart, txend, strand, exons, 
                   offset, line_width, min_visible_exon_width, font_size, 
                   highlight=hl,
                   ax=ax2, clip_on=clip_on)
@@ -358,7 +369,7 @@ def gene_plot(chrom, start, end, highlight=[], hg19=False, only_protein_coding=F
 # Map between assembly coordinates
 ##################################################################################
 
-def map_interval(chrom, start, end, strand, map_from, map_to, species='human'):
+def map_interval(chrom, start, end, strand, map_from, map_to, species='homo_sapiens'):
     if chrom.startswith('chr'):
         chrom = chrom[3:]
     start, end = int(start), int(end)    
