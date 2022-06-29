@@ -276,11 +276,14 @@ def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, min_visi
             fontsize=font_size, color=color, clip_on=clip_on)
 
 
-def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', collapse_splice_var=True, hard_limits=False, exact_exons=False, figsize=None, clip_on=True):
+def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', 
+                collapse_splice_var=True, hard_limits=False, exact_exons=False, 
+                figsize=None, aspect=1, despine=False, clip_on=True):
     
     global CACHE
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize, sharex='col', sharey='row')
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize, sharex='col', 
+                                    sharey='row', gridspec_kw={'height_ratios': [1, aspect]})
     plt.subplots_adjust(wspace=0, hspace=0.05)
 
     if (chrom, start, end, assembly) in CACHE:
@@ -288,10 +291,6 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', collap
     else:
         genes = list(get_genes_region(chrom, start, end, assembly, db))
         CACHE[(chrom, start, end, assembly)] = genes
-
-    if len(genes) == 200:
-        print("Limit reached, make window smaller")
-        return
 
     if collapse_splice_var:
         d = {}
@@ -315,7 +314,7 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', collap
     for name, txstart, txend, strand, exons in genes:
 
         gene_interval = [txstart-label_width, txend]
-        max_gene_rows = 400
+        max_gene_rows = 1000
         for offset in range(1, max_gene_rows, 1):
             if not intersect([gene_interval], plotted_intervals[offset]) and \
                 not intersect([gene_interval], plotted_intervals[offset-1]) and \
@@ -361,6 +360,10 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', collap
     ax2.spines['left'].set_visible(False)
 
     ax1.set_xlim(ax2.get_xlim())
+
+    if despine:
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['right'].set_visible(False)
 
     return ax1
 
