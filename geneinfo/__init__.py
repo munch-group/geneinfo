@@ -85,7 +85,7 @@ def ensembl2ncbi(ensembl_id):
     return int(ids[0])
 
 def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
-    api_url = f"https://mygene.info/v3/query?content-type=appliation/x-www-form-urlencoded;q={query};scopes={scopes};species={species};fields={fields}"
+    api_url = f"https://mygene.info/v3/query?q={query}&scopes={scopes}&species={species}&fields={fields}"    
     response = requests.get(api_url)
     if not response.ok:
         response.raise_for_status()
