@@ -634,6 +634,13 @@ def _tidy_taxid(taxid):
     return taxid  
     
 
+def symbols_protein_coding(taxid=9606):
+    fetch_background_genes(taxid=taxid)
+    symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'
+    symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'ncbi2symbol')
+    return symbol2ncbi.tolist()
+
+
 def get_terms_for_go_regex(regex, taxid=9606, add_children=False):
 
     taxid = _tidy_taxid(taxid)
