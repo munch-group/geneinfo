@@ -5,8 +5,13 @@ conda-build purge-all
 conda config --set anaconda_upload yes
 
 platform=`uname`
-if [ $platform == 'Darwin' ] ; then
-    plat='osx-64'
+chip=`uname -m`
+if [ $platform == "Darwin" ] ; then
+    if [ $chip == "arm64" ] ; then
+        plat='osx-arm64'
+    else
+        plat='osx-64'
+    fi
 else
     plat='linux-64'
 fi
