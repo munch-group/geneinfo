@@ -1,6 +1,5 @@
 
 from IPython.display import Markdown, display, Image, SVG, HTML
-import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
 from contextlib import redirect_stdout, redirect_stderr
@@ -14,6 +13,12 @@ import subprocess
 import pandas as pd
 from math import log10
 import shutil
+
+import matplotlib
+from matplotlib.patches import Rectangle, Polygon
+import matplotlib.pyplot as plt
+from matplotlib_inline.backend_inline import set_matplotlib_formats
+set_matplotlib_formats('retina', 'png')
 
 from goatools.base import download_go_basic_obo
 #from goatools.base import download_ncbi_associations
@@ -1160,3 +1165,157 @@ def show_go_dag_enrichment_results(results):
     with open(os.devnull, 'w') as null, redirect_stdout(null):
         plot_results('geneinfo_cache/plot.png', results)
     return Image('geneinfo_cache/plot.png')    
+
+
+def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10), assembly='hg38'):
+
+    d = {'axes.linewidth': 0.8, 'grid.linewidth': 0.64, 'lines.linewidth': 0.96, 
+         'lines.markersize': 3.84, 'patch.linewidth': 0.64, 'xtick.major.width': 0.8,
+         'ytick.major.width': 0.8, 'xtick.minor.width': 0.64, 'ytick.minor.width': 0.64,
+         'xtick.major.size': 3.84, 'ytick.major.size': 3.84, 'xtick.minor.size': 2.56, 
+         'ytick.minor.size': 2.56, 'font.size': 7.68, 'axes.labelsize': 7.68,
+         'axes.titlesize': 7.68, 'xtick.labelsize': 7.04, 'ytick.labelsize': 7.04, 
+         'legend.fontsize': 7.04, 'legend.title_fontsize': 7.68}
+    
+    chrom_lengths = {'hg19': {'chr1': 249250621, 'chr2': 243199373, 'chr3': 198022430, 'chr4': 191154276, 
+                              'chr5': 180915260, 'chr6': 171115067, 'chr7': 159138663, 'chr8': 146364022, 
+                              'chr9': 141213431, 'chr10': 135534747, 'chr11': 135006516, 'chr12': 133851895,
+                              'chr13': 115169878, 'chr14': 107349540, 'chr15': 102531392, 'chr16': 90354753, 
+                              'chr17': 81195210, 'chr18': 78077248, 'chr19': 59128983, 'chr20': 63025520, 
+                              'chr21': 48129895, 'chr22': 51304566, 'chrX': 155270560, 'chrY': 59373566},
+                     'hg38': {'chr1': 248956422, 'chr2': 242193529, 'chr3': 198295559, 'chr4': 190214555, 
+                              'chr5': 181538259, 'chr6': 170805979, 'chr7': 159345973, 'chr8': 145138636, 
+                              'chr9': 138394717, 'chr10': 133797422, 'chr11': 135086622, 'chr12': 133275309, 
+                              'chr13': 114364328, 'chr14': 107043718, 'chr15': 101991189, 'chr16': 90338345, 
+                              'chr17': 83257441, 'chr18': 80373285, 'chr19': 58617616, 'chr20': 64444167, 
+                              'chr21': 46709983, 'chr22': 50818468, 'chrX': 156040895, 'chrY': 57227415}}    
+
+    centromeres = {
+        'chr1':    (121700000, 125100000),
+        'chr10':   (38000000, 41600000),
+        'chr11':   (51000000, 55800000),
+        'chr12':   (33200000, 37800000),
+        'chr13':   (16500000, 18900000),
+        'chr14':   (16100000, 18200000),
+        'chr15':   (17500000, 20500000),
+        'chr16':   (35300000, 38400000),
+        'chr17':   (22700000, 27400000),
+        'chr18':   (15400000, 21500000),
+        'chr19':   (24200000, 28100000),
+        'chr2':    (91800000, 96000000),
+        'chr20':   (25700000, 30400000),
+        'chr21':   (10900000, 13000000),
+        'chr22':   (13700000, 17400000),
+        'chr3':    (87800000, 94000000),
+        'chr4':    (48200000, 51800000),
+        'chr5':    (46100000, 51400000),
+        'chr6':    (58500000, 62600000),
+        'chr7':    (58100000, 62100000),
+        'chr8':    (43200000, 47200000),
+        'chr9':    (42200000, 45500000),
+        'chrX':    (58100000, 63800000),
+        'chrY':    (10300000, 10400000)}                     
+
+    chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
+    chr_sizes = [chrom_lengths[assembly][chrom] for chrom in chr_names]
+    figwidth = max(chr_sizes)
+    
+    with plt.rc_context(d):
+    
+        nr_rows, nr_cols = len(chr_names)-2, 2
+
+        fig = plt.figure(figsize=figsize)
+
+        gs = matplotlib.gridspec.GridSpec(nr_rows, 25)
+        gs.update(wspace=0, hspace=hspace) # set the spacing between axes.             
+        ax_list = [plt.subplot(gs[i, :]) for i in range(nr_rows-2)]
+        ax_list.append(plt.subplot(gs[nr_rows-2, :9]))
+        ax_list.append(plt.subplot(gs[nr_rows-1, :9]))
+        ax_list.append(plt.subplot(gs[nr_rows-2, 9:]))
+        ax_list.append(plt.subplot(gs[nr_rows-1, 9:]))
+
+        chr_axes = dict(zip(chr_names, ax_list))
+
+        for ax in ax_list[:-4]:
+            ax.set_xlim((-200000, figwidth+100000))
+        for ax in ax_list[-4:]:
+            ax.set_xlim((-200000, ((25-9)/25)*figwidth+100000))
+
+        for i in range(len(ax_list)):
+            chrom = chr_names[i]
+            ax = ax_list[i]
+            start, end = 0, chr_sizes[i] 
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['bottom'].set_visible(False)
+            ax.spines['left'].set_visible(False)
+            ax.set_ylim((0, 3))
+
+            if i in [20, 21]:   
+                x = -3500000
+            else:
+                x = -2000000
+            ax.text(x, 1, chrom.replace('chr', ''), fontsize=8, horizontalalignment='right', weight='bold')
+
+            # h = ax.set_ylabel(chrom)
+            # h.set_rotation(0)
+            ax.set_yticklabels([])
+
+            if i == 0:
+                ax.spines['top'].set_visible(True)
+                ax.xaxis.tick_top()
+                ax.xaxis.set_label_position('top') 
+                ax.yaxis.set_ticks_position('none')
+            elif i == len(ax_list)-1:
+                ax.xaxis.tick_bottom()
+                ax.spines['bottom'].set_visible(True)                    
+                ax.yaxis.set_ticks_position('none')
+            else:
+                ax.set_xticklabels([])
+                ax.xaxis.set_ticks_position('none')
+                ax.yaxis.set_ticks_position('none')
+
+
+            # draw chrom
+            g = ax.add_patch(Rectangle((start, 1), end-start, 1, 
+                                       fill=False,
+                                       color='black',
+                                       edgecolor=None,
+                                       zorder=1, linewidth=0.7
+                                      ))
+
+            # draw centromere
+            cent_start, cent_end = centromeres[chrom]
+            ax.add_patch(Rectangle((cent_start, 0), cent_end-cent_start, 3, 
+                                       fill=True, color='white',
+                                       zorder=2))
+            xy = [[cent_start, 1], [cent_start, 2], [cent_end, 1], [cent_end, 2]]
+            g = ax.add_patch(Polygon(xy, closed=True, zorder=3, fill=True,
+                                     # color='#666666',
+                                     color='#777777',
+                                    ))
+
+
+        def plot_segment(chrom, start, end, color='red', label=None, base=1, height=1):
+            x, y, width = start, base, end-start
+
+            if width < min_visible_width:
+                x -= min_visible_width/2
+                width += min_visible_width
+
+            rect = Rectangle((x, y), width, height, linewidth=1, edgecolor='none', facecolor=color)
+            chr_axes[chrom].add_patch(rect)    
+            if label is not None:
+                chr_axes[chrom].plot([x+width/2, x+width/2], [y+height, y+height+0.5], linewidth=0.5, color=color)
+                chr_axes[chrom].text(x+width/2, y+height+0.5, label, fontsize=4, horizontalalignment='left',# weight='bold',
+                         verticalalignment='bottom', rotation=45)
+
+        for tup in annot:
+            plot_segment(*tup)                     
+            
+
+# annot = [('chr1', 20000000, 20100000, 'red', 'TP53'), ('chr7', 20000000, 30000000, 'orange', 'DYNLT3')] \
+# + [('chr5', 40000000, 70000000, 'red', None, 1, 0.5), ('chr8', 90000000, 110000000)] \
+#  + [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
+
+# chrom_ideogram(annot, figsize=(15, 9), hspace=0.2) 
