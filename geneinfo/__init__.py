@@ -1303,12 +1303,12 @@ def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10),
                 x -= min_visible_width/2
                 width += min_visible_width
 
-            rect = Rectangle((x, y), width, height, linewidth=1, edgecolor='none', facecolor=color)
+            rect = Rectangle((x, y), width, height, linewidth=1, edgecolor='none', facecolor=color, zorder=3)
             chr_axes[chrom].add_patch(rect)    
             if label is not None:
-                chr_axes[chrom].plot([x+width/2, x+width/2], [y+height, y+height+0.5], linewidth=0.5, color=color)
+                chr_axes[chrom].plot([x+width/2, x+width/2], [y+height, y+height+0.5], linewidth=0.5, color=color, zorder=3)
                 chr_axes[chrom].text(x+width/2, y+height+0.5, label, fontsize=4, horizontalalignment='left',# weight='bold',
-                         verticalalignment='bottom', rotation=45)
+                         verticalalignment='bottom', rotation=45, zorder=3)
 
         for tup in annot:
             plot_segment(*tup)                     
