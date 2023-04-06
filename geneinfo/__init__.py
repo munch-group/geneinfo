@@ -336,7 +336,7 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
 
         if type(highlight) is list or type(highlight) is set:
             hl = name in highlight
-        elif type(highlight) is dict or type(highlight) is defaultdict:
+        elif hasattr(highlight, "__getitem__"):
             hl = highlight[name]
         else:
             hl = None
