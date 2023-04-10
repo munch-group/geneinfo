@@ -20,7 +20,7 @@ fi
 name=${PWD##*/}
 
 # conda skeleton with meta info
-conda skeleton pypi --output-dir conda $name --python-version 3.6
+conda skeleton pypi --output-dir conda $name
 
 # for for each version of python
 for pythonversion in 3.6 3.7 3.8 3.9 3.10 ; do
