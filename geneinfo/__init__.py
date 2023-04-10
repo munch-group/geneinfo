@@ -283,13 +283,13 @@ def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, min_visi
 
 def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', 
                 collapse_splice_var=True, hard_limits=False, exact_exons=False, 
-                figsize=None, aspect=1, despine=False, clip_on=True):
+                figsize=None, aspect=1, despine=False, clip_on=True, gene_density=60, font_size=None, return_axes=1):
     
     global CACHE
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize, sharex='col', 
-                                    sharey='row', gridspec_kw={'height_ratios': [1, aspect]})
-    plt.subplots_adjust(wspace=0, hspace=0.05)
+    fig, axes = plt.subplots(return_axes+1, 1, figsize=figsize, sharex='col', 
+                                    sharey='row', gridspec_kw={'height_ratios': [1/return_axes]*return_axes + [aspect]})
+    plt.subplots_adjust(wspace=0, hspace=0.15)
 
     if (chrom, start, end, assembly) in CACHE:
         genes = CACHE[(chrom, start, end, assembly)]
@@ -308,8 +308,9 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
 
 
     line_width = max(6, int(50 / log10(end - start)))-2
-    font_size = max(6, int(50 / log10(end - start)))
-    label_width = font_size * (end - start) / 60
+    if font_size is None:
+        font_size = max(6, int(50 / log10(end - start)))
+    label_width = font_size * (end - start) / gene_density
     if exact_exons:
         min_visible_exon_width = 0
     else:
@@ -336,7 +337,7 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
 
         if type(highlight) is list or type(highlight) is set:
             hl = name in highlight
-        elif hasattr(highlight, "__getitem__"):
+        elif type(highlight) is dict or type(highlight) is defaultdict:
             hl = highlight[name]
         else:
             hl = None
@@ -344,7 +345,7 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
         _plot_gene(name, txstart, txend, strand, exons, 
                   offset, line_width, min_visible_exon_width, font_size, 
                   highlight=hl,
-                  ax=ax2, clip_on=clip_on)
+                  ax=axes[-1], clip_on=clip_on)
 
     if plotted_intervals:
         offset = max(plotted_intervals.keys())
@@ -352,25 +353,26 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
         offset = 1
 
     if hard_limits:
-        ax2.set_xlim(start, end)
+        axex[-1].set_xlim(start, end)
     else:
-        s, e = ax2.get_xlim()
-        ax2.set_xlim(min(s-label_width/2, start), max(e, end))
+        s, e = axes[-1].get_xlim()
+        axes[-1].set_xlim(min(s-label_width/2, start), max(e, end))
 
-    ax2.set_ylim(-2, offset+2)
-    ax2.get_yaxis().set_visible(False)
-    ax2.invert_yaxis()
-    ax2.spines['top'].set_visible(False)
-    ax2.spines['right'].set_visible(False)
-    ax2.spines['left'].set_visible(False)
+    axes[-1].set_ylim(-2, offset+2)
+    axes[-1].get_yaxis().set_visible(False)
+    axes[-1].invert_yaxis()
+    axes[-1].spines['top'].set_visible(False)
+    axes[-1].spines['right'].set_visible(False)
+    axes[-1].spines['left'].set_visible(False)
 
-    ax1.set_xlim(ax2.get_xlim())
+    for ax in axes[:-1]:
+        ax.set_xlim(axes[-1].get_xlim())
 
-    if despine:
-        ax1.spines['top'].set_visible(False)
-        ax1.spines['right'].set_visible(False)
-
-    return ax1
+        if despine:
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+    
+    return axes[:-1]
 
 
 ##################################################################################
