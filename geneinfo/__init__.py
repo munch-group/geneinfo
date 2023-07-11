@@ -353,7 +353,7 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
         offset = 1
 
     if hard_limits:
-        axex[-1].set_xlim(start, end)
+        axes[-1].set_xlim(start, end)
     else:
         s, e = axes[-1].get_xlim()
         axes[-1].set_xlim(min(s-label_width/2, start), max(e, end))
@@ -372,7 +372,10 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
             ax.spines['top'].set_visible(False)
             ax.spines['right'].set_visible(False)
     
-    return axes[:-1]
+    if return_axes == 1:
+        return axes[0]
+    else:
+        return axes[:-1]
 
 
 ##################################################################################
@@ -597,7 +600,7 @@ def _cached_symbol2ncbi(symbols, taxid=9606):
     symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'
     symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'symbol2ncbi')
     try:    
-        return symbol2ncbi.loc[symbols].tolist()
+        return symbol2ncbi.loc[symbols].tolist() 
     except KeyError:
         geneids = []
         for symbol in symbols:
@@ -605,8 +608,14 @@ def _cached_symbol2ncbi(symbols, taxid=9606):
                 geneids.append(symbol2ncbi.loc[symbol])
             except KeyError:
                 try:
-                    geneids.append(symbol2ncbi.loc[hgcn_symbol(symbol)])
-                    # geneids.append(ensembl2ncbi(ensembl_id(symbol)))
+                    ncbi_id = hgcn_symbol(symbol)
+                    if ncbi_id not in symbol2ncbi.index:
+                        print(ncbi_id, 'not in symbol2ncbi index')
+                        raise NotFound
+                        
+                        
+                    geneids.append(symbol2ncbi.loc[ncbi_id])
+                    # geneids.append(ensembl2ncbi(ensembl_id(symbol)))                    
                 except NotFound:
                     print(f'Could not map "{symbol}" to ncbi id', file=sys.stderr)
         return geneids
