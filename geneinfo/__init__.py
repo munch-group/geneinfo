@@ -40,6 +40,13 @@ from .intervals import *
 
 # sys.path.append('.')
 
+# if this runs on a cluster node we need to set proxies to access external resources:
+if re.match(r's\d+n\d+', os.environ['HOSTNAME']):
+    os.environ['http_proxy'] = 'http://proxy-default:3128'
+    os.environ['https_proxy'] = 'http://proxy-default:3128'
+    os.environ['ftp_proxy'] = 'http://proxy-default:3128'
+    os.environ['ftps_proxy'] = 'http://proxy-default:3128'
+
 CACHE = dict()
 
 class NotFound(Exception):
@@ -365,6 +372,8 @@ def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq',
     axes[-1].spines['right'].set_visible(False)
     axes[-1].spines['left'].set_visible(False)
 
+    # TODO: add optional title explaining gene name styles
+
     for ax in axes[:-1]:
         ax.set_xlim(axes[-1].get_xlim())
 
@@ -617,7 +626,7 @@ def _cached_symbol2ncbi(symbols, taxid=9606):
                     geneids.append(symbol2ncbi.loc[ncbi_id])
                     # geneids.append(ensembl2ncbi(ensembl_id(symbol)))                    
                 except NotFound:
-                    print(f'Could not map "{symbol}" to ncbi id', file=sys.stderr)
+                    print(f'Could not map gene symbol "{symbol}" to ncbi id', file=sys.stderr)
         return geneids
 
 
@@ -633,7 +642,7 @@ def _cached_ncbi2symbol(geneids, taxid=9606):
             try:
                 symbols.append(ncbi2symbol.loc[geneid])
             except KeyError:
-                print(f'Could not map "{geneid}" to gene symbol', file=sys.stderr)
+                print(f'Could not map ncbi id "{geneid}" to gene symbol', file=sys.stderr)
         return symbols
 
 
@@ -1201,6 +1210,7 @@ def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10),
                               'chr17': 83257441, 'chr18': 80373285, 'chr19': 58617616, 'chr20': 64444167, 
                               'chr21': 46709983, 'chr22': 50818468, 'chrX': 156040895, 'chrY': 57227415}}    
 
+    # TODO: make the centromeres fit each assembly!
     centromeres = {
         'chr1':    (121700000, 125100000),
         'chr10':   (38000000, 41600000),
@@ -1263,9 +1273,9 @@ def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10),
             ax.set_ylim((0, 3))
 
             if i in [20, 21]:   
-                x = -3500000
+                x = -3500000 * 10 / figsize[1]
             else:
-                x = -2000000
+                x = -2000000 * 10 / figsize[1]
             ax.text(x, 1, chrom.replace('chr', ''), fontsize=8, horizontalalignment='right', weight='bold')
 
             # h = ax.set_ylabel(chrom)
@@ -1307,7 +1317,10 @@ def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10),
                                     ))
 
 
-        def plot_segment(chrom, start, end, color='red', label=None, base=1, height=1):
+        def plot_segment(chrom, start, end, color='red', label=None, base=0, height=1):
+
+            base += 1
+            
             x, y, width = start, base, end-start
 
             if width < min_visible_width:
