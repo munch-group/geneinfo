@@ -23,6 +23,6 @@ setuptools.setup(
           'numpy>=1.1',
           'requests',
           'biopython',
-          'goatools',
+          'goatools>=1.4',
           'wget'
         ])

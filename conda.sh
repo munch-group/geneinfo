@@ -1,5 +1,6 @@
 
 # clean slate
+rm -rf ./conda
 conda-build purge-all
 
 conda config --set anaconda_upload yes
