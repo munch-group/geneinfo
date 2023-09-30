@@ -19,16 +19,15 @@ requirements:
   host:
     - python
     - pip
+  run:
     - jupyter
     - ipython
     - matplotlib>=3.0
     - numpy>=1.1
     - requests
     - biopython
-    # - goatools>=1.4
-    - wget
-  run:
     - goatools>=1.4
+    - wget
 
 channels:
   - defaults
