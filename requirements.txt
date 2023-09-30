@@ -1,3 +1,4 @@
+ipython
 jupyter
 matplotlib>=3.0
 numpy>=1.1
