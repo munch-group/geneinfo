@@ -29,10 +29,10 @@ requirements:
     - goatools>=1.4
     - wget
 
-channels:
-  - defaults
-  - conda-forge
-  - bioconda
+# channels:
+#   - defaults
+#   - conda-forge
+#   - bioconda
 
 test:
   imports:
