@@ -19,14 +19,14 @@ requirements:
   host:
     - python
     - pip
-#     - jupyter
-#     - ipython
-#     - matplotlib>=3.0
-#     - numpy>=1.1
-#     - requests
-#     - biopython
-# #    - goatools>=1.4
-#     - wget
+    - jupyter
+    - ipython
+    - matplotlib>=3.0
+    - numpy>=1.1
+    - requests
+    - biopython
+    - goatools>=1.4
+    - wget
   run:
     - python
     - jupyter
