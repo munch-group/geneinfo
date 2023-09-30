@@ -22,6 +22,11 @@ requirements:
   run:
     - python
 
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+
 test:
   imports:
     - geneinfo
