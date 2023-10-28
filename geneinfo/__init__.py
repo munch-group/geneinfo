@@ -11,7 +11,8 @@ import re
 import json
 import subprocess
 import pandas as pd
-from math import log10
+from pandas.api.types import is_object_dtype
+from math import log10, sqrt
 import shutil
 
 import matplotlib
@@ -53,6 +54,45 @@ class NotFound(Exception):
     """query returned no result"""
     pass
 
+
+class nice:
+
+    def __rlshift__(self, df):
+        "Left align columns of data frame: df << nice()"
+
+        def make_pretty(styler):
+
+            def commas(v):
+                if type(v) is int:
+                    s = str(v)[::-1]
+                    return ','.join([s[i:i+3] for i in range(0, len(s), 3)])[::-1]
+                else:
+                    return v
+
+            return styler.format(commas)
+
+        s = df.style.pipe(make_pretty)
+        s.set_table_styles(
+            {c: [{'selector': '', 'props': [('text-align', 'left')]}] 
+                 for c in df.columns if is_object_dtype(df[c]) and c != 'strand'},
+            overwrite=False
+        )
+        display(s)
+
+def tabulate_genes(words, ncols=None):
+    n = len(words)
+    col_width = max(map(len, words)) + 1
+    if ncols is None:
+        ncols = max(100//col_width, 1+sqrt(n/col_width))
+    nrows = int(n/ncols) + 1
+    rows = []
+    for r in range(0, n, nrows):
+        rows.append(words[r:r+nrows])
+    for row in list(zip_longest(*rows, fillvalue='')):
+        line = []
+        for gene in row:
+            line.append(gene.ljust(col_width))
+        print(''.join(line))
 
 def ensembl_id(name, species='homo_sapiens'):
     server = "https://rest.ensembl.org"
