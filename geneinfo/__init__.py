@@ -42,7 +42,8 @@ from .intervals import *
 # sys.path.append('.')
 
 # if this runs on a cluster node we need to set proxies to access external resources:
-if re.match(r's\d+n\d+', subprocess.run('hostname', capture_output=True).stdout.decode().strip()):
+hostname = subprocess.run('hostname', capture_output=True).stdout.decode().strip()
+if hostname == 'fe-open-01' or re.match(r's\d+n\d+', hostname):
     os.environ['http_proxy'] = 'http://proxy-default:3128'
     os.environ['https_proxy'] = 'http://proxy-default:3128'
     os.environ['ftp_proxy'] = 'http://proxy-default:3128'
