@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setuptools.setup(
     name="geneinfo",
-    version="3.4.12",
+    version="3.4.13",
     author="Kasper Munch",
     author_email="kaspermunch@birc.au.dk",
     description="Functions for showing gene information in jupyter notebooks.",
@@ -25,5 +25,6 @@ setuptools.setup(
           'requests',
           'biopython',
           'goatools>=1.2',
+          'graphviz',
           'wget'
         ])

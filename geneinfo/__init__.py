@@ -556,7 +556,7 @@ def download_ncbi_associations(prt=sys.stdout):
         stdout, stderr = process.communicate()
         print(stdout.decode(), file=prt)
         print(stderr.decode(), file=prt)    
-        assert not process.returncode
+        assert not process.returncode, process.returncode
     return 'geneinfo_cache/gene2go'
 
 
@@ -997,6 +997,7 @@ def go_term2name(term):
     _write_go_hdf()
     with pd.HDFStore('geneinfo_cache/go-basic.h5', 'r') as store:
         entry = store.select("df", "goterm == %r" % term).iloc[0]
+
     return entry.goterm
 
 
@@ -1018,12 +1019,12 @@ def go_info(terms):
 
     _write_go_hdf()
 
-    with pd.HDFStore('geneinfo_cache/go-basic.h5', 'r') as store:
-        for term in terms:
-            entry = store.select("df", "goterm == %r" % term.upper()).iloc[0]
-            desc = re.search(r'"([^"]+)"', entry.description).group(1)
-            s = f'**<span style="color:gray;">{term}:</span>** **{entry.goname}**  \n {desc}    \n\n ----'        
-            display(Markdown(s))
+    df = pd.read_hdf('geneinfo_cache/go-basic.h5')
+    for term in terms:
+        entry = df.loc[df.goterm == term].iloc[0]
+        desc = re.search(r'"([^"]+)"', entry.description).group(1)
+        s = f'**<span style="color:gray;">{term}:</span>** **{entry.goname}**  \n {desc}    \n\n ----'        
+        display(Markdown(s))
 
 
 class WrSubObo(object):

@@ -5,4 +5,5 @@ numpy>=1.1
 requests
 biopython
 goatools>=1.2
+graphviz
 wget
