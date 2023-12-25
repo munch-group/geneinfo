@@ -1,7 +1,7 @@
 # geneinfo
-Functions using mygene to show gene summaries and gene annotation plots in Jupyter
+Jupyter notebook utility functions for working with gene information, go ontologies, and gene networks, and for plotting data over gene and chromosome ideograms.
 
-# install
+## install
 
  conda install -c conda-forge -c bioconda -c kaspermunch geneinfo
  
