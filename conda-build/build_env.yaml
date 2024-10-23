@@ -9,5 +9,4 @@ dependencies:
   - pip
   - twine
   - anaconda-client
-  - libmamba
   - conda-verify
