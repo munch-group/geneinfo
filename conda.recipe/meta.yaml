@@ -1,19 +1,20 @@
-{% set version = "3.4.10" %}
+{% set data = load_setup_py_data() %}
 
 package:
-  name: geneinfo
-  version: {{ version }}
+  name: exercise-client
+  version: {{ data.get('version') }}  
 
 source:
-  git_url: https://github.com/kaspermunch/geneinfo.git
+  git_url: https://github.com/munch-group/geneinfo.git
 
 build:
   noarch: python
   number: 0
   # script: python -m pip install --no-deps --ignore-installed .
+  # script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  script: "{{ PYTHON }} -m pip install . -vv"
   # entry_points:
-  #   - print-steps = bp_help.print_steps:run_student_file
-  #   - myiagi = bp_help.text_gui:run
+  #   - exercises = exercise_client:launch_exercise
 
 requirements:
   host:
@@ -30,54 +31,24 @@ requirements:
     - goatools>=1.2
     - wget
 
-# channels:
-#   - defaults
-#   - conda-forge
-#   - bioconda
+channels:    # write here the list of channels to look for your library dependencies
+  # - uibcdf
+  - conda-forge
+  - default
 
+dependencies:   # Keep this block with only these two packages
+  - anaconda-client
+  - conda-build
+  
 test:
   imports:
     - geneinfo
+  # commands:
+  #   - exercises --help    
 
 about:
-  home: https://github.com/kaspermunch/geneinfo.git
-  # license: MIT
+  home: https://github.com/munch-group/geneinfo
+  license: MIT
   summary: 'summary'
   description: |
     Description.
-
-
-# package:
-#   name: bp-help
-#   version: "0.3"
-
-# source:
-#   path: ../
-
-# requirements:
-#   build:
-#     - python
-#   run:
-#     - python #>=3.9, <=3.11
-#     - pygments
-#     - textual
-#     - rich
-#     - art
-
-# channels:
-#   - defaults
-#   - conda-forge
-#   - sepandhaghighi
-
-# about:
-#   home: https://github.com/kaspermunch/bp-help
-#   license: MIT
-
-# build:
-#   script: python -m pip install . -vv
-#   noarch: python
-
-# test:
-#   imports:
-#     - bp-help
-
