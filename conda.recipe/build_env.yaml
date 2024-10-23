@@ -1,0 +1,20 @@
+name: buildenv
+channels:
+  - conda-forge
+  - bioconda
+platforms:
+  - linux-64
+  - osx-64
+  - osx-arm64
+  - win-64
+dependencies:
+  - ipython
+  - jupyter
+  - matplotlib>=3.0
+  - numpy>=1.1
+  - requests
+  - biopython
+  - goatools>=1.2
+  - graphviz
+  - wget
+ 
