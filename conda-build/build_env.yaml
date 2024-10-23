@@ -1,12 +1,7 @@
 name: buildenv
 channels:
   - conda-forge
-  # - bioconda
 dependencies:
   - anaconda
   - conda-build
-  # - git
-  # - pip
-  # - twine
   - anaconda-client
-  # - conda-verify
