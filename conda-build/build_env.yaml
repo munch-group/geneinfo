@@ -8,5 +8,5 @@ dependencies:
   # - git
   # - pip
   # - twine
-  # - anaconda-client
+  - anaconda-client
   # - conda-verify
