@@ -12,3 +12,5 @@ dependencies:
   - "goatools>=1.2"
   - graphviz
   - wget
+  - conda-build
+  - anaconda
