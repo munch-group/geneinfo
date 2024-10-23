@@ -8,6 +8,7 @@ source:
   git_url: https://github.com/munch-group/geneinfo.git
 
 build:
+  skip: True  # [win]
   noarch: python
   number: 0
   # script: python -m pip install --no-deps --ignore-installed .
