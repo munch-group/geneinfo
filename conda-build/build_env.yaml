@@ -5,8 +5,8 @@ channels:
 dependencies:
   - anaconda
   - conda-build
-  - git
-  - pip
-  - twine
-  - anaconda-client
-  - conda-verify
+  # - git
+  # - pip
+  # - twine
+  # - anaconda-client
+  # - conda-verify
