@@ -35,6 +35,8 @@ jobs:
           python-version: ${{ matrix.python-version }} # Values previously defined in `matrix`
           # platform_all: true
           platform_osx-arm64: true
+          platform_linux-64: true
+          platform_osx-64: true
           user: munch-group
           label: auto
           token: ${{ secrets.ANACONDA_TOKEN }} # Replace with the right name of your secret
