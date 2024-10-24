@@ -545,7 +545,7 @@ def download_ncbi_associations(prt=sys.stdout):
     if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
 
     if not os.path.exists('geneinfo_cache/gene2go'):
-        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/gene2go.gz', 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
+        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/gene2go.gz', 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
@@ -568,8 +568,16 @@ def download_and_move_go_basic_obo(prt=sys.stdout):
     if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
 
     if not os.path.exists('geneinfo_cache/go-basic.obo'):
-        obo_fname = download_go_basic_obo(prt=prt)
-        shutil.move('go-basic.obo', 'geneinfo_cache/go-basic.obo')
+        # obo_fname = download_go_basic_obo(prt=prt)
+        # shutil.move('go-basic.obo', 'geneinfo_cache/go-basic.obo')
+        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/go-basic.obo', 'https://purl.obolibrary.org/obo/go/go-basic.obo'],
+                            stdout=subprocess.PIPE, 
+                            stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        print(stdout.decode(), file=prt)
+        print(stderr.decode(), file=prt)
+        assert not process.returncode
+
     return 'geneinfo_cache/go-basic.obo'
 
 
