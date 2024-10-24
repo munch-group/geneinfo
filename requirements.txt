@@ -6,4 +6,5 @@ requests
 biopython
 goatools>=1.2
 graphviz
+pytables
 wget
