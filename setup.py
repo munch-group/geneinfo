@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setuptools.setup(
     name="geneinfo",
-    version="3.4.40",
+    version="3.4.41",
     author="Kasper Munch",
     author_email="kaspermunch@birc.au.dk",
     description="Functions for showing gene information in jupyter notebooks.",
@@ -16,12 +16,17 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/munch-group/geneinfo",
     packages=setuptools.find_packages(),
-    package_data= {
-        # # all .dat files at any package depth
-        # '': ['**/*.dat'],
-        # into the data folder (being into a module) but w/o the init file
-        'geneinfo.data': [ '**/*.csv', '**/*.picle', ]        
-    },    
+    include_package_data=True,
+    package_data={'geneinfo': [
+        'data/*.csv',
+        'data/*.pickle',
+    ]},
+    # package_data= {
+        # # # all .dat files at any package depth
+        # # '': ['**/*.dat'],
+        # # into the data folder (being into a module) but w/o the init file
+        # 'geneinfo.data': [ '**/*.csv', '**/*.picle', ]        
+    # },    
     python_requires='>=3.6',
     install_requires=[
           'ipython',
