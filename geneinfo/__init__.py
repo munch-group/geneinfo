@@ -9,6 +9,7 @@ import sys
 import os
 import re
 import json
+import pickle
 import subprocess
 import pandas as pd
 from pandas.api.types import is_object_dtype
@@ -50,6 +51,8 @@ if hostname == 'fe-open-01' or re.match(r's\d+n\d+', hostname):
     os.environ['ftps_proxy'] = 'http://proxy-default:3128'
 
 CACHE = dict()
+with open(os.path.join(os.path.dirname(__file__), 'data/CACHE.pickle'), 'rb') as f:
+    CACHE = pickle.load(f)
 
 class NotFound(Exception):
     """query returned no result"""
