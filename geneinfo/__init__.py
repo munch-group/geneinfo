@@ -563,7 +563,7 @@ def download_ncbi_associations(prt=sys.stdout):
     return 'geneinfo_cache/gene2go'
 
 
-def download_and_move_go_basic_obo(prt):  
+def download_and_move_go_basic_obo(prt=sys.stdout):  
 
     if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
 
@@ -571,6 +571,12 @@ def download_and_move_go_basic_obo(prt):
         obo_fname = download_go_basic_obo(prt=prt)
         shutil.move('go-basic.obo', 'geneinfo_cache/go-basic.obo')
     return 'geneinfo_cache/go-basic.obo'
+
+
+def download_data(prt=sys.stdout):  
+
+    download_ncbi_associations(prt)
+    download_and_move_go_basic_obo(prt)
 
 
 def _fetch_ids_to_file(id_list, output_file_name):
