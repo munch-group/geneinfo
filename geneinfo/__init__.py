@@ -51,7 +51,7 @@ if hostname == 'fe-open-01' or re.match(r's\d+n\d+', hostname):
     os.environ['ftps_proxy'] = 'http://proxy-default:3128'
 
 CACHE = dict()
-with open(os.path.join(os.path.dirname(__file__), 'data/CACHE.pickle'), 'rb') as f:
+with open(os.path.join(os.path.dirname(__file__), 'params/CACHE.pickle'), 'rb') as f:
     CACHE = pickle.load(f)
 
 class NotFound(Exception):
@@ -62,7 +62,7 @@ class NotFound(Exception):
 class nice:
 
     def __rlshift__(self, df):
-        "Left align columns of data frame: df << nice()"
+        "Left align columns of params frame: df << nice()"
 
         def make_pretty(styler):
 
@@ -223,9 +223,9 @@ def _ensembl_get_features_region(chrom, window_start, window_end, features=['gen
 
         if not response.ok:
             response.raise_for_status()
-        data = response.json()
+        params = response.json()
 
-        for gene in data:
+        for gene in params:
             genes[gene['id']] = gene
             
     return genes
@@ -277,7 +277,7 @@ def get_genes_region(chrom, window_start, window_end, assembly='GRCh38', db='ncb
               'start': window_start,
               'end': window_end
               }
-    response = requests.get(api_url, data=params)
+    response = requests.get(api_url, params=params)
     if not response.ok:
         response.raise_for_status()
 
@@ -441,7 +441,7 @@ def map_interval(chrom, start, end, strand, map_from, map_to, species='homo_sapi
     start, end = int(start), int(end)    
     api_url = f"http://rest.ensembl.org/map/{species}/{map_from}/{chrom}:{start}..{end}:{strand}/{map_to}"
     params = {'content-type': 'application/json'}
-    response = requests.get(api_url, data=params)
+    response = requests.get(api_url, params=params)
     if not response.ok:
         response.raise_for_status()
     #null = '' # json may include 'null' variables 
