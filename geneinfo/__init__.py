@@ -1739,7 +1739,7 @@ def show_go_dag_enrichment_results(results:Union[List[GOEnrichmentRecord],pd.Ser
     return display(Image('geneinfo_cache/plot.png'))
 
 
-def chrom_ideogram(annot:list, vspace:float=0.1, min_visible_width:int=200000, figsize:tuple=(10,10), assembly:str='hg38'):
+def chrom_ideogram(annot:list, hspace:float=0.1, min_visible_width:int=200000, figsize:tuple=(10,10), assembly:str='hg38'):
     """
     Plots an ideogram of the human chromosomes with annotations.
 
@@ -1747,8 +1747,8 @@ def chrom_ideogram(annot:list, vspace:float=0.1, min_visible_width:int=200000, f
     ----------
     annot : 
         List of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.
-    vspace : 
-        Vertical space between ideograms, by default 0.1
+    hspace : 
+        Space between ideograms, by default 0.1
     min_visible_width : 
         Minum display width of very short annotations, by default 200000
     figsize : 
@@ -1765,11 +1765,11 @@ def chrom_ideogram(annot:list, vspace:float=0.1, min_visible_width:int=200000, f
         ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), 
         ('chr8', 90000000, 110000000)
     ]
-    chrom_ideogram(annot, figsize=(15, 9), vspace=0.2)
+    chrom_ideogram(annot, figsize=(15, 9), hspace=0.2)
 
     # black ticks every 10Mb on chrX
     annot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
-    chrom_ideogram(annot, figsize=(15, 9), vspace=0.2)
+    chrom_ideogram(annot, figsize=(15, 9), hspace=0.2)
     ```
 
     """
@@ -1778,7 +1778,7 @@ def chrom_ideogram(annot:list, vspace:float=0.1, min_visible_width:int=200000, f
 # + [('chr5', 40000000, 70000000, 'red', None, 1, 0.5), ('chr8', 90000000, 110000000)] \
 #  + [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
 
-# chrom_ideogram(annot, figsize=(15, 9), vspace=0.2) 
+# chrom_ideogram(annot, figsize=(15, 9), hspace=0.2) 
 
     d = {'axes.linewidth': 0.8, 'grid.linewidth': 0.64, 'lines.linewidth': 0.96, 
          'lines.markersize': 3.84, 'patch.linewidth': 0.64, 'xtick.major.width': 0.8,
@@ -1839,7 +1839,7 @@ def chrom_ideogram(annot:list, vspace:float=0.1, min_visible_width:int=200000, f
         fig = plt.figure(figsize=figsize)
 
         gs = matplotlib.gridspec.GridSpec(nr_rows, 25)
-        gs.update(wspace=0, vspace=vspace) # set the spacing between axes.             
+        gs.update(wspace=0, hspace=hspace) # set the spacing between axes.             
         ax_list = [plt.subplot(gs[i, :]) for i in range(nr_rows-2)]
         ax_list.append(plt.subplot(gs[nr_rows-2, :9]))
         ax_list.append(plt.subplot(gs[nr_rows-1, :9]))
@@ -1933,4 +1933,4 @@ def chrom_ideogram(annot:list, vspace:float=0.1, min_visible_width:int=200000, f
 # + [('chr5', 40000000, 70000000, 'red', None, 1, 0.5), ('chr8', 90000000, 110000000)] \
 #  + [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
 
-# chrom_ideogram(annot, figsize=(15, 9), vspace=0.2) 
+# chrom_ideogram(annot, figsize=(15, 9), hspace=0.2) 
