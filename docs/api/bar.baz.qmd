@@ -1,6 +1,0 @@
-# bar.baz { #geneinfo.bar.baz }
-
-```python
-geneinfo.bar.baz()
-```
-

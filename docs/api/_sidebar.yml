@@ -21,8 +21,8 @@ website:
       - api/ensembl2ncbi.qmd
       section: ID conversion
     - contents:
-      - api/show_string_network.qmd
       - api/string_network_table.qmd
+      - api/show_string_network.qmd
       section: STRING networks
     - contents:
       - api/go_info.qmd

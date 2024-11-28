@@ -44,7 +44,7 @@ website:
       # - file: examples/
       #   text: Examples
       - href: api/
-        text: Reference
+        text: API reference
     right:
       - icon: github
         href: https://github.com/munch-group/geneinfo/
@@ -54,13 +54,12 @@ website:
       style: floating
       align: left
       contents:
-        - pages/overview.qmd
+        - pages/getting_started.qmd
         - section: "Examples"
           contents:
-            - pages/examples.ipynb            
-        - section: "Library reference"
-          contents:
-            - api/index.qmd
+            - pages/examples.ipynb 
+        - href: api/
+          text: API reference                       
 
 format:
   html:
@@ -86,34 +85,43 @@ quartodoc:
   sections:
     - title: Gene information
       desc: |
-        These functions...
+        These functions retrieve information summaries, for named genes or 
+        genes in a defined genomic range, and displays it as rendered Markdown
+        in the output cell.
       contents:
         - gene_info
         - gene_info_region
     - title: Gene plots
-      desc: ""
+      desc: |
+        These functions display information graphically together with each 
+        either gene structures in a genomic region (gene_plot) or chromosomal
+        ideograms (chrom_ideogram).
       contents:
         - gene_plot
         - chrom_ideogram
     - title: Gene coordinates
-      desc: ""
+      desc: |
+        These functions retrieve coordinates of genes in a chromosomal region.
       contents:
         - get_genes_region
         - get_genes_region_dataframe
     - title: ID conversion
-      desc: ""
+      desc: |
+        These functions converts between NCBI, ENSEMBL and HGCN gene identifiers.
       contents:
         - ensembl_id
         - hgcn_symbol
         - ensembl2symbol
         - ensembl2ncbi
     - title: STRING networks
-      desc: ""
+      desc: |
+        These functions retrieve and display STRING network information.
       contents:    
-        - show_string_network
         - string_network_table
+        - show_string_network
     - title: GO information
-      desc: ""
+      desc:  |
+        These functions retrieve gene ontology information.
       contents:
         - go_info
         - go_term2name
@@ -122,26 +130,30 @@ quartodoc:
         - get_terms_for_go_regex
         - go_annotation_table
     - title: GO enrichment
-      desc: ""
+      desc: |
+        These functions allow gene ontology enrichment analyses.
       contents:
         - go_enrichment
         - show_go_evidence_codes
         - symbols_protein_coding
         - download_data
     - title: GO graphs
-      desc: ""
+      desc: |
+        These functions display directed graphs representing sets of connected GO terms.
       contents:
         - show_go_dag_for_gene
         - show_go_dag_for_terms
         - show_go_dag_enrichment_results
     - title: Gene annotation
-      desc: ""
+      desc: |
+        These functions retrieves genes based on their GO annotation.
       contents:
         - get_genes_for_go_regex
         - get_genes_for_go_terms
         - gene_annotation_table
     - title: Utilities
-      desc: ""
+      desc: |
+        These are utility functions to record your email in queries and to tabulate genes.
       contents:
         - email
         - tabulate_genes

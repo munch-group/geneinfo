@@ -1,6 +1,0 @@
-# download_and_move_go_basic_obo { #geneinfo.download_and_move_go_basic_obo }
-
-```python
-geneinfo.download_and_move_go_basic_obo(prt=sys.stdout)
-```
-

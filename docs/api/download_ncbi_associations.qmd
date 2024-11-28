@@ -1,6 +1,0 @@
-# download_ncbi_associations { #geneinfo.download_ncbi_associations }
-
-```python
-geneinfo.download_ncbi_associations(prt=sys.stdout)
-```
-
