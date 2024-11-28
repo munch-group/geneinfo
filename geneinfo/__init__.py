@@ -52,8 +52,10 @@ if hostname == 'fe-open-01' or re.match(r's\d+n\d+', hostname):
     os.environ['ftps_proxy'] = 'http://proxy-default:3128'
 
 CACHE = dict()
-with open(os.path.join(os.path.dirname(__file__), 'params/CACHE.pickle'), 'rb') as f:
-    CACHE = pickle.load(f)
+cache_path = os.path.join(os.path.dirname(__file__), 'data/CACHE.pickle')
+if os.path.exists(cache_path):
+    with open(cache_path, 'rb') as f:
+        CACHE = pickle.load(f)
 
 class NotFound(Exception):
     """
