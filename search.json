@@ -1,0 +1,1249 @@
+[
+  {
+    "objectID": "pages/something.html",
+    "href": "pages/something.html",
+    "title": "Some other use case",
+    "section": "",
+    "text": "Import some plotting libraries and set some defaults:\n%config InlineBackend.figure_formats = ['svg']\nparams = load_params('../global_params.yml')\nparams\n\n{'questions': ['Blah blah blah',\n               'Blah blah blah',\n               'Blah blah blah',\n               'Blah blah blah'],\n 'sample_size': 24}\nparams.sample_size\n\n24",
+    "crumbs": [
+      "Examples",
+      "Some other use case"
+    ]
+  },
+  {
+    "objectID": "pages/something.html#sampling",
+    "href": "pages/something.html#sampling",
+    "title": "Some other use case",
+    "section": "Sampling",
+    "text": "Sampling\n\nsubjects = pd.read_csv('../data/data_table.csv')\nassert subjects.index.size == params.sample_size\n\n\nTip:\nBy adding a label and caption to a cell displaying a table, you can refer to that table elsewhere and insert it in a manuscript.\n\n\nsubjects\n\n\n\nTable 1: People included in the analysis.\n\n\n\n\n\n\n\n\n\n\nname\nage\nsex\nposition\nnationality\n\n\n\n\n0\nJulie\n27\nF\nPhDstudent\nDK\n\n\n1\nThomas\n33\nM\nPostdoc\nGB\n\n\n2\nEmilie\n23\nF\nPhDstudent\nCH\n\n\n3\nSofie\n31\nF\nPostdoc\nDK\n\n\n4\nSara\n29\nF\nPostdoc\nUS\n\n\n5\nCecilie\n34\nF\nPostdoc\nDK\n\n\n6\nAnders\n32\nM\nPhDstudent\nUK\n\n\n7\nEmma\n42\nF\nProfessor\nDK\n\n\n8\nCaroline\n31\nF\nPhDstudent\nDK\n\n\n9\nLaura\n30\nF\nPostdoc\nDK\n\n\n10\nMikkel\n33\nM\nPostdoc\nNL\n\n\n11\nJens\n27\nM\nPhDstudent\nDK\n\n\n12\nAndreas\n29\nM\nPhDstudent\nDK\n\n\n13\nJakob\n28\nM\nPhDstudent\nDK\n\n\n14\nMathilde\n61\nF\nProfessor\nDK\n\n\n15\nKatrine\n35\nF\nPostdoc\nDK\n\n\n16\nPoul\n30\nM\nPostdoc\nDK\n\n\n17\nAnna\n26\nF\nPhDstudent\nDK\n\n\n18\nPeter\n42\nM\nProfessor\nGB\n\n\n19\nIda\n53\nF\nPostdoc\nDK\n\n\n20\nFreja\n30\nF\nPostdoc\nDK\n\n\n21\nMaria\n39\nF\nProfessor\nUK\n\n\n22\nAmalie\n29\nF\nPhDstudent\nDK\n\n\n23\nCamilla\n35\nF\nPostdoc\nDK\n\n\n\n\n\n\n\n\n\n\n\nTip:\nBy generaing markdown for descriptions that will eventually end up in the manuscript, you can imbed python values. It also ensures that the manuscript exactly reflects the notebook.\n\n\n\nThe 24 subjects from workplaces in Denmark were interviewed …. blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah",
+    "crumbs": [
+      "Examples",
+      "Some other use case"
+    ]
+  },
+  {
+    "objectID": "pages/something.html#interviews",
+    "href": "pages/something.html#interviews",
+    "title": "Some other use case",
+    "section": "Interviews",
+    "text": "Interviews\n\n\nThe 24 subjects were asked to score the follow statements:\n\nBlah blah blah\nBlah blah blah\nBlah blah blah\nBlah blah blah",
+    "crumbs": [
+      "Examples",
+      "Some other use case"
+    ]
+  },
+  {
+    "objectID": "pages/examples.html",
+    "href": "pages/examples.html",
+    "title": "Some common use case",
+    "section": "",
+    "text": "Import some plotting libraries and set some defaults:\n%config InlineBackend.figure_formats = ['svg']\nparams = load_params('../global_params.yml')\nparams\n\n{'questions': ['Blah blah blah',\n               'Blah blah blah',\n               'Blah blah blah',\n               'Blah blah blah'],\n 'sample_size': 24}\nparams.sample_size\n\n24",
+    "crumbs": [
+      "Examples",
+      "Some common use case"
+    ]
+  },
+  {
+    "objectID": "pages/examples.html#sampling",
+    "href": "pages/examples.html#sampling",
+    "title": "Some common use case",
+    "section": "Sampling",
+    "text": "Sampling\n\nsubjects = pd.read_csv('../data/data_table.csv')\nassert subjects.index.size == params.sample_size\n\n\nTip:\nBy adding a label and caption to a cell displaying a table, you can refer to that table elsewhere and insert it in a manuscript.\n\n\nsubjects\n\n\n\nTable 1: People included in the analysis.\n\n\n\n\n\n\n\n\n\n\nname\nage\nsex\nposition\nnationality\n\n\n\n\n0\nJulie\n27\nF\nPhDstudent\nDK\n\n\n1\nThomas\n33\nM\nPostdoc\nGB\n\n\n2\nEmilie\n23\nF\nPhDstudent\nCH\n\n\n3\nSofie\n31\nF\nPostdoc\nDK\n\n\n4\nSara\n29\nF\nPostdoc\nUS\n\n\n5\nCecilie\n34\nF\nPostdoc\nDK\n\n\n6\nAnders\n32\nM\nPhDstudent\nUK\n\n\n7\nEmma\n42\nF\nProfessor\nDK\n\n\n8\nCaroline\n31\nF\nPhDstudent\nDK\n\n\n9\nLaura\n30\nF\nPostdoc\nDK\n\n\n10\nMikkel\n33\nM\nPostdoc\nNL\n\n\n11\nJens\n27\nM\nPhDstudent\nDK\n\n\n12\nAndreas\n29\nM\nPhDstudent\nDK\n\n\n13\nJakob\n28\nM\nPhDstudent\nDK\n\n\n14\nMathilde\n61\nF\nProfessor\nDK\n\n\n15\nKatrine\n35\nF\nPostdoc\nDK\n\n\n16\nPoul\n30\nM\nPostdoc\nDK\n\n\n17\nAnna\n26\nF\nPhDstudent\nDK\n\n\n18\nPeter\n42\nM\nProfessor\nGB\n\n\n19\nIda\n53\nF\nPostdoc\nDK\n\n\n20\nFreja\n30\nF\nPostdoc\nDK\n\n\n21\nMaria\n39\nF\nProfessor\nUK\n\n\n22\nAmalie\n29\nF\nPhDstudent\nDK\n\n\n23\nCamilla\n35\nF\nPostdoc\nDK\n\n\n\n\n\n\n\n\n\n\n\nTip:\nBy generaing markdown for descriptions that will eventually end up in the manuscript, you can imbed python values. It also ensures that the manuscript exactly reflects the notebook.\n\n\n\nThe 24 subjects from workplaces in Denmark were interviewed …. blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah",
+    "crumbs": [
+      "Examples",
+      "Some common use case"
+    ]
+  },
+  {
+    "objectID": "pages/examples.html#interviews",
+    "href": "pages/examples.html#interviews",
+    "title": "Some common use case",
+    "section": "Interviews",
+    "text": "Interviews\n\n\nThe 24 subjects were asked to score the follow statements:\n\nBlah blah blah\nBlah blah blah\nBlah blah blah\nBlah blah blah",
+    "crumbs": [
+      "Examples",
+      "Some common use case"
+    ]
+  },
+  {
+    "objectID": "pages/overview.html",
+    "href": "pages/overview.html",
+    "title": "Overview",
+    "section": "",
+    "text": "geneinfo lets you …\nEtiam quis tortor luctus, pellentesque ante a, finibus dolor. Phasellus in nibh et magna pulvinar malesuada. Ut nisl ex, sagittis at sollicitudin et, sollicitudin id nunc. In id porta urna. Proin porta dolor dolor, vel dapibus nisi lacinia in. Pellentesque ante mauris, ornare non euismod a, fermentum ut sapien. Proin sed vehicula enim. Aliquam tortor odio, vestibulum vitae odio in, tempor molestie justo. Praesent maximus lacus nec leo maximus blandit.",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "pages/overview.html#installation",
+    "href": "pages/overview.html#installation",
+    "title": "Overview",
+    "section": "Installation",
+    "text": "Installation\nconda install -c conda-forge -c munch-group geneinfo",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "pages/overview.html#basic-use",
+    "href": "pages/overview.html#basic-use",
+    "title": "Overview",
+    "section": "Basic use",
+    "text": "Basic use\nDuis ornare ex ac iaculis pretium. Maecenas sagittis odio id erat pharetra, sit amet consectetur quam sollicitudin. Vivamus pharetra quam purus, nec sagittis risus pretium at. Nullam feugiat, turpis ac accumsan interdum, sem tellus blandit neque, id vulputate diam quam semper nisl. Donec sit amet enim at neque porttitor aliquet. Phasellus facilisis nulla eget placerat eleifend. Vestibulum non egestas eros, eget lobortis ipsum. Nulla rutrum massa eget enim aliquam, id porttitor erat luctus. Nunc sagittis quis eros eu sagittis. Pellentesque dictum, erat at pellentesque sollicitudin, justo augue pulvinar metus, quis rutrum est mi nec felis. Vestibulum efficitur mi lorem, at elementum purus tincidunt a. Aliquam finibus enim magna, vitae pellentesque erat faucibus at. Nulla mauris tellus, imperdiet id lobortis et, dignissim condimentum ipsum. Morbi nulla orci, varius at aliquet sed, facilisis id tortor. Donec ut urna nisi.",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "pages/overview.html#some-use-case",
+    "href": "pages/overview.html#some-use-case",
+    "title": "Overview",
+    "section": "Some use case",
+    "text": "Some use case\nThe foo function does … geneinfo.gene_info does … gene_info does …\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sagittis posuere ligula sit amet lacinia. Duis dignissim pellentesque magna, rhoncus congue sapien finibus mollis. Ut eu sem laoreet, vehicula ipsum in, convallis erat. Vestibulum magna sem, blandit pulvinar augue sit amet, auctor malesuada sapien. Nullam faucibus leo eget eros hendrerit, non laoreet ipsum lacinia. Curabitur cursus diam elit, non tempus ante volutpat a. Quisque hendrerit blandit purus non fringilla. Integer sit amet elit viverra ante dapibus semper. Vestibulum viverra rutrum enim, at luctus enim posuere eu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.\ngene_info(\"ALG13\")",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "pages/overview.html#learning-more",
+    "href": "pages/overview.html#learning-more",
+    "title": "Overview",
+    "section": "Learning more",
+    "text": "Learning more\nGo to the anvanced page to learn how to …\n\nExamples page: sites using quartodoc.",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "api/gene_info.html",
+    "href": "api/gene_info.html",
+    "title": "gene_info",
+    "section": "",
+    "text": "geneinfo.gene_info(query, species='human', scopes='hgnc')\nDisplays HTML formatted information about one or more genes.\n\n\n\nquery : str | List[str]\n\nGene symbol or list of gene symbols\n\nspecies : optional = 'human'\n\nSpecies, by default ‘human’\n\nscopes : optional = 'hgnc'\n\nScopes for information search, by default ‘hgnc’",
+    "crumbs": [
+      "Gene information",
+      "gene_info"
+    ]
+  },
+  {
+    "objectID": "api/gene_info.html#parameters",
+    "href": "api/gene_info.html#parameters",
+    "title": "gene_info",
+    "section": "",
+    "text": "query : str | List[str]\n\nGene symbol or list of gene symbols\n\nspecies : optional = 'human'\n\nSpecies, by default ‘human’\n\nscopes : optional = 'hgnc'\n\nScopes for information search, by default ‘hgnc’",
+    "crumbs": [
+      "Gene information",
+      "gene_info"
+    ]
+  },
+  {
+    "objectID": "api/download_data.html",
+    "href": "api/download_data.html",
+    "title": "download_data",
+    "section": "",
+    "text": "download_data\ngeneinfo.download_data(prt=sys.stdout)",
+    "crumbs": [
+      "Gene ontology",
+      "download_data"
+    ]
+  },
+  {
+    "objectID": "api/gene_annotation_table.html",
+    "href": "api/gene_annotation_table.html",
+    "title": "gene_annotation_table",
+    "section": "",
+    "text": "geneinfo.gene_annotation_table(taxid=9606)\nGene annotations for a given taxonomy id as a pandas.DataFrame.\n\n\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human\n\n\n\n\n\n\n : pd.DataFrame\n\nGene annotations for the specified taxonomy id.",
+    "crumbs": [
+      "Gene ontology",
+      "gene_annotation_table"
+    ]
+  },
+  {
+    "objectID": "api/gene_annotation_table.html#parameters",
+    "href": "api/gene_annotation_table.html#parameters",
+    "title": "gene_annotation_table",
+    "section": "",
+    "text": "taxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human",
+    "crumbs": [
+      "Gene ontology",
+      "gene_annotation_table"
+    ]
+  },
+  {
+    "objectID": "api/gene_annotation_table.html#returns",
+    "href": "api/gene_annotation_table.html#returns",
+    "title": "gene_annotation_table",
+    "section": "",
+    "text": ": pd.DataFrame\n\nGene annotations for the specified taxonomy id.",
+    "crumbs": [
+      "Gene ontology",
+      "gene_annotation_table"
+    ]
+  },
+  {
+    "objectID": "api/ensembl_id.html",
+    "href": "api/ensembl_id.html",
+    "title": "ensembl_id",
+    "section": "",
+    "text": "geneinfo.ensembl_id(name, species='homo_sapiens')\nGet ENSEMBL ID for some gene identifier\n\n\n\nname : str\n\nGene identifier\n\nspecies : optional = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’\n\n\n\n\n\n\n : str\n\nENSEMBL ID\n\n\n\n\n\n\n: [](~geneinfo.NotFound)\n\nRaises exception if no ENSEMBL ID can be found.",
+    "crumbs": [
+      "Gene information",
+      "ensembl_id"
+    ]
+  },
+  {
+    "objectID": "api/ensembl_id.html#parameters",
+    "href": "api/ensembl_id.html#parameters",
+    "title": "ensembl_id",
+    "section": "",
+    "text": "name : str\n\nGene identifier\n\nspecies : optional = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’",
+    "crumbs": [
+      "Gene information",
+      "ensembl_id"
+    ]
+  },
+  {
+    "objectID": "api/ensembl_id.html#returns",
+    "href": "api/ensembl_id.html#returns",
+    "title": "ensembl_id",
+    "section": "",
+    "text": ": str\n\nENSEMBL ID",
+    "crumbs": [
+      "Gene information",
+      "ensembl_id"
+    ]
+  },
+  {
+    "objectID": "api/ensembl_id.html#raises",
+    "href": "api/ensembl_id.html#raises",
+    "title": "ensembl_id",
+    "section": "",
+    "text": ": [](~geneinfo.NotFound)\n\nRaises exception if no ENSEMBL ID can be found.",
+    "crumbs": [
+      "Gene information",
+      "ensembl_id"
+    ]
+  },
+  {
+    "objectID": "api/ensembl_get_gene_info_by_symbol.html",
+    "href": "api/ensembl_get_gene_info_by_symbol.html",
+    "title": "ensembl_get_gene_info_by_symbol",
+    "section": "",
+    "text": "ensembl_get_gene_info_by_symbol\ngeneinfo.ensembl_get_gene_info_by_symbol(\n    symbols\n    assembly=None\n    species='homo_sapiens'\n)",
+    "crumbs": [
+      "Gene information",
+      "ensembl_get_gene_info_by_symbol"
+    ]
+  },
+  {
+    "objectID": "api/gene_info_region.html",
+    "href": "api/gene_info_region.html",
+    "title": "gene_info_region",
+    "section": "",
+    "text": "geneinfo.gene_info_region(\n    chrom\n    window_start\n    window_end\n    assembly='GRCh38'\n    db='ncbiRefSeq'\n)\nDisplays HTML formatted information about genes in a chromosomal region.\n\n\n\nchrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’",
+    "crumbs": [
+      "Gene information",
+      "gene_info_region"
+    ]
+  },
+  {
+    "objectID": "api/gene_info_region.html#parameters",
+    "href": "api/gene_info_region.html#parameters",
+    "title": "gene_info_region",
+    "section": "",
+    "text": "chrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’",
+    "crumbs": [
+      "Gene information",
+      "gene_info_region"
+    ]
+  },
+  {
+    "objectID": "api/go_info.html",
+    "href": "api/go_info.html",
+    "title": "go_info",
+    "section": "",
+    "text": "geneinfo.go_info(terms)\nDisplays HML formatted information about the given GO terms.\n\n\n\nterms : str | List[str]\n\nA GO term or list of GO terms to display information for.",
+    "crumbs": [
+      "Gene ontology",
+      "go_info"
+    ]
+  },
+  {
+    "objectID": "api/go_info.html#parameters",
+    "href": "api/go_info.html#parameters",
+    "title": "go_info",
+    "section": "",
+    "text": "terms : str | List[str]\n\nA GO term or list of GO terms to display information for.",
+    "crumbs": [
+      "Gene ontology",
+      "go_info"
+    ]
+  },
+  {
+    "objectID": "api/tabulate_genes.html",
+    "href": "api/tabulate_genes.html",
+    "title": "tabulate_genes",
+    "section": "",
+    "text": "tabulate_genes\ngeneinfo.tabulate_genes(words, ncols=None)",
+    "crumbs": [
+      "Utilities",
+      "tabulate_genes"
+    ]
+  },
+  {
+    "objectID": "api/foo.html",
+    "href": "api/foo.html",
+    "title": "foo",
+    "section": "",
+    "text": "geneinfo.foo(x, y=1)\nThe sum of two numbers.\n\n\n\nx : int\n\nThe first number\n\ny :  = 1\n\nThe second number.\n\n\n\n\n\n\n : int\n\nSum of two numbers.\n\n\n\n\n\nscripts.bar : “Printing hello world”."
+  },
+  {
+    "objectID": "api/foo.html#parameters",
+    "href": "api/foo.html#parameters",
+    "title": "foo",
+    "section": "",
+    "text": "x : int\n\nThe first number\n\ny :  = 1\n\nThe second number."
+  },
+  {
+    "objectID": "api/foo.html#returns",
+    "href": "api/foo.html#returns",
+    "title": "foo",
+    "section": "",
+    "text": ": int\n\nSum of two numbers."
+  },
+  {
+    "objectID": "api/foo.html#see-also",
+    "href": "api/foo.html#see-also",
+    "title": "foo",
+    "section": "",
+    "text": "scripts.bar : “Printing hello world”."
+  },
+  {
+    "objectID": "api/index.html",
+    "href": "api/index.html",
+    "title": "Function reference",
+    "section": "",
+    "text": "gene_info\nDisplays HTML formatted information about one or more genes.\n\n\nget_genes_region\nGets gene structure information for genes in a chromosomal region.\n\n\nget_genes_region_dataframe\nGets gene structure information for genes in a chromosomal region in the form\n\n\ngene_info_region\nDisplays HTML formatted information about genes in a chromosomal region.\n\n\nensembl_id\nGet ENSEMBL ID for some gene identifier\n\n\nhgcn_symbol\nGet HGCN gene symbol for some gene identifier\n\n\nensembl2symbol\nConverts ENSEMBL ID to gene HGCN gene symbol\n\n\nensembl2ncbi\nConverts ENSEMBL ID to gene NCBI ID\n\n\nmygene_get_gene_info\n\n\n\nensembl_get_gene_info_by_symbol\n\n\n\nensembl_get_genes_region\n\n\n\nmap_interval\n\n\n\n\n\n\n\n\n\n\ngene_plot\nPlots gene ideograms for a chromosomal region and returns axes for\n\n\nchrom_ideogram\nPlots an ideogram of the human chromosomes with annotations.\n\n\n\n\n\n\n\n\n\nshow_string_network\nDisplay STRING network for a list of genes.\n\n\nstring_network_table\nRetrieves STRING network for a list of genes and returns it as a pandas.DataFrame.\n\n\n\n\n\n\n\n\n\ngo_info\nDisplays HML formatted information about the given GO terms.\n\n\ngo_enrichment\nRuns a GO enrichment analysis.\n\n\nshow_go_dag_enrichment_results\nDisplays a GO enrichment analysis results.\n\n\ngo_term2name\nConverts a GO term to its name.\n\n\ngo_name2term\nConverts a GO term name to its term.\n\n\nsymbols_protein_coding\nList of protein coding gene symbols for a given taxonomy id.\n\n\ndownload_ncbi_associations\n\n\n\ndownload_and_move_go_basic_obo\n\n\n\ndownload_data\n\n\n\nget_terms_for_go_regex\nGet GO terms for terms matching a regular expression in their description string.\n\n\nget_genes_for_go_regex\nGet gene information for GO terms matching a regular expression in their description string.\n\n\nget_genes_for_go_terms\nGet gene information for genes with specified GO terms.\n\n\ngo_annotation_table\nGO annotations for a given taxonomy id as a pandas.DataFrame.\n\n\ngene_annotation_table\nGene annotations for a given taxonomy id as a pandas.DataFrame.\n\n\nget_go_terms_for_genes\nGet the union of GO terms for a list of genes.\n\n\nshow_go_dag_for_terms\nDisplay GO graph for a list of GO terms.\n\n\nshow_go_dag_for_gene\nDisplays GO graph for a given gene.\n\n\nshow_go_evidence_codes\nDisplay list of GO evidence categories and their codes.\n\n\n\n\n\n\n\n\n\nemail\nRegisters your email address for Entrez queries. Thay way, NCBI will contect you\n\n\ntabulate_genes",
+    "crumbs": [
+      "Library reference",
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "api/index.html#gene-information",
+    "href": "api/index.html#gene-information",
+    "title": "Function reference",
+    "section": "",
+    "text": "gene_info\nDisplays HTML formatted information about one or more genes.\n\n\nget_genes_region\nGets gene structure information for genes in a chromosomal region.\n\n\nget_genes_region_dataframe\nGets gene structure information for genes in a chromosomal region in the form\n\n\ngene_info_region\nDisplays HTML formatted information about genes in a chromosomal region.\n\n\nensembl_id\nGet ENSEMBL ID for some gene identifier\n\n\nhgcn_symbol\nGet HGCN gene symbol for some gene identifier\n\n\nensembl2symbol\nConverts ENSEMBL ID to gene HGCN gene symbol\n\n\nensembl2ncbi\nConverts ENSEMBL ID to gene NCBI ID\n\n\nmygene_get_gene_info\n\n\n\nensembl_get_gene_info_by_symbol\n\n\n\nensembl_get_genes_region\n\n\n\nmap_interval",
+    "crumbs": [
+      "Library reference",
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "api/index.html#gene-plots",
+    "href": "api/index.html#gene-plots",
+    "title": "Function reference",
+    "section": "",
+    "text": "gene_plot\nPlots gene ideograms for a chromosomal region and returns axes for\n\n\nchrom_ideogram\nPlots an ideogram of the human chromosomes with annotations.",
+    "crumbs": [
+      "Library reference",
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "api/index.html#string-networks",
+    "href": "api/index.html#string-networks",
+    "title": "Function reference",
+    "section": "",
+    "text": "show_string_network\nDisplay STRING network for a list of genes.\n\n\nstring_network_table\nRetrieves STRING network for a list of genes and returns it as a pandas.DataFrame.",
+    "crumbs": [
+      "Library reference",
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "api/index.html#gene-ontology",
+    "href": "api/index.html#gene-ontology",
+    "title": "Function reference",
+    "section": "",
+    "text": "go_info\nDisplays HML formatted information about the given GO terms.\n\n\ngo_enrichment\nRuns a GO enrichment analysis.\n\n\nshow_go_dag_enrichment_results\nDisplays a GO enrichment analysis results.\n\n\ngo_term2name\nConverts a GO term to its name.\n\n\ngo_name2term\nConverts a GO term name to its term.\n\n\nsymbols_protein_coding\nList of protein coding gene symbols for a given taxonomy id.\n\n\ndownload_ncbi_associations\n\n\n\ndownload_and_move_go_basic_obo\n\n\n\ndownload_data\n\n\n\nget_terms_for_go_regex\nGet GO terms for terms matching a regular expression in their description string.\n\n\nget_genes_for_go_regex\nGet gene information for GO terms matching a regular expression in their description string.\n\n\nget_genes_for_go_terms\nGet gene information for genes with specified GO terms.\n\n\ngo_annotation_table\nGO annotations for a given taxonomy id as a pandas.DataFrame.\n\n\ngene_annotation_table\nGene annotations for a given taxonomy id as a pandas.DataFrame.\n\n\nget_go_terms_for_genes\nGet the union of GO terms for a list of genes.\n\n\nshow_go_dag_for_terms\nDisplay GO graph for a list of GO terms.\n\n\nshow_go_dag_for_gene\nDisplays GO graph for a given gene.\n\n\nshow_go_evidence_codes\nDisplay list of GO evidence categories and their codes.",
+    "crumbs": [
+      "Library reference",
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "api/index.html#utilities",
+    "href": "api/index.html#utilities",
+    "title": "Function reference",
+    "section": "",
+    "text": "email\nRegisters your email address for Entrez queries. Thay way, NCBI will contect you\n\n\ntabulate_genes",
+    "crumbs": [
+      "Library reference",
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "api/email.html",
+    "href": "api/email.html",
+    "title": "email",
+    "section": "",
+    "text": "geneinfo.email(email_address)\nRegisters your email address for Entrez queries. Thay way, NCBI will contect you before closeing your connection if you are making too many queries.\n\n\n\nemail_address : str\n\nyour email address",
+    "crumbs": [
+      "Utilities",
+      "email"
+    ]
+  },
+  {
+    "objectID": "api/email.html#parameters",
+    "href": "api/email.html#parameters",
+    "title": "email",
+    "section": "",
+    "text": "email_address : str\n\nyour email address",
+    "crumbs": [
+      "Utilities",
+      "email"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region_dataframe.html",
+    "href": "api/get_genes_region_dataframe.html",
+    "title": "get_genes_region_dataframe",
+    "section": "",
+    "text": "geneinfo.get_genes_region_dataframe(\n    chrom\n    window_start\n    window_end\n    assembly='GRCh38'\n    db='ncbiRefSeq'\n)\nGets gene structure information for genes in a chromosomal region in the form of a pandas.DataFrame.\n\n\n\nchrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : optional = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : optional = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’\n\n\n\n\n\n\n : pd.DataFrame\n\npandas.DataFrame with the following colunms: - name: gene name - start: gene start - end: gene end - strand: gene strand",
+    "crumbs": [
+      "Gene information",
+      "get_genes_region_dataframe"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region_dataframe.html#parameters",
+    "href": "api/get_genes_region_dataframe.html#parameters",
+    "title": "get_genes_region_dataframe",
+    "section": "",
+    "text": "chrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : optional = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : optional = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’",
+    "crumbs": [
+      "Gene information",
+      "get_genes_region_dataframe"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region_dataframe.html#returns",
+    "href": "api/get_genes_region_dataframe.html#returns",
+    "title": "get_genes_region_dataframe",
+    "section": "",
+    "text": ": pd.DataFrame\n\npandas.DataFrame with the following colunms: - name: gene name - start: gene start - end: gene end - strand: gene strand",
+    "crumbs": [
+      "Gene information",
+      "get_genes_region_dataframe"
+    ]
+  },
+  {
+    "objectID": "api/download_ncbi_associations.html",
+    "href": "api/download_ncbi_associations.html",
+    "title": "download_ncbi_associations",
+    "section": "",
+    "text": "download_ncbi_associations\ngeneinfo.download_ncbi_associations(prt=sys.stdout)",
+    "crumbs": [
+      "Gene ontology",
+      "download_ncbi_associations"
+    ]
+  },
+  {
+    "objectID": "api/map_interval.html",
+    "href": "api/map_interval.html",
+    "title": "map_interval",
+    "section": "",
+    "text": "map_interval\ngeneinfo.map_interval(\n    chrom\n    start\n    end\n    strand\n    map_from\n    map_to\n    species='homo_sapiens'\n)",
+    "crumbs": [
+      "Gene information",
+      "map_interval"
+    ]
+  },
+  {
+    "objectID": "api/show_go_dag_enrichment_results.html",
+    "href": "api/show_go_dag_enrichment_results.html",
+    "title": "show_go_dag_enrichment_results",
+    "section": "",
+    "text": "geneinfo.show_go_dag_enrichment_results(results)\nDisplays a GO enrichment analysis results.\n\n\n\nresults : Union[List[GOEnrichmentRecord] | pd.Series]\n\nList or Series of GO result objejcts from obj column in the pd.DataFrame returned by go_enrichment().\n\n\n\n\n\ngene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']\nresults = go_enrichment(gene_list, taxid=9606, alpha=0.05)\nshow_go_dag_enrichment_results(results.obj)",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_dag_enrichment_results"
+    ]
+  },
+  {
+    "objectID": "api/show_go_dag_enrichment_results.html#parameters",
+    "href": "api/show_go_dag_enrichment_results.html#parameters",
+    "title": "show_go_dag_enrichment_results",
+    "section": "",
+    "text": "results : Union[List[GOEnrichmentRecord] | pd.Series]\n\nList or Series of GO result objejcts from obj column in the pd.DataFrame returned by go_enrichment().",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_dag_enrichment_results"
+    ]
+  },
+  {
+    "objectID": "api/show_go_dag_enrichment_results.html#examples",
+    "href": "api/show_go_dag_enrichment_results.html#examples",
+    "title": "show_go_dag_enrichment_results",
+    "section": "",
+    "text": "gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']\nresults = go_enrichment(gene_list, taxid=9606, alpha=0.05)\nshow_go_dag_enrichment_results(results.obj)",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_dag_enrichment_results"
+    ]
+  },
+  {
+    "objectID": "api/get_terms_for_go_regex.html",
+    "href": "api/get_terms_for_go_regex.html",
+    "title": "get_terms_for_go_regex",
+    "section": "",
+    "text": "geneinfo.get_terms_for_go_regex(regex, taxid=9606, add_children=False)\nGet GO terms for terms matching a regular expression in their description string.\n\n\n\nregex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\nadd_children : bool = False\n\nAdd GO terms nested under GO terms found, by default False\n\n\n\n\n\n\n : list\n\nList of GO terms.",
+    "crumbs": [
+      "Gene ontology",
+      "get_terms_for_go_regex"
+    ]
+  },
+  {
+    "objectID": "api/get_terms_for_go_regex.html#parameters",
+    "href": "api/get_terms_for_go_regex.html#parameters",
+    "title": "get_terms_for_go_regex",
+    "section": "",
+    "text": "regex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\nadd_children : bool = False\n\nAdd GO terms nested under GO terms found, by default False",
+    "crumbs": [
+      "Gene ontology",
+      "get_terms_for_go_regex"
+    ]
+  },
+  {
+    "objectID": "api/get_terms_for_go_regex.html#returns",
+    "href": "api/get_terms_for_go_regex.html#returns",
+    "title": "get_terms_for_go_regex",
+    "section": "",
+    "text": ": list\n\nList of GO terms.",
+    "crumbs": [
+      "Gene ontology",
+      "get_terms_for_go_regex"
+    ]
+  },
+  {
+    "objectID": "api/show_go_evidence_codes.html",
+    "href": "api/show_go_evidence_codes.html",
+    "title": "show_go_evidence_codes",
+    "section": "",
+    "text": "show_go_evidence_codes\ngeneinfo.show_go_evidence_codes()\nDisplay list of GO evidence categories and their codes.",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_evidence_codes"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_for_go_terms.html",
+    "href": "api/get_genes_for_go_terms.html",
+    "title": "get_genes_for_go_terms",
+    "section": "",
+    "text": "geneinfo.get_genes_for_go_terms(terms, taxid=9606)\nGet gene information for genes with specified GO terms.\n\n\n\nterms : \n\nList of GO terms\n\ntaxid :  = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\n\n\n\n\n\n : pd.DataFrame\n\nColumns: symbol, name, chrom, start, end.",
+    "crumbs": [
+      "Gene ontology",
+      "get_genes_for_go_terms"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_for_go_terms.html#parameters",
+    "href": "api/get_genes_for_go_terms.html#parameters",
+    "title": "get_genes_for_go_terms",
+    "section": "",
+    "text": "terms : \n\nList of GO terms\n\ntaxid :  = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)",
+    "crumbs": [
+      "Gene ontology",
+      "get_genes_for_go_terms"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_for_go_terms.html#returns",
+    "href": "api/get_genes_for_go_terms.html#returns",
+    "title": "get_genes_for_go_terms",
+    "section": "",
+    "text": ": pd.DataFrame\n\nColumns: symbol, name, chrom, start, end.",
+    "crumbs": [
+      "Gene ontology",
+      "get_genes_for_go_terms"
+    ]
+  },
+  {
+    "objectID": "api/go_name2term.html",
+    "href": "api/go_name2term.html",
+    "title": "go_name2term",
+    "section": "",
+    "text": "geneinfo.go_name2term(name)\nConverts a GO term name to its term.\n\n\n\nname : str\n\nGO term name\n\n\n\n\n\n\n : str\n\nGO term.",
+    "crumbs": [
+      "Gene ontology",
+      "go_name2term"
+    ]
+  },
+  {
+    "objectID": "api/go_name2term.html#parameters",
+    "href": "api/go_name2term.html#parameters",
+    "title": "go_name2term",
+    "section": "",
+    "text": "name : str\n\nGO term name",
+    "crumbs": [
+      "Gene ontology",
+      "go_name2term"
+    ]
+  },
+  {
+    "objectID": "api/go_name2term.html#returns",
+    "href": "api/go_name2term.html#returns",
+    "title": "go_name2term",
+    "section": "",
+    "text": ": str\n\nGO term.",
+    "crumbs": [
+      "Gene ontology",
+      "go_name2term"
+    ]
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "geneinfo",
+    "section": "",
+    "text": "geneinfo\nBlah blah…"
+  },
+  {
+    "objectID": "api/mygene_get_gene_info.html",
+    "href": "api/mygene_get_gene_info.html",
+    "title": "mygene_get_gene_info",
+    "section": "",
+    "text": "mygene_get_gene_info\ngeneinfo.mygene_get_gene_info(\n    query\n    species='human'\n    scopes='hgnc'\n    fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'\n)",
+    "crumbs": [
+      "Gene information",
+      "mygene_get_gene_info"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_for_go_regex.html",
+    "href": "api/get_genes_for_go_regex.html",
+    "title": "get_genes_for_go_regex",
+    "section": "",
+    "text": "geneinfo.get_genes_for_go_regex(regex, taxid=9606)\nGet gene information for GO terms matching a regular expression in their description string.\n\n\n\nregex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\n\n\n\n\n\n : pd.DataFrame\n\nColumns: symbol, name, chrom, start, end.",
+    "crumbs": [
+      "Gene ontology",
+      "get_genes_for_go_regex"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_for_go_regex.html#parameters",
+    "href": "api/get_genes_for_go_regex.html#parameters",
+    "title": "get_genes_for_go_regex",
+    "section": "",
+    "text": "regex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)",
+    "crumbs": [
+      "Gene ontology",
+      "get_genes_for_go_regex"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_for_go_regex.html#returns",
+    "href": "api/get_genes_for_go_regex.html#returns",
+    "title": "get_genes_for_go_regex",
+    "section": "",
+    "text": ": pd.DataFrame\n\nColumns: symbol, name, chrom, start, end.",
+    "crumbs": [
+      "Gene ontology",
+      "get_genes_for_go_regex"
+    ]
+  },
+  {
+    "objectID": "api/go_annotation_table.html",
+    "href": "api/go_annotation_table.html",
+    "title": "go_annotation_table",
+    "section": "",
+    "text": "geneinfo.go_annotation_table(taxid=9606)\nGO annotations for a given taxonomy id as a pandas.DataFrame.\n\n\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human\n\n\n\n\n\n\n : pd.DataFrame\n\nGO annotations for the specified taxonomy id.",
+    "crumbs": [
+      "Gene ontology",
+      "go_annotation_table"
+    ]
+  },
+  {
+    "objectID": "api/go_annotation_table.html#parameters",
+    "href": "api/go_annotation_table.html#parameters",
+    "title": "go_annotation_table",
+    "section": "",
+    "text": "taxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human",
+    "crumbs": [
+      "Gene ontology",
+      "go_annotation_table"
+    ]
+  },
+  {
+    "objectID": "api/go_annotation_table.html#returns",
+    "href": "api/go_annotation_table.html#returns",
+    "title": "go_annotation_table",
+    "section": "",
+    "text": ": pd.DataFrame\n\nGO annotations for the specified taxonomy id.",
+    "crumbs": [
+      "Gene ontology",
+      "go_annotation_table"
+    ]
+  },
+  {
+    "objectID": "api/chrom_ideogram.html",
+    "href": "api/chrom_ideogram.html",
+    "title": "chrom_ideogram",
+    "section": "",
+    "text": "geneinfo.chrom_ideogram(\n    annot\n    vspace=0.1\n    min_visible_width=200000\n    figsize=(10, 10)\n    assembly='hg38'\n)\nPlots an ideogram of the human chromosomes with annotations.\n\n\n\nannot : list\n\nList of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.\n\nvspace : float = 0.1\n\nVertical space between ideograms, by default 0.1\n\nmin_visible_width : int = 200000\n\nMinum display width of very short annotations, by default 200000\n\nfigsize : tuple = (10, 10)\n\nFigure size, by default (10,10)\n\nassembly : str = 'hg38'\n\nHuman genome assembly, by default ‘hg38’\n\n\n\n\n\nannot = [\n    ('chr1', 20000000, 20100000, 'red', 'TP53'),\n    ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), \n    ('chr8', 90000000, 110000000)\n]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)\n\n# black ticks every 10Mb on chrX\nannot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)",
+    "crumbs": [
+      "Gene plots",
+      "chrom_ideogram"
+    ]
+  },
+  {
+    "objectID": "api/chrom_ideogram.html#parameters",
+    "href": "api/chrom_ideogram.html#parameters",
+    "title": "chrom_ideogram",
+    "section": "",
+    "text": "annot : list\n\nList of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.\n\nvspace : float = 0.1\n\nVertical space between ideograms, by default 0.1\n\nmin_visible_width : int = 200000\n\nMinum display width of very short annotations, by default 200000\n\nfigsize : tuple = (10, 10)\n\nFigure size, by default (10,10)\n\nassembly : str = 'hg38'\n\nHuman genome assembly, by default ‘hg38’",
+    "crumbs": [
+      "Gene plots",
+      "chrom_ideogram"
+    ]
+  },
+  {
+    "objectID": "api/chrom_ideogram.html#examples",
+    "href": "api/chrom_ideogram.html#examples",
+    "title": "chrom_ideogram",
+    "section": "",
+    "text": "annot = [\n    ('chr1', 20000000, 20100000, 'red', 'TP53'),\n    ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), \n    ('chr8', 90000000, 110000000)\n]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)\n\n# black ticks every 10Mb on chrX\nannot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)",
+    "crumbs": [
+      "Gene plots",
+      "chrom_ideogram"
+    ]
+  },
+  {
+    "objectID": "api/show_string_network.html",
+    "href": "api/show_string_network.html",
+    "title": "show_string_network",
+    "section": "",
+    "text": "geneinfo.show_string_network(my_genes, nodes=10)\nDisplay STRING network for a list of genes.\n\n\n\nmy_genes : list\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10",
+    "crumbs": [
+      "STRING networks",
+      "show_string_network"
+    ]
+  },
+  {
+    "objectID": "api/show_string_network.html#parameters",
+    "href": "api/show_string_network.html#parameters",
+    "title": "show_string_network",
+    "section": "",
+    "text": "my_genes : list\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10",
+    "crumbs": [
+      "STRING networks",
+      "show_string_network"
+    ]
+  },
+  {
+    "objectID": "api/gene_plot.html",
+    "href": "api/gene_plot.html",
+    "title": "gene_plot",
+    "section": "",
+    "text": "geneinfo.gene_plot(\n    chrom\n    start\n    end\n    assembly\n    highlight=[]\n    db='ncbiRefSeq'\n    collapse_splice_var=True\n    hard_limits=False\n    exact_exons=False\n    figsize=None\n    aspect=1\n    despine=False\n    clip_on=True\n    gene_density=60\n    font_size=None\n    return_axes=1\n)\nPlots gene ideograms for a chromosomal region and returns axes for plotting along the same chromosome coordinates.\n\n\n\nchrom : str\n\nChromosome identifier\n\nstart : str\n\nStart of region\n\nend : str\n\nEnd of region (end base not included)\n\nassembly : str\n\nGenome assembly identifier\n\nhighlight : list = []\n\nList or dictionary of genes to highlight on gene plot (see Examples), by default []\n\ndb : str = 'ncbiRefSeq'\n\nDatabase to search, by default ‘ncbiRefSeq’\n\ncollapse_splice_var : bool = True\n\nWhether to collapse splice variants into a single string of exons, by default True\n\nhard_limits : bool = False\n\nWhether to truncate plot in the middle of a gene, by default False so that genes are fully plotted.\n\nexact_exons : bool = False\n\nWhether to plot exon coordinates exatly, by default False so that exons are plotted as a minimum width.\n\nfigsize : tuple = None\n\nFigure size specifified as a (width, height) tuple, by default None honering the default matplotlib settings.\n\naspect : float = 1\n\nSize of gene plot height relative to the total height of the other axes, by default 1\n\ndespine : bool = False\n\nWheher to remove top and right frame borders, by default False\n\nclip_on : bool = True\n\nArgument passed to axes.Text, by default True\n\ngene_density : float = 60\n\nControls the density of gene ideograms in the plot, by default 60\n\nfont_size : int = None\n\nGene label font size, by default None, in which case it is calculated based on the region size.\n\nreturn_axes : int = 1\n\nThe number of vertically stacked axes to return for plotting over the gene plot, by default 1\n\n\n\n\n\n\n : Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]]\n\nA sing axes or a list of axes for plotting data over the gene plot.\n\n\n\n\n\nimport geneinfo as gi\n# Set email for Entrez queries\ngi.email('your@email.com')\n\n# Highlight a single gene\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight='TP53')\nax.scatter(chrom_coordinates, values)\n\n# Highlight multiple genes\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight=['TP53', 'BRCA1'])\nax.scatter(chrom_coordinates, values)\n\n# Highlight genes with custom styles\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})\nax.scatter(chrom_coordinates, values)\n\n# Muli-gene highlight with custom styles\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 'BRCA1': {'color': 'red'}})\nax.scatter(chrom_coordinates, values)\n\n# Multipel axes for plotting over gene plot\naxes = gene_plot('chr1', 1000000, 2000000, 'hg38', return_axes=2)\nax1, ax2 = axes\nax1.scatter(chrom_coordinates, values1)\nax2.scatter(chrom_coordinates, values2)\n\n# Custom figure size and aspect ratio\naxes = gene_plot('chr1', 1000000, 2000000, 'hg38', figsize=(10, 4), aspect=0.5)\nax1, ax2 = axes\nax1.scatter(chrom_coordinates, values1)\nax2.scatter(chrom_coordinates, values2)",
+    "crumbs": [
+      "Gene plots",
+      "gene_plot"
+    ]
+  },
+  {
+    "objectID": "api/gene_plot.html#parameters",
+    "href": "api/gene_plot.html#parameters",
+    "title": "gene_plot",
+    "section": "",
+    "text": "chrom : str\n\nChromosome identifier\n\nstart : str\n\nStart of region\n\nend : str\n\nEnd of region (end base not included)\n\nassembly : str\n\nGenome assembly identifier\n\nhighlight : list = []\n\nList or dictionary of genes to highlight on gene plot (see Examples), by default []\n\ndb : str = 'ncbiRefSeq'\n\nDatabase to search, by default ‘ncbiRefSeq’\n\ncollapse_splice_var : bool = True\n\nWhether to collapse splice variants into a single string of exons, by default True\n\nhard_limits : bool = False\n\nWhether to truncate plot in the middle of a gene, by default False so that genes are fully plotted.\n\nexact_exons : bool = False\n\nWhether to plot exon coordinates exatly, by default False so that exons are plotted as a minimum width.\n\nfigsize : tuple = None\n\nFigure size specifified as a (width, height) tuple, by default None honering the default matplotlib settings.\n\naspect : float = 1\n\nSize of gene plot height relative to the total height of the other axes, by default 1\n\ndespine : bool = False\n\nWheher to remove top and right frame borders, by default False\n\nclip_on : bool = True\n\nArgument passed to axes.Text, by default True\n\ngene_density : float = 60\n\nControls the density of gene ideograms in the plot, by default 60\n\nfont_size : int = None\n\nGene label font size, by default None, in which case it is calculated based on the region size.\n\nreturn_axes : int = 1\n\nThe number of vertically stacked axes to return for plotting over the gene plot, by default 1",
+    "crumbs": [
+      "Gene plots",
+      "gene_plot"
+    ]
+  },
+  {
+    "objectID": "api/gene_plot.html#returns",
+    "href": "api/gene_plot.html#returns",
+    "title": "gene_plot",
+    "section": "",
+    "text": ": Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]]\n\nA sing axes or a list of axes for plotting data over the gene plot.",
+    "crumbs": [
+      "Gene plots",
+      "gene_plot"
+    ]
+  },
+  {
+    "objectID": "api/gene_plot.html#examples",
+    "href": "api/gene_plot.html#examples",
+    "title": "gene_plot",
+    "section": "",
+    "text": "import geneinfo as gi\n# Set email for Entrez queries\ngi.email('your@email.com')\n\n# Highlight a single gene\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight='TP53')\nax.scatter(chrom_coordinates, values)\n\n# Highlight multiple genes\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight=['TP53', 'BRCA1'])\nax.scatter(chrom_coordinates, values)\n\n# Highlight genes with custom styles\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})\nax.scatter(chrom_coordinates, values)\n\n# Muli-gene highlight with custom styles\nax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 'BRCA1': {'color': 'red'}})\nax.scatter(chrom_coordinates, values)\n\n# Multipel axes for plotting over gene plot\naxes = gene_plot('chr1', 1000000, 2000000, 'hg38', return_axes=2)\nax1, ax2 = axes\nax1.scatter(chrom_coordinates, values1)\nax2.scatter(chrom_coordinates, values2)\n\n# Custom figure size and aspect ratio\naxes = gene_plot('chr1', 1000000, 2000000, 'hg38', figsize=(10, 4), aspect=0.5)\nax1, ax2 = axes\nax1.scatter(chrom_coordinates, values1)\nax2.scatter(chrom_coordinates, values2)",
+    "crumbs": [
+      "Gene plots",
+      "gene_plot"
+    ]
+  },
+  {
+    "objectID": "api/symbols_protein_coding.html",
+    "href": "api/symbols_protein_coding.html",
+    "title": "symbols_protein_coding",
+    "section": "",
+    "text": "geneinfo.symbols_protein_coding(taxid=9606)\nList of protein coding gene symbols for a given taxonomy id.\n\n\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\n\n\n\n\n\n : list\n\nList of gene symbols.",
+    "crumbs": [
+      "Gene ontology",
+      "symbols_protein_coding"
+    ]
+  },
+  {
+    "objectID": "api/symbols_protein_coding.html#parameters",
+    "href": "api/symbols_protein_coding.html#parameters",
+    "title": "symbols_protein_coding",
+    "section": "",
+    "text": "taxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)",
+    "crumbs": [
+      "Gene ontology",
+      "symbols_protein_coding"
+    ]
+  },
+  {
+    "objectID": "api/symbols_protein_coding.html#returns",
+    "href": "api/symbols_protein_coding.html#returns",
+    "title": "symbols_protein_coding",
+    "section": "",
+    "text": ": list\n\nList of gene symbols.",
+    "crumbs": [
+      "Gene ontology",
+      "symbols_protein_coding"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2symbol.html",
+    "href": "api/ensembl2symbol.html",
+    "title": "ensembl2symbol",
+    "section": "",
+    "text": "geneinfo.ensembl2symbol(ensembl_id)\nConverts ENSEMBL ID to gene HGCN gene symbol\n\n\n\nensembl_id : str\n\nENSEMBL ID\n\n\n\n\n\n\n : str\n\nHGCN gene symbol\n\n\n\n\n\n\n: [](~geneinfo.NotFound)\n\nRaises exception if no HGCN gene symbol can be found.",
+    "crumbs": [
+      "Gene information",
+      "ensembl2symbol"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2symbol.html#parameters",
+    "href": "api/ensembl2symbol.html#parameters",
+    "title": "ensembl2symbol",
+    "section": "",
+    "text": "ensembl_id : str\n\nENSEMBL ID",
+    "crumbs": [
+      "Gene information",
+      "ensembl2symbol"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2symbol.html#returns",
+    "href": "api/ensembl2symbol.html#returns",
+    "title": "ensembl2symbol",
+    "section": "",
+    "text": ": str\n\nHGCN gene symbol",
+    "crumbs": [
+      "Gene information",
+      "ensembl2symbol"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2symbol.html#raises",
+    "href": "api/ensembl2symbol.html#raises",
+    "title": "ensembl2symbol",
+    "section": "",
+    "text": ": [](~geneinfo.NotFound)\n\nRaises exception if no HGCN gene symbol can be found.",
+    "crumbs": [
+      "Gene information",
+      "ensembl2symbol"
+    ]
+  },
+  {
+    "objectID": "api/go_enrichment.html",
+    "href": "api/go_enrichment.html",
+    "title": "go_enrichment",
+    "section": "",
+    "text": "geneinfo.go_enrichment(\n    gene_list\n    taxid=9606\n    background_chrom=None\n    background_genes=None\n    terms=None\n    list_study_genes=False\n    alpha=0.05\n)\nRuns a GO enrichment analysis.\n\n\n\ngene_list : list\n\nList of gene symbols or NCBI gene ids.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human\n\nbackground_chrom : str = None\n\nName of chromosome, by default None. Limits analysis to this named chromosome\n\nbackground_genes : list = None\n\nList of genes for use as background in GO enrichment analysis, by default None\n\nterms : list = None\n\nList of GO terms for use as background in GO enrichment analysis, by default None\n\nlist_study_genes : list = False\n\nWhether to include lists of genes responsible for enrichment for each identified GO term, by default False\n\nalpha : float = 0.05\n\nFalse discovery significance cut-off, by default 0.05\n\n\n\n\n\n\n : pd.DataFrame\n\npd.DataFrame with columns: - namespace: (BP, MF, CC) - term_id: GO term - e/p: enrichment or depletion - pval_uncorr: uncorrected p-value - p_fdr_bh: Benjamini-Hochberg corrected p-value - ratio: ratio of study genes in GO term - bg_ratio: ratio of background genes in GO term - obj: GOEnrichmentRecord object\n\n\n\n\n\ngene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']\nresults = go_enrichment(gene_list, taxid=9606, alpha=0.05)\nshow_go_dag_enrichment_results(results.obj)",
+    "crumbs": [
+      "Gene ontology",
+      "go_enrichment"
+    ]
+  },
+  {
+    "objectID": "api/go_enrichment.html#parameters",
+    "href": "api/go_enrichment.html#parameters",
+    "title": "go_enrichment",
+    "section": "",
+    "text": "gene_list : list\n\nList of gene symbols or NCBI gene ids.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human\n\nbackground_chrom : str = None\n\nName of chromosome, by default None. Limits analysis to this named chromosome\n\nbackground_genes : list = None\n\nList of genes for use as background in GO enrichment analysis, by default None\n\nterms : list = None\n\nList of GO terms for use as background in GO enrichment analysis, by default None\n\nlist_study_genes : list = False\n\nWhether to include lists of genes responsible for enrichment for each identified GO term, by default False\n\nalpha : float = 0.05\n\nFalse discovery significance cut-off, by default 0.05",
+    "crumbs": [
+      "Gene ontology",
+      "go_enrichment"
+    ]
+  },
+  {
+    "objectID": "api/go_enrichment.html#returns",
+    "href": "api/go_enrichment.html#returns",
+    "title": "go_enrichment",
+    "section": "",
+    "text": ": pd.DataFrame\n\npd.DataFrame with columns: - namespace: (BP, MF, CC) - term_id: GO term - e/p: enrichment or depletion - pval_uncorr: uncorrected p-value - p_fdr_bh: Benjamini-Hochberg corrected p-value - ratio: ratio of study genes in GO term - bg_ratio: ratio of background genes in GO term - obj: GOEnrichmentRecord object",
+    "crumbs": [
+      "Gene ontology",
+      "go_enrichment"
+    ]
+  },
+  {
+    "objectID": "api/go_enrichment.html#examples",
+    "href": "api/go_enrichment.html#examples",
+    "title": "go_enrichment",
+    "section": "",
+    "text": "gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']\nresults = go_enrichment(gene_list, taxid=9606, alpha=0.05)\nshow_go_dag_enrichment_results(results.obj)",
+    "crumbs": [
+      "Gene ontology",
+      "go_enrichment"
+    ]
+  },
+  {
+    "objectID": "api/download_and_move_go_basic_obo.html",
+    "href": "api/download_and_move_go_basic_obo.html",
+    "title": "download_and_move_go_basic_obo",
+    "section": "",
+    "text": "download_and_move_go_basic_obo\ngeneinfo.download_and_move_go_basic_obo(prt=sys.stdout)",
+    "crumbs": [
+      "Gene ontology",
+      "download_and_move_go_basic_obo"
+    ]
+  },
+  {
+    "objectID": "api/get_go_terms_for_genes.html",
+    "href": "api/get_go_terms_for_genes.html",
+    "title": "get_go_terms_for_genes",
+    "section": "",
+    "text": "geneinfo.get_go_terms_for_genes(genes, taxid=9606, evidence=None)\nGet the union of GO terms for a list of genes.\n\n\n\ngenes : str\n\ndescription\n\ntaxid : int = 9606\n\ndescription, by default 9606\n\nevidence : list = None\n\ndescription, by default None\n\n\n\n\n\n\n : list\n\nGo terms for the specified genes.",
+    "crumbs": [
+      "Gene ontology",
+      "get_go_terms_for_genes"
+    ]
+  },
+  {
+    "objectID": "api/get_go_terms_for_genes.html#parameters",
+    "href": "api/get_go_terms_for_genes.html#parameters",
+    "title": "get_go_terms_for_genes",
+    "section": "",
+    "text": "genes : str\n\ndescription\n\ntaxid : int = 9606\n\ndescription, by default 9606\n\nevidence : list = None\n\ndescription, by default None",
+    "crumbs": [
+      "Gene ontology",
+      "get_go_terms_for_genes"
+    ]
+  },
+  {
+    "objectID": "api/get_go_terms_for_genes.html#returns",
+    "href": "api/get_go_terms_for_genes.html#returns",
+    "title": "get_go_terms_for_genes",
+    "section": "",
+    "text": ": list\n\nGo terms for the specified genes.",
+    "crumbs": [
+      "Gene ontology",
+      "get_go_terms_for_genes"
+    ]
+  },
+  {
+    "objectID": "api/ensembl_get_genes_region.html",
+    "href": "api/ensembl_get_genes_region.html",
+    "title": "ensembl_get_genes_region",
+    "section": "",
+    "text": "ensembl_get_genes_region\ngeneinfo.ensembl_get_genes_region(\n    chrom\n    window_start\n    window_end\n    assembly=None\n    species='homo_sapiens'\n)",
+    "crumbs": [
+      "Gene information",
+      "ensembl_get_genes_region"
+    ]
+  },
+  {
+    "objectID": "api/show_go_dag_for_terms.html",
+    "href": "api/show_go_dag_for_terms.html",
+    "title": "show_go_dag_for_terms",
+    "section": "",
+    "text": "geneinfo.show_go_dag_for_terms(terms, add_relationships=True)\nDisplay GO graph for a list of GO terms.\n\n\n\nterms : Union[list | pd.Series]\n\nGo terms\n\nadd_relationships : bool = True\n\nAdd edges representing relationships between GO terms, by default True",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_dag_for_terms"
+    ]
+  },
+  {
+    "objectID": "api/show_go_dag_for_terms.html#parameters",
+    "href": "api/show_go_dag_for_terms.html#parameters",
+    "title": "show_go_dag_for_terms",
+    "section": "",
+    "text": "terms : Union[list | pd.Series]\n\nGo terms\n\nadd_relationships : bool = True\n\nAdd edges representing relationships between GO terms, by default True",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_dag_for_terms"
+    ]
+  },
+  {
+    "objectID": "api/bar.baz.html",
+    "href": "api/bar.baz.html",
+    "title": "bar.baz",
+    "section": "",
+    "text": "bar.baz\ngeneinfo.bar.baz()"
+  },
+  {
+    "objectID": "api/string_network_table.html",
+    "href": "api/string_network_table.html",
+    "title": "string_network_table",
+    "section": "",
+    "text": "geneinfo.string_network_table(my_genes, nodes=10)\nRetrieves STRING network for a list of genes and returns it as a pandas.DataFrame.\n\n\n\nmy_genes : list\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10\n\n\n\n\n\n\n : pd.DataFrame\n\nSTRING network information for specified genes.",
+    "crumbs": [
+      "STRING networks",
+      "string_network_table"
+    ]
+  },
+  {
+    "objectID": "api/string_network_table.html#parameters",
+    "href": "api/string_network_table.html#parameters",
+    "title": "string_network_table",
+    "section": "",
+    "text": "my_genes : list\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10",
+    "crumbs": [
+      "STRING networks",
+      "string_network_table"
+    ]
+  },
+  {
+    "objectID": "api/string_network_table.html#returns",
+    "href": "api/string_network_table.html#returns",
+    "title": "string_network_table",
+    "section": "",
+    "text": ": pd.DataFrame\n\nSTRING network information for specified genes.",
+    "crumbs": [
+      "STRING networks",
+      "string_network_table"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2ncbi.html",
+    "href": "api/ensembl2ncbi.html",
+    "title": "ensembl2ncbi",
+    "section": "",
+    "text": "geneinfo.ensembl2ncbi(ensembl_id)\nConverts ENSEMBL ID to gene NCBI ID\n\n\n\nensembl_id : \n\nENSEMBL ID\n\n\n\n\n\n\n : \n\nNCBI ID\n\n\n\n\n\n\n: [](~geneinfo.NotFound)\n\nRaises exception if no NCBI ID can be found.",
+    "crumbs": [
+      "Gene information",
+      "ensembl2ncbi"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2ncbi.html#parameters",
+    "href": "api/ensembl2ncbi.html#parameters",
+    "title": "ensembl2ncbi",
+    "section": "",
+    "text": "ensembl_id : \n\nENSEMBL ID",
+    "crumbs": [
+      "Gene information",
+      "ensembl2ncbi"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2ncbi.html#returns",
+    "href": "api/ensembl2ncbi.html#returns",
+    "title": "ensembl2ncbi",
+    "section": "",
+    "text": ": \n\nNCBI ID",
+    "crumbs": [
+      "Gene information",
+      "ensembl2ncbi"
+    ]
+  },
+  {
+    "objectID": "api/ensembl2ncbi.html#raises",
+    "href": "api/ensembl2ncbi.html#raises",
+    "title": "ensembl2ncbi",
+    "section": "",
+    "text": ": [](~geneinfo.NotFound)\n\nRaises exception if no NCBI ID can be found.",
+    "crumbs": [
+      "Gene information",
+      "ensembl2ncbi"
+    ]
+  },
+  {
+    "objectID": "api/hgcn_symbol.html",
+    "href": "api/hgcn_symbol.html",
+    "title": "hgcn_symbol",
+    "section": "",
+    "text": "geneinfo.hgcn_symbol(name)\nGet HGCN gene symbol for some gene identifier\n\n\n\nname : str\n\nGene identifier\n\n\n\n\n\n\n : str\n\nHGCN gene symbol\n\n\n\n\n\n\n: [](~geneinfo.NotFound)\n\nRaises exception if no HGCN gene symbol can be found.",
+    "crumbs": [
+      "Gene information",
+      "hgcn_symbol"
+    ]
+  },
+  {
+    "objectID": "api/hgcn_symbol.html#parameters",
+    "href": "api/hgcn_symbol.html#parameters",
+    "title": "hgcn_symbol",
+    "section": "",
+    "text": "name : str\n\nGene identifier",
+    "crumbs": [
+      "Gene information",
+      "hgcn_symbol"
+    ]
+  },
+  {
+    "objectID": "api/hgcn_symbol.html#returns",
+    "href": "api/hgcn_symbol.html#returns",
+    "title": "hgcn_symbol",
+    "section": "",
+    "text": ": str\n\nHGCN gene symbol",
+    "crumbs": [
+      "Gene information",
+      "hgcn_symbol"
+    ]
+  },
+  {
+    "objectID": "api/hgcn_symbol.html#raises",
+    "href": "api/hgcn_symbol.html#raises",
+    "title": "hgcn_symbol",
+    "section": "",
+    "text": ": [](~geneinfo.NotFound)\n\nRaises exception if no HGCN gene symbol can be found.",
+    "crumbs": [
+      "Gene information",
+      "hgcn_symbol"
+    ]
+  },
+  {
+    "objectID": "api/show_go_dag_for_gene.html",
+    "href": "api/show_go_dag_for_gene.html",
+    "title": "show_go_dag_for_gene",
+    "section": "",
+    "text": "geneinfo.show_go_dag_for_gene(\n    gene\n    taxid=9606\n    evidence=None\n    add_relationships=True\n)\nDisplays GO graph for a given gene.\n\n\n\ngene : str\n\nGene symbol\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human\n\nevidence : list = None\n\nLimiting list of evidence categories to include, by default None. See show_go_evidence_codes().\n\nadd_relationships : bool = True\n\nAdd edges representing relationships between GO terms, by default True",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_dag_for_gene"
+    ]
+  },
+  {
+    "objectID": "api/show_go_dag_for_gene.html#parameters",
+    "href": "api/show_go_dag_for_gene.html#parameters",
+    "title": "show_go_dag_for_gene",
+    "section": "",
+    "text": "gene : str\n\nGene symbol\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606, which is human\n\nevidence : list = None\n\nLimiting list of evidence categories to include, by default None. See show_go_evidence_codes().\n\nadd_relationships : bool = True\n\nAdd edges representing relationships between GO terms, by default True",
+    "crumbs": [
+      "Gene ontology",
+      "show_go_dag_for_gene"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region.html",
+    "href": "api/get_genes_region.html",
+    "title": "get_genes_region",
+    "section": "",
+    "text": "geneinfo.get_genes_region(\n    chrom\n    window_start\n    window_end\n    assembly='GRCh38'\n    db='ncbiRefSeq'\n)\nGets gene structure information for genes in a chromosomal region.\n\n\n\nchrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’\n\n\n\n\n\n\n : list\n\nList of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - gene strand - list of exons (start, end)",
+    "crumbs": [
+      "Gene information",
+      "get_genes_region"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region.html#parameters",
+    "href": "api/get_genes_region.html#parameters",
+    "title": "get_genes_region",
+    "section": "",
+    "text": "chrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’",
+    "crumbs": [
+      "Gene information",
+      "get_genes_region"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region.html#returns",
+    "href": "api/get_genes_region.html#returns",
+    "title": "get_genes_region",
+    "section": "",
+    "text": ": list\n\nList of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - gene strand - list of exons (start, end)",
+    "crumbs": [
+      "Gene information",
+      "get_genes_region"
+    ]
+  },
+  {
+    "objectID": "api/go_term2name.html",
+    "href": "api/go_term2name.html",
+    "title": "go_term2name",
+    "section": "",
+    "text": "geneinfo.go_term2name(term)\nConverts a GO term to its name.\n\n\n\nterm : str\n\nGO term\n\n\n\n\n\n\n : str\n\nGO term name.",
+    "crumbs": [
+      "Gene ontology",
+      "go_term2name"
+    ]
+  },
+  {
+    "objectID": "api/go_term2name.html#parameters",
+    "href": "api/go_term2name.html#parameters",
+    "title": "go_term2name",
+    "section": "",
+    "text": "term : str\n\nGO term",
+    "crumbs": [
+      "Gene ontology",
+      "go_term2name"
+    ]
+  },
+  {
+    "objectID": "api/go_term2name.html#returns",
+    "href": "api/go_term2name.html#returns",
+    "title": "go_term2name",
+    "section": "",
+    "text": ": str\n\nGO term name.",
+    "crumbs": [
+      "Gene ontology",
+      "go_term2name"
+    ]
+  },
+  {
+    "objectID": "pages/advanced.html",
+    "href": "pages/advanced.html",
+    "title": "Advanced use",
+    "section": "",
+    "text": "Proin sodales neque erat, varius cursus diam tincidunt sit amet. Etiam scelerisque fringilla nisl eu venenatis. Donec sem ipsum, scelerisque ac venenatis quis, hendrerit vel mauris. Praesent semper erat sit amet purus condimentum, sit amet auctor mi feugiat. In hac habitasse platea dictumst. Nunc ac mauris in massa feugiat bibendum id in dui. Praesent accumsan urna at lacinia aliquet. Proin ultricies eu est quis pellentesque. In vel lorem at nisl rhoncus cursus eu quis mi. In eu rutrum ante, quis placerat justo. Etiam euismod nibh nibh, sed elementum nunc imperdiet in. Praesent gravida nunc vel odio lacinia, at tempus nisl placerat. Aenean id ipsum sed est sagittis hendrerit non in tortor.\nNulla eget cursus ipsum. Vivamus porttitor leo diam, sed volutpat lectus facilisis sit amet. Maecenas et pulvinar metus. Ut at dignissim tellus. In in tincidunt elit. Etiam vulputate lobortis arcu, vel faucibus leo lobortis ac. Aliquam erat volutpat. In interdum orci ac est euismod euismod. Nunc eleifend tristique risus, at lacinia odio commodo in. Sed aliquet ligula odio, sed tempor neque ultricies sit amet.",
+    "crumbs": [
+      "Advanced",
+      "Advanced use"
+    ]
+  },
+  {
+    "objectID": "pages/advanced.html#some-topic",
+    "href": "pages/advanced.html#some-topic",
+    "title": "Advanced use",
+    "section": "Some topic",
+    "text": "Some topic\nFinding Python objects to document involves two pieces of configuration:\n\nthe package name.\na list of objects for content.\n\nquartodoc can look up a wide variety of objects, including functions, modules, classes, attributes, and methods:",
+    "crumbs": [
+      "Advanced",
+      "Advanced use"
+    ]
+  },
+  {
+    "objectID": "pages/basics.html",
+    "href": "pages/basics.html",
+    "title": "Basic use",
+    "section": "",
+    "text": "Praesent ornare dolor turpis, sed tincidunt nisl pretium eget. Curabitur sed iaculis ex, vitae tristique sapien. Quisque nec ex dolor. Quisque ut nisl a libero egestas molestie. Nulla vel porta nulla. Phasellus id pretium arcu. Etiam sed mi pellentesque nibh scelerisque elementum sed at urna. Ut congue molestie nibh, sit amet pretium ligula consectetur eu. Integer consectetur augue justo, at placerat erat posuere at. Ut elementum urna lectus, vitae bibendum neque pulvinar quis. Suspendisse vulputate cursus eros id maximus. Duis pulvinar facilisis massa, et condimentum est viverra congue. Curabitur ornare convallis nisl. Morbi dictum scelerisque turpis quis pellentesque. Etiam lectus risus, luctus lobortis risus ut, rutrum vulputate justo. Nulla facilisi.\nDuis urna urna, pellentesque eu urna ut, malesuada bibendum dolor. Suspendisse potenti. Vivamus ornare, arcu quis molestie ultrices, magna est accumsan augue, auctor vulputate erat quam quis neque. Nullam scelerisque odio vel ultricies facilisis. Ut porta arcu non magna sagittis lacinia. Cras ornare vulputate lectus a tristique. Pellentesque ac arcu congue, rhoncus mi id, dignissim ligula.",
+    "crumbs": [
+      "Basics",
+      "Basic use"
+    ]
+  },
+  {
+    "objectID": "pages/basics.html#some-topic",
+    "href": "pages/basics.html#some-topic",
+    "title": "Basic use",
+    "section": "Some topic",
+    "text": "Some topic\nFinding Python objects to document involves two pieces of configuration:\n\nthe package name.\na list of objects for content.\n\nquartodoc can look up a wide variety of objects, including functions, modules, classes, attributes, and methods:",
+    "crumbs": [
+      "Basics",
+      "Basic use"
+    ]
+  }
+]
