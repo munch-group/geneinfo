@@ -1,0 +1,1 @@
+Sitemap: https://munch-group.github.io/geneinfo/sitemap.xml
