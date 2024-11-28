@@ -1,0 +1,23 @@
+# get_genes_for_go_regex { #geneinfo.get_genes_for_go_regex }
+
+```python
+geneinfo.get_genes_for_go_regex(regex, taxid=9606)
+```
+
+Get gene information for GO terms matching a regular expression in their description string.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**regex**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Regular expression to match GO term descriptions.
+
+<code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
+
+:   NCBI taxonomy ID, by default 9606 (which is human)
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[pd](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Columns: symbol, name, chrom, start, end.

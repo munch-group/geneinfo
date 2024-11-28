@@ -1,0 +1,59 @@
+# go_enrichment { #geneinfo.go_enrichment }
+
+```python
+geneinfo.go_enrichment(
+    gene_list
+    taxid=9606
+    background_chrom=None
+    background_genes=None
+    terms=None
+    list_study_genes=False
+    alpha=0.05
+)
+```
+
+Runs a GO enrichment analysis.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**gene_list**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+
+:   List of gene symbols or NCBI gene ids.
+
+<code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
+
+:   NCBI taxonomy ID, by default 9606, which is human
+
+<code>[**background_chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Name of chromosome, by default None. Limits analysis to this named chromosome
+
+<code>[**background_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   List of genes for use as background in GO enrichment analysis, by default None
+
+<code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   List of GO terms for use as background in GO enrichment analysis, by default None
+
+<code>[**list_study_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Whether to include lists of genes responsible for enrichment for each identified GO term, by default False
+
+<code>[**alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.05]{.parameter-default}</code>
+
+:   False discovery significance cut-off, by default 0.05
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[pd](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   pd.DataFrame with columns:  - namespace: (BP, MF, CC) - term_id: GO term - e/p: enrichment or depletion - pval_uncorr: uncorrected p-value - p_fdr_bh: Benjamini-Hochberg corrected p-value - ratio: ratio of study genes in GO term - bg_ratio: ratio of background genes in GO term - obj: GOEnrichmentRecord object
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
+show_go_dag_enrichment_results(results.obj)
+```

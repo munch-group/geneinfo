@@ -1,0 +1,30 @@
+# show_go_dag_for_gene { #geneinfo.show_go_dag_for_gene }
+
+```python
+geneinfo.show_go_dag_for_gene(
+    gene
+    taxid=9606
+    evidence=None
+    add_relationships=True
+)
+```
+
+Displays GO graph for a given gene.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**gene**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Gene symbol
+
+<code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
+
+:   NCBI taxonomy ID, by default 9606, which is human
+
+<code>[**evidence**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Limiting list of evidence categories to include, by default None. See `show_go_evidence_codes()`.
+
+<code>[**add_relationships**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Add edges representing relationships between GO terms, by default True

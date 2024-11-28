@@ -1,0 +1,21 @@
+# show_go_dag_enrichment_results { #geneinfo.show_go_dag_enrichment_results }
+
+```python
+geneinfo.show_go_dag_enrichment_results(results)
+```
+
+Displays a GO enrichment analysis results.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**results**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[List](`typing.List`)\[[GOEnrichmentRecord](`goatools.go_enrichment.GOEnrichmentRecord`)\] \| [pd](`pandas`).[Series](`pandas.Series`)\]]{.parameter-annotation}</code>
+
+:   List or Series of GO result objejcts from `obj` column in the  `pd.DataFrame` returned by `go_enrichment()`.
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
+show_go_dag_enrichment_results(results.obj)
+```

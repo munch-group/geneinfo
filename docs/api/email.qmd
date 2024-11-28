@@ -1,0 +1,14 @@
+# email { #geneinfo.email }
+
+```python
+geneinfo.email(email_address)
+```
+
+Registers your email address for Entrez queries. Thay way, NCBI will contect you
+before closeing your connection if you are making too many queries.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**email_address**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   your email address

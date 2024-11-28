@@ -1,0 +1,25 @@
+# ensembl2ncbi { #geneinfo.ensembl2ncbi }
+
+```python
+geneinfo.ensembl2ncbi(ensembl_id)
+```
+
+Converts ENSEMBL ID to gene NCBI ID
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**ensembl_id**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+
+:   ENSEMBL ID
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+
+:   NCBI ID
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [\[\](`~geneinfo.NotFound`)]{.parameter-annotation}</code>
+
+:   Raises exception if no NCBI ID can be found.

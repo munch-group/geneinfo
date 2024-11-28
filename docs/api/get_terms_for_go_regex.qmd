@@ -1,0 +1,27 @@
+# get_terms_for_go_regex { #geneinfo.get_terms_for_go_regex }
+
+```python
+geneinfo.get_terms_for_go_regex(regex, taxid=9606, add_children=False)
+```
+
+Get GO terms for terms matching a regular expression in their description string.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**regex**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Regular expression to match GO term descriptions.
+
+<code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
+
+:   NCBI taxonomy ID, by default 9606 (which is human)
+
+<code>[**add_children**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Add GO terms nested under GO terms found, by default False
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+
+:   List of GO terms.

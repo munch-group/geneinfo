@@ -1,0 +1,17 @@
+# show_string_network { #geneinfo.show_string_network }
+
+```python
+geneinfo.show_string_network(my_genes, nodes=10)
+```
+
+Display STRING network for a list of genes.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**my_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+
+:   List of gene symbols
+
+<code>[**nodes**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [10]{.parameter-default}</code>
+
+:   Number of nodes to show, by default 10

@@ -1,0 +1,23 @@
+# string_network_table { #geneinfo.string_network_table }
+
+```python
+geneinfo.string_network_table(my_genes, nodes=10)
+```
+
+Retrieves STRING network for a list of genes and returns it as a pandas.DataFrame.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**my_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+
+:   List of gene symbols
+
+<code>[**nodes**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [10]{.parameter-default}</code>
+
+:   Number of nodes to show, by default 10
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[pd](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   STRING network information for specified genes.

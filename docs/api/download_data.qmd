@@ -1,0 +1,6 @@
+# download_data { #geneinfo.download_data }
+
+```python
+geneinfo.download_data(prt=sys.stdout)
+```
+

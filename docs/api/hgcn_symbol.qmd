@@ -1,0 +1,25 @@
+# hgcn_symbol { #geneinfo.hgcn_symbol }
+
+```python
+geneinfo.hgcn_symbol(name)
+```
+
+Get HGCN gene symbol for some gene identifier
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Gene identifier
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   HGCN gene symbol
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [\[\](`~geneinfo.NotFound`)]{.parameter-annotation}</code>
+
+:   Raises exception if no HGCN gene symbol can be found.

@@ -1,0 +1,11 @@
+# mygene_get_gene_info { #geneinfo.mygene_get_gene_info }
+
+```python
+geneinfo.mygene_get_gene_info(
+    query
+    species='human'
+    scopes='hgnc'
+    fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'
+)
+```
+

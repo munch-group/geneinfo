@@ -1,0 +1,19 @@
+# go_name2term { #geneinfo.go_name2term }
+
+```python
+geneinfo.go_name2term(name)
+```
+
+Converts a GO term name to its term.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   GO term name
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   GO term.

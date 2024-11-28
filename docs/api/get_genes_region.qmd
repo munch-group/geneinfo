@@ -1,0 +1,41 @@
+# get_genes_region { #geneinfo.get_genes_region }
+
+```python
+geneinfo.get_genes_region(
+    chrom
+    window_start
+    window_end
+    assembly='GRCh38'
+    db='ncbiRefSeq'
+)
+```
+
+Gets gene structure information for genes in a chromosomal region.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Chromosome identifier
+
+<code>[**window_start**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation}</code>
+
+:   Start of region
+
+<code>[**window_end**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation}</code>
+
+:   End of region (end base not included)
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'GRCh38\']{.parameter-default}</code>
+
+:   Genome assembly, by default 'GRCh38'
+
+<code>[**db**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'ncbiRefSeq\']{.parameter-default}</code>
+
+:   Database, by default 'ncbiRefSeq'
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+
+:   List of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - gene strand - list of exons (start, end)

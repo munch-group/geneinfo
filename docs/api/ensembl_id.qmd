@@ -1,0 +1,29 @@
+# ensembl_id { #geneinfo.ensembl_id }
+
+```python
+geneinfo.ensembl_id(name, species='homo_sapiens')
+```
+
+Get ENSEMBL ID for some gene identifier
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Gene identifier
+
+<code>[**species**]{.parameter-name} [:]{.parameter-annotation-sep} [ optional]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'homo_sapiens\']{.parameter-default}</code>
+
+:   Species, by default 'homo_sapiens'
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   ENSEMBL ID
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [\[\](`~geneinfo.NotFound`)]{.parameter-annotation}</code>
+
+:   Raises exception if no ENSEMBL ID can be found.

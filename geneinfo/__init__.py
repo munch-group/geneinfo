@@ -36,7 +36,6 @@ from goatools.anno.genetogo_reader import Gene2GoReader
 from goatools.go_search import GoSearch
 from goatools.godag.go_tasks import CurNHigher
 from goatools.godag_plot import plot_gos, plot_goid2goobj, plot_results, plt_goea_results
-
 import requests
 from Bio import Entrez
 
@@ -57,7 +56,12 @@ with open(os.path.join(os.path.dirname(__file__), 'params/CACHE.pickle'), 'rb') 
     CACHE = pickle.load(f)
 
 class NotFound(Exception):
-    """query returned no result"""
+    """
+    Exception raised when a gene or other entity is not found.
+
+    Exception : 
+        Does nothing. Just a return value placeholder.
+    """
     pass
 
 
@@ -118,7 +122,7 @@ def ensembl_id(name:str, species:str='homo_sapiens') -> str:
 
     Raises
     ------
-    NotFound
+    [](`~geneinfo.NotFound`)
         Raises exception if no ENSEMBL ID can be found.
     """
     server = "https://rest.ensembl.org"
@@ -144,11 +148,11 @@ def ensembl2symbol(ensembl_id:str) -> str:
     Returns
     -------
     :
-       HGCN gene symbol
+        HGCN gene symbol
 
     Raises
     ------
-    NotFound
+    [](`~geneinfo.NotFound`)
         Raises exception if no HGCN gene symbol can be found.
     """
     server = "https://rest.ensembl.org"
@@ -178,7 +182,7 @@ def hgcn_symbol(name:str) -> str:
 
     Raises
     ------
-    NotFound
+    [](`~geneinfo.NotFound`)
         Raises exception if no HGCN gene symbol can be found.
     """ 
     if type(name) is list or type(name) is set:
@@ -198,11 +202,11 @@ def ensembl2ncbi(ensembl_id):
     Returns
     -------
     :
-       NCBI ID
+        NCBI ID
 
     Raises
     ------
-    NotFound
+    [](`~geneinfo.NotFound`)
         Raises exception if no NCBI ID can be found.
     """
     server = "https://rest.ensembl.org"
@@ -1000,7 +1004,7 @@ def symbols_protein_coding(taxid:int=9606) -> list:
     Returns
     -------
     :
-       List of gene symbols.
+        List of gene symbols.
     """
     fetch_background_genes(taxid=taxid)
     symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'

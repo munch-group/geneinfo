@@ -1,0 +1,19 @@
+# symbols_protein_coding { #geneinfo.symbols_protein_coding }
+
+```python
+geneinfo.symbols_protein_coding(taxid=9606)
+```
+
+List of protein coding gene symbols for a given taxonomy id.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
+
+:   NCBI taxonomy ID, by default 9606 (which is human)
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+
+:   List of gene symbols.

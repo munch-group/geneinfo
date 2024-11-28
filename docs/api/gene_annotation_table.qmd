@@ -1,0 +1,19 @@
+# gene_annotation_table { #geneinfo.gene_annotation_table }
+
+```python
+geneinfo.gene_annotation_table(taxid=9606)
+```
+
+Gene annotations for a given taxonomy id as a pandas.DataFrame.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
+
+:   NCBI taxonomy ID, by default 9606, which is human
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[pd](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Gene annotations for the specified taxonomy id.

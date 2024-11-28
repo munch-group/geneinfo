@@ -1,0 +1,17 @@
+# show_go_dag_for_terms { #geneinfo.show_go_dag_for_terms }
+
+```python
+geneinfo.show_go_dag_for_terms(terms, add_relationships=True)
+```
+
+Display GO graph for a list of GO terms.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[list](`list`) \| [pd](`pandas`).[Series](`pandas.Series`)\]]{.parameter-annotation}</code>
+
+:   Go terms
+
+<code>[**add_relationships**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Add edges representing relationships between GO terms, by default True

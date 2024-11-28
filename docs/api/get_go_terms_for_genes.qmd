@@ -1,0 +1,27 @@
+# get_go_terms_for_genes { #geneinfo.get_go_terms_for_genes }
+
+```python
+geneinfo.get_go_terms_for_genes(genes, taxid=9606, evidence=None)
+```
+
+Get the union of GO terms for a list of genes.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   _description_
+
+<code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
+
+:   _description_, by default 9606
+
+<code>[**evidence**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   _description_, by default None
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+
+:   Go terms for the specified genes.

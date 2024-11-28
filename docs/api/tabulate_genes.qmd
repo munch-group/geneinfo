@@ -1,0 +1,6 @@
+# tabulate_genes { #geneinfo.tabulate_genes }
+
+```python
+geneinfo.tabulate_genes(words, ncols=None)
+```
+

@@ -1,0 +1,25 @@
+# ensembl2symbol { #geneinfo.ensembl2symbol }
+
+```python
+geneinfo.ensembl2symbol(ensembl_id)
+```
+
+Converts ENSEMBL ID to gene HGCN gene symbol    
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**ensembl_id**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   ENSEMBL ID
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   HGCN gene symbol
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [\[\](`~geneinfo.NotFound`)]{.parameter-annotation}</code>
+
+:   Raises exception if no HGCN gene symbol can be found.

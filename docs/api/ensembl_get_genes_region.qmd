@@ -1,0 +1,12 @@
+# ensembl_get_genes_region { #geneinfo.ensembl_get_genes_region }
+
+```python
+geneinfo.ensembl_get_genes_region(
+    chrom
+    window_start
+    window_end
+    assembly=None
+    species='homo_sapiens'
+)
+```
+
