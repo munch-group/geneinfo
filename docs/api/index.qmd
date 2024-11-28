@@ -2,22 +2,13 @@
 
 ## Gene information
 
+These functions...
 
 
 | | |
 | --- | --- |
 | [gene_info](gene_info.qmd#geneinfo.gene_info) | Displays HTML formatted information about one or more genes. |
-| [get_genes_region](get_genes_region.qmd#geneinfo.get_genes_region) | Gets gene structure information for genes in a chromosomal region. |
-| [get_genes_region_dataframe](get_genes_region_dataframe.qmd#geneinfo.get_genes_region_dataframe) | Gets gene structure information for genes in a chromosomal region in the form |
 | [gene_info_region](gene_info_region.qmd#geneinfo.gene_info_region) | Displays HTML formatted information about genes in a chromosomal region. |
-| [ensembl_id](ensembl_id.qmd#geneinfo.ensembl_id) | Get ENSEMBL ID for some gene identifier |
-| [hgcn_symbol](hgcn_symbol.qmd#geneinfo.hgcn_symbol) | Get HGCN gene symbol for some gene identifier |
-| [ensembl2symbol](ensembl2symbol.qmd#geneinfo.ensembl2symbol) | Converts ENSEMBL ID to gene HGCN gene symbol     |
-| [ensembl2ncbi](ensembl2ncbi.qmd#geneinfo.ensembl2ncbi) | Converts ENSEMBL ID to gene NCBI ID |
-| [mygene_get_gene_info](mygene_get_gene_info.qmd#geneinfo.mygene_get_gene_info) |  |
-| [ensembl_get_gene_info_by_symbol](ensembl_get_gene_info_by_symbol.qmd#geneinfo.ensembl_get_gene_info_by_symbol) |  |
-| [ensembl_get_genes_region](ensembl_get_genes_region.qmd#geneinfo.ensembl_get_genes_region) |  |
-| [map_interval](map_interval.qmd#geneinfo.map_interval) |  |
 
 ## Gene plots
 
@@ -28,6 +19,26 @@
 | [gene_plot](gene_plot.qmd#geneinfo.gene_plot) | Plots gene ideograms for a chromosomal region and returns axes for  |
 | [chrom_ideogram](chrom_ideogram.qmd#geneinfo.chrom_ideogram) | Plots an ideogram of the human chromosomes with annotations. |
 
+## Gene coordinates
+
+
+
+| | |
+| --- | --- |
+| [get_genes_region](get_genes_region.qmd#geneinfo.get_genes_region) | Gets gene structure information for genes in a chromosomal region. |
+| [get_genes_region_dataframe](get_genes_region_dataframe.qmd#geneinfo.get_genes_region_dataframe) | Gets gene structure information for genes in a chromosomal region in the form |
+
+## ID conversion
+
+
+
+| | |
+| --- | --- |
+| [ensembl_id](ensembl_id.qmd#geneinfo.ensembl_id) | Get ENSEMBL ID for some gene identifier |
+| [hgcn_symbol](hgcn_symbol.qmd#geneinfo.hgcn_symbol) | Get HGCN gene symbol for some gene identifier |
+| [ensembl2symbol](ensembl2symbol.qmd#geneinfo.ensembl2symbol) | Converts ENSEMBL ID to gene HGCN gene symbol     |
+| [ensembl2ncbi](ensembl2ncbi.qmd#geneinfo.ensembl2ncbi) | Converts ENSEMBL ID to gene NCBI ID |
+
 ## STRING networks
 
 
@@ -37,30 +48,49 @@
 | [show_string_network](show_string_network.qmd#geneinfo.show_string_network) | Display STRING network for a list of genes. |
 | [string_network_table](string_network_table.qmd#geneinfo.string_network_table) | Retrieves STRING network for a list of genes and returns it as a pandas.DataFrame. |
 
-## Gene ontology
+## GO information
 
 
 
 | | |
 | --- | --- |
 | [go_info](go_info.qmd#geneinfo.go_info) | Displays HML formatted information about the given GO terms. |
-| [go_enrichment](go_enrichment.qmd#geneinfo.go_enrichment) | Runs a GO enrichment analysis. |
-| [show_go_dag_enrichment_results](show_go_dag_enrichment_results.qmd#geneinfo.show_go_dag_enrichment_results) | Displays a GO enrichment analysis results. |
 | [go_term2name](go_term2name.qmd#geneinfo.go_term2name) | Converts a GO term to its name. |
 | [go_name2term](go_name2term.qmd#geneinfo.go_name2term) | Converts a GO term name to its term. |
-| [symbols_protein_coding](symbols_protein_coding.qmd#geneinfo.symbols_protein_coding) | List of protein coding gene symbols for a given taxonomy id. |
-| [download_ncbi_associations](download_ncbi_associations.qmd#geneinfo.download_ncbi_associations) |  |
-| [download_and_move_go_basic_obo](download_and_move_go_basic_obo.qmd#geneinfo.download_and_move_go_basic_obo) |  |
-| [download_data](download_data.qmd#geneinfo.download_data) |  |
+| [get_go_terms_for_genes](get_go_terms_for_genes.qmd#geneinfo.get_go_terms_for_genes) | Get the union of GO terms for a list of genes. |
 | [get_terms_for_go_regex](get_terms_for_go_regex.qmd#geneinfo.get_terms_for_go_regex) | Get GO terms for terms matching a regular expression in their description string. |
+| [go_annotation_table](go_annotation_table.qmd#geneinfo.go_annotation_table) | GO annotations for a given taxonomy id as a pandas.DataFrame. |
+
+## GO enrichment
+
+
+
+| | |
+| --- | --- |
+| [go_enrichment](go_enrichment.qmd#geneinfo.go_enrichment) | Runs a GO enrichment analysis. |
+| [show_go_evidence_codes](show_go_evidence_codes.qmd#geneinfo.show_go_evidence_codes) | Display list of GO evidence categories and their codes. |
+| [symbols_protein_coding](symbols_protein_coding.qmd#geneinfo.symbols_protein_coding) | List of protein coding gene symbols for a given taxonomy id. |
+| [download_data](download_data.qmd#geneinfo.download_data) |  |
+
+## GO graphs
+
+
+
+| | |
+| --- | --- |
+| [show_go_dag_for_gene](show_go_dag_for_gene.qmd#geneinfo.show_go_dag_for_gene) | Displays GO graph for a given gene. |
+| [show_go_dag_for_terms](show_go_dag_for_terms.qmd#geneinfo.show_go_dag_for_terms) | Display GO graph for a list of GO terms. |
+| [show_go_dag_enrichment_results](show_go_dag_enrichment_results.qmd#geneinfo.show_go_dag_enrichment_results) | Displays a GO enrichment analysis results. |
+
+## Gene annotation
+
+
+
+| | |
+| --- | --- |
 | [get_genes_for_go_regex](get_genes_for_go_regex.qmd#geneinfo.get_genes_for_go_regex) | Get gene information for GO terms matching a regular expression in their description string. |
 | [get_genes_for_go_terms](get_genes_for_go_terms.qmd#geneinfo.get_genes_for_go_terms) | Get gene information for genes with specified GO terms. |
-| [go_annotation_table](go_annotation_table.qmd#geneinfo.go_annotation_table) | GO annotations for a given taxonomy id as a pandas.DataFrame. |
 | [gene_annotation_table](gene_annotation_table.qmd#geneinfo.gene_annotation_table) | Gene annotations for a given taxonomy id as a pandas.DataFrame. |
-| [get_go_terms_for_genes](get_go_terms_for_genes.qmd#geneinfo.get_go_terms_for_genes) | Get the union of GO terms for a list of genes. |
-| [show_go_dag_for_terms](show_go_dag_for_terms.qmd#geneinfo.show_go_dag_for_terms) | Display GO graph for a list of GO terms. |
-| [show_go_dag_for_gene](show_go_dag_for_gene.qmd#geneinfo.show_go_dag_for_gene) | Displays GO graph for a given gene. |
-| [show_go_evidence_codes](show_go_evidence_codes.qmd#geneinfo.show_go_evidence_codes) | Display list of GO evidence categories and their codes. |
 
 ## Utilities
 

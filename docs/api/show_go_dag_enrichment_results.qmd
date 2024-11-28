@@ -8,7 +8,7 @@ Displays a GO enrichment analysis results.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**results**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[List](`typing.List`)\[[GOEnrichmentRecord](`goatools.go_enrichment.GOEnrichmentRecord`)\] \| [pd](`pandas`).[Series](`pandas.Series`)\]]{.parameter-annotation}</code>
+<code>[**results**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[List](`typing.List`)\[[GOEnrichmentRecord](`goatools.go_enrichment.GOEnrichmentRecord`)\], [pd](`pandas`).[Series](`pandas.Series`)\]]{.parameter-annotation}</code>
 
 :   List or Series of GO result objejcts from `obj` column in the  `pd.DataFrame` returned by `go_enrichment()`.
 

@@ -94,7 +94,7 @@ plotting along the same chromosome coordinates.
 
 <code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[matplotlib](`matplotlib`).[axes](`matplotlib.axes`).[Axes](`matplotlib.axes.Axes`), [List](`typing.List`)\[[matplotlib](`matplotlib`).[axes](`matplotlib.axes`).[Axes](`matplotlib.axes.Axes`)\]\]]{.parameter-annotation}</code>
 
-:   A sing axes or a list of axes for plotting data over the gene plot.
+:   A single axes or a list of axes for plotting data over the gene plot.
 
 ## Examples {.doc-section .doc-section-examples}
 

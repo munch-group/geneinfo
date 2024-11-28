@@ -8,7 +8,7 @@ Display GO graph for a list of GO terms.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[list](`list`) \| [pd](`pandas`).[Series](`pandas.Series`)\]]{.parameter-annotation}</code>
+<code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[list](`list`), [pd](`pandas`).[Series](`pandas.Series`)\]]{.parameter-annotation}</code>
 
 :   Go terms
 

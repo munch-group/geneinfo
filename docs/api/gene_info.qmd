@@ -8,7 +8,7 @@ Displays HTML formatted information about one or more genes.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**query**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| [List](`typing.List`)\[[str](`str`)\]]{.parameter-annotation}</code>
+<code>[**query**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[str](`str`), [List](`typing.List`)\[[str](`str`)\]\]]{.parameter-annotation}</code>
 
 :   Gene symbol or list of gene symbols
 

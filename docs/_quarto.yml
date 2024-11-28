@@ -85,7 +85,8 @@ quartodoc:
 
   sections:
     - title: Gene information
-      desc: ""
+      desc: |
+        These functions...
       contents:
         - gene_info
         - gene_info_region
@@ -95,6 +96,8 @@ quartodoc:
         - gene_plot
         - chrom_ideogram
     - title: Gene coordinates
+      desc: ""
+      contents:
         - get_genes_region
         - get_genes_region_dataframe
     - title: ID conversion

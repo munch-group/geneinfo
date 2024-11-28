@@ -8,6 +8,6 @@ Displays HML formatted information about the given GO terms.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| [List](`typing.List`)\[[str](`str`)\]]{.parameter-annotation}</code>
+<code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[str](`str`), [List](`typing.List`)\[[str](`str`)\]\]]{.parameter-annotation}</code>
 
 :   A GO term or list of GO terms to display information for.

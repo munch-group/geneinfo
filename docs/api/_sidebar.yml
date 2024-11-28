@@ -4,46 +4,50 @@ website:
     - api/index.qmd
     - contents:
       - api/gene_info.qmd
-      - api/get_genes_region.qmd
-      - api/get_genes_region_dataframe.qmd
       - api/gene_info_region.qmd
-      - api/ensembl_id.qmd
-      - api/hgcn_symbol.qmd
-      - api/ensembl2symbol.qmd
-      - api/ensembl2ncbi.qmd
-      - api/mygene_get_gene_info.qmd
-      - api/ensembl_get_gene_info_by_symbol.qmd
-      - api/ensembl_get_genes_region.qmd
-      - api/map_interval.qmd
       section: Gene information
     - contents:
       - api/gene_plot.qmd
       - api/chrom_ideogram.qmd
       section: Gene plots
     - contents:
+      - api/get_genes_region.qmd
+      - api/get_genes_region_dataframe.qmd
+      section: Gene coordinates
+    - contents:
+      - api/ensembl_id.qmd
+      - api/hgcn_symbol.qmd
+      - api/ensembl2symbol.qmd
+      - api/ensembl2ncbi.qmd
+      section: ID conversion
+    - contents:
       - api/show_string_network.qmd
       - api/string_network_table.qmd
       section: STRING networks
     - contents:
       - api/go_info.qmd
-      - api/go_enrichment.qmd
-      - api/show_go_dag_enrichment_results.qmd
       - api/go_term2name.qmd
       - api/go_name2term.qmd
-      - api/symbols_protein_coding.qmd
-      - api/download_ncbi_associations.qmd
-      - api/download_and_move_go_basic_obo.qmd
-      - api/download_data.qmd
+      - api/get_go_terms_for_genes.qmd
       - api/get_terms_for_go_regex.qmd
+      - api/go_annotation_table.qmd
+      section: GO information
+    - contents:
+      - api/go_enrichment.qmd
+      - api/show_go_evidence_codes.qmd
+      - api/symbols_protein_coding.qmd
+      - api/download_data.qmd
+      section: GO enrichment
+    - contents:
+      - api/show_go_dag_for_gene.qmd
+      - api/show_go_dag_for_terms.qmd
+      - api/show_go_dag_enrichment_results.qmd
+      section: GO graphs
+    - contents:
       - api/get_genes_for_go_regex.qmd
       - api/get_genes_for_go_terms.qmd
-      - api/go_annotation_table.qmd
       - api/gene_annotation_table.qmd
-      - api/get_go_terms_for_genes.qmd
-      - api/show_go_dag_for_terms.qmd
-      - api/show_go_dag_for_gene.qmd
-      - api/show_go_evidence_codes.qmd
-      section: Gene ontology
+      section: Gene annotation
     - contents:
       - api/email.qmd
       - api/tabulate_genes.qmd
