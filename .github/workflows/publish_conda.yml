@@ -3,9 +3,7 @@ name: Build and upload conda packages
 on:
   push:
     branches:
-      - 'master'
-  release:
-    types: ['released']
+      - main
 
 # workflow_dispatch:        # Un comment line if you also want to trigger action manually
 
