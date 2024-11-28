@@ -57,9 +57,7 @@ website:
         - pages/getting_started.qmd
         - section: "Examples"
           contents:
-            - pages/examples.ipynb 
-        - href: api/
-          text: API reference                       
+            - pages/examples.ipynb                   
 
 format:
   html:
