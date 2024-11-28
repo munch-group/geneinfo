@@ -55,16 +55,9 @@ website:
       align: left
       contents:
         - pages/overview.qmd
-        - section: "Basics"
-          contents:
-            - pages/basics.qmd
         - section: "Examples"
           contents:
             - pages/examples.ipynb            
-            - pages/something.ipynb            
-        - section: "Advanced"
-          contents:
-            - pages/advanced.qmd
         - section: "Library reference"
           contents:
             - api/index.qmd
@@ -95,48 +88,55 @@ quartodoc:
       desc: ""
       contents:
         - gene_info
-        - get_genes_region
-        - get_genes_region_dataframe
         - gene_info_region
-        - ensembl_id
-        - hgcn_symbol
-        - ensembl2symbol
-        - ensembl2ncbi
-        - mygene_get_gene_info
-        - ensembl_get_gene_info_by_symbol
-        - ensembl_get_genes_region
-        - map_interval
     - title: Gene plots
       desc: ""
       contents:
         - gene_plot
         - chrom_ideogram
+    - title: Gene coordinates
+        - get_genes_region
+        - get_genes_region_dataframe
+    - title: ID conversion
+      desc: ""
+      contents:
+        - ensembl_id
+        - hgcn_symbol
+        - ensembl2symbol
+        - ensembl2ncbi
     - title: STRING networks
       desc: ""
       contents:    
         - show_string_network
         - string_network_table
-    - title: Gene ontology
+    - title: GO information
       desc: ""
       contents:
         - go_info
-        - go_enrichment
-        - show_go_dag_enrichment_results
         - go_term2name
         - go_name2term
-        - symbols_protein_coding
-        - download_ncbi_associations
-        - download_and_move_go_basic_obo
-        - download_data
+        - get_go_terms_for_genes
         - get_terms_for_go_regex
+        - go_annotation_table
+    - title: GO enrichment
+      desc: ""
+      contents:
+        - go_enrichment
+        - show_go_evidence_codes
+        - symbols_protein_coding
+        - download_data
+    - title: GO graphs
+      desc: ""
+      contents:
+        - show_go_dag_for_gene
+        - show_go_dag_for_terms
+        - show_go_dag_enrichment_results
+    - title: Gene annotation
+      desc: ""
+      contents:
         - get_genes_for_go_regex
         - get_genes_for_go_terms
-        - go_annotation_table
         - gene_annotation_table
-        - get_go_terms_for_genes
-        - show_go_dag_for_terms
-        - show_go_dag_for_gene
-        - show_go_evidence_codes
     - title: Utilities
       desc: ""
       contents:
