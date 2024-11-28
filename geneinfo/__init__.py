@@ -15,8 +15,10 @@ import pandas as pd
 from pandas.api.types import is_object_dtype
 from math import log10, sqrt
 import shutil
+from collections.abc import Callable
+from typing import Any, TypeVar, List, Tuple, Dict, Union
 
-import matplotlib
+import matplotlib.axes
 from matplotlib.patches import Rectangle, Polygon
 import matplotlib.pyplot as plt
 from matplotlib_inline.backend_inline import set_matplotlib_formats
@@ -98,7 +100,27 @@ def tabulate_genes(words, ncols=None):
             line.append(gene.ljust(col_width))
         print(''.join(line))
 
-def ensembl_id(name, species='homo_sapiens'):
+def ensembl_id(name:str, species:str='homo_sapiens') -> str:
+    """
+    Get ENSEMBL ID for some gene identifier
+
+    Parameters
+    ----------
+    name : 
+        Gene identifier
+    species :  optional
+        Species, by default 'homo_sapiens'
+
+    Returns
+    -------
+    :
+        ENSEMBL ID
+
+    Raises
+    ------
+    NotFound
+        Raises exception if no ENSEMBL ID can be found.
+    """
     server = "https://rest.ensembl.org"
     ext = f"/xrefs/symbol/{species}/{name}?"
     r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
@@ -110,7 +132,25 @@ def ensembl_id(name, species='homo_sapiens'):
         raise NotFound
     return ensembl_ids[0]
 
-def ensembl2symbol(ensembl_id):
+def ensembl2symbol(ensembl_id:str) -> str:
+    """
+    Converts ENSEMBL ID to gene HGCN gene symbol    
+
+    Parameters
+    ----------
+    ensembl_id : 
+        ENSEMBL ID
+
+    Returns
+    -------
+    :
+       HGCN gene symbol
+
+    Raises
+    ------
+    NotFound
+        Raises exception if no HGCN gene symbol can be found.
+    """
     server = "https://rest.ensembl.org"
     ext = f"/xrefs/id/{ensembl_id}?"
     r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
@@ -122,13 +162,49 @@ def ensembl2symbol(ensembl_id):
         raise NotFound
     return symbols[0]
 
-def hgcn_symbol(name):
+def hgcn_symbol(name:str) -> str:
+    """
+    Get HGCN gene symbol for some gene identifier
+
+    Parameters
+    ----------
+    name : 
+        Gene identifier
+
+    Returns
+    -------
+    :
+        HGCN gene symbol
+
+    Raises
+    ------
+    NotFound
+        Raises exception if no HGCN gene symbol can be found.
+    """ 
     if type(name) is list or type(name) is set:
         return [ensembl2symbol(ensembl_id(n)) for n in name]
     else:
         return ensembl2symbol(ensembl_id(name))
 
 def ensembl2ncbi(ensembl_id):
+    """
+    Converts ENSEMBL ID to gene NCBI ID
+
+    Parameters
+    ----------
+    ensembl_id : 
+        ENSEMBL ID
+
+    Returns
+    -------
+    :
+       NCBI ID
+
+    Raises
+    ------
+    NotFound
+        Raises exception if no NCBI ID can be found.
+    """
     server = "https://rest.ensembl.org"
     ext = f"/xrefs/id/{ensembl_id}?"
     r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
@@ -153,8 +229,20 @@ def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,a
     print(f"Gene not found: {query}", file=sys.stderr)
 
 
-def gene_info(query, species='human', scopes='hgnc'):
-    
+def gene_info(query: str|List[str], species:str='human', scopes:str='hgnc') -> None:
+    """
+    Displays HTML formatted information about one or more genes.
+
+    Parameters
+    ----------
+    query : 
+        Gene symbol or list of gene symbols
+    species :  optional
+        Species, by default 'human'
+    scopes :  optional
+        Scopes for information search, by default 'hgnc'
+    """
+
     if type(query) is not list:
         query = [query]
         
@@ -267,9 +355,34 @@ def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, spe
     return gene_info
 
 
-def get_genes_region(chrom, window_start, window_end, assembly='GRCh38', db='ncbiRefSeq'):
+def get_genes_region(chrom:str, window_start:int, window_end:int, 
+                     assembly:str='GRCh38', db:str='ncbiRefSeq') -> list:
+    """
+    Gets gene structure information for genes in a chromosomal region.
 
-    
+    Parameters
+    ----------
+    chrom : 
+        Chromosome identifier
+    window_start : 
+        Start of region
+    window_end : 
+        End of region (end base not included)
+    assembly : 
+        Genome assembly, by default 'GRCh38'
+    db : 
+        Database, by default 'ncbiRefSeq'
+
+    Returns
+    -------
+    :
+        List of gene information. Each gene is a tuple with the following elements:
+        - gene name
+        - gene start
+        - gene end
+        - gene strand
+        - list of exons (start, end)
+    """
     api_url = f'https://api.genome.ucsc.edu/getData/track'
     params = {'track': db,
               'genome': assembly,
@@ -291,20 +404,63 @@ def get_genes_region(chrom, window_start, window_end, assembly='GRCh38', db='ncb
     return genes
 
 
-def gene_info_region(chrom, window_start, window_end, assembly='GRCh38', db='ncbiRefSeq'):
+def get_genes_region_dataframe(chrom:str, window_start:int, window_end:int, 
+                     assembly:str='GRCh38', db:str='ncbiRefSeq') -> pd.DataFrame:
+    """
+    Gets gene structure information for genes in a chromosomal region in the form
+    of a pandas.DataFrame.
 
-    for gene in get_genes_region(chrom, window_start, window_end, assembly, db):    
-        gene_info(gene[0])
+    Parameters
+    ----------
+    chrom : 
+        Chromosome identifier
+    window_start : 
+        Start of region
+    window_end : 
+        End of region (end base not included)
+    assembly :  optional
+        Genome assembly, by default 'GRCh38'
+    db :  optional
+        Database, by default 'ncbiRefSeq'
 
-
-def get_genes_region_dataframe(chrom, start, end, assembly='GRCh38', db='ncbiRefSeq'):
+    Returns
+    -------
+    :
+        pandas.DataFrame with the following colunms:
+        - name: gene name
+        - start: gene start
+        - end: gene end
+        - strand: gene strand
+    """
     try:
         import pandas as pd
     except ImportError:
         print("pandas must be installed to return data frame")
         return
-    genes = get_genes_region(chrom, start, end, assembly, db)
+    genes = get_genes_region(chrom, window_start, window_end, assembly, db)
     return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
+
+
+def gene_info_region(chrom:str, window_start:int, window_end:int, 
+                     assembly:str='GRCh38', db:str='ncbiRefSeq') -> None:
+    """
+    Displays HTML formatted information about genes in a chromosomal region.
+
+    Parameters
+    ----------
+    chrom : 
+        Chromosome identifier
+    window_start : 
+        Start of region
+    window_end : 
+        End of region (end base not included)
+    assembly : 
+        Genome assembly, by default 'GRCh38'
+    db : 
+        Database, by default 'ncbiRefSeq'
+    """
+    for gene in get_genes_region(chrom, window_start, window_end, assembly, db):    
+        gene_info(gene[0])
 
 
 def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, min_visible_width, font_size, ax, highlight=False, clip_on=True):
@@ -332,10 +488,91 @@ def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, min_visi
             fontsize=font_size, color=color, clip_on=clip_on)
 
 
-def gene_plot(chrom, start, end, assembly, highlight=[], db='ncbiRefSeq', 
-                collapse_splice_var=True, hard_limits=False, exact_exons=False, 
-                figsize=None, aspect=1, despine=False, clip_on=True, gene_density=60, font_size=None, return_axes=1):
-    
+def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:list=[], db:str='ncbiRefSeq', 
+                collapse_splice_var:bool=True, hard_limits:bool=False, exact_exons:bool=False, 
+                figsize:tuple=None, aspect:float=1, despine:bool=False, clip_on:bool=True, 
+                gene_density:float=60, font_size:int=None, return_axes:int=1) -> Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]]:
+    """
+    Plots gene ideograms for a chromosomal region and returns axes for 
+    plotting along the same chromosome coordinates.
+
+    Parameters
+    ----------
+    chrom : 
+        Chromosome identifier
+    start : 
+        Start of region
+    end : 
+        End of region (end base not included)
+    assembly : 
+        Genome assembly identifier
+    highlight : 
+        List or dictionary of genes to highlight on gene plot (see Examples), by default []
+    db : 
+        Database to search, by default 'ncbiRefSeq'
+    collapse_splice_var : 
+        Whether to collapse splice variants into a single string of exons, by default True
+    hard_limits : 
+        Whether to truncate plot in the middle of a gene, by default False so that genes are fully plotted.
+    exact_exons : 
+        Whether to plot exon coordinates exatly, by default False so that exons are plotted as a minimum width.
+    figsize : 
+        Figure size specifified as a (width, height) tuple, by default None honering the default matplotlib settings.
+    aspect : 
+        Size of gene plot height relative to the total height of the other axes, by default 1
+    despine : 
+        Wheher to remove top and right frame borders, by default False
+    clip_on : 
+        Argument passed to axes.Text, by default True
+    gene_density : 
+        Controls the density of gene ideograms in the plot, by default 60
+    font_size : 
+        Gene label font size, by default None, in which case it is calculated based on the region size.
+    return_axes : 
+        The number of vertically stacked axes to return for plotting over the gene plot, by default 1
+
+    Returns
+    -------
+    :
+        A sing axes or a list of axes for plotting data over the gene plot.
+
+    Examples
+    --------
+    ```python
+    import geneinfo as gi
+    # Set email for Entrez queries
+    gi.email('your@email.com')
+
+    # Highlight a single gene
+    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight='TP53')
+    ax.scatter(chrom_coordinates, values)
+
+    # Highlight multiple genes
+    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight=['TP53', 'BRCA1'])
+    ax.scatter(chrom_coordinates, values)
+
+    # Highlight genes with custom styles
+    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})
+    ax.scatter(chrom_coordinates, values)
+
+    # Muli-gene highlight with custom styles
+    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 'BRCA1': {'color': 'red'}})
+    ax.scatter(chrom_coordinates, values)
+
+    # Multipel axes for plotting over gene plot
+    axes = gene_plot('chr1', 1000000, 2000000, 'hg38', return_axes=2)
+    ax1, ax2 = axes
+    ax1.scatter(chrom_coordinates, values1)
+    ax2.scatter(chrom_coordinates, values2)
+
+    # Custom figure size and aspect ratio
+    axes = gene_plot('chr1', 1000000, 2000000, 'hg38', figsize=(10, 4), aspect=0.5)
+    ax1, ax2 = axes
+    ax1.scatter(chrom_coordinates, values1)
+    ax2.scatter(chrom_coordinates, values2)
+    ```
+
+    """
     global CACHE
 
     fig, axes = plt.subplots(return_axes+1, 1, figsize=figsize, sharex='col', 
@@ -475,7 +712,17 @@ def _get_string_ids(my_genes):
     return string_identifiers
 
 
-def show_string_network(my_genes, nodes=10):
+def show_string_network(my_genes:list, nodes:int=10) -> None:
+    """
+    Display STRING network for a list of genes.
+
+    Parameters
+    ----------
+    my_genes : 
+        List of gene symbols
+    nodes : 
+        Number of nodes to show, by default 10
+    """
 
     if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
 
@@ -500,10 +747,25 @@ def show_string_network(my_genes, nodes=10):
     file_name = "geneinfo_cache/network.svg"
     with open(file_name, 'wb') as fh:
         fh.write(response.content)
-    return SVG('geneinfo_cache/network.svg') 
+    display(SVG('geneinfo_cache/network.svg'))
 
 
-def string_network_table(my_genes, nodes=10):
+def string_network_table(my_genes:list, nodes:int=10) -> pd.DataFrame:
+    """
+    Retrieves STRING network for a list of genes and returns it as a pandas.DataFrame.
+
+    Parameters
+    ----------
+    my_genes : 
+        List of gene symbols
+    nodes : 
+        Number of nodes to show, by default 10
+
+    Returns
+    -------
+    :
+        STRING network information for specified genes.
+    """
     if type(my_genes) is str:
         my_genes = list(my_genes)
     string_api_url = "https://string-db.org/api"
@@ -527,7 +789,16 @@ def string_network_table(my_genes, nodes=10):
 # Gene Ontology
 ##################################################################################
 
-def email(email_address):
+def email(email_address:str) -> None:
+    """
+    Registers your email address for Entrez queries. Thay way, NCBI will contect you
+    before closeing your connection if you are making too many queries.
+
+    Parameters
+    ----------
+    email_address : 
+        your email address
+    """
     Entrez.email = email_address
 
 def _assert_entrez_email():
@@ -600,7 +871,7 @@ def _fetch_ids_to_file(id_list, output_file_name):
 
         batch_size = 2000
         for i in range(0, len(id_list), batch_size):
-            to_fetch = id_list[i:i+batch_size]
+            to_fetch = id_List[i:i+batch_size]
             handle = Entrez.esummary(db="gene", id=",".join(to_fetch), retmax=batch_size)
             entry = Entrez.read(handle)
             docsums = entry['DocumentSummarySet']['DocumentSummary']
@@ -711,20 +982,50 @@ def _tidy_taxid(taxid):
         handle = Entrez.esearch(db="taxonomy", term=f'"{taxid}"[Scientific Name]')
         id_list = Entrez.read(handle)['IdList']
         if id_list:
-            taxid = int(id_list[0])
+            taxid = int(id_List[0])
         else:
             print(f'Could not find taxonomy id for "{taxid}"')
     return taxid  
     
 
-def symbols_protein_coding(taxid=9606):
+def symbols_protein_coding(taxid:int=9606) -> list:
+    """
+    List of protein coding gene symbols for a given taxonomy id.
+
+    Parameters
+    ----------
+    taxid : 
+        NCBI taxonomy ID, by default 9606 (which is human)
+
+    Returns
+    -------
+    :
+       List of gene symbols.
+    """
     fetch_background_genes(taxid=taxid)
     symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'
     symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'ncbi2symbol')
     return symbol2ncbi.tolist()
 
 
-def get_terms_for_go_regex(regex, taxid=9606, add_children=False):
+def get_terms_for_go_regex(regex:str, taxid:int=9606, add_children:bool=False) -> list:
+    """
+    Get GO terms for terms matching a regular expression in their description string.
+
+    Parameters
+    ----------
+    regex : 
+        Regular expression to match GO term descriptions.
+    taxid : 
+        NCBI taxonomy ID, by default 9606 (which is human)
+    add_children : 
+        Add GO terms nested under GO terms found, by default False
+
+    Returns
+    -------
+    :
+        List of GO terms.
+    """
 
     taxid = _tidy_taxid(taxid)
         
@@ -750,8 +1051,22 @@ def get_terms_for_go_regex(regex, taxid=9606, add_children=False):
         return list(gos)
 
 
-def get_genes_for_go_regex(regex, taxid=9606):
+def get_genes_for_go_regex(regex:str, taxid:int=9606) -> pd.DataFrame:
+    """
+    Get gene information for GO terms matching a regular expression in their description string.
 
+    Parameters
+    ----------
+    regex : 
+        Regular expression to match GO term descriptions.
+    taxid : 
+        NCBI taxonomy ID, by default 9606 (which is human)
+
+    Returns
+    -------
+    :
+        Columns: symbol, name, chrom, start, end.
+    """
     _assert_entrez_email()
 
     taxid = _tidy_taxid(taxid)
@@ -801,8 +1116,23 @@ def get_genes_for_go_regex(regex, taxid=9606):
     return df.sort_values(by='start').reset_index(drop=True)
 
     
-def get_genes_for_go_terms(terms, taxid=9606):
-    
+def get_genes_for_go_terms(terms, taxid=9606) -> pd.DataFrame:
+    """
+    Get gene information for genes with specified GO terms.
+
+    Parameters
+    ----------
+    terms : 
+        List of GO terms
+    taxid : 
+        NCBI taxonomy ID, by default 9606 (which is human)
+
+    Returns
+    -------
+    :
+        Columns: symbol, name, chrom, start, end.
+    """
+
     if type(terms) is not list:
         terms = [terms]
 
@@ -852,8 +1182,20 @@ def get_genes_for_go_terms(terms, taxid=9606):
     return df.sort_values(by='start').reset_index(drop=True)
 
 
-def go_annotation_table(taxid=9606):
+def go_annotation_table(taxid:int=9606) -> pd.DataFrame:
+    """
+    GO annotations for a given taxonomy id as a pandas.DataFrame.
 
+    Parameters
+    ----------
+    taxid : 
+        NCBI taxonomy ID, by default 9606, which is human
+
+    Returns
+    -------
+    pd.DataFrame
+        GO annotations for the specified taxonomy id.
+    """
     _assert_entrez_email()
 
     try:
@@ -873,7 +1215,20 @@ def go_annotation_table(taxid=9606):
     return df.loc[df['taxid'] == taxid]
 
 
-def gene_annotation_table(taxid=9606):
+def gene_annotation_table(taxid:int=9606) -> pd.DataFrame:
+    """
+    Gene annotations for a given taxonomy id as a pandas.DataFrame.
+
+    Parameters
+    ----------
+    taxid : 
+        NCBI taxonomy ID, by default 9606, which is human
+
+    Returns
+    -------
+    pd.DataFrame
+        Gene annotations for the specified taxonomy id.
+    """
 
     ncbi_tsv = f'geneinfo_cache/{taxid}_protein_genes.txt'
     if not os.path.exists(ncbi_tsv):
@@ -883,8 +1238,24 @@ def gene_annotation_table(taxid=9606):
     return df.loc[df['taxid'] == taxid]
 
 
-def get_go_terms_for_genes(genes, taxid=9606, evidence=None):
-    
+def get_go_terms_for_genes(genes:str, taxid:int=9606, evidence:list=None) -> list:
+    """
+    Get the union of GO terms for a list of genes.
+
+    Parameters
+    ----------
+    genes : 
+        _description_
+    taxid : 
+        _description_, by default 9606
+    evidence : 
+        _description_, by default None
+
+    Returns
+    -------
+    :
+        Go terms for the specified genes.
+    """
     go_df = go_annotation_table(taxid)
     genes_df = gene_annotation_table(taxid)
     gene_ids = genes_df.loc[genes_df.Symbol.isin(genes)].GeneID
@@ -896,8 +1267,17 @@ def get_go_terms_for_genes(genes, taxid=9606, evidence=None):
     return list(sorted(df.GO_ID.unique().tolist()))
 
     
-def show_go_dag_for_terms(terms, add_relationships=True):
-    
+def show_go_dag_for_terms(terms:Union[list|pd.Series], add_relationships:bool=True) -> None:
+    """
+    Display GO graph for a list of GO terms.
+
+    Parameters
+    ----------
+    terms : 
+        Go terms
+    add_relationships : 
+        Add edges representing relationships between GO terms, by default True
+    """
     if type(terms) is pd.core.series.Series:
         terms = terms.tolist()
 
@@ -919,7 +1299,7 @@ def show_go_dag_for_terms(terms, add_relationships=True):
         gosubdag = GoSubDag(terms, obodag, relationships=add_relationships) 
         GoSubDagPlot(gosubdag).plt_dag('geneinfo_cache/plot.png')
 
-    return Image('geneinfo_cache/plot.png')    
+    return display(Image('geneinfo_cache/plot.png'))
 
 # def show_go_dag_for_terms(terms, add_relationships=True):
 
@@ -936,7 +1316,22 @@ def show_go_dag_for_terms(terms, add_relationships=True):
 # https://github.com/tanghaibao/goatools/blob/main/notebooks/goea_nbt3102_group_results.ipynb
 
 
-def show_go_dag_for_gene(gene, taxid=9606, evidence=None, add_relationships=True):
+def show_go_dag_for_gene(gene:str, taxid:int=9606, evidence:list=None, add_relationships:bool=True) -> None:
+    """
+    Displays GO graph for a given gene.
+
+    Parameters
+    ----------
+    gene : 
+        Gene symbol
+    taxid : 
+        NCBI taxonomy ID, by default 9606, which is human
+    evidence : 
+        Limiting list of evidence categories to include, by default None. See `show_go_evidence_codes()`.
+    add_relationships : 
+        Add edges representing relationships between GO terms, by default True
+    """
+
     # evidence codes: http://geneontology.org/docs/guide-go-evidence-codes/
     go_terms = get_go_terms_for_genes([gene], taxid=taxid, evidence=evidence)
     if not go_terms:
@@ -945,7 +1340,10 @@ def show_go_dag_for_gene(gene, taxid=9606, evidence=None, add_relationships=True
     return show_go_dag_for_terms(go_terms, add_relationships=add_relationships)
 
     
-def show_go_evidence_codes():   
+def show_go_evidence_codes() -> None:   
+    """
+    Display list of GO evidence categories and their codes.
+    """
 
     s = """
 **Experimental evidence codes:** <br>
@@ -1009,8 +1407,20 @@ def  _write_go_hdf():
             df.to_hdf('geneinfo_cache/go-basic.h5', key='df', format='table', data_columns=['goterm', 'goname'])
 
 
-def go_term2name(term):
+def go_term2name(term:str) -> str:
+    """
+    Converts a GO term to its name.
 
+    Parameters
+    ----------
+    term : 
+        GO term
+
+    Returns
+    -------
+    :
+        GO term name.
+    """
     _write_go_hdf()
     with pd.HDFStore('geneinfo_cache/go-basic.h5', 'r') as store:
         entry = store.select("df", "goterm == %r" % term).iloc[0]
@@ -1018,16 +1428,35 @@ def go_term2name(term):
     return entry.goterm
 
 
-def go_name2term(name):
+def go_name2term(name:str) -> str:
+    """
+    Converts a GO term name to its term.
 
+    Parameters
+    ----------
+    name : 
+        GO term name
+
+    Returns
+    -------
+    :
+        GO term.
+    """
     _write_go_hdf()
     with pd.HDFStore('geneinfo_cache/go-basic.h5', 'r') as store:
         entry = store.select("df", "goname == %r" % name.lower()).iloc[0]
     return entry.goterm
 
 
-def go_info(terms):
-            
+def go_info(terms:str|List[str]) -> None:
+    """
+    Displays HML formatted information about the given GO terms.
+
+    Parameters
+    ----------
+    terms : 
+        A GO term or list of GO terms to display information for.
+    """
     if type(terms) is pd.core.series.Series:
         terms = terms.tolist()
 
@@ -1126,8 +1555,50 @@ class My_GOEnrichemntRecord(GOEnrichmentRecord):
         return f'<{self.GO}>'
 
 
-def go_enrichment(gene_list, taxid=9606, background_chrom=None, background_genes=None, 
-    terms=None, list_study_genes=False, alpha=0.05):
+def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, background_genes:list=None, 
+    terms:list=None, list_study_genes:list=False, alpha:float=0.05) -> pd.DataFrame:
+    """
+    Runs a GO enrichment analysis.
+
+    Parameters
+    ----------
+    gene_list : 
+        List of gene symbols or NCBI gene ids.
+    taxid : 
+        NCBI taxonomy ID, by default 9606, which is human
+    background_chrom : 
+        Name of chromosome, by default None. Limits analysis to this named chromosome
+    background_genes : 
+        List of genes for use as background in GO enrichment analysis, by default None
+    terms : 
+        List of GO terms for use as background in GO enrichment analysis, by default None
+    list_study_genes : 
+        Whether to include lists of genes responsible for enrichment for each identified GO term, by default False
+    alpha : 
+        False discovery significance cut-off, by default 0.05
+
+    Returns
+    -------
+    :
+        pd.DataFrame with columns: 
+        - namespace: (BP, MF, CC)
+        - term_id: GO term
+        - e/p: enrichment or depletion
+        - pval_uncorr: uncorrected p-value
+        - p_fdr_bh: Benjamini-Hochberg corrected p-value
+        - ratio: ratio of study genes in GO term
+        - bg_ratio: ratio of background genes in GO term
+        - obj: GOEnrichmentRecord object
+
+    Examples
+    --------
+    ```python
+    gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+    results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
+    show_go_dag_enrichment_results(results.obj)
+    ```
+
+    """
 
     if type(gene_list) is pd.core.series.Series:
         gene_list = gene_list.tolist()
@@ -1237,16 +1708,71 @@ def go_enrichment(gene_list, taxid=9606, background_chrom=None, background_genes
 
 
 
-def show_go_dag_enrichment_results(results):
+def show_go_dag_enrichment_results(results:Union[List[GOEnrichmentRecord]|pd.Series]) -> None:
+    """
+    Displays a GO enrichment analysis results.
 
+    Parameters
+    ----------
+    results : 
+        List or Series of GO result objejcts from `obj` column in the 
+        `pd.DataFrame` returned by `go_enrichment()`.
+
+    Examples
+    --------
+    ```python
+    gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+    results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
+    show_go_dag_enrichment_results(results.obj)
+    ```
+    """
     if type(results) is pd.core.series.Series:
         results = results.tolist()
     with open(os.devnull, 'w') as null, redirect_stdout(null):
         plot_results('geneinfo_cache/plot.png', results)
-    return Image('geneinfo_cache/plot.png')    
+    return display(Image('geneinfo_cache/plot.png'))
 
 
-def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10), assembly='hg38'):
+def chrom_ideogram(annot:list, vspace:float=0.1, min_visible_width:int=200000, figsize:tuple=(10,10), assembly:str='hg38'):
+    """
+    Plots an ideogram of the human chromosomes with annotations.
+
+    Parameters
+    ----------
+    annot : 
+        List of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.
+    vspace : 
+        Vertical space between ideograms, by default 0.1
+    min_visible_width : 
+        Minum display width of very short annotations, by default 200000
+    figsize : 
+        Figure size, by default (10,10)
+    assembly : 
+        Human genome assembly, by default 'hg38'
+
+    Examples
+    --------
+
+    ```python
+    annot = [
+        ('chr1', 20000000, 20100000, 'red', 'TP53'),
+        ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), 
+        ('chr8', 90000000, 110000000)
+    ]
+    chrom_ideogram(annot, figsize=(15, 9), vspace=0.2)
+
+    # black ticks every 10Mb on chrX
+    annot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
+    chrom_ideogram(annot, figsize=(15, 9), vspace=0.2)
+    ```
+
+    """
+
+# annot = [('chr1', 20000000, 20100000, 'red', 'TP53'), ('chr7', 20000000, 30000000, 'orange', 'DYNLT3')] \
+# + [('chr5', 40000000, 70000000, 'red', None, 1, 0.5), ('chr8', 90000000, 110000000)] \
+#  + [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
+
+# chrom_ideogram(annot, figsize=(15, 9), vspace=0.2) 
 
     d = {'axes.linewidth': 0.8, 'grid.linewidth': 0.64, 'lines.linewidth': 0.96, 
          'lines.markersize': 3.84, 'patch.linewidth': 0.64, 'xtick.major.width': 0.8,
@@ -1307,7 +1833,7 @@ def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10),
         fig = plt.figure(figsize=figsize)
 
         gs = matplotlib.gridspec.GridSpec(nr_rows, 25)
-        gs.update(wspace=0, hspace=hspace) # set the spacing between axes.             
+        gs.update(wspace=0, vspace=vspace) # set the spacing between axes.             
         ax_list = [plt.subplot(gs[i, :]) for i in range(nr_rows-2)]
         ax_list.append(plt.subplot(gs[nr_rows-2, :9]))
         ax_list.append(plt.subplot(gs[nr_rows-1, :9]))
@@ -1401,4 +1927,4 @@ def chrom_ideogram(annot, hspace=0.1, min_visible_width=200000, figsize=(10,10),
 # + [('chr5', 40000000, 70000000, 'red', None, 1, 0.5), ('chr8', 90000000, 110000000)] \
 #  + [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
 
-# chrom_ideogram(annot, figsize=(15, 9), hspace=0.2) 
+# chrom_ideogram(annot, figsize=(15, 9), vspace=0.2) 

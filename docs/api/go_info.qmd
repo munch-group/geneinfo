@@ -1,0 +1,13 @@
+# go_info { #geneinfo.go_info }
+
+```python
+geneinfo.go_info(terms)
+```
+
+Displays HML formatted information about the given GO terms.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| [List](`typing.List`)\[[str](`str`)\]]{.parameter-annotation}</code>
+
+:   A GO term or list of GO terms to display information for.

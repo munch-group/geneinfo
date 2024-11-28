@@ -1,0 +1,105 @@
+project:
+  type: website
+  output-dir: _build
+  # resources:
+  #   - objects.txt
+  #   - objects-test.txt
+
+execute:
+  freeze: auto
+  echo: true
+
+metadata-files:
+  - api/_sidebar.yml
+
+filters:
+  - "interlinks"
+
+interlinks:
+  fast: true
+  sources:
+    python:
+      url: https://docs.python.org/3/
+    griffe:
+      url: https://mkdocstrings.github.io/griffe/
+    numpy:
+      url: https://numpy.org/doc/stable/
+    pandas:
+      url: https://pandas.pydata.org/docs/
+    matplotlib:
+      url: https://matplotlib.org/stable/
+    scipy:
+      url: https://docs.scipy.org/doc/scipy/
+    statsmodels:
+      url: https://www.statsmodels.org/stable/
+    # quartodoc-test:
+    #   url: https://machow.github.io/quartodoc
+    #   inv: objects-test.txt
+
+website:
+  title: "geneinfo"
+  page-navigation: true
+  navbar:
+    left:
+      # - file: examples/
+      #   text: Examples
+      - href: api/
+        text: Reference
+    right:
+      - icon: github
+        href: https://github.com/munch-group/geneinfo/
+  sidebar:
+    - id: pages
+      title: Get Started
+      style: floating
+      align: left
+      contents:
+        - pages/overview.qmd
+        - section: "Basics"
+          contents:
+            - pages/basics.qmd
+        - section: "Examples"
+          contents:
+            - pages/examples.ipynb            
+            - pages/something.ipynb            
+        - section: "Advanced"
+          contents:
+            - pages/advanced.qmd
+        - section: "Library reference"
+          contents:
+            - api/index.qmd
+
+format:
+  html:
+    theme: cosmo
+    css:
+      - api/_styles-quartodoc.css
+      - styles.css
+    toc: true
+
+quartodoc:
+  style: pkgdown
+  dir: api
+  package: geneinfo
+  render_interlinks: true
+  options:
+    signature_name: full
+  renderer:
+    style: markdown
+    table_style: description-list
+  sidebar: "api/_sidebar.yml"
+  css: "api/_styles-quartodoc.css"
+
+  sections:
+    - title: Gene information
+      desc: ""
+      contents:
+        - gene_info
+    - title: Gene plots
+      desc: ""
+      contents:
+        - gene_plot
+    - title: Gene ontology
+      desc: ""
+      contents:
+        - go_info

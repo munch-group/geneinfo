@@ -1,0 +1,25 @@
+# Function reference {.doc .doc-index}
+
+## Gene information
+
+
+
+| | |
+| --- | --- |
+| [gene_info](gene_info.qmd#geneinfo.gene_info) | Displays HTML formatted information about one or more genes. |
+
+## Gene plots
+
+
+
+| | |
+| --- | --- |
+| [gene_plot](gene_plot.qmd#geneinfo.gene_plot) | Plots gene ideograms for a chromosomal region and returns axes for  |
+
+## Gene ontology
+
+
+
+| | |
+| --- | --- |
+| [go_info](go_info.qmd#geneinfo.go_info) | Displays HML formatted information about the given GO terms. |

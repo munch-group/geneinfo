@@ -1,0 +1,15 @@
+website:
+  sidebar:
+  - contents:
+    - api/index.qmd
+    - contents:
+      - api/gene_info.qmd
+      section: Gene information
+    - contents:
+      - api/gene_plot.qmd
+      section: Gene plots
+    - contents:
+      - api/go_info.qmd
+      section: Gene ontology
+    id: api
+  - id: dummy-sidebar

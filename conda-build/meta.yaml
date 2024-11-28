@@ -18,19 +18,19 @@ requirements:
   host:
     - python
     - pip
-  run:
+  run:       # your library dependencies
     - python
-    - jupyter
-    - ipython
-    - matplotlib>=3.0
-    - numpy>=1.1
-    - requests
-    - biopython
-    - goatools>=1.2
-    - pytables
-    - wget
+    # - jupyter
+    # - ipython
+    # - matplotlib>=3.0
+    # - numpy>=1.1
+    # - requests
+    # - biopython
+    # - goatools>=1.2
+    # - pytables
+    # - wget
 
-channels:    # write here the list of channels to look for your library dependencies
+channels:    # your library dependencies
   # - uibcdf
   - conda-forge
   - default
@@ -38,6 +38,7 @@ channels:    # write here the list of channels to look for your library dependen
 dependencies:   # Keep this block with only these two packages
   - anaconda-client
   - conda-build
+  - conda-verify
   
 test:
   imports:
@@ -46,8 +47,11 @@ test:
   #   - exercises --help    
 
 about:
-  home: https://github.com/munch-group/geneinfo
+  home: https://github.com/munch-group/geneinfo.git
   license: MIT
-  summary: 'summary'
-  description: |
-    Description.
+  # summary: "Blah blah"
+  # description: |
+  #   "Blah blah"
+  #   "Blah blah"
+  dev_url: https://github.com/munch-group/geneinfo.git
+  doc_url: https://munch-group.org/geneinfo

@@ -1,0 +1,26 @@
+channels:
+  - conda-forge
+  - kaspermunch
+  - gwforg
+  - micknudsen
+  - r  
+  - defaults
+dependencies:
+  - jupyterlab
+  - nodejs
+  - pytables
+  - scipy
+  - seaborn
+  - slurm-jupyter
+  - statsmodels
+  - geneinfo
+  - git
+  - nbdime
+  - gwf
+  - gwf-utilization
+  - r-essentials
+  - pyyaml
+  - tabulate
+  - pycryptodome>3.10
+  - pbkdf2
+  - cryptography 

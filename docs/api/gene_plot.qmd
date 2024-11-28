@@ -1,0 +1,133 @@
+# gene_plot { #geneinfo.gene_plot }
+
+```python
+geneinfo.gene_plot(
+    chrom
+    start
+    end
+    assembly
+    highlight=[]
+    db='ncbiRefSeq'
+    collapse_splice_var=True
+    hard_limits=False
+    exact_exons=False
+    figsize=None
+    aspect=1
+    despine=False
+    clip_on=True
+    gene_density=60
+    font_size=None
+    return_axes=1
+)
+```
+
+Plots gene ideograms for a chromosomal region and returns axes for 
+plotting along the same chromosome coordinates.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Chromosome identifier
+
+<code>[**start**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Start of region
+
+<code>[**end**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   End of region (end base not included)
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Genome assembly identifier
+
+<code>[**highlight**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\[\]]{.parameter-default}</code>
+
+:   List or dictionary of genes to highlight on gene plot (see Examples), by default []
+
+<code>[**db**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'ncbiRefSeq\']{.parameter-default}</code>
+
+:   Database to search, by default 'ncbiRefSeq'
+
+<code>[**collapse_splice_var**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Whether to collapse splice variants into a single string of exons, by default True
+
+<code>[**hard_limits**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Whether to truncate plot in the middle of a gene, by default False so that genes are fully plotted.
+
+<code>[**exact_exons**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Whether to plot exon coordinates exatly, by default False so that exons are plotted as a minimum width.
+
+<code>[**figsize**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Figure size specifified as a (width, height) tuple, by default None honering the default matplotlib settings.
+
+<code>[**aspect**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1]{.parameter-default}</code>
+
+:   Size of gene plot height relative to the total height of the other axes, by default 1
+
+<code>[**despine**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Wheher to remove top and right frame borders, by default False
+
+<code>[**clip_on**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Argument passed to axes.Text, by default True
+
+<code>[**gene_density**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [60]{.parameter-default}</code>
+
+:   Controls the density of gene ideograms in the plot, by default 60
+
+<code>[**font_size**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Gene label font size, by default None, in which case it is calculated based on the region size.
+
+<code>[**return_axes**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1]{.parameter-default}</code>
+
+:   The number of vertically stacked axes to return for plotting over the gene plot, by default 1
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[matplotlib](`matplotlib`).[axes](`matplotlib.axes`).[Axes](`matplotlib.axes.Axes`), [List](`typing.List`)\[[matplotlib](`matplotlib`).[axes](`matplotlib.axes`).[Axes](`matplotlib.axes.Axes`)\]\]]{.parameter-annotation}</code>
+
+:   A sing axes or a list of axes for plotting data over the gene plot.
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+import geneinfo as gi
+# Set email for Entrez queries
+gi.email('your@email.com')
+
+# Highlight a single gene
+ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight='TP53')
+ax.scatter(chrom_coordinates, values)
+
+# Highlight multiple genes
+ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight=['TP53', 'BRCA1'])
+ax.scatter(chrom_coordinates, values)
+
+# Highlight genes with custom styles
+ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})
+ax.scatter(chrom_coordinates, values)
+
+# Muli-gene highlight with custom styles
+ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 'BRCA1': {'color': 'red'}})
+ax.scatter(chrom_coordinates, values)
+
+# Multipel axes for plotting over gene plot
+axes = gene_plot('chr1', 1000000, 2000000, 'hg38', return_axes=2)
+ax1, ax2 = axes
+ax1.scatter(chrom_coordinates, values1)
+ax2.scatter(chrom_coordinates, values2)
+
+# Custom figure size and aspect ratio
+axes = gene_plot('chr1', 1000000, 2000000, 'hg38', figsize=(10, 4), aspect=0.5)
+ax1, ax2 = axes
+ax1.scatter(chrom_coordinates, values1)
+ax2.scatter(chrom_coordinates, values2)
+```

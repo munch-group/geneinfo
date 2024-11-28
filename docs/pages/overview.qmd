@@ -1,0 +1,41 @@
+---
+title: Overview
+aliases:
+  - ../index.html
+jupyter:
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+
+**geneinfo** lets you ... 
+
+{{< lipsum 1 >}}
+
+## Installation
+
+```bash
+conda install -c conda-forge -c munch-group geneinfo
+```
+
+## Basic use
+
+{{< lipsum 1 >}}
+
+## Some use case
+
+The [foo function](`geneinfo.gene_info`) does ... [](`geneinfo.gene_info`) does ... [](`~geneinfo.gene_info`) does ...
+
+{{< lipsum 1 >}}
+
+```python
+gene_info("ALG13")
+```
+
+## Learning more
+
+Go [to the anvanced page](advanced.qmd) to learn how to ...
+
+* [Examples page](examples.ipynb): sites using quartodoc.
