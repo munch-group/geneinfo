@@ -235,7 +235,7 @@ def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,a
     print(f"Gene not found: {query}", file=sys.stderr)
 
 
-def gene_info(query: str|List[str], species:str='human', scopes:str='hgnc') -> None:
+def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgnc') -> None:
     """
     Displays HTML formatted information about one or more genes.
 
@@ -1273,7 +1273,7 @@ def get_go_terms_for_genes(genes:str, taxid:int=9606, evidence:list=None) -> lis
     return list(sorted(df.GO_ID.unique().tolist()))
 
     
-def show_go_dag_for_terms(terms:Union[list|pd.Series], add_relationships:bool=True) -> None:
+def show_go_dag_for_terms(terms:Union[list, pd.Series], add_relationships:bool=True) -> None:
     """
     Display GO graph for a list of GO terms.
 
@@ -1454,7 +1454,7 @@ def go_name2term(name:str) -> str:
     return entry.goterm
 
 
-def go_info(terms:str|List[str]) -> None:
+def go_info(terms:Union[str,List[str]]) -> None:
     """
     Displays HML formatted information about the given GO terms.
 
@@ -1714,7 +1714,7 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
 
 
 
-def show_go_dag_enrichment_results(results:Union[List[GOEnrichmentRecord]|pd.Series]) -> None:
+def show_go_dag_enrichment_results(results:Union[List[GOEnrichmentRecord],pd.Series]) -> None:
     """
     Displays a GO enrichment analysis results.
 
