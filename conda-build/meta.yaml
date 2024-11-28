@@ -20,15 +20,15 @@ requirements:
     - pip
   run:       # your library dependencies
     - python
-    # - jupyter
-    # - ipython
-    # - matplotlib>=3.0
-    # - numpy>=1.1
-    # - requests
-    # - biopython
-    # - goatools>=1.2
-    # - pytables
-    # - wget
+    - jupyter
+    - ipython
+    - matplotlib>=3.0
+    - numpy>=1.1
+    - requests
+    - biopython
+    - goatools>=1.2
+    - pytables
+    - wget
 
 channels:    # your library dependencies
   # - uibcdf
