@@ -540,7 +540,7 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:list=[], db
     Returns
     -------
     :
-        A sing axes or a list of axes for plotting data over the gene plot.
+        A single axes or a list of axes for plotting data over the gene plot.
 
     Examples
     --------
