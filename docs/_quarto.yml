@@ -66,6 +66,9 @@ format:
       - api/_styles-quartodoc.css
       - styles.css
     toc: true
+    code-block-background: false
+    code-block-border-left: true    
+    highlight-style: arrow
 
 quartodoc:
   style: pkgdown
