@@ -940,7 +940,7 @@ def _fetch_ids_to_file(id_list, output_file_name):
 
         batch_size = 2000
         for i in range(0, len(id_list), batch_size):
-            to_fetch = id_List[i:i+batch_size]
+            to_fetch = id_list[i:i+batch_size]
             handle = Entrez.esummary(db="gene", id=",".join(to_fetch), retmax=batch_size)
             entry = Entrez.read(handle)
             docsums = entry['DocumentSummarySet']['DocumentSummary']

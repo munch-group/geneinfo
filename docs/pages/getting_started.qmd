@@ -12,20 +12,60 @@ jupyter:
 
 **geneinfo** is a compilation of gene information APIs adapted for use in a Jupyter notebook.
 
-{{< lipsum 1 >}}
-
 ## Installation
 
 ```bash
 conda install -c conda-forge -c munch-group geneinfo
 ```
+
+## Interpreting data in a gene context
+
+Among many other things, `geneinfo` lets you plot data in chromosome coordinates and view overlapping gene annotation using [](`~geneinfo.gene_plot`).
+
+```{python}
+#| echo: false
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style('white')
+
+%matplotlib inline
+%config InlineBackend.figure_format = 'retina'
+
+import geneinfo as gi
+gi.email('kaspermunch@birc.au.dk')
+
+import numpy as np
+x = np.linspace(76500000, 77500000, 10000)
+rng = np.random.default_rng()
+y = rng.exponential(scale=1, size=x.size)
+```
+
+```{python}
+import geneinfo as gi
+ax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19')
+ax.scatter(x, y, s=2)
+```
+
+You can get brief summaries using [](`~geneinfo.gene_info`).
+
+```{python}
+gi.gene_info(['ATRX', 'MAGT1'])
+```
+
 <!-- 
-## Basic use
+Show gene ontology terms associated with genes.
 
-{{< lipsum 1 >}}
+```{python}
+go_terms = gi.get_go_terms_for_genes(['ATRX', 'MAGT1'])
+gi.show_go_dag_for_terms(go_terms)
+```
 
-## Some use case
+List the GO term definitions.
 
-The [foo function](`geneinfo.gene_info`) does ... [](`geneinfo.gene_info`) does ... [](`~geneinfo.gene_info`) does ...
+And gene ontology terms associated with genes.
 
-{ -->
+```{python}
+gi.go_info(go_terms)
+```
+
+ -->
