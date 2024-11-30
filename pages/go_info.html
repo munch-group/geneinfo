@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Overview – geneinfo</title>
+<title>GO information – geneinfo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -57,14 +57,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../pages/gene_ids.html" rel="next">
+<link href="../pages/go_enrichment.html" rel="next">
+<link href="../pages/string_nets.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -101,6 +102,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../api/_styles-quartodoc.css">
@@ -146,7 +150,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/getting_started.html">Overview</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/go_info.html">Gene ontology</a></li><li class="breadcrumb-item"><a href="../pages/go_info.html">GO information</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -160,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../pages/getting_started.html" class="sidebar-item-text sidebar-link active">
+  <a href="../pages/getting_started.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Overview</span></a>
   </div>
 </li>
@@ -227,7 +231,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../pages/go_info.html" class="sidebar-item-text sidebar-link">
+  <a href="../pages/go_info.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">GO information</span></a>
   </div>
 </li>
@@ -249,16 +253,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#go-graphs" id="toc-go-graphs" class="nav-link active" data-scroll-target="#go-graphs">GO graphs</a></li>
+  <li><a href="#find-genes-based-on-go-info" id="toc-find-genes-based-on-go-info" class="nav-link" data-scroll-target="#find-genes-based-on-go-info">Find genes based on GO info</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/go_info.html">Gene ontology</a></li><li class="breadcrumb-item"><a href="../pages/go_info.html">GO information</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Overview</h1>
+<h1 class="title">GO information</h1>
 </div>
 
 
@@ -275,32 +280,270 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><strong>geneinfo</strong> is a compilation of gene information APIs adapted for use in a Jupyter notebook.</p>
-<p>Vestibulum ultrices, tortor at mattis porta, odio nisi rutrum nulla, sit amet tincidunt eros quam facilisis tellus. Fusce eleifend lectus in elementum lacinia. Nam auctor nunc in massa ullamcorper, sit amet auctor ante accumsan. Nam ut varius metus. Curabitur eget tristique leo. Cras finibus euismod erat eget elementum. Integer vel placerat ex. Ut id eros quis lectus lacinia venenatis hendrerit vel ante.</p>
-<section id="installation" class="level2">
-<h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge <span class="at">-c</span> munch-group geneinfo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<!-- 
-## Basic use
+<div id="cell-3" class="cell" data-tags="[]">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'retina'</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo <span class="im">as</span> gi</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>gi.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-4" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> left:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__rlshift__</span>(<span class="va">self</span>, df):</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Left align columns of data frame: df &lt;&lt; left()"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        left_aligned_df <span class="op">=</span> df.style.set_properties(<span class="op">**</span>{<span class="st">'text-align'</span>: <span class="st">'left'</span>})</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        left_aligned_df <span class="op">=</span> left_aligned_df.set_table_styles(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        [<span class="bu">dict</span>(selector <span class="op">=</span> <span class="st">'th'</span>, props<span class="op">=</span>[(<span class="st">'text-align'</span>, <span class="st">'left'</span>)])])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        display(left_aligned_df)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(name<span class="op">=</span>[<span class="st">'A'</span>, <span class="st">'B'</span>], desc<span class="op">=</span>[<span class="st">'bla bla bla bla'</span>, <span class="st">'bla'</span>]))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>NB:</strong> The first time you use the GO utilities, it will spend a <em>very</em> long time downloading data. If you do not want to wait that out in the notebook, you can execute this command in the folder where you store your notebooks:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>conda run -n &lt;environment&gt; python -c 'import geneinfo ; geneinfo.download_data()'</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Get info for one or more GO terms:</strong></p>
+<div id="cell-7" class="cell" data-execution_count="41">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gi.go_info(<span class="st">'GO:0000776'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0000776:</span></strong> <strong>kinetochore</strong><br>
+A multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.</p>
+<hr>
+</div>
+</div>
+<div id="cell-8" class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gi.go_info([<span class="st">'GO:0000776'</span>, <span class="st">'GO:0005634'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0000776:</span></strong> <strong>kinetochore</strong><br>
+A multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0005634:</span></strong> <strong>nucleus</strong><br>
+A membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.</p>
+<hr>
+</div>
+</div>
+<p><strong>Get GO terms for a one or more genes:</strong></p>
+<div id="cell-10" class="cell" data-tags="[]" data-execution_count="43">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>go_terms <span class="op">=</span> gi.get_go_terms_for_genes([<span class="st">'DYNLT3'</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>go_terms[:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="43">
+<pre><code>['GO:0000776',
+ 'GO:0005515',
+ 'GO:0005634',
+ 'GO:0005737',
+ 'GO:0005868',
+ 'GO:0007018',
+ 'GO:0007346',
+ 'GO:0042802',
+ 'GO:0045505',
+ 'GO:0045931']</code></pre>
+</div>
+</div>
+<p><strong>Descriptions for GO terms for one or more genes:</strong></p>
+<div id="cell-12" class="cell" data-execution_count="44">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gi.go_info(gi.get_go_terms_for_genes([<span class="st">'DYNLT3'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0000776:</span></strong> <strong>kinetochore</strong><br>
+A multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0005515:</span></strong> <strong>protein binding</strong><br>
+Binding to a protein.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0005634:</span></strong> <strong>nucleus</strong><br>
+A membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0005737:</span></strong> <strong>cytoplasm</strong><br>
+The contents of a cell excluding the plasma membrane and nucleus, but including other subcellular structures.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0005868:</span></strong> <strong>cytoplasmic dynein complex</strong><br>
+Any dynein complex with a homodimeric dynein heavy chain core that catalyzes movement along a microtubule. Cytoplasmic dynein complexes participate in many cytoplasmic transport activities in eukaryotes, such as mRNA localization, intermediate filament transport, nuclear envelope breakdown, apoptosis, transport of centrosomal proteins, mitotic spindle assembly, virus transport, kinetochore functions, and movement of signaling and spindle checkpoint proteins. Some complexes participate in intraflagellar transport. Subunits associated with the dynein heavy chain mediate association between dynein heavy chain and cargoes, and may include light chains and light intermediate chains.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0007018:</span></strong> <strong>microtubule-based movement</strong><br>
+A microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0007346:</span></strong> <strong>regulation of mitotic cell cycle</strong><br>
+Any process that modulates the rate or extent of progress through the mitotic cell cycle.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0042802:</span></strong> <strong>identical protein binding</strong><br>
+Binding to an identical protein or proteins.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0045505:</span></strong> <strong>dynein intermediate chain binding</strong><br>
+Binding to an intermediate chain of the dynein complex.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0045931:</span></strong> <strong>positive regulation of mitotic cell cycle</strong><br>
+Any process that activates or increases the rate or extent of progression through the mitotic cell cycle.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0051301:</span></strong> <strong>cell division</strong><br>
+The process resulting in division and partitioning of components of a cell to form more cells; may or may not be accompanied by the physical separation of a cell into distinct, individually membrane-bounded daughter cells.</p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong><span style="color:gray;">GO:0061673:</span></strong> <strong>mitotic spindle astral microtubule</strong><br>
+Any of the mitotic spindle microtubules that radiate in all directions from the spindle poles and are thought to contribute to the forces that separate the poles and position them in relation to the rest of the cell.</p>
+<hr>
+</div>
+</div>
+<section id="go-graphs" class="level2">
+<h2 class="anchored" data-anchor-id="go-graphs">GO graphs</h2>
+<p><strong>Show the sub-graph for a list of GO terms:</strong></p>
+<div id="cell-15" class="cell" data-execution_count="48">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> importlib</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>importlib.<span class="bu">reload</span>(geneinfo)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#geneinfo.go_info('GO:0000776')</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>geneinfo.show_go_dag_for_terms(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="48">
+<div>
+<figure class="figure">
+<p><img src="go_info_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-16" class="cell" data-tags="[]" data-execution_count="49">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gi.show_go_dag_for_terms(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="49">
+<div>
+<figure class="figure">
+<p><img src="go_info_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Show the sub-graph for the GO terms of a single gene:</strong></p>
+<div id="cell-18" class="cell" data-execution_count="50">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gi.show_go_dag_for_gene(<span class="st">'DYNLT3'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="50">
+<div>
+<figure class="figure">
+<p><img src="go_info_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Same but using GO annotation backed by certain kinds of evidence:</strong></p>
+<div id="cell-20" class="cell" data-tags="[]" data-execution_count="51">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gi.show_go_dag_for_gene(<span class="st">'DYNLT3'</span>, evidence<span class="op">=</span>[<span class="st">'IDA'</span>, <span class="st">'EXP'</span>, <span class="st">'HTP'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="51">
+<div>
+<figure class="figure">
+<p><img src="go_info_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Show the categories of evidence backing GO annotations:</strong></p>
+<div id="cell-22" class="cell" data-execution_count="52">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gi.show_go_evidence_codes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Experimental evidence codes:</strong> <br> Inferred from Experiment (EXP) <br> Inferred from Direct Assay (IDA) <br> Inferred from Physical Interaction (IPI) <br> Inferred from Mutant Phenotype (IMP) <br> Inferred from Genetic Interaction (IGI) <br> Inferred from Expression Pattern (IEP) <br> Inferred from High Throughput Experiment (HTP) <br> Inferred from High Throughput Direct Assay (HDA) <br> Inferred from High Throughput Mutant Phenotype (HMP) <br> Inferred from High Throughput Genetic Interaction (HGI) <br> Inferred from High Throughput Expression Pattern (HEP)</p>
+<p><strong>Phylogenetically-inferred annotations:</strong> <br> Inferred from Biological aspect of Ancestor (IBA) <br> Inferred from Biological aspect of Descendant (IBD) <br> Inferred from Key Residues (IKR) <br> Inferred from Rapid Divergence (IRD)</p>
+<p><strong>Computational analysis evidence codes</strong> <br> Inferred from Sequence or structural Similarity (ISS) <br> Inferred from Sequence Orthology (ISO) <br> Inferred from Sequence Alignment (ISA) <br> Inferred from Sequence Model (ISM) <br> Inferred from Genomic Context (IGC) <br> Inferred from Reviewed Computational Analysis (RCA)</p>
+<p><strong>Author statement evidence codes:</strong> <br> Traceable Author Statement (TAS) <br> Non-traceable Author Statement (NAS)</p>
+<p><strong>Curator statement evidence codes:</strong> <br> Inferred by Curator (IC) <br> No biological Data available (ND)</p>
+<p><strong>Electronic annotation evidence code:</strong> <br> Inferred from Electronic Annotation (IEA)</p>
+</div>
+</div>
+</section>
+<section id="find-genes-based-on-go-info" class="level2">
+<h2 class="anchored" data-anchor-id="find-genes-based-on-go-info">Find genes based on GO info</h2>
+<p><strong>Find genes matching a regular expression in any associated GO term description:</strong></p>
+<div id="cell-25" class="cell" data-execution_count="53">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>motor_genes_df <span class="op">=</span> gi.get_genes_for_go_regex(<span class="st">'kinesin|dynein'</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>motor_genes_df.head() <span class="op">&lt;&lt;</span> left()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>geneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)
+geneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<style type="text/css">
+#T_41c02 th {
+  text-align: left;
+}
+#T_41c02_row0_col0, #T_41c02_row0_col1, #T_41c02_row0_col2, #T_41c02_row0_col3, #T_41c02_row0_col4, #T_41c02_row1_col0, #T_41c02_row1_col1, #T_41c02_row1_col2, #T_41c02_row1_col3, #T_41c02_row1_col4, #T_41c02_row2_col0, #T_41c02_row2_col1, #T_41c02_row2_col2, #T_41c02_row2_col3, #T_41c02_row2_col4, #T_41c02_row3_col0, #T_41c02_row3_col1, #T_41c02_row3_col2, #T_41c02_row3_col3, #T_41c02_row3_col4, #T_41c02_row4_col0, #T_41c02_row4_col1, #T_41c02_row4_col2, #T_41c02_row4_col3, #T_41c02_row4_col4 {
+  text-align: left;
+}
+</style>
 
-
-
-
-
-Aenean placerat luctus tortor vitae molestie. Nulla at aliquet nulla. Sed efficitur tellus orci, sed fringilla lectus laoreet eget. Vivamus maximus quam sit amet arcu dignissim, sed accumsan massa ullamcorper. Sed iaculis tincidunt feugiat. Nulla in est at nunc ultricies dictum ut vitae nunc. Aenean convallis vel diam at malesuada. Suspendisse arcu libero, vehicula tempus ultrices a, placerat sit amet tortor. Sed dictum id nulla commodo mattis. Aliquam mollis, nunc eu tristique faucibus, purus lacus tincidunt nulla, ac pretium lorem nunc ut enim. Curabitur eget mattis nisl, vitae sodales augue. Nam felis massa, bibendum sit amet nulla vel, vulputate rutrum lacus. Aenean convallis odio pharetra nulla mattis consequat.
-
-
-
-
-
-
-
-
-## Some use case
-
-The [foo function](`geneinfo.gene_info`) does ... [](`geneinfo.gene_info`) does ... [](`~geneinfo.gene_info`) does ...
-
-{ -->
+<table id="T_41c02" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_41c02_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">symbol</th>
+<th id="T_41c02_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">name</th>
+<th id="T_41c02_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">chrom</th>
+<th id="T_41c02_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">start</th>
+<th id="T_41c02_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_41c02_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</td>
+<td id="T_41c02_row0_col0" class="data row0 col0">SPAG1</td>
+<td id="T_41c02_row0_col1" class="data row0 col1">sperm associated antigen 1</td>
+<td id="T_41c02_row0_col2" class="data row0 col2">8</td>
+<td id="T_41c02_row0_col3" class="data row0 col3">100158037</td>
+<td id="T_41c02_row0_col4" class="data row0 col4">100241903</td>
+</tr>
+<tr class="even">
+<td id="T_41c02_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</td>
+<td id="T_41c02_row1_col0" class="data row1 col0">BLOC1S2</td>
+<td id="T_41c02_row1_col1" class="data row1 col1">biogenesis of lysosomal organelles complex 1 subunit 2</td>
+<td id="T_41c02_row1_col2" class="data row1 col2">10</td>
+<td id="T_41c02_row1_col3" class="data row1 col3">100286679</td>
+<td id="T_41c02_row1_col4" class="data row1 col4">100273277</td>
+</tr>
+<tr class="odd">
+<td id="T_41c02_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</td>
+<td id="T_41c02_row2_col0" class="data row2 col0">LZTS2</td>
+<td id="T_41c02_row2_col1" class="data row2 col1">leucine zipper tumor suppressor 2</td>
+<td id="T_41c02_row2_col2" class="data row2 col2">10</td>
+<td id="T_41c02_row2_col3" class="data row2 col3">100996587</td>
+<td id="T_41c02_row2_col4" class="data row2 col4">101007832</td>
+</tr>
+<tr class="even">
+<td id="T_41c02_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</td>
+<td id="T_41c02_row3_col0" class="data row3 col0">DYNC1H1</td>
+<td id="T_41c02_row3_col1" class="data row3 col1">dynein cytoplasmic 1 heavy chain 1</td>
+<td id="T_41c02_row3_col2" class="data row3 col2">14</td>
+<td id="T_41c02_row3_col3" class="data row3 col3">101964572</td>
+<td id="T_41c02_row3_col4" class="data row3 col4">102056442</td>
+</tr>
+<tr class="odd">
+<td id="T_41c02_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</td>
+<td id="T_41c02_row4_col0" class="data row4 col0">KIF1B</td>
+<td id="T_41c02_row4_col1" class="data row4 col1">kinesin family member 1B</td>
+<td id="T_41c02_row4_col2" class="data row4 col2">1</td>
+<td id="T_41c02_row4_col3" class="data row4 col3">10210569</td>
+<td id="T_41c02_row4_col4" class="data row4 col4">10381602</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
 </section>
@@ -725,10 +968,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="../pages/string_nets.html" class="pagination-link" aria-label="String networks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">String networks</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../pages/gene_ids.html" class="pagination-link" aria-label="ID conversion">
-        <span class="nav-page-text">ID conversion</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../pages/go_enrichment.html" class="pagination-link" aria-label="GO enrichment">
+        <span class="nav-page-text">GO enrichment</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

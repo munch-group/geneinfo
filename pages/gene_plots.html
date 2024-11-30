@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>chrom_ideogram – geneinfo</title>
+<title>Gene plots – geneinfo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../api/get_genes_region.html" rel="next">
-<link href="../api/gene_plot.html" rel="prev">
+<link href="../pages/chrom_ideograms.html" rel="next">
+<link href="../pages/gene_information.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -147,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/chrom_ideogram.html">chrom_ideogram</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Gene plots</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -161,8 +161,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Function reference</span></a>
+  <a href="../pages/getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -176,14 +176,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_info.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_info</span></a>
+  <a href="../pages/gene_ids.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ID conversion</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_info_region.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_info_region</span></a>
+  <a href="../pages/gene_information.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gene information</span></a>
   </div>
 </li>
       </ul>
@@ -199,14 +199,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_plot.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_plot</span></a>
+  <a href="../pages/gene_plots.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Gene plots</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/chrom_ideogram.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">chrom_ideogram</span></a>
+  <a href="../pages/chrom_ideograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chromosome ideograms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/string_nets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">String networks</span></a>
   </div>
 </li>
       </ul>
@@ -214,7 +220,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Gene coordinates</span></a>
+ <span class="menu-text">Gene ontology</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -222,235 +228,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region_dataframe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region_dataframe</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">ID conversion</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/ensembl_id.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ensembl_id</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/hgcn_symbol.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">hgcn_symbol</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/ensembl2symbol.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ensembl2symbol</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/ensembl2ncbi.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ensembl2ncbi</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">STRING networks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/string_network_table.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">string_network_table</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_string_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_string_network</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+  <a href="../pages/go_info.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GO information</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_info.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_info</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/go_term2name.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_term2name</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_name2term.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_name2term</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_go_terms_for_genes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_go_terms_for_genes</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_terms_for_go_regex.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_terms_for_go_regex</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_annotation_table.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_annotation_table</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+  <a href="../pages/go_enrichment.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GO enrichment</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_enrichment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_enrichment</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_evidence_codes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_evidence_codes</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/symbols_protein_coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">symbols_protein_coding</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/download_data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">download_data</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
- <span class="menu-text">GO graphs</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_dag_for_gene.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_dag_for_gene</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_dag_for_terms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_dag_for_terms</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_dag_enrichment_results.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_dag_enrichment_results</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
- <span class="menu-text">Gene annotation</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_for_go_regex.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_for_go_regex</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_for_go_terms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_for_go_terms</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/gene_annotation_table.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_annotation_table</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
- <span class="menu-text">Utilities</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">email</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">tabulate_genes</span></a>
   </div>
 </li>
       </ul>
@@ -465,70 +250,212 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#geneinfo.chrom_ideogram" id="toc-geneinfo.chrom_ideogram" class="nav-link active" data-scroll-target="#geneinfo.chrom_ideogram">chrom_ideogram</a>
-  <ul class="collapse">
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  </ul></li>
+  <li><a href="#plot-data-over-gene-annotation" id="toc-plot-data-over-gene-annotation" class="nav-link active" data-scroll-target="#plot-data-over-gene-annotation">Plot data over gene annotation</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/chrom_ideogram.html">chrom_ideogram</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Gene plots</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Gene plots</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<section id="geneinfo.chrom_ideogram" class="level1">
-<h1>chrom_ideogram</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.chrom_ideogram(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    annot</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    hspace<span class="op">=</span><span class="fl">0.1</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    min_visible_width<span class="op">=</span><span class="dv">200000</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="st">'hg38'</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Plots an ideogram of the human chromosomes with annotations.</p>
-<section id="parameters" class="level2 doc-section doc-section-parameters">
-<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
-<dl>
-<dt><code><span class="parameter-name"><strong>annot</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>list</code></span></code></dt>
-<dd>
-<p>List of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>hspace</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.1</span></code></dt>
-<dd>
-<p>Space between ideograms, by default 0.1</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>min_visible_width</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">200000</span></code></dt>
-<dd>
-<p>Minum display width of very short annotations, by default 200000</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>figsize</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>tuple</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">(10, 10)</span></code></dt>
-<dd>
-<p>Figure size, by default (10,10)</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>assembly</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'hg38'</span></code></dt>
-<dd>
-<p>Human genome assembly, by default ‘hg38’</p>
-</dd>
-</dl>
-</section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> [</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr1'</span>, <span class="dv">20000000</span>, <span class="dv">20100000</span>, <span class="st">'red'</span>, <span class="st">'TP53'</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr5'</span>, <span class="dv">40000000</span>, <span class="dv">70000000</span>, <span class="st">'red'</span>, <span class="va">None</span>, <span class="dv">1</span>, <span class="fl">0.5</span>), </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr8'</span>, <span class="dv">90000000</span>, <span class="dv">110000000</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>chrom_ideogram(annot, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">9</span>), hspace<span class="op">=</span><span class="fl">0.2</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># black ticks every 10Mb on chrX</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> [(<span class="st">'chrX'</span>, x[<span class="dv">0</span>], x[<span class="dv">1</span>], <span class="st">'black'</span>, <span class="bu">str</span>(x[<span class="dv">2</span>]<span class="op">/</span><span class="dv">1000000</span>)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">150000000</span>, <span class="dv">10000000</span>), <span class="bu">range</span>(<span class="dv">300000</span>, <span class="dv">150000000</span>, <span class="dv">10000000</span>), <span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">150000000</span>, <span class="dv">10000000</span>))]</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>chrom_ideogram(annot, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">9</span>), hspace<span class="op">=</span><span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+    
+  
+    
+  </div>
+  
 
 
-</section>
+</header>
+
+
+<div id="cell-2" class="cell" data-tags="[]">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'retina'</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo <span class="im">as</span> gi</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>gi.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="plot-data-over-gene-annotation" class="level2">
+<h2 class="anchored" data-anchor-id="plot-data-over-gene-annotation">Plot data over gene annotation</h2>
+<div id="cell-4" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># x = np.linspace(1, 1520300000, 100000)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># y = np.random.random(100000)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># dummy manhattan data</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="dv">10000</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> rng.exponential(scale<span class="op">=</span><span class="dv">1</span>, size<span class="op">=</span>x.size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Standard plot:</strong></p>
+<div id="cell-6" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg38'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-4-output-1.png" width="630" height="472" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Same on older hg19 assembly:</strong></p>
+<div id="cell-8" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-5-output-1.png" width="630" height="472" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Two subplots for data:</strong></p>
+<div id="cell-10" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ax1, ax2 <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, return_axes<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ax1.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>ax2.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-6-output-1.png" width="630" height="472" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Three subplots for data and adjusted aspect ratio:</strong></p>
+<div id="cell-12" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ax1, ax2, ax3 <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, return_axes<span class="op">=</span><span class="dv">3</span>, aspect<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ax1.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ax2.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ax3.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-7-output-1.png" width="630" height="472" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Highlight a list of genes:</strong></p>
+<div id="cell-14" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>[<span class="st">'ATRX'</span>, <span class="st">'ATP7A'</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>sns.despine(ax<span class="op">=</span>ax) <span class="co"># make it look nicer</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-8-output-1.png" width="630" height="472" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Combinatorial hightlighting:</strong></p>
+<p>Combining text weight, style, color and bbox:</p>
+<div id="cell-16" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>highlight <span class="op">=</span> defaultdict(<span class="bu">dict</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'ATRX'</span>, <span class="st">'COX7B'</span>, <span class="st">'PGK1'</span>]:</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(weight<span class="op">=</span><span class="st">'bold'</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'MAGT1'</span>]:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(style<span class="op">=</span><span class="st">'italic'</span>))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'ATP7A'</span>, <span class="st">'ATRX'</span>]:</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(color<span class="op">=</span><span class="st">'red'</span>))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'PGK1'</span>, <span class="st">'ATRX'</span>]:</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(bbox<span class="op">=</span><span class="bu">dict</span>(edgecolor<span class="op">=</span><span class="st">'black'</span>, facecolor<span class="op">=</span><span class="st">'none'</span>, linewidth<span class="op">=</span><span class="fl">0.2</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-17" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>highlight)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>sns.despine(ax<span class="op">=</span>ax) <span class="co"># make it look nicer</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-10-output-1.png" width="630" height="472" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-18" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>highlight <span class="op">=</span> defaultdict(<span class="bu">dict</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> gene_list(<span class="st">'xi_any_evidence'</span>):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(weight<span class="op">=</span><span class="st">'bold'</span>))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> gene_list(<span class="st">'ech75_regions'</span>):</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(style<span class="op">=</span><span class="st">'italic'</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> gene_list(<span class="st">'sfari_all_conf'</span>) <span class="op">+</span> gene_list(<span class="st">'intelect_disabil'</span>):</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(color<span class="op">=</span><span class="st">'red'</span>))</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> gene_list(<span class="st">'gametologs'</span>) <span class="op">+</span>  gene_list(<span class="st">'mult_copy'</span>) <span class="op">+</span> gene_list(<span class="st">'xi_escape'</span>) <span class="op">+</span> gene_list(<span class="st">'cDEG'</span>) <span class="op">+</span> gene_list(<span class="st">'nDEG'</span>):</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(bbox<span class="op">=</span><span class="bu">dict</span>(edgecolor<span class="op">=</span><span class="st">'black'</span>, facecolor<span class="op">=</span><span class="st">'none'</span>, linewidth<span class="op">=</span><span class="fl">0.2</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-19" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>highlight)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sns.despine(ax<span class="op">=</span>ax) <span class="co"># make it look nicer</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-12-output-1.png" width="630" height="472" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Larger with colors:</strong></p>
+<div id="cell-21" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>highlight, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>, c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'viridis_r'</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>sns.despine(ax<span class="op">=</span>ax) <span class="co"># make it look nicer</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-13-output-1.png" width="689" height="391" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Other features:</strong></p>
+<div id="cell-23" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gi.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                  figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>),          <span class="co"># larger figure</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                  collapse_splice_var<span class="op">=</span><span class="va">False</span>, <span class="co"># show all splice variants separately</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                  exact_exons<span class="op">=</span><span class="va">False</span>,        <span class="co"># allow exons to be wide enough to be visible on large plots</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                  hard_limits<span class="op">=</span><span class="va">True</span>,          <span class="co"># truncate genes that overlap the borders of the specified range</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>sns.despine(ax<span class="op">=</span>ax) <span class="co"># make it look nicer</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="gene_plots_files/figure-html/cell-14-output-1.png" width="689" height="391" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -951,13 +878,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../api/gene_plot.html" class="pagination-link" aria-label="gene_plot">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">gene_plot</span>
+      <a href="../pages/gene_information.html" class="pagination-link" aria-label="Gene information">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Gene information</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../api/get_genes_region.html" class="pagination-link" aria-label="get_genes_region">
-        <span class="nav-page-text">get_genes_region</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../pages/chrom_ideograms.html" class="pagination-link" aria-label="Chromosome ideograms">
+        <span class="nav-page-text">Chromosome ideograms</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

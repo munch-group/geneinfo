@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>chrom_ideogram – geneinfo</title>
+<title>Gene information – geneinfo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../api/get_genes_region.html" rel="next">
-<link href="../api/gene_plot.html" rel="prev">
+<link href="../pages/gene_plots.html" rel="next">
+<link href="../pages/gene_ids.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -147,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/chrom_ideogram.html">chrom_ideogram</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_ids.html">Gene information</a></li><li class="breadcrumb-item"><a href="../pages/gene_information.html">Gene information</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -161,8 +161,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Function reference</span></a>
+  <a href="../pages/getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -176,14 +176,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_info.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_info</span></a>
+  <a href="../pages/gene_ids.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ID conversion</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_info_region.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_info_region</span></a>
+  <a href="../pages/gene_information.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Gene information</span></a>
   </div>
 </li>
       </ul>
@@ -199,14 +199,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_plot.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_plot</span></a>
+  <a href="../pages/gene_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gene plots</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/chrom_ideogram.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">chrom_ideogram</span></a>
+  <a href="../pages/chrom_ideograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chromosome ideograms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/string_nets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">String networks</span></a>
   </div>
 </li>
       </ul>
@@ -214,7 +220,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Gene coordinates</span></a>
+ <span class="menu-text">Gene ontology</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -222,235 +228,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region_dataframe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region_dataframe</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">ID conversion</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/ensembl_id.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ensembl_id</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/hgcn_symbol.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">hgcn_symbol</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/ensembl2symbol.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ensembl2symbol</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/ensembl2ncbi.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ensembl2ncbi</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">STRING networks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/string_network_table.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">string_network_table</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_string_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_string_network</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+  <a href="../pages/go_info.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GO information</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_info.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_info</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/go_term2name.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_term2name</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_name2term.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_name2term</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_go_terms_for_genes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_go_terms_for_genes</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_terms_for_go_regex.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_terms_for_go_regex</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_annotation_table.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_annotation_table</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+  <a href="../pages/go_enrichment.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GO enrichment</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/go_enrichment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">go_enrichment</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_evidence_codes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_evidence_codes</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/symbols_protein_coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">symbols_protein_coding</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/download_data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">download_data</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
- <span class="menu-text">GO graphs</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_dag_for_gene.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_dag_for_gene</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_dag_for_terms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_dag_for_terms</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/show_go_dag_enrichment_results.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">show_go_dag_enrichment_results</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
- <span class="menu-text">Gene annotation</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_for_go_regex.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_for_go_regex</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_for_go_terms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_for_go_terms</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/gene_annotation_table.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_annotation_table</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
- <span class="menu-text">Utilities</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">email</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">tabulate_genes</span></a>
   </div>
 </li>
       </ul>
@@ -465,70 +250,222 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#geneinfo.chrom_ideogram" id="toc-geneinfo.chrom_ideogram" class="nav-link active" data-scroll-target="#geneinfo.chrom_ideogram">chrom_ideogram</a>
-  <ul class="collapse">
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  </ul></li>
+  <li><a href="#summary-gene-information" id="toc-summary-gene-information" class="nav-link active" data-scroll-target="#summary-gene-information">Summary gene information</a></li>
+  <li><a href="#get-the-hgcn-symbol-for-an-alias" id="toc-get-the-hgcn-symbol-for-an-alias" class="nav-link" data-scroll-target="#get-the-hgcn-symbol-for-an-alias">Get the HGCN symbol for an alias</a></li>
+  <li><a href="#get-coordinates-for-genes-in-a-region" id="toc-get-coordinates-for-genes-in-a-region" class="nav-link" data-scroll-target="#get-coordinates-for-genes-in-a-region">Get coordinates for genes in a region</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/chrom_ideogram.html">chrom_ideogram</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_ids.html">Gene information</a></li><li class="breadcrumb-item"><a href="../pages/gene_information.html">Gene information</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Gene information</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<section id="geneinfo.chrom_ideogram" class="level1">
-<h1>chrom_ideogram</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.chrom_ideogram(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    annot</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    hspace<span class="op">=</span><span class="fl">0.1</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    min_visible_width<span class="op">=</span><span class="dv">200000</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="st">'hg38'</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Plots an ideogram of the human chromosomes with annotations.</p>
-<section id="parameters" class="level2 doc-section doc-section-parameters">
-<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
-<dl>
-<dt><code><span class="parameter-name"><strong>annot</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>list</code></span></code></dt>
-<dd>
-<p>List of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>hspace</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.1</span></code></dt>
-<dd>
-<p>Space between ideograms, by default 0.1</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>min_visible_width</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">200000</span></code></dt>
-<dd>
-<p>Minum display width of very short annotations, by default 200000</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>figsize</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>tuple</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">(10, 10)</span></code></dt>
-<dd>
-<p>Figure size, by default (10,10)</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>assembly</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'hg38'</span></code></dt>
-<dd>
-<p>Human genome assembly, by default ‘hg38’</p>
-</dd>
-</dl>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="cell-2" class="cell" data-tags="[]">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo <span class="im">as</span> gi</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gi.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="summary-gene-information" class="level2">
+<h2 class="anchored" data-anchor-id="summary-gene-information">Summary gene information</h2>
+<p><strong>Using gene symbol:</strong></p>
+<div id="cell-5" class="cell" data-tags="[]" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info(<span class="st">'USP4'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>USP4</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> UNP, Unph<br>
+<em>ubiquitin specific peptidase 4</em><br>
+<strong>Summary:</strong> The protein encoded by this gene is a protease that deubiquitinates target proteins such as ADORA2A and TRIM21. The encoded protein shuttles between the nucleus and cytoplasm and is involved in maintaining operational fidelity in the endoplasmic reticulum. Three transcript variants encoding different isoforms have been found for this gene. [provided by RefSeq, Oct 2011].<br>
+<strong>Genomic position:</strong> 3:49277144-49340712 (hg38), 3:49315264-49378145 (hg19)<br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=USP4">Gene card</a></p>
+<hr>
+</div>
+</div>
+<p><strong>Using NCBI ID:</strong></p>
+<div id="cell-7" class="cell" data-tags="[]" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info(<span class="dv">7157</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>TP53</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> BCC7, BMFS5, LFS1, P53, TRP53<br>
+<em>tumor protein p53</em><br>
+<strong>Summary:</strong> This gene encodes a tumor suppressor protein containing transcriptional activation, DNA binding, and oligomerization domains. The encoded protein responds to diverse cellular stresses to regulate expression of target genes, thereby inducing cell cycle arrest, apoptosis, senescence, DNA repair, or changes in metabolism. Mutations in this gene are associated with a variety of human cancers, including hereditary cancers such as Li-Fraumeni syndrome. Alternative splicing of this gene and the use of alternate promoters result in multiple transcript variants and isoforms. Additional isoforms have also been shown to result from the use of alternate translation initiation codons from identical transcript variants (PMIDs: 12032546, 20937277). [provided by RefSeq, Dec 2016].<br>
+<strong>Genomic position:</strong> 17:7661779-7687546 (hg38), 17:7565097-7590856 (hg19)<br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=TP53">Gene card</a></p>
+<hr>
+</div>
+</div>
+<p><strong>For a a list of genes:</strong></p>
+<div id="cell-9" class="cell" data-tags="[]" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info([<span class="st">'LARS2'</span>, <span class="st">'XCR1'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>LARS2</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> HLASA, LEURS, PRLTS4, mtLeuRS<br>
+<em>leucyl-tRNA synthetase 2, mitochondrial</em><br>
+<strong>Summary:</strong> This gene encodes a class 1 aminoacyl-tRNA synthetase, mitochondrial leucyl-tRNA synthetase. Each of the twenty aminoacyl-tRNA synthetases catalyzes the aminoacylation of a specific tRNA or tRNA isoaccepting family with the cognate amino acid. [provided by RefSeq, Jul 2008].<br>
+<strong>Genomic position:</strong> 3:45388561-45554726 (hg38), 3:45429998-45590913 (hg19)<br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=LARS2">Gene card</a></p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>XCR1</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> CCXCR1, GPR5<br>
+<em>X-C motif chemokine receptor 1</em><br>
+<strong>Summary:</strong> The protein encoded by this gene is a chemokine receptor belonging to the G protein-coupled receptor superfamily. The family members are characterized by the presence of 7 transmembrane domains. The encoded protein transduces a signal by increasing the intracellular calcium ion level. The viral macrophage inflammatory protein-II is an antagonist of this receptor and blocks signaling. Some studies have implicated a cluster of genes at 3p21.31, including this gene, as associated with COVID-19 risk. The encoded protein may also play a role in cell proliferation and migration in several types of cancer. [provided by RefSeq, Jan 2023].<br>
+<strong>Genomic position:</strong> 3:46016990-46085825 (hg38), 3:46058516-46069234 (hg19)<br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=XCR1">Gene card</a></p>
+<hr>
+</div>
+</div>
+<p><strong>For genes a region:</strong></p>
+<div id="cell-11" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>FGF16</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> FGF-16, MF4<br>
+<em>fibroblast growth factor 16</em><br>
+<strong>Summary:</strong> This gene encodes a member of a family of proteins that are involved in a variety of biological processes, including embryonic development, cell growth, morphogenesis, tissue repair, tumor growth and invasion. This gene is expressed in cardiac cells and is required for proper heart development. Mutation in this gene was also observed in individuals with metacarpal 4-5 fusion. [provided by RefSeq, Mar 2014].<br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=FGF16">Gene card</a></p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>ATRX</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX<br>
+<em>ATRX chromatin remodeler</em><br>
+<strong>Summary:</strong> The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].<br>
+<strong>Genomic position:</strong> X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)<br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=ATRX">Gene card</a></p>
+<hr>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>ATRX</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX<br>
+<em>ATRX chromatin remodeler</em><br>
+<strong>Summary:</strong> The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].<br>
+<strong>Genomic position:</strong> X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)<br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=ATRX">Gene card</a></p>
+<hr>
+</div>
+</div>
+<p>For species other than human:</p>
+<div id="cell-13" class="cell" data-tags="[]" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info(<span class="st">'DYNLT3'</span>, species<span class="op">=</span><span class="st">'mouse'</span>, scopes<span class="op">=</span>[<span class="st">'mgi'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><strong>Symbol:</strong> <strong><em>Dynlt3</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> 2310075M16Rik, Tcte1l<br>
+<em>dynein light chain Tctex-type 3</em><br>
+<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=Dynlt3">Gene card</a></p>
+<hr>
+</div>
+</div>
 </section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> [</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr1'</span>, <span class="dv">20000000</span>, <span class="dv">20100000</span>, <span class="st">'red'</span>, <span class="st">'TP53'</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr5'</span>, <span class="dv">40000000</span>, <span class="dv">70000000</span>, <span class="st">'red'</span>, <span class="va">None</span>, <span class="dv">1</span>, <span class="fl">0.5</span>), </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr8'</span>, <span class="dv">90000000</span>, <span class="dv">110000000</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>chrom_ideogram(annot, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">9</span>), hspace<span class="op">=</span><span class="fl">0.2</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># black ticks every 10Mb on chrX</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> [(<span class="st">'chrX'</span>, x[<span class="dv">0</span>], x[<span class="dv">1</span>], <span class="st">'black'</span>, <span class="bu">str</span>(x[<span class="dv">2</span>]<span class="op">/</span><span class="dv">1000000</span>)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">150000000</span>, <span class="dv">10000000</span>), <span class="bu">range</span>(<span class="dv">300000</span>, <span class="dv">150000000</span>, <span class="dv">10000000</span>), <span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">150000000</span>, <span class="dv">10000000</span>))]</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>chrom_ideogram(annot, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">9</span>), hspace<span class="op">=</span><span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-
+<section id="get-the-hgcn-symbol-for-an-alias" class="level2">
+<h2 class="anchored" data-anchor-id="get-the-hgcn-symbol-for-an-alias">Get the HGCN symbol for an alias</h2>
+<div id="cell-15" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gi.hgcn_symbol([<span class="st">'CXorf23'</span>, <span class="st">'BCLAF3'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>['BCLAF3', 'BCLAF3']</code></pre>
+</div>
+</div>
 </section>
+<section id="get-coordinates-for-genes-in-a-region" class="level2">
+<h2 class="anchored" data-anchor-id="get-coordinates-for-genes-in-a-region">Get coordinates for genes in a region</h2>
+<div id="cell-17" class="cell" data-tags="[]" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gi.get_genes_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>[('FGF16',
+  76709642,
+  76712769,
+  '+',
+  [(76709642, 76709751), (76711767, 76712769)]),
+ ('ATRX',
+  76760357,
+  77041702,
+  '-',
+  [(76760357, 76764107),
+   (76776265, 76776394),
+   (76776880, 76776976),
+   (76777740, 76777866),
+   (76778729, 76778879),
+   (76812921, 76813116),
+   (76814139, 76814317),
+   (76829714, 76829823),
+   (76845303, 76845410),
+   (76849165, 76849319),
+   (76854879, 76855049),
+   (76855200, 76855289),
+   (76855902, 76856033),
+   (76872080, 76872198),
+   (76874273, 76874449),
+   (76875862, 76876000),
+   (76888694, 76888872),
+   (76889053, 76889200),
+   (76890084, 76890194),
+   (76891405, 76891547),
+   (76907603, 76907843),
+   (76909587, 76909690),
+   (76912049, 76912143),
+   (76918870, 76919047),
+   (76920133, 76920267),
+   (76931720, 76931793),
+   (76937011, 76940085),
+   (76940430, 76940498),
+   (76944310, 76944420),
+   (76949312, 76949426),
+   (76952064, 76952192),
+   (76953070, 76953123),
+   (76954061, 76954117),
+   (76972607, 76972720),
+   (77041467, 77041702)]),
+ ('ATRX',
+  76760357,
+  77041702,
+  '-',
+  [(76760357, 76764107),
+   (76776265, 76776394),
+   (76776880, 76776976),
+   (76777740, 76777866),
+   (76778729, 76778879),
+   (76812921, 76813116),
+   (76814139, 76814317),
+   (76829714, 76829823),
+   (76845303, 76845410),
+   (76849165, 76849319),
+   (76854879, 76855049),
+   (76855200, 76855289),
+   (76855902, 76856033),
+   (76872080, 76872198),
+   (76874273, 76874449),
+   (76875862, 76876000),
+   (76888694, 76888872),
+   (76889053, 76889200),
+   (76890084, 76890194),
+   (76891405, 76891547),
+   (76907603, 76907843),
+   (76909587, 76909690),
+   (76912049, 76912143),
+   (76918870, 76919047),
+   (76920133, 76920267),
+   (76931720, 76931793),
+   (76937011, 76940085),
+   (76940430, 76940498),
+   (76944310, 76944420),
+   (76952064, 76952192),
+   (76953070, 76953123),
+   (76954061, 76954117),
+   (76972607, 76972720),
+   (77041467, 77041702)])]</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -951,13 +888,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../api/gene_plot.html" class="pagination-link" aria-label="gene_plot">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">gene_plot</span>
+      <a href="../pages/gene_ids.html" class="pagination-link" aria-label="ID conversion">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">ID conversion</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../api/get_genes_region.html" class="pagination-link" aria-label="get_genes_region">
-        <span class="nav-page-text">get_genes_region</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../pages/gene_plots.html" class="pagination-link" aria-label="Gene plots">
+        <span class="nav-page-text">Gene plots</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

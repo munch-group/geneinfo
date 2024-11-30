@@ -59,7 +59,7 @@
     "href": "api/ensembl_id.html",
     "title": "ensembl_id",
     "section": "",
-    "text": "geneinfo.ensembl_id(name, species='homo_sapiens')\nGet ENSEMBL ID for some gene identifier\n\n\n\nname : str\n\nGene identifier\n\nspecies : optional = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’\n\n\n\n\n\n\n : str\n\nENSEMBL ID\n\n\n\n\n\n\n: [](~geneinfo.NotFound)\n\nRaises exception if no ENSEMBL ID can be found.",
+    "text": "geneinfo.ensembl_id(name, species='homo_sapiens')\nGet ENSEMBL ID for some gene identifier\n\n\n\nname : Union[str, list]\n\nGene identifier\n\nspecies : optional = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’\n\n\n\n\n\n\n : str\n\nENSEMBL ID\n\n\n\n\n\n\n: [](~geneinfo.NotFound)\n\nRaises exception if no ENSEMBL ID can be found.",
     "crumbs": [
       "ID conversion",
       "ensembl_id"
@@ -70,7 +70,7 @@
     "href": "api/ensembl_id.html#parameters",
     "title": "ensembl_id",
     "section": "",
-    "text": "name : str\n\nGene identifier\n\nspecies : optional = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’",
+    "text": "name : Union[str, list]\n\nGene identifier\n\nspecies : optional = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’",
     "crumbs": [
       "ID conversion",
       "ensembl_id"
@@ -532,7 +532,7 @@
     "href": "pages/getting_started.html",
     "title": "Overview",
     "section": "",
-    "text": "geneinfo lets you …\nNulla eget cursus ipsum. Vivamus porttitor leo diam, sed volutpat lectus facilisis sit amet. Maecenas et pulvinar metus. Ut at dignissim tellus. In in tincidunt elit. Etiam vulputate lobortis arcu, vel faucibus leo lobortis ac. Aliquam erat volutpat. In interdum orci ac est euismod euismod. Nunc eleifend tristique risus, at lacinia odio commodo in. Sed aliquet ligula odio, sed tempor neque ultricies sit amet.",
+    "text": "geneinfo is a compilation of gene information APIs adapted for use in a Jupyter notebook.\nVestibulum ultrices, tortor at mattis porta, odio nisi rutrum nulla, sit amet tincidunt eros quam facilisis tellus. Fusce eleifend lectus in elementum lacinia. Nam auctor nunc in massa ullamcorper, sit amet auctor ante accumsan. Nam ut varius metus. Curabitur eget tristique leo. Cras finibus euismod erat eget elementum. Integer vel placerat ex. Ut id eros quis lectus lacinia venenatis hendrerit vel ante.",
     "crumbs": [
       "Overview"
     ]
@@ -548,173 +548,241 @@
     ]
   },
   {
-    "objectID": "pages/getting_started.html#basic-use",
-    "href": "pages/getting_started.html#basic-use",
-    "title": "Overview",
-    "section": "Basic use",
-    "text": "Basic use\nAenean placerat luctus tortor vitae molestie. Nulla at aliquet nulla. Sed efficitur tellus orci, sed fringilla lectus laoreet eget. Vivamus maximus quam sit amet arcu dignissim, sed accumsan massa ullamcorper. Sed iaculis tincidunt feugiat. Nulla in est at nunc ultricies dictum ut vitae nunc. Aenean convallis vel diam at malesuada. Suspendisse arcu libero, vehicula tempus ultrices a, placerat sit amet tortor. Sed dictum id nulla commodo mattis. Aliquam mollis, nunc eu tristique faucibus, purus lacus tincidunt nulla, ac pretium lorem nunc ut enim. Curabitur eget mattis nisl, vitae sodales augue. Nam felis massa, bibendum sit amet nulla vel, vulputate rutrum lacus. Aenean convallis odio pharetra nulla mattis consequat.",
-    "crumbs": [
-      "Overview"
-    ]
-  },
-  {
-    "objectID": "pages/getting_started.html#some-use-case",
-    "href": "pages/getting_started.html#some-use-case",
-    "title": "Overview",
-    "section": "Some use case",
-    "text": "Some use case\nThe foo function does … geneinfo.gene_info does … gene_info does …\nNunc ac dignissim magna. Vestibulum vitae egestas elit. Proin feugiat leo quis ante condimentum, eu ornare mauris feugiat. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris cursus laoreet ex, dignissim bibendum est posuere iaculis. Suspendisse et maximus elit. In fringilla gravida ornare. Aenean id lectus pulvinar, sagittis felis nec, rutrum risus. Nam vel neque eu arcu blandit fringilla et in quam. Aliquam luctus est sit amet vestibulum eleifend. Phasellus elementum sagittis molestie. Proin tempor lorem arcu, at condimentum purus volutpat eu. Fusce et pellentesque ligula. Pellentesque id tellus at erat luctus fringilla. Suspendisse potenti.\ngene_info(\"ALG13\")",
-    "crumbs": [
-      "Overview"
-    ]
-  },
-  {
-    "objectID": "pages/getting_started.html#learning-more",
-    "href": "pages/getting_started.html#learning-more",
-    "title": "Overview",
-    "section": "Learning more",
-    "text": "Learning more\nGo to the anvanced page to learn how to …\n\nExamples page: sites using quartodoc.",
-    "crumbs": [
-      "Overview"
-    ]
-  },
-  {
-    "objectID": "pages/examples.html",
-    "href": "pages/examples.html",
-    "title": "Example use",
+    "objectID": "pages/gene_information.html",
+    "href": "pages/gene_information.html",
+    "title": "Gene information",
     "section": "",
-    "text": "import sys, os\nimport re\nfrom collections import defaultdict\nimport numpy as np\nimport pandas as pd\nimport pickle\n\n%matplotlib inline\n\nimport matplotlib.pyplot as plt\nfrom matplotlib_inline.backend_inline import set_matplotlib_formats\nset_matplotlib_formats('retina', 'png')\nfrom matplotlib.patches import Rectangle, Polygon\nimport seaborn as sns\nsns.set_style('white')\n\nimport geneinfo as gi\ngi.email('your@email.com')\n\n#%run -i build_cache.py\nIn-house uliity for accessing gene lists in google spreadsheet:\nfrom math import sqrt\nfrom itertools import zip_longest\n\ndef list_genes(words, ncols=None):\n    n = len(words)\n    col_width = max(map(len, words)) + 1\n    if ncols is None:\n        ncols = max(100//col_width, 1+sqrt(n/col_width))\n    nrows = int(n/ncols) + 1\n    rows = []\n    for r in range(0, n, nrows):\n        rows.append(words[r:r+nrows])\n    for row in list(zip_longest(*rows, fillvalue='')):\n        line = []\n        for gene in row:\n            line.append(gene.ljust(col_width))\n        print(''.join(line))\n\ndef read_google_sheet():\n    SHEET_ID = '1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk'\n    SHEET_NAME = 'Sheet1'\n    url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'\n    df = pd.read_csv(url, header=1, low_memory=False)\n    return df.loc[:, [not x.startswith('Unnamed') for x in df.columns]]\n    \ndef gene_list_names():\n    df = read_google_sheet()\n    return sorted(df.columns.tolist())\n\ndef gene_list(name):\n    df = read_google_sheet()\n    sr = df[name]\n    return sr[~sr.isnull()]\n# from pkg_resources import resource_filename\n# with open(resource_filename('geneinfo', 'data/gene_lists.pickle'), 'rb') as f:\n#     gene_lists = pickle.load(f)\n    \n# def gene_list_names():\n#     return sorted(gene_lists.keys())\n\n# def gene_list(name):\n#     return gene_lists[name].tolist()\ngene_list_names()        \n\n['accel_reg_simiiformes_br',\n 'all_npx',\n 'all_post_mei_expr',\n 'ari_all',\n 'ari_nonPUR',\n 'ari_relate_AFR',\n 'ari_relate_ASIA',\n 'ari_relate_EUR',\n 'ari_relate_PUR',\n 'cDEG',\n 'candidates',\n 'ech75_regions',\n 'ech90_regions',\n 'expr_mod_xi_copynr_fibrobl',\n 'expr_mod_xi_copynr_lcl',\n 'gametologs',\n 'hpa_brain_prot',\n 'intel_seiz_lang',\n 'intelect_disabil',\n 'intersection(nDEG, matos_neuron)',\n 'matos_common',\n 'matos_common_no_xy_gametologs',\n 'matos_neuron',\n 'meritxell_spermatid_expr',\n 'msci',\n 'msci_esc',\n 'mult_copy',\n 'my_primate_codeml',\n 'nDEG',\n 'neuron_genome_proteome',\n 'neuron_npx_proteome',\n 'primate_ampl_multi',\n 'reg_sa_pheno',\n 'sfari_all_conf',\n 'union(H,matos_common)',\n 'xi',\n 'xi_any_evidence',\n 'xi_escape',\n 'xi_uncertain']\nxi_escape = gene_list('xi_escape')\nlist_genes(xi_escape)\n\nAFF2    CDK16   EFNB1   GPR173  IKBKG   MAMLD1  OFD1    PPP2R3B SEPTIN6 TCEAL9  XG      \nAKAP17A CDR1    EIF1AX  GPR174  IL3RA   MAP7D2  P2RY10  PQBP1   SLC25A6 TCEANC  XIST    \nALG13   CHM     EIF2S3  GTPBP6  IQSEC2  MED14   P2RY8   PRKX    SMC1A   TRAPPC2 XPNPEP2 \nAP1S2   COX7B   FGF13   GYG2    JPX     MSL3    PDZD11  PUDP    SRPX    TXLNG   ZBED1   \nARSD    CXorf38 FHL1    HCFC1   KDM5C   MXRA5   PHKA1   RAB9A   STK26   UBA1    ZFX     \nASMTL   CXorf65 FOXO4   HEPH    KDM6A   NAA10   PLCXD1  RBBP7   STS     UBQLN2  ZRSR2   \nCA5B    DDX3X   FUNDC1  HMGN5   LRCH2   NHS     PNPLA4  RPS4X   SYAP1   USP9X           \nCD99    DHRSX   GEMIN8  HUWE1   MAGEE1  NHSL2   PORCN   SCML2   TASL    WAS\nLeft align in pandas tables:\nclass left:\n    def __rlshift__(self, df):\n        \"Left align columns of data frame: df &lt;&lt; left()\"\n        left_aligned_df = df.style.set_properties(**{'text-align': 'left'})\n        left_aligned_df = left_aligned_df.set_table_styles(\n        [dict(selector = 'th', props=[('text-align', 'left')])])\n        display(left_aligned_df)\n        \ndf = pd.DataFrame(dict(name=['A', 'B'], desc=['bla bla bla bla', 'bla']))\ndf\n\n\n\n\n\n\n\n\nname\ndesc\n\n\n\n\n0\nA\nbla bla bla bla\n\n\n1\nB\nbla\ndf &lt;&lt; left()\n\n\n\n\n\n\n \nname\ndesc\n\n\n\n\n0\nA\nbla bla bla bla\n\n\n1\nB\nbla\n%%html\n&lt;style&gt; table { font-variant-numeric: tabular-nums; } &lt;/style&gt;",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene information",
+      "Gene information"
     ]
   },
   {
-    "objectID": "pages/examples.html#summary-gene-information",
-    "href": "pages/examples.html#summary-gene-information",
-    "title": "Example use",
+    "objectID": "pages/gene_information.html#summary-gene-information",
+    "href": "pages/gene_information.html#summary-gene-information",
+    "title": "Gene information",
     "section": "Summary gene information",
     "text": "Summary gene information\nUsing gene symbol:\n\ngi.gene_info('USP4')\n\nSymbol: USP4 (protein-coding)         Aliases: UNP, Unph\nubiquitin specific peptidase 4\nSummary: The protein encoded by this gene is a protease that deubiquitinates target proteins such as ADORA2A and TRIM21. The encoded protein shuttles between the nucleus and cytoplasm and is involved in maintaining operational fidelity in the endoplasmic reticulum. Three transcript variants encoding different isoforms have been found for this gene. [provided by RefSeq, Oct 2011].\nGenomic position: 3:49277144-49340712 (hg38), 3:49315264-49378145 (hg19)\nGene card\n\n\n\nUsing NCBI ID:\n\ngi.gene_info(7157)\n\nSymbol: TP53 (protein-coding)         Aliases: BCC7, BMFS5, LFS1, P53, TRP53\ntumor protein p53\nSummary: This gene encodes a tumor suppressor protein containing transcriptional activation, DNA binding, and oligomerization domains. The encoded protein responds to diverse cellular stresses to regulate expression of target genes, thereby inducing cell cycle arrest, apoptosis, senescence, DNA repair, or changes in metabolism. Mutations in this gene are associated with a variety of human cancers, including hereditary cancers such as Li-Fraumeni syndrome. Alternative splicing of this gene and the use of alternate promoters result in multiple transcript variants and isoforms. Additional isoforms have also been shown to result from the use of alternate translation initiation codons from identical transcript variants (PMIDs: 12032546, 20937277). [provided by RefSeq, Dec 2016].\nGenomic position: 17:7661779-7687546 (hg38), 17:7565097-7590856 (hg19)\nGene card\n\n\n\nFor a a list of genes:\n\ngi.gene_info(['LARS2', 'XCR1'])\n\nSymbol: LARS2 (protein-coding)         Aliases: HLASA, LEURS, PRLTS4, mtLeuRS\nleucyl-tRNA synthetase 2, mitochondrial\nSummary: This gene encodes a class 1 aminoacyl-tRNA synthetase, mitochondrial leucyl-tRNA synthetase. Each of the twenty aminoacyl-tRNA synthetases catalyzes the aminoacylation of a specific tRNA or tRNA isoaccepting family with the cognate amino acid. [provided by RefSeq, Jul 2008].\nGenomic position: 3:45388561-45554726 (hg38), 3:45429998-45590913 (hg19)\nGene card\n\n\n\nSymbol: XCR1 (protein-coding)         Aliases: CCXCR1, GPR5\nX-C motif chemokine receptor 1\nSummary: The protein encoded by this gene is a chemokine receptor belonging to the G protein-coupled receptor superfamily. The family members are characterized by the presence of 7 transmembrane domains. The encoded protein transduces a signal by increasing the intracellular calcium ion level. The viral macrophage inflammatory protein-II is an antagonist of this receptor and blocks signaling. Some studies have implicated a cluster of genes at 3p21.31, including this gene, as associated with COVID-19 risk. The encoded protein may also play a role in cell proliferation and migration in several types of cancer. [provided by RefSeq, Jan 2023].\nGenomic position: 3:46016990-46085825 (hg38), 3:46058516-46069234 (hg19)\nGene card\n\n\n\nFor genes a region:\n\ngi.gene_info_region('chrX', 76500000, 77000000, assembly='hg19')\n\nSymbol: FGF16 (protein-coding)         Aliases: FGF-16, MF4\nfibroblast growth factor 16\nSummary: This gene encodes a member of a family of proteins that are involved in a variety of biological processes, including embryonic development, cell growth, morphogenesis, tissue repair, tumor growth and invasion. This gene is expressed in cardiac cells and is required for proper heart development. Mutation in this gene was also observed in individuals with metacarpal 4-5 fusion. [provided by RefSeq, Mar 2014].\nGene card\n\n\n\nSymbol: ATRX (protein-coding)         Aliases: JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX\nATRX chromatin remodeler\nSummary: The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].\nGenomic position: X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)\nGene card\n\n\n\nSymbol: ATRX (protein-coding)         Aliases: JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX\nATRX chromatin remodeler\nSummary: The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].\nGenomic position: X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)\nGene card\n\n\n\nFor species other than human:\n\ngi.gene_info('DYNLT3', species='mouse', scopes=['mgi'])\n\nSymbol: Dynlt3 (protein-coding)         Aliases: 2310075M16Rik, Tcte1l\ndynein light chain Tctex-type 3\nGene card",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene information",
+      "Gene information"
     ]
   },
   {
-    "objectID": "pages/examples.html#get-the-hgcn-symbol-for-an-alias",
-    "href": "pages/examples.html#get-the-hgcn-symbol-for-an-alias",
-    "title": "Example use",
+    "objectID": "pages/gene_information.html#get-the-hgcn-symbol-for-an-alias",
+    "href": "pages/gene_information.html#get-the-hgcn-symbol-for-an-alias",
+    "title": "Gene information",
     "section": "Get the HGCN symbol for an alias",
     "text": "Get the HGCN symbol for an alias\n\ngi.hgcn_symbol(['CXorf23', 'BCLAF3'])\n\n['BCLAF3', 'BCLAF3']",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene information",
+      "Gene information"
     ]
   },
   {
-    "objectID": "pages/examples.html#get-coordinates-for-genes-in-a-region",
-    "href": "pages/examples.html#get-coordinates-for-genes-in-a-region",
-    "title": "Example use",
+    "objectID": "pages/gene_information.html#get-coordinates-for-genes-in-a-region",
+    "href": "pages/gene_information.html#get-coordinates-for-genes-in-a-region",
+    "title": "Gene information",
     "section": "Get coordinates for genes in a region",
     "text": "Get coordinates for genes in a region\n\ngi.get_genes_region('chrX', 76500000, 77000000, assembly='hg19')\n\n[('FGF16',\n  76709642,\n  76712769,\n  '+',\n  [(76709642, 76709751), (76711767, 76712769)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76949312, 76949426),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)])]",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene information",
+      "Gene information"
     ]
   },
   {
-    "objectID": "pages/examples.html#plot-data-over-gene-annotation",
-    "href": "pages/examples.html#plot-data-over-gene-annotation",
-    "title": "Example use",
-    "section": "Plot data over gene annotation",
-    "text": "Plot data over gene annotation\n\n# x = np.linspace(1, 1520300000, 100000)\n# y = np.random.random(100000)\n# dummy manhattan data\nx = np.linspace(76500000, 77500000, 10000)\nrng = np.random.default_rng()\ny = rng.exponential(scale=1, size=x.size)\n\nStandard plot:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg38')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nSame on older hg19 assembly:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nTwo subplots for data:\n\nax1, ax2 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=2)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nThree subplots for data and adjusted aspect ratio:\n\nax1, ax2, ax3 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=3, aspect=0.5)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nax3.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nHighlight a list of genes:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=['ATRX', 'ATP7A'])\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nCombinatorial hightlighting:\nCombining text weight, style, color and bbox:\n\nhighlight = defaultdict(dict)\nfor gene in ['ATRX', 'COX7B', 'PGK1']:\n    highlight[gene].update(dict(weight='bold'))\nfor gene in ['MAGT1']:\n    highlight[gene].update(dict(style='italic'))\nfor gene in ['ATP7A', 'ATRX']:\n    highlight[gene].update(dict(color='red'))\nfor gene in ['PGK1', 'ATRX']:\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\n\nhighlight = defaultdict(dict)\nfor gene in gene_list('xi_any_evidence'):\n    highlight[gene].update(dict(weight='bold'))\nfor gene in gene_list('ech75_regions'):\n    highlight[gene].update(dict(style='italic'))\nfor gene in gene_list('sfari_all_conf') + gene_list('intelect_disabil'):\n    highlight[gene].update(dict(color='red'))\nfor gene in gene_list('gametologs') +  gene_list('mult_copy') + gene_list('xi_escape') + gene_list('cDEG') + gene_list('nDEG'):\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nLarger with colors:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight, figsize=(7, 4))\n\nax.scatter(x, y, s=2, c=y, cmap='viridis_r')\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nOther features:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19',\n                  figsize=(7, 4),          # larger figure\n                  collapse_splice_var=False, # show all splice variants separately\n                  exact_exons=False,        # allow exons to be wide enough to be visible on large plots\n                  hard_limits=True,          # truncate genes that overlap the borders of the specified range\n                 )\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()",
+    "objectID": "pages/go_info.html",
+    "href": "pages/go_info.html",
+    "title": "GO information",
+    "section": "",
+    "text": "import pandas as pd\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\nclass left:\n    def __rlshift__(self, df):\n        \"Left align columns of data frame: df &lt;&lt; left()\"\n        left_aligned_df = df.style.set_properties(**{'text-align': 'left'})\n        left_aligned_df = left_aligned_df.set_table_styles(\n        [dict(selector = 'th', props=[('text-align', 'left')])])\n        display(left_aligned_df)\n        \ndf = pd.DataFrame(dict(name=['A', 'B'], desc=['bla bla bla bla', 'bla']))\ndf\nNB: The first time you use the GO utilities, it will spend a very long time downloading data. If you do not want to wait that out in the notebook, you can execute this command in the folder where you store your notebooks:\nGet info for one or more GO terms:\ngi.go_info('GO:0000776')\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\ngi.go_info(['GO:0000776', 'GO:0005634'])\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\nGet GO terms for a one or more genes:\ngo_terms = gi.get_go_terms_for_genes(['DYNLT3'])\ngo_terms[:10]\n\n['GO:0000776',\n 'GO:0005515',\n 'GO:0005634',\n 'GO:0005737',\n 'GO:0005868',\n 'GO:0007018',\n 'GO:0007346',\n 'GO:0042802',\n 'GO:0045505',\n 'GO:0045931']\nDescriptions for GO terms for one or more genes:\ngi.go_info(gi.get_go_terms_for_genes(['DYNLT3']))\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005515: protein binding\nBinding to a protein.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\n\n\n\nGO:0005737: cytoplasm\nThe contents of a cell excluding the plasma membrane and nucleus, but including other subcellular structures.\n\n\n\nGO:0005868: cytoplasmic dynein complex\nAny dynein complex with a homodimeric dynein heavy chain core that catalyzes movement along a microtubule. Cytoplasmic dynein complexes participate in many cytoplasmic transport activities in eukaryotes, such as mRNA localization, intermediate filament transport, nuclear envelope breakdown, apoptosis, transport of centrosomal proteins, mitotic spindle assembly, virus transport, kinetochore functions, and movement of signaling and spindle checkpoint proteins. Some complexes participate in intraflagellar transport. Subunits associated with the dynein heavy chain mediate association between dynein heavy chain and cargoes, and may include light chains and light intermediate chains.\n\n\n\nGO:0007018: microtubule-based movement\nA microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.\n\n\n\nGO:0007346: regulation of mitotic cell cycle\nAny process that modulates the rate or extent of progress through the mitotic cell cycle.\n\n\n\nGO:0042802: identical protein binding\nBinding to an identical protein or proteins.\n\n\n\nGO:0045505: dynein intermediate chain binding\nBinding to an intermediate chain of the dynein complex.\n\n\n\nGO:0045931: positive regulation of mitotic cell cycle\nAny process that activates or increases the rate or extent of progression through the mitotic cell cycle.\n\n\n\nGO:0051301: cell division\nThe process resulting in division and partitioning of components of a cell to form more cells; may or may not be accompanied by the physical separation of a cell into distinct, individually membrane-bounded daughter cells.\n\n\n\nGO:0061673: mitotic spindle astral microtubule\nAny of the mitotic spindle microtubules that radiate in all directions from the spindle poles and are thought to contribute to the forces that separate the poles and position them in relation to the rest of the cell.",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene ontology",
+      "GO information"
     ]
   },
   {
-    "objectID": "pages/examples.html#show-string-interaction-network",
-    "href": "pages/examples.html#show-string-interaction-network",
-    "title": "Example use",
-    "section": "Show STRING interaction network",
-    "text": "Show STRING interaction network\n\ngi.show_string_network(['ATRX', 'TP53', 'RAD51'], nodes=10)",
-    "crumbs": [
-      "Examples",
-      "Example use"
-    ]
-  },
-  {
-    "objectID": "pages/examples.html#chromosome-ideogram",
-    "href": "pages/examples.html#chromosome-ideogram",
-    "title": "Example use",
-    "section": "Chromosome ideogram",
-    "text": "Chromosome ideogram\n\n# import importlib\n# import geneinfo\n# importlib.reload(geneinfo)\n\n\nannotation = [\n    ('chr1', 50000000, 50001000),                          # segment color defaults to red\n    ('chr2', 10000000, 1000000, 'green'),                  # with segment color\n    ('chr3', 45000000, 55000000, 'blue', 'NAME'),          # with name label\n    ('chr6', 10000000, 15000000, 'magenta', None, 0, 0.5), # with base and height\n    ('chr6', 10000000, 15000000, 'pink', None, 0.5, 0.5),  # with base and height\n]\n\ngi.chrom_ideogram(annotation, figsize=(8, 8))\n\n\n\n\n\n\n\n\nTo make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):\n\ngi.chrom_ideogram(annotation, figsize=(8, 8), min_visible_width=1)\n\n\n\n\n\n\n\n\nOther assembly, figure dimentions:\n\ngi.chrom_ideogram(annotation, assembly='hg19', figsize=(8, 8))\n\n\n\n\n\n\n\n\nYou can add position markers along a chromosome like this to better see the location of some segments:\n\nchrom = 'chr3'\nstart = 100000000\nend = 200000000\nwidth = 10000000\nannotation2 = annotation + [(chrom, x[0], x[1], 'black', str(x[2]/width)) for x in zip(\n    range(start, end, width), \n    range(start+1, end, width), \n    range(start, end, width)\n)]\ngi.chrom_ideogram(annotation2, figsize=(8, 8))",
-    "crumbs": [
-      "Examples",
-      "Example use"
-    ]
-  },
-  {
-    "objectID": "pages/examples.html#gene-ontology-information",
-    "href": "pages/examples.html#gene-ontology-information",
-    "title": "Example use",
-    "section": "Gene ontology information",
-    "text": "Gene ontology information\nNB: The first time you use the GO utilities, it will spend a very long time downloading data. If you do not want to wait that out in the notebook, you can execute this command in the folder where you store your notebooks:\nconda run -n &lt;environment&gt; python -c 'import geneinfo ; geneinfo.download_data()'\nGet info for one or more GO terms:\n\ngi.go_info('GO:0000776')\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\n\ngi.go_info(['GO:0000776', 'GO:0005634'])\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\n\n\n\nGet GO terms for a one or more genes:\n\ngo_terms = gi.get_go_terms_for_genes(['DYNLT3'])\ngo_terms[:10]\n\n['GO:0000776',\n 'GO:0005515',\n 'GO:0005634',\n 'GO:0005737',\n 'GO:0005868',\n 'GO:0007018',\n 'GO:0007346',\n 'GO:0042802',\n 'GO:0045505',\n 'GO:0045931']\n\n\nDescriptions for GO terms for one or more genes:\n\ngi.go_info(gi.get_go_terms_for_genes(['DYNLT3']))\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005515: protein binding\nBinding to a protein.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\n\n\n\nGO:0005737: cytoplasm\nThe contents of a cell excluding the plasma membrane and nucleus, but including other subcellular structures.\n\n\n\nGO:0005868: cytoplasmic dynein complex\nAny dynein complex with a homodimeric dynein heavy chain core that catalyzes movement along a microtubule. Cytoplasmic dynein complexes participate in many cytoplasmic transport activities in eukaryotes, such as mRNA localization, intermediate filament transport, nuclear envelope breakdown, apoptosis, transport of centrosomal proteins, mitotic spindle assembly, virus transport, kinetochore functions, and movement of signaling and spindle checkpoint proteins. Some complexes participate in intraflagellar transport. Subunits associated with the dynein heavy chain mediate association between dynein heavy chain and cargoes, and may include light chains and light intermediate chains.\n\n\n\nGO:0007018: microtubule-based movement\nA microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.\n\n\n\nGO:0007346: regulation of mitotic cell cycle\nAny process that modulates the rate or extent of progress through the mitotic cell cycle.\n\n\n\nGO:0042802: identical protein binding\nBinding to an identical protein or proteins.\n\n\n\nGO:0045505: dynein intermediate chain binding\nBinding to an intermediate chain of the dynein complex.\n\n\n\nGO:0045931: positive regulation of mitotic cell cycle\nAny process that activates or increases the rate or extent of progression through the mitotic cell cycle.\n\n\n\nGO:0051301: cell division\nThe process resulting in division and partitioning of components of a cell to form more cells; may or may not be accompanied by the physical separation of a cell into distinct, individually membrane-bounded daughter cells.\n\n\n\nGO:0061673: mitotic spindle astral microtubule\nAny of the mitotic spindle microtubules that radiate in all directions from the spindle poles and are thought to contribute to the forces that separate the poles and position them in relation to the rest of the cell.",
-    "crumbs": [
-      "Examples",
-      "Example use"
-    ]
-  },
-  {
-    "objectID": "pages/examples.html#go-graphs",
-    "href": "pages/examples.html#go-graphs",
-    "title": "Example use",
+    "objectID": "pages/go_info.html#go-graphs",
+    "href": "pages/go_info.html#go-graphs",
+    "title": "GO information",
     "section": "GO graphs",
     "text": "GO graphs\nShow the sub-graph for a list of GO terms:\n\nimport geneinfo\nimport importlib\nimportlib.reload(geneinfo)\n#geneinfo.go_info('GO:0000776')\ngeneinfo.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\n\ngi.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\nShow the sub-graph for the GO terms of a single gene:\n\ngi.show_go_dag_for_gene('DYNLT3')\n\n\n\n\n\n\n\n\nSame but using GO annotation backed by certain kinds of evidence:\n\ngi.show_go_dag_for_gene('DYNLT3', evidence=['IDA', 'EXP', 'HTP'])\n\n\n\n\n\n\n\n\nShow the categories of evidence backing GO annotations:\n\ngi.show_go_evidence_codes()\n\nExperimental evidence codes:  Inferred from Experiment (EXP)  Inferred from Direct Assay (IDA)  Inferred from Physical Interaction (IPI)  Inferred from Mutant Phenotype (IMP)  Inferred from Genetic Interaction (IGI)  Inferred from Expression Pattern (IEP)  Inferred from High Throughput Experiment (HTP)  Inferred from High Throughput Direct Assay (HDA)  Inferred from High Throughput Mutant Phenotype (HMP)  Inferred from High Throughput Genetic Interaction (HGI)  Inferred from High Throughput Expression Pattern (HEP)\nPhylogenetically-inferred annotations:  Inferred from Biological aspect of Ancestor (IBA)  Inferred from Biological aspect of Descendant (IBD)  Inferred from Key Residues (IKR)  Inferred from Rapid Divergence (IRD)\nComputational analysis evidence codes  Inferred from Sequence or structural Similarity (ISS)  Inferred from Sequence Orthology (ISO)  Inferred from Sequence Alignment (ISA)  Inferred from Sequence Model (ISM)  Inferred from Genomic Context (IGC)  Inferred from Reviewed Computational Analysis (RCA)\nAuthor statement evidence codes:  Traceable Author Statement (TAS)  Non-traceable Author Statement (NAS)\nCurator statement evidence codes:  Inferred by Curator (IC)  No biological Data available (ND)\nElectronic annotation evidence code:  Inferred from Electronic Annotation (IEA)",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene ontology",
+      "GO information"
     ]
   },
   {
-    "objectID": "pages/examples.html#find-genes-based-on-go-info",
-    "href": "pages/examples.html#find-genes-based-on-go-info",
-    "title": "Example use",
+    "objectID": "pages/go_info.html#find-genes-based-on-go-info",
+    "href": "pages/go_info.html#find-genes-based-on-go-info",
+    "title": "GO information",
     "section": "Find genes based on GO info",
     "text": "Find genes based on GO info\nFind genes matching a regular expression in any associated GO term description:\n\nmotor_genes_df = gi.get_genes_for_go_regex('kinesin|dynein')\nmotor_genes_df.head() &lt;&lt; left()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n \nsymbol\nname\nchrom\nstart\nend\n\n\n\n\n0\nSPAG1\nsperm associated antigen 1\n8\n100158037\n100241903\n\n\n1\nBLOC1S2\nbiogenesis of lysosomal organelles complex 1 subunit 2\n10\n100286679\n100273277\n\n\n2\nLZTS2\nleucine zipper tumor suppressor 2\n10\n100996587\n101007832\n\n\n3\nDYNC1H1\ndynein cytoplasmic 1 heavy chain 1\n14\n101964572\n102056442\n\n\n4\nKIF1B\nkinesin family member 1B\n1\n10210569\n10381602",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene ontology",
+      "GO information"
     ]
   },
   {
-    "objectID": "pages/examples.html#global-go-enrichment",
-    "href": "pages/examples.html#global-go-enrichment",
-    "title": "Example use",
+    "objectID": "pages/chrom_ideograms.html",
+    "href": "pages/chrom_ideograms.html",
+    "title": "Chromosome ideograms",
+    "section": "",
+    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nsns.set_style('white')\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\n\n\n# import importlib\n# import geneinfo\n# importlib.reload(geneinfo)\n\n\nannotation = [\n    ('chr1', 50000000, 50001000),                          # segment color defaults to red\n    ('chr2', 10000000, 1000000, 'green'),                  # with segment color\n    ('chr3', 45000000, 55000000, 'blue', 'NAME'),          # with name label\n    ('chr6', 10000000, 15000000, 'magenta', None, 0, 0.5), # with base and height\n    ('chr6', 10000000, 15000000, 'pink', None, 0.5, 0.5),  # with base and height\n]\n\ngi.chrom_ideogram(annotation, figsize=(8, 8))\n\n\n\n\n\n\n\n\nTo make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):\n\ngi.chrom_ideogram(annotation, figsize=(8, 8), min_visible_width=1)\n\n\n\n\n\n\n\n\nOther assembly, figure dimentions:\n\ngi.chrom_ideogram(annotation, assembly='hg19', figsize=(8, 8))\n\n\n\n\n\n\n\n\nYou can add position markers along a chromosome like this to better see the location of some segments:\n\nchrom = 'chr3'\nstart = 100000000\nend = 200000000\nwidth = 10000000\nannotation2 = annotation + [(chrom, x[0], x[1], 'black', str(x[2]/width)) for x in zip(\n    range(start, end, width), \n    range(start+1, end, width), \n    range(start, end, width)\n)]\ngi.chrom_ideogram(annotation2, figsize=(8, 8))",
+    "crumbs": [
+      "Gene plots",
+      "Chromosome ideograms"
+    ]
+  },
+  {
+    "objectID": "pages/string_nets.html",
+    "href": "pages/string_nets.html",
+    "title": "String networks",
+    "section": "",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')",
+    "crumbs": [
+      "Gene plots",
+      "String networks"
+    ]
+  },
+  {
+    "objectID": "pages/string_nets.html#show-string-interaction-network",
+    "href": "pages/string_nets.html#show-string-interaction-network",
+    "title": "String networks",
+    "section": "Show STRING interaction network",
+    "text": "Show STRING interaction network\n\ngi.show_string_network(['ATRX', 'TP53', 'RAD51'], nodes=10)",
+    "crumbs": [
+      "Gene plots",
+      "String networks"
+    ]
+  },
+  {
+    "objectID": "pages/gene_plots.html",
+    "href": "pages/gene_plots.html",
+    "title": "Gene plots",
+    "section": "",
+    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nsns.set_style('white')\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')",
+    "crumbs": [
+      "Gene plots",
+      "Gene plots"
+    ]
+  },
+  {
+    "objectID": "pages/gene_plots.html#plot-data-over-gene-annotation",
+    "href": "pages/gene_plots.html#plot-data-over-gene-annotation",
+    "title": "Gene plots",
+    "section": "Plot data over gene annotation",
+    "text": "Plot data over gene annotation\n\n# x = np.linspace(1, 1520300000, 100000)\n# y = np.random.random(100000)\n# dummy manhattan data\nx = np.linspace(76500000, 77500000, 10000)\nrng = np.random.default_rng()\ny = rng.exponential(scale=1, size=x.size)\n\nStandard plot:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg38')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nSame on older hg19 assembly:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nTwo subplots for data:\n\nax1, ax2 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=2)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nThree subplots for data and adjusted aspect ratio:\n\nax1, ax2, ax3 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=3, aspect=0.5)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nax3.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nHighlight a list of genes:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=['ATRX', 'ATP7A'])\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nCombinatorial hightlighting:\nCombining text weight, style, color and bbox:\n\nhighlight = defaultdict(dict)\nfor gene in ['ATRX', 'COX7B', 'PGK1']:\n    highlight[gene].update(dict(weight='bold'))\nfor gene in ['MAGT1']:\n    highlight[gene].update(dict(style='italic'))\nfor gene in ['ATP7A', 'ATRX']:\n    highlight[gene].update(dict(color='red'))\nfor gene in ['PGK1', 'ATRX']:\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\n\nhighlight = defaultdict(dict)\nfor gene in gene_list('xi_any_evidence'):\n    highlight[gene].update(dict(weight='bold'))\nfor gene in gene_list('ech75_regions'):\n    highlight[gene].update(dict(style='italic'))\nfor gene in gene_list('sfari_all_conf') + gene_list('intelect_disabil'):\n    highlight[gene].update(dict(color='red'))\nfor gene in gene_list('gametologs') +  gene_list('mult_copy') + gene_list('xi_escape') + gene_list('cDEG') + gene_list('nDEG'):\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nLarger with colors:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight, figsize=(7, 4))\n\nax.scatter(x, y, s=2, c=y, cmap='viridis_r')\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nOther features:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19',\n                  figsize=(7, 4),          # larger figure\n                  collapse_splice_var=False, # show all splice variants separately\n                  exact_exons=False,        # allow exons to be wide enough to be visible on large plots\n                  hard_limits=True,          # truncate genes that overlap the borders of the specified range\n                 )\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()",
+    "crumbs": [
+      "Gene plots",
+      "Gene plots"
+    ]
+  },
+  {
+    "objectID": "pages/gene_coord.html",
+    "href": "pages/gene_coord.html",
+    "title": "Gene coordinates",
+    "section": "",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')"
+  },
+  {
+    "objectID": "pages/gene_coord.html#get-coordinates-for-genes-in-a-region",
+    "href": "pages/gene_coord.html#get-coordinates-for-genes-in-a-region",
+    "title": "Gene coordinates",
+    "section": "Get coordinates for genes in a region",
+    "text": "Get coordinates for genes in a region\n\ngi.get_genes_region('chrX', 76500000, 77000000, assembly='hg19')\n\n[('FGF16',\n  76709642,\n  76712769,\n  '+',\n  [(76709642, 76709751), (76711767, 76712769)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76949312, 76949426),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)])]"
+  },
+  {
+    "objectID": "pages/gene_ids.html",
+    "href": "pages/gene_ids.html",
+    "title": "ID conversion",
+    "section": "",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')",
+    "crumbs": [
+      "Gene information",
+      "ID conversion"
+    ]
+  },
+  {
+    "objectID": "pages/gene_ids.html#conversion-from-ensembl-ids",
+    "href": "pages/gene_ids.html#conversion-from-ensembl-ids",
+    "title": "ID conversion",
+    "section": "Conversion from ENSEMBL IDs:",
+    "text": "Conversion from ENSEMBL IDs:\n\ngi.ensembl2ncbi('ENSG00000128573')\n\n93986\n\n\n\ngi.ensembl2symbol('ENSG00000128573')\n\n'FOXP2'",
+    "crumbs": [
+      "Gene information",
+      "ID conversion"
+    ]
+  },
+  {
+    "objectID": "pages/gene_ids.html#conversion-to-ensembl-ids",
+    "href": "pages/gene_ids.html#conversion-to-ensembl-ids",
+    "title": "ID conversion",
+    "section": "Conversion to ENSEMBL IDs:",
+    "text": "Conversion to ENSEMBL IDs:\n\ngi.ensembl_id('FOXP2')\n\n['ENSG00000128573']\n\n\n\ngi.ensembl_id(['FOXP2', '93986'])\n\n['ENSG00000128573', 'ENSG00000128573']",
+    "crumbs": [
+      "Gene information",
+      "ID conversion"
+    ]
+  },
+  {
+    "objectID": "pages/gene_ids.html#conversion-to-hgcn-gene-symbols",
+    "href": "pages/gene_ids.html#conversion-to-hgcn-gene-symbols",
+    "title": "ID conversion",
+    "section": "Conversion to HGCN gene symbols",
+    "text": "Conversion to HGCN gene symbols\n\ngi.hgcn_symbol(['CXorf23', 'BCLAF3', 'ENSG00000173681'])\n\n['BCLAF3', 'BCLAF3', 'BCLAF3']",
+    "crumbs": [
+      "Gene information",
+      "ID conversion"
+    ]
+  },
+  {
+    "objectID": "pages/go_enrichment.html",
+    "href": "pages/go_enrichment.html",
+    "title": "GO enrichment",
+    "section": "",
+    "text": "import pandas as pd\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\nclass left:\n    def __rlshift__(self, df):\n        \"Left align columns of data frame: df &lt;&lt; left()\"\n        left_aligned_df = df.style.set_properties(**{'text-align': 'left'})\n        left_aligned_df = left_aligned_df.set_table_styles(\n        [dict(selector = 'th', props=[('text-align', 'left')])])\n        display(left_aligned_df)\n        \ndf = pd.DataFrame(dict(name=['A', 'B'], desc=['bla bla bla bla', 'bla']))\ndf",
+    "crumbs": [
+      "Gene ontology",
+      "GO enrichment"
+    ]
+  },
+  {
+    "objectID": "pages/go_enrichment.html#global-go-enrichment",
+    "href": "pages/go_enrichment.html#global-go-enrichment",
+    "title": "GO enrichment",
     "section": "Global GO enrichment",
     "text": "Global GO enrichment\nEnrichment against all GO terms with all protein coding genes as background:\n\nimport importlib\nimport geneinfo\nimportlib.reload(geneinfo)\n\n&lt;module 'geneinfo' from '/Users/kmt/geneinfo/geneinfo/__init__.py'&gt;\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol)\ngo_results.head(10)\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nCC\nGO:0005874\ne\n3.174662e-104\n5.793757e-101\n0.296407\n0.014664\n&lt;GO:0005874&gt;\n\n\n1\nBP\nGO:0007018\ne\n3.469444e-87\n4.220231e-83\n0.152695\n0.002719\n&lt;GO:0007018&gt;\n\n\n2\nCC\nGO:0005871\ne\n1.323152e-82\n1.207376e-79\n0.134731\n0.002185\n&lt;GO:0005871&gt;\n\n\n3\nMF\nGO:0008017\ne\n2.849730e-80\n1.305176e-76\n0.239521\n0.012819\n&lt;GO:0008017&gt;\n\n\n4\nCC\nGO:0005813\ne\n1.960675e-77\n1.192744e-74\n0.314371\n0.030444\n&lt;GO:0005813&gt;\n\n\n5\nMF\nGO:0019894\ne\n4.661206e-77\n1.067416e-73\n0.125749\n0.002039\n&lt;GO:0019894&gt;\n\n\n6\nCC\nGO:0032391\ne\n3.269844e-75\n1.491866e-72\n0.122754\n0.001991\n&lt;GO:0032391&gt;\n\n\n7\nMF\nGO:0003777\ne\n5.259928e-70\n8.030157e-67\n0.125749\n0.002331\n&lt;GO:0003777&gt;\n\n\n8\nMF\nGO:0045505\ne\n7.657838e-68\n8.768225e-65\n0.110778\n0.001797\n&lt;GO:0045505&gt;\n\n\n9\nCC\nGO:0016235\ne\n3.632820e-64\n1.325979e-61\n0.104790\n0.001699\n&lt;GO:0016235&gt;\n\n\n\n\n\n\n\nShow GO DAG for enrichment results:\n\ngi.show_go_dag_enrichment_results(go_results.obj)\n\n\n\n\n\n\n\n\nSame but only for top 10 GO terms:\n\ngi.show_go_dag_enrichment_results(go_results.obj[:10])\n\n\n\n\n\n\n\n\nDescriptions of the same 10 GO terms:\n\ngi.go_info(go_results.term_id[:10])\n\nGO:0005874: microtubule\nAny of the long, generally straight, hollow tubes of internal diameter 12-15 nm and external diameter 24 nm found in a wide variety of eukaryotic cells; each consists (usually) of 13 protofilaments of polymeric tubulin, staggered in such a manner that the tubulin monomers are arranged in a helical pattern on the microtubular surface, and with the alpha/beta axes of the tubulin subunits parallel to the long axis of the tubule; exist in equilibrium with pool of tubulin monomers and can be rapidly assembled or disassembled in response to physiological stimuli; concerned with force generation, e.g. in the spindle.\n\n\n\nGO:0007018: microtubule-based movement\nA microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.\n\n\n\nGO:0005871: kinesin complex\nAny complex that includes a dimer of molecules from the kinesin superfamily, a group of related proteins that contain an extended region of predicted alpha-helical coiled coil in the main chain that likely produces dimerization. The native complexes of several kinesin family members have also been shown to contain additional peptides, often designated light chains as all of the noncatalytic subunits that are currently known are smaller than the chain that contains the motor unit. Kinesin complexes generally possess a force-generating enzymatic activity, or motor, which converts the free energy of the gamma phosphate bond of ATP into mechanical work.\n\n\n\nGO:0008017: microtubule binding\nBinding to a microtubule, a filament composed of tubulin monomers.\n\n\n\nGO:0005813: centrosome\nA structure comprised of a core structure (in most organisms, a pair of centrioles) and peripheral material from which a microtubule-based structure, such as a spindle apparatus, is organized. Centrosomes occur close to the nucleus during interphase in many eukaryotic cells, though in animal cells it changes continually during the cell-division cycle.\n\n\n\nGO:0019894: kinesin binding\nInteracting selectively and non-covalently and stoichiometrically with kinesin, a member of a superfamily of microtubule-based motor proteins that perform force-generating tasks such as organelle transport and chromosome segregation.\n\n\n\nGO:0032391: photoreceptor connecting cilium\nThe portion of the photoreceptor cell cilium linking the photoreceptor inner and outer segments. It’s considered to be equivalent to the ciliary transition zone.\n\n\n\nGO:0003777: microtubule motor activity\nA motor activity that generates movement along a microtubule, driven by ATP hydrolysis.\n\n\n\nGO:0045505: dynein intermediate chain binding\nBinding to an intermediate chain of the dynein complex.\n\n\n\nGO:0016235: aggresome\nAn inclusion body formed by dynein-dependent retrograde transport of an aggregated protein on microtubules.\n\n\n\nShow the GO DAG for a set of GO terms and their parent terms:\n\ngi.show_go_dag_for_terms(go_results.term_id[:10])\n\n\n\n\n\n\n\n\nSpecifying a custom set of background genes:\nThe query genes should be a subset of the background genes:\n\nall_protein_coding = set(pd.read_csv('geneinfo_cache/9606_protein_genes.txt', sep='\\t').Symbol)\n# only the first 50 genes:\nsubset_background = list(all_protein_coding)[:50] + motor_genes_df.symbol.tolist()\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, background_genes=subset_background)\ngo_results\n\nCould not map gene symbol \"KIF28P\" to ncbi id\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nCC\nGO:0005813\ne\n8.279747e-07\n0.000378\n0.314371\n0.276042\n&lt;GO:0005813&gt;\n\n\n1\nCC\nGO:0005874\ne\n2.975553e-06\n0.000678\n0.296407\n0.260417\n&lt;GO:0005874&gt;\n\n\n2\nCC\nGO:0005737\ne\n2.878076e-05\n0.004375\n0.538922\n0.497396\n&lt;GO:0005737&gt;\n\n\n3\nMF\nGO:0000981\np\n9.358545e-05\n0.018951\n0.011976\n0.028646\n&lt;GO:0000981&gt;\n\n\n4\nMF\nGO:0008017\ne\n6.502644e-05\n0.018951\n0.239521\n0.210938\n&lt;GO:0008017&gt;\n\n\n5\nCC\nGO:0005929\ne\n3.614207e-04\n0.032962\n0.164671\n0.143229\n&lt;GO:0005929&gt;\n\n\n6\nCC\nGO:0036064\ne\n3.598807e-04\n0.032962\n0.167665\n0.145833\n&lt;GO:0036064&gt;\n\n\n7\nCC\nGO:0005930\ne\n6.152330e-04\n0.046758\n0.155689\n0.135417\n&lt;GO:0005930&gt;\n\n\n8\nCC\nGO:0005829\ne\n7.499627e-04\n0.048855\n0.494012\n0.460938\n&lt;GO:0005829&gt;\n\n\n\n\n\n\n\nUse only the X chromosome as background:\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, background_chrom='X')\ngo_results\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nMF\nGO:0045505\ne\n0.000041\n0.010017\n0.333333\n0.002345\n&lt;GO:0045505&gt;\n\n\n1\nMF\nGO:0070840\ne\n0.000041\n0.010017\n0.333333\n0.002345\n&lt;GO:0070840&gt;\n\n\n2\nMF\nGO:0008017\ne\n0.000031\n0.010017\n0.500000\n0.012896\n&lt;GO:0008017&gt;\n\n\n3\nCC\nGO:0016235\ne\n0.000041\n0.020475\n0.333333\n0.002345\n&lt;GO:0016235&gt;",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene ontology",
+      "GO enrichment"
     ]
   },
   {
-    "objectID": "pages/examples.html#enrichment-among-a-subset-of-go-terms",
-    "href": "pages/examples.html#enrichment-among-a-subset-of-go-terms",
-    "title": "Example use",
+    "objectID": "pages/go_enrichment.html#enrichment-among-a-subset-of-go-terms",
+    "href": "pages/go_enrichment.html#enrichment-among-a-subset-of-go-terms",
+    "title": "GO enrichment",
     "section": "Enrichment among a subset of GO terms",
     "text": "Enrichment among a subset of GO terms\nExtract terms matching regular expression:\n\n#target_terms = gi.get_terms_for_go_regex('brain')\n#target_terms = gi.get_terms_for_go_regex('microtubul')\n# target_terms = gi.get_terms_for_go_regex('spindle')\ntarget_terms = gi.get_terms_for_go_regex(r'neuron\\S* migration')\ngi.show_go_dag_for_terms(target_terms)\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, terms=target_terms, list_study_genes=True)\ngo_results.head()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(def relationship)\n\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\nstudy_genes\n\n\n\n\n0\nCC\nGO:0005615\np\n0.000016\n0.000063\n0.020958\n0.076426\n&lt;GO:0005615&gt;\n[ACTB, BLOC1S1, HSPA1A, SNCA, LRP8, DYNC2I1, T...\n\n\n1\nCC\nGO:0032991\ne\n0.000155\n0.000310\n0.071856\n0.031027\n&lt;GO:0032991&gt;\n[ACTB, HTT, HNRNPU, HSPA1A, HSPA1B, HSP90AB1, ...\n\n\n2\nBP\nGO:0140650\ne\n0.000778\n0.031519\n0.005988\n0.000146\n&lt;GO:0140650&gt;\n[PAFAH1B1, NDEL1]\n\n\n3\nBP\nGO:0001764\ne\n0.000515\n0.031519\n0.023952\n0.005487\n&lt;GO:0001764&gt;\n[BBS4, PAFAH1B1, PCM1, PSEN1, DISC1, DCDC2, ND...\n\n\n\n\n\n\n\n\ngi.show_go_dag_enrichment_results(go_results.obj)\n\n\n\n\n\n\n\n\nExtract terms matching two regular expressions in any order:\n\npattern_one = r'microtub\\S*'\npattern_two = r'spindle'\nregex = fr\"(?=.*({pattern_one}))(?=.*({pattern_two}))(?=.*)\"\n\ntarget_terms = gi.get_terms_for_go_regex(regex)\ngi.show_go_dag_for_terms(target_terms)\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, terms=target_terms, list_study_genes=True)\ngo_results.head()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(def relationship)\n\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\nstudy_genes\n\n\n\n\n0\nCC\nGO:0005874\ne\n3.174662e-104\n1.428598e-102\n0.296407\n0.014664\n&lt;GO:0005874&gt;\n[APC, KIF1A, CENPE, DCTN1, DNAH5, DNAH6, DNAH8...\n\n\n1\nBP\nGO:0007018\ne\n3.469444e-87\n3.816388e-85\n0.152695\n0.002719\n&lt;GO:0007018&gt;\n[CENPE, DYNC1I2, DYNC1LI2, KIF2A, KIF3C, KIF5A...\n\n\n2\nCC\nGO:0005813\ne\n1.960675e-77\n4.411518e-76\n0.314371\n0.030444\n&lt;GO:0005813&gt;\n[APC, ARL3, BBS4, BICD1, CENPF, CETN1, CETN2, ...\n\n\n3\nCC\nGO:0005868\ne\n3.150407e-42\n4.725610e-41\n0.068862\n0.001117\n&lt;GO:0005868&gt;\n[DYNC1H1, DYNC1I1, DYNC1I2, DYNC1LI2, DYNLT3, ...\n\n\n4\nCC\nGO:0030286\ne\n5.844463e-35\n6.575021e-34\n0.056886\n0.000923\n&lt;GO:0030286&gt;\n[DCTN1, DNAH6, DNAH9, DYNC1H1, DYNC1I2, DYNC1L...\n\n\n\n\n\n\n\n\ngi.show_go_dag_enrichment_results(go_results.obj)",
     "crumbs": [
-      "Examples",
-      "Example use"
+      "Gene ontology",
+      "GO enrichment"
     ]
+  },
+  {
+    "objectID": "pages/google_sheets.html",
+    "href": "pages/google_sheets.html",
+    "title": "Gene lists",
+    "section": "",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')\n\nLoad Google spreadsheet with gene lists\n\ngene_lists = gi.GoogleSheet()\ngene_lists\n\n\n\n\n\n\n\n\nlabel\ndescription\n\n\n\n\nall_npx\nall NPX genes\n\n\nneuron_genome_proteome\nNeuron proteome (whole genome)\n\n\nneuron_npx_proteome\nNPX neuron proteome\n\n\nmatos_neuron\nMatos neuron genes\n\n\nmatos_common\nMatos neuron genes expressed in spermatids\n\n\nhpa_brain_prot\nBrain genes form Human protein atlas\n\n\nmeritxell_spermatid_expr\n\n\n\nintersection(nDEG, matos_neuron)\n\n\n\nunion(H,matos_common)\n\n\n\nmult_copy\n\n\n\nall_post_mei_expr\nMulti copy genes\n\n\nmsci\nall post.mei.expr. X genes\n\n\nmsci_esc\nMSCI genes\n\n\nmy_primate_codeml\nMSCI-escaping\n\n\ncDEG\nPrimate codeml site model\n\n\nnDEG\ncDEG\n\n\nprimate_ampl_multi\nnDEG\n\n\ngametologs\nAmpliconic or multicopy in some primates\n\n\nxi\nGametologs in some primates\n\n\nxi_escape\nSubject to somatic X inactivation (XI)\n\n\nxi_uncertain\nEscaping somatic X inactivation (XI)\n\n\nxi_any_evidence\nX genes uncertain XI status\n\n\nexpr_mod_xi_copynr_fibrobl\nUnion of certain and uncertain XI status\n\n\nexpr_mod_xi_copynr_lcl\nExpression modulated by Xi copy number (Fibroblast)\n\n\nreg_sa_pheno\nExpression modulated by Xi copy number (LCL)\n\n\nari_relate_EUR\nX-chromosome genes associated with regional SA phenotypes\n\n\nari_relate_ASIA\n\n\n\nari_relate_AFR\n\n\n\nari_nonPUR\n\n\n\nari_relate_PUR\n\n\n\nari_all\n\n\n\ncandidates\n\n\n\nech75_regions\nCandidate for explaining human and baboon sweeps\n\n\nech90_regions\nOverlapping human sweeps (75% ECH regions)\n\n\naccel_reg_simiiformes_br\nOverlapping human sweeps (90% ECH regions)\n\n\nsfari_all_conf\nGenes with accelerated regions Simiiformes branch\n\n\nintel_seiz_lang\nX SFARI genes (including all confidence levels)\n\n\nintelect_disabil\nIntellectual disability or Seizures or Language impairment\n\n\nmatos_common_no_xy_gametologs\nIntelectual disbility\n\n\n\n\n\n\n\n\nIndividual gene lists behaves like normal lists, but when displayed they render in columns to make them easier to read:\n\nech90_regions = gene_lists.get('ech90_regions')\nech90_regions\n\nABCB7        CNKSR2       FRMD8P1      LOC101928627 MIR500A      PGAM4        TRPC5        \nACTRT1       COX7B        FTX          LOC729609    MIR500B      PHF8         TSIX         \nAKAP4        CYBB         FUNDC2       LRCH2        MIR501       PRRG1        UPRT         \nALG13        DCX          GAB3         MAGT1        MIR502       RAB39B       USP27X       \nARHGAP36     DKC1         GPC3         MAP7D2       MIR660       RAP2C        USP27X-DT    \nATP7A        DYNLT3       H2AB1        MBNL3        MIR664B      RAP2C-AS1    VBP1         \nATRX         ENOX2        HTR2C        MIR1184-1    MPP1         RLIM         WNK3         \nBCLAF3       ENOX2-AS1    IL13RA2      MIR188       MSN          SERTM2       XIST         \nBRCC3        EZHIP        JPX          MIR23C       MTCP1        SH3KBP1      XK           \nCAPN6        F8           LANCL3       MIR362       NEXMIF       SMIM9        ZC3H12B      \nCCNB3        F8A1         LAS1L        MIR374B      NUDT10       SNORA35B                  \nCFAP47       FAM120C      LINC01201    MIR374C      NUDT11       SNORA36A                  \nCLCN5        FGF16        LINC01284    MIR421       PAGE4        SNORA56                   \nCMC4         FRMD7        LINC01496    MIR448       PAK3         STK26"
   },
   {
     "objectID": "pages/basics.html",
     "href": "pages/basics.html",
     "title": "Basic use",
     "section": "",
-    "text": "Etiam congue quam eget velit convallis, eu sagittis orci vestibulum. Vestibulum at massa turpis. Curabitur ornare ex sed purus vulputate, vitae porta augue rhoncus. Phasellus auctor suscipit purus, vel ultricies nunc. Nunc eleifend nulla ac purus volutpat, id fringilla felis aliquet. Duis vitae porttitor nibh, in rhoncus risus. Vestibulum a est vitae est tristique vehicula. Proin mollis justo id est tempus hendrerit. Praesent suscipit placerat congue. Aliquam eu elit gravida, consequat augue non, ultricies sapien. Nunc ultricies viverra ante, sit amet vehicula ante volutpat id. Etiam tempus purus vitae tellus mollis viverra. Donec at ornare mauris. Aliquam sodales hendrerit ornare. Suspendisse accumsan lacinia sapien, sit amet imperdiet dui molestie ut.\nEtiam quis tortor luctus, pellentesque ante a, finibus dolor. Phasellus in nibh et magna pulvinar malesuada. Ut nisl ex, sagittis at sollicitudin et, sollicitudin id nunc. In id porta urna. Proin porta dolor dolor, vel dapibus nisi lacinia in. Pellentesque ante mauris, ornare non euismod a, fermentum ut sapien. Proin sed vehicula enim. Aliquam tortor odio, vestibulum vitae odio in, tempor molestie justo. Praesent maximus lacus nec leo maximus blandit."
+    "text": "Vestibulum ultrices, tortor at mattis porta, odio nisi rutrum nulla, sit amet tincidunt eros quam facilisis tellus. Fusce eleifend lectus in elementum lacinia. Nam auctor nunc in massa ullamcorper, sit amet auctor ante accumsan. Nam ut varius metus. Curabitur eget tristique leo. Cras finibus euismod erat eget elementum. Integer vel placerat ex. Ut id eros quis lectus lacinia venenatis hendrerit vel ante.\nAenean placerat luctus tortor vitae molestie. Nulla at aliquet nulla. Sed efficitur tellus orci, sed fringilla lectus laoreet eget. Vivamus maximus quam sit amet arcu dignissim, sed accumsan massa ullamcorper. Sed iaculis tincidunt feugiat. Nulla in est at nunc ultricies dictum ut vitae nunc. Aenean convallis vel diam at malesuada. Suspendisse arcu libero, vehicula tempus ultrices a, placerat sit amet tortor. Sed dictum id nulla commodo mattis. Aliquam mollis, nunc eu tristique faucibus, purus lacus tincidunt nulla, ac pretium lorem nunc ut enim. Curabitur eget mattis nisl, vitae sodales augue. Nam felis massa, bibendum sit amet nulla vel, vulputate rutrum lacus. Aenean convallis odio pharetra nulla mattis consequat."
   },
   {
     "objectID": "pages/basics.html#some-topic",
@@ -1047,7 +1115,7 @@
     "href": "api/chrom_ideogram.html",
     "title": "chrom_ideogram",
     "section": "",
-    "text": "geneinfo.chrom_ideogram(\n    annot\n    vspace=0.1\n    min_visible_width=200000\n    figsize=(10, 10)\n    assembly='hg38'\n)\nPlots an ideogram of the human chromosomes with annotations.\n\n\n\nannot : list\n\nList of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.\n\nvspace : float = 0.1\n\nVertical space between ideograms, by default 0.1\n\nmin_visible_width : int = 200000\n\nMinum display width of very short annotations, by default 200000\n\nfigsize : tuple = (10, 10)\n\nFigure size, by default (10,10)\n\nassembly : str = 'hg38'\n\nHuman genome assembly, by default ‘hg38’\n\n\n\n\n\nannot = [\n    ('chr1', 20000000, 20100000, 'red', 'TP53'),\n    ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), \n    ('chr8', 90000000, 110000000)\n]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)\n\n# black ticks every 10Mb on chrX\nannot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)",
+    "text": "geneinfo.chrom_ideogram(\n    annot\n    hspace=0.1\n    min_visible_width=200000\n    figsize=(10, 10)\n    assembly='hg38'\n)\nPlots an ideogram of the human chromosomes with annotations.\n\n\n\nannot : list\n\nList of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.\n\nhspace : float = 0.1\n\nSpace between ideograms, by default 0.1\n\nmin_visible_width : int = 200000\n\nMinum display width of very short annotations, by default 200000\n\nfigsize : tuple = (10, 10)\n\nFigure size, by default (10,10)\n\nassembly : str = 'hg38'\n\nHuman genome assembly, by default ‘hg38’\n\n\n\n\n\nannot = [\n    ('chr1', 20000000, 20100000, 'red', 'TP53'),\n    ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), \n    ('chr8', 90000000, 110000000)\n]\nchrom_ideogram(annot, figsize=(15, 9), hspace=0.2)\n\n# black ticks every 10Mb on chrX\nannot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]\nchrom_ideogram(annot, figsize=(15, 9), hspace=0.2)",
     "crumbs": [
       "Gene plots",
       "chrom_ideogram"
@@ -1058,7 +1126,7 @@
     "href": "api/chrom_ideogram.html#parameters",
     "title": "chrom_ideogram",
     "section": "",
-    "text": "annot : list\n\nList of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.\n\nvspace : float = 0.1\n\nVertical space between ideograms, by default 0.1\n\nmin_visible_width : int = 200000\n\nMinum display width of very short annotations, by default 200000\n\nfigsize : tuple = (10, 10)\n\nFigure size, by default (10,10)\n\nassembly : str = 'hg38'\n\nHuman genome assembly, by default ‘hg38’",
+    "text": "annot : list\n\nList of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.\n\nhspace : float = 0.1\n\nSpace between ideograms, by default 0.1\n\nmin_visible_width : int = 200000\n\nMinum display width of very short annotations, by default 200000\n\nfigsize : tuple = (10, 10)\n\nFigure size, by default (10,10)\n\nassembly : str = 'hg38'\n\nHuman genome assembly, by default ‘hg38’",
     "crumbs": [
       "Gene plots",
       "chrom_ideogram"
@@ -1069,7 +1137,7 @@
     "href": "api/chrom_ideogram.html#examples",
     "title": "chrom_ideogram",
     "section": "",
-    "text": "annot = [\n    ('chr1', 20000000, 20100000, 'red', 'TP53'),\n    ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), \n    ('chr8', 90000000, 110000000)\n]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)\n\n# black ticks every 10Mb on chrX\nannot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]\nchrom_ideogram(annot, figsize=(15, 9), vspace=0.2)",
+    "text": "annot = [\n    ('chr1', 20000000, 20100000, 'red', 'TP53'),\n    ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), \n    ('chr8', 90000000, 110000000)\n]\nchrom_ideogram(annot, figsize=(15, 9), hspace=0.2)\n\n# black ticks every 10Mb on chrX\nannot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]\nchrom_ideogram(annot, figsize=(15, 9), hspace=0.2)",
     "crumbs": [
       "Gene plots",
       "chrom_ideogram"

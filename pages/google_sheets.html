@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Basic use – geneinfo</title>
+<title>Gene lists – geneinfo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -145,21 +145,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#some-topic" id="toc-some-topic" class="nav-link active" data-scroll-target="#some-topic">Some topic</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Basic use</h1>
+<h1 class="title">Gene lists</h1>
 </div>
 
 
@@ -176,22 +170,213 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Vestibulum ultrices, tortor at mattis porta, odio nisi rutrum nulla, sit amet tincidunt eros quam facilisis tellus. Fusce eleifend lectus in elementum lacinia. Nam auctor nunc in massa ullamcorper, sit amet auctor ante accumsan. Nam ut varius metus. Curabitur eget tristique leo. Cras finibus euismod erat eget elementum. Integer vel placerat ex. Ut id eros quis lectus lacinia venenatis hendrerit vel ante.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contents</span><span class="kw">:</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> MdRenderer</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Aenean placerat luctus tortor vitae molestie. Nulla at aliquet nulla. Sed efficitur tellus orci, sed fringilla lectus laoreet eget. Vivamus maximus quam sit amet arcu dignissim, sed accumsan massa ullamcorper. Sed iaculis tincidunt feugiat. Nulla in est at nunc ultricies dictum ut vitae nunc. Aenean convallis vel diam at malesuada. Suspendisse arcu libero, vehicula tempus ultrices a, placerat sit amet tortor. Sed dictum id nulla commodo mattis. Aliquam mollis, nunc eu tristique faucibus, purus lacus tincidunt nulla, ac pretium lorem nunc ut enim. Curabitur eget mattis nisl, vitae sodales augue. Nam felis massa, bibendum sit amet nulla vel, vulputate rutrum lacus. Aenean convallis odio pharetra nulla mattis consequat.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>foo(<span class="dv">3</span>, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="some-topic" class="level2">
-<h2 class="anchored" data-anchor-id="some-topic">Some topic</h2>
-<p>Finding Python objects to document involves two pieces of configuration:</p>
-<ol type="1">
-<li>the package name.</li>
-<li>a list of objects for content.</li>
-</ol>
-<p>quartodoc can look up a wide variety of objects, including functions, modules, classes, attributes, and methods:</p>
+<div id="cell-2" class="cell" data-tags="[]" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo <span class="im">as</span> gi</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gi.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Load Google spreadsheet with gene lists</p>
+<div id="cell-4" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> gi.GoogleSheet()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gene_lists</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">label</th>
+<th style="text-align: left;">description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>all_npx</strong></td>
+<td style="text-align: left;">all NPX genes</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>neuron_genome_proteome</strong></td>
+<td style="text-align: left;">Neuron proteome (whole genome)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>neuron_npx_proteome</strong></td>
+<td style="text-align: left;">NPX neuron proteome</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>matos_neuron</strong></td>
+<td style="text-align: left;">Matos neuron genes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>matos_common</strong></td>
+<td style="text-align: left;">Matos neuron genes expressed in spermatids</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>hpa_brain_prot</strong></td>
+<td style="text-align: left;">Brain genes form Human protein atlas</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>meritxell_spermatid_expr</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>intersection(nDEG, matos_neuron)</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>union(H,matos_common)</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>mult_copy</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>all_post_mei_expr</strong></td>
+<td style="text-align: left;">Multi copy genes</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>msci</strong></td>
+<td style="text-align: left;">all post.mei.expr. X genes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>msci_esc</strong></td>
+<td style="text-align: left;">MSCI genes</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>my_primate_codeml</strong></td>
+<td style="text-align: left;">MSCI-escaping</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>cDEG</strong></td>
+<td style="text-align: left;">Primate codeml site model</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>nDEG</strong></td>
+<td style="text-align: left;">cDEG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>primate_ampl_multi</strong></td>
+<td style="text-align: left;">nDEG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>gametologs</strong></td>
+<td style="text-align: left;">Ampliconic or multicopy in some primates</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>xi</strong></td>
+<td style="text-align: left;">Gametologs in some primates</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>xi_escape</strong></td>
+<td style="text-align: left;">Subject to somatic X inactivation (XI)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>xi_uncertain</strong></td>
+<td style="text-align: left;">Escaping somatic X inactivation (XI)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>xi_any_evidence</strong></td>
+<td style="text-align: left;">X genes uncertain XI status</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>expr_mod_xi_copynr_fibrobl</strong></td>
+<td style="text-align: left;">Union of certain and uncertain XI status</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>expr_mod_xi_copynr_lcl</strong></td>
+<td style="text-align: left;">Expression modulated by Xi copy number (Fibroblast)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>reg_sa_pheno</strong></td>
+<td style="text-align: left;">Expression modulated by Xi copy number (LCL)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>ari_relate_EUR</strong></td>
+<td style="text-align: left;">X-chromosome genes associated with regional SA phenotypes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>ari_relate_ASIA</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>ari_relate_AFR</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>ari_nonPUR</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>ari_relate_PUR</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>ari_all</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>candidates</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>ech75_regions</strong></td>
+<td style="text-align: left;">Candidate for explaining human and baboon sweeps</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>ech90_regions</strong></td>
+<td style="text-align: left;">Overlapping human sweeps (75% ECH regions)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>accel_reg_simiiformes_br</strong></td>
+<td style="text-align: left;">Overlapping human sweeps (90% ECH regions)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>sfari_all_conf</strong></td>
+<td style="text-align: left;">Genes with accelerated regions Simiiformes branch</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>intel_seiz_lang</strong></td>
+<td style="text-align: left;">X SFARI genes (including all confidence levels)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>intelect_disabil</strong></td>
+<td style="text-align: left;">Intellectual disability or Seizures or Language impairment</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>matos_common_no_xy_gametologs</strong></td>
+<td style="text-align: left;">Intelectual disbility</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code></code></pre>
+</div>
+</div>
+<p>Individual gene lists behaves like normal lists, but when displayed they render in columns to make them easier to read:</p>
+<div id="cell-6" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ech90_regions <span class="op">=</span> gene_lists.get(<span class="st">'ech90_regions'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ech90_regions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>ABCB7        CNKSR2       FRMD8P1      LOC101928627 MIR500A      PGAM4        TRPC5        
+ACTRT1       COX7B        FTX          LOC729609    MIR500B      PHF8         TSIX         
+AKAP4        CYBB         FUNDC2       LRCH2        MIR501       PRRG1        UPRT         
+ALG13        DCX          GAB3         MAGT1        MIR502       RAB39B       USP27X       
+ARHGAP36     DKC1         GPC3         MAP7D2       MIR660       RAP2C        USP27X-DT    
+ATP7A        DYNLT3       H2AB1        MBNL3        MIR664B      RAP2C-AS1    VBP1         
+ATRX         ENOX2        HTR2C        MIR1184-1    MPP1         RLIM         WNK3         
+BCLAF3       ENOX2-AS1    IL13RA2      MIR188       MSN          SERTM2       XIST         
+BRCC3        EZHIP        JPX          MIR23C       MTCP1        SH3KBP1      XK           
+CAPN6        F8           LANCL3       MIR362       NEXMIF       SMIM9        ZC3H12B      
+CCNB3        F8A1         LAS1L        MIR374B      NUDT10       SNORA35B                  
+CFAP47       FAM120C      LINC01201    MIR374C      NUDT11       SNORA36A                  
+CLCN5        FGF16        LINC01284    MIR421       PAGE4        SNORA56                   
+CMC4         FRMD7        LINC01496    MIR448       PAK3         STK26                     </code></pre>
+</div>
+</div>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
