@@ -3,7 +3,7 @@
 ```python
 geneinfo.chrom_ideogram(
     annot
-    vspace=0.1
+    hspace=0.1
     min_visible_width=200000
     figsize=(10, 10)
     assembly='hg38'
@@ -18,9 +18,9 @@ Plots an ideogram of the human chromosomes with annotations.
 
 :   List of tuples with annotations. Each tuple should contain the chromosome name, start and end position, color, label and optionally the width and height of the annotation.
 
-<code>[**vspace**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.1]{.parameter-default}</code>
+<code>[**hspace**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.1]{.parameter-default}</code>
 
-:   Vertical space between ideograms, by default 0.1
+:   Space between ideograms, by default 0.1
 
 <code>[**min_visible_width**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [200000]{.parameter-default}</code>
 
@@ -42,9 +42,9 @@ annot = [
     ('chr5', 40000000, 70000000, 'red', None, 1, 0.5), 
     ('chr8', 90000000, 110000000)
 ]
-chrom_ideogram(annot, figsize=(15, 9), vspace=0.2)
+chrom_ideogram(annot, figsize=(15, 9), hspace=0.2)
 
 # black ticks every 10Mb on chrX
 annot = [('chrX', x[0], x[1], 'black', str(x[2]/1000000)) for x in zip(range(0, 150000000, 10000000), range(300000, 150000000, 10000000), range(0, 150000000, 10000000))]
-chrom_ideogram(annot, figsize=(15, 9), vspace=0.2)
+chrom_ideogram(annot, figsize=(15, 9), hspace=0.2)
 ```

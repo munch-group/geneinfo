@@ -55,9 +55,20 @@ website:
       align: left
       contents:
         - pages/getting_started.qmd
-        - section: "Examples"
+        - section: "Gene information"
           contents:
-            - pages/examples.ipynb                   
+            - pages/gene_ids.ipynb                   
+            - pages/gene_information.ipynb                   
+        - section: "Gene plots"
+          contents:
+            - pages/gene_plots.ipynb  
+            - pages/chrom_ideograms.ipynb  
+            - pages/string_nets.ipynb                   
+        - section: "Gene ontology"
+          contents:
+            - pages/go_info.ipynb                   
+            - pages/go_enrichment.ipynb                   
+
 
 format:
   html:

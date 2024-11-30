@@ -17,6 +17,7 @@ from math import log10, sqrt
 import shutil
 from collections.abc import Callable
 from typing import Any, TypeVar, List, Tuple, Dict, Union
+from itertools import zip_longest
 
 import matplotlib.axes
 from matplotlib.patches import Rectangle, Polygon
@@ -91,6 +92,7 @@ class nice:
         )
         display(s)
 
+
 def tabulate_genes(words, ncols=None):
     n = len(words)
     col_width = max(map(len, words)) + 1
@@ -106,7 +108,73 @@ def tabulate_genes(words, ncols=None):
             line.append(gene.ljust(col_width))
         print(''.join(line))
 
-def ensembl_id(name:str, species:str='homo_sapiens') -> str:
+
+class GeneList(list):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        n = len(self)
+        col_width = max(map(len, self)) + 1
+        ncols = max(100//col_width, 1+sqrt(n/col_width))
+        nrows = int(n/ncols) + 1
+        rows = []
+        for r in range(0, n, nrows):
+            rows.append(self[r:r+nrows])
+        repr = []
+        for row in list(zip_longest(*rows, fillvalue='')):
+            line = []
+            for gene in row:
+                line.append(gene.ljust(col_width))
+            repr.append(''.join(line))
+        return('\n'.join(repr))
+
+class GoogleSheet(object):
+
+    def __init__(self, SHEET_ID='1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk', SHEET_NAME='Sheet1'):
+        url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
+        self.desc = []
+        for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
+            if str(desc) == 'nan':
+                self.desc.append('')
+            else:
+                self.desc.append(desc.replace('\n', ' '))
+        self.df = pd.read_csv(url, header=1, low_memory=False)
+        self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
+        self.names = self.df.columns.tolist()
+
+    def get(self, name):
+        sr = self.df[name]
+        return GeneList(sorted(sr[~sr.isnull()]))
+
+    def _repr_html_(self):
+        out = ['| label | description |', '|:---|:---|']
+        for name, desc in zip(self.names, self.desc):
+            if pd.isnull(desc):
+                desc = ''
+            # out.append(f"- **{(name+':**').ljust(130)} {desc}")
+            out.append(f"| **{name}** | {desc} |")
+            
+        display(Markdown('\n'.join(out)))
+
+    def __repr__(self):
+        return ""
+
+
+def _ensembl_id(name:str, species:str='homo_sapiens') -> str:
+    server = "https://rest.ensembl.org"
+    ext = f"/xrefs/symbol/{species}/{name}?"
+    r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+    if not r.ok:
+      r.raise_for_status()
+    decoded = r.json()
+    ensembl_ids = [x['id'] for x in decoded if x['type'] == 'gene']
+    if not len(ensembl_ids) == 1:
+        raise NotFound
+    return ensembl_ids[0]
+
+def ensembl_id(name:Union[str, list], species:str='homo_sapiens') -> str:
     """
     Get ENSEMBL ID for some gene identifier
 
@@ -127,16 +195,11 @@ def ensembl_id(name:str, species:str='homo_sapiens') -> str:
     [](`~geneinfo.NotFound`)
         Raises exception if no ENSEMBL ID can be found.
     """
-    server = "https://rest.ensembl.org"
-    ext = f"/xrefs/symbol/{species}/{name}?"
-    r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
-    if not r.ok:
-      r.raise_for_status()
-    decoded = r.json()
-    ensembl_ids = [x['id'] for x in decoded if x['type'] == 'gene']
-    if not len(ensembl_ids) == 1:
-        raise NotFound
-    return ensembl_ids[0]
+    if type(name) is str:
+        name_list = [name]
+    else:
+        name_list = name
+    return [_ensembl_id(x) for x in name_list]
 
 def ensembl2symbol(ensembl_id:str) -> str:
     """

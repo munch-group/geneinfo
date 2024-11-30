@@ -8,7 +8,7 @@ Get ENSEMBL ID for some gene identifier
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[str](`str`), [list](`list`)\]]{.parameter-annotation}</code>
 
 :   Gene identifier
 
