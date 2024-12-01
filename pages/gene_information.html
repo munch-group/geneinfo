@@ -252,7 +252,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#summary-gene-information" id="toc-summary-gene-information" class="nav-link active" data-scroll-target="#summary-gene-information">Summary gene information</a></li>
   <li><a href="#get-the-hgcn-symbol-for-an-alias" id="toc-get-the-hgcn-symbol-for-an-alias" class="nav-link" data-scroll-target="#get-the-hgcn-symbol-for-an-alias">Get the HGCN symbol for an alias</a></li>
-  <li><a href="#get-coordinates-for-genes-in-a-region" id="toc-get-coordinates-for-genes-in-a-region" class="nav-link" data-scroll-target="#get-coordinates-for-genes-in-a-region">Get coordinates for genes in a region</a></li>
+  <li><a href="#gene-coordinates" id="toc-gene-coordinates" class="nav-link" data-scroll-target="#gene-coordinates">Gene coordinates</a></li>
   </ul>
 </nav>
     </div>
@@ -278,7 +278,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-tags="[]">
+<div id="cell-2" class="cell" data-tags="[]" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo <span class="im">as</span> gi</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gi.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -375,10 +375,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="get-coordinates-for-genes-in-a-region" class="level2">
-<h2 class="anchored" data-anchor-id="get-coordinates-for-genes-in-a-region">Get coordinates for genes in a region</h2>
-<div id="cell-17" class="cell" data-tags="[]" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gi.get_genes_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="gene-coordinates" class="level2">
+<h2 class="anchored" data-anchor-id="gene-coordinates">Gene coordinates</h2>
+<p>For a list of genes:</p>
+<div id="cell-18" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coord([<span class="st">'ATRX'</span>, <span class="st">'MAGT1'</span>, <span class="st">'FOXP2'</span>], assembly<span class="op">=</span><span class="st">'GRCh38'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>{'FOXP2': ('chr7', 114086327, 114693772, '+'),
+ 'ATRX': ('chrX', 77504880, 77786233, '-'),
+ 'MAGT1': ('chrX', 77825747, 77899271, '-')}</code></pre>
+</div>
+</div>
+<p>For the genes in a genomic region:</p>
+<div id="cell-20" class="cell" data-tags="[]" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gi.get_genes_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>[('FGF16',
   76709642,

@@ -221,6 +221,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </div>
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
+ <span class="menu-text">api/gene_coord.qmd</span>
+  </li>
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../api/get_genes_region.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">get_genes_region</span></a>
@@ -486,17 +489,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <dl>
-<dt><code><span class="parameter-name"><strong>genes</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
+<dt><code><span class="parameter-name"><strong>genes</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Union</code>[<code>str</code>, <code>list</code>]</span></code></dt>
 <dd>
-<p><em>description</em></p>
+<p>Gene name or list of gene names.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>taxid</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">9606</span></code></dt>
 <dd>
-<p><em>description</em>, by default 9606</p>
+<p>NCBI taxonomy ID, by default 9606, which is human.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>evidence</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>list</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
-<p><em>description</em>, by default None</p>
+<p>Evidence codes, by default None</p>
 </dd>
 </dl>
 </section>
