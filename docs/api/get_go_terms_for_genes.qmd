@@ -8,17 +8,17 @@ Get the union of GO terms for a list of genes.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+<code>[**genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[str](`str`), [list](`list`)\]]{.parameter-annotation}</code>
 
-:   _description_
+:   Gene name or list of gene names.
 
 <code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
 
-:   _description_, by default 9606
+:   NCBI taxonomy ID, by default 9606, which is human.
 
 <code>[**evidence**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   _description_, by default None
+:   Evidence codes, by default None
 
 ## Returns {.doc-section .doc-section-returns}
 

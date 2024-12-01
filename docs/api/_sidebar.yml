@@ -11,6 +11,7 @@ website:
       - api/chrom_ideogram.qmd
       section: Gene plots
     - contents:
+      - api/gene_coord.qmd
       - api/get_genes_region.qmd
       - api/get_genes_region_dataframe.qmd
       section: Gene coordinates

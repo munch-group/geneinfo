@@ -297,6 +297,41 @@ def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,a
                 return hit
     print(f"Gene not found: {query}", file=sys.stderr)
 
+def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens') -> dict:
+    """
+    Retrieves genome (`chrom`, `start`, `end`) coordinates one or more genes.
+
+    Parameters
+    ----------
+    query : 
+        Gene symbol or list of gene symbols
+    assembly :  
+        Genome assembly.
+    species :  
+        Species, by default 'homo_sapiens'.
+
+
+    Returns
+    -------
+    :
+        Dictionary with gene names as keys and coordinates as values.       
+    """
+    data = ensembl_get_gene_info_by_symbol(query, assembly=None, species='homo_sapiens')
+    coords = {}
+    for name, props in data.items():
+        chrom, start, end, strand = props['seq_region_name'], props['start'], props['end'], props['strand']
+        if not chrom.lower().startswith('contig') and not chrom.lower().startswith('scaffold'):
+            chrom = 'chr'+chrom
+        if strand == -1:
+            strand = '-'
+        elif strand == 1:
+            strand = '+'
+        else:
+            strand = None
+
+        coords[name] = (chrom, start, end, strand)
+    return coords
+
 
 def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgnc') -> None:
     """
@@ -389,6 +424,11 @@ def _ensembl_get_features_region(chrom, window_start, window_end, features=['gen
 
 
 def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapiens'):
+
+    if assembly == 'hg38':
+        assembly='GRCh38'
+    if assembly == 'hg19':
+        assembly='GRCh37'
 
     if type(symbols) is not list:
         symbols = [symbols]
@@ -1307,18 +1347,18 @@ def gene_annotation_table(taxid:int=9606) -> pd.DataFrame:
     return df.loc[df['taxid'] == taxid]
 
 
-def get_go_terms_for_genes(genes:str, taxid:int=9606, evidence:list=None) -> list:
+def get_go_terms_for_genes(genes:Union[str,list], taxid:int=9606, evidence:list=None) -> list:
     """
     Get the union of GO terms for a list of genes.
 
     Parameters
     ----------
     genes : 
-        _description_
+        Gene name or list of gene names.
     taxid : 
-        _description_, by default 9606
+        NCBI taxonomy ID, by default 9606, which is human.
     evidence : 
-        _description_, by default None
+        Evidence codes, by default None
 
     Returns
     -------

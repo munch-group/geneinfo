@@ -26,11 +26,12 @@ ideograms (chrom_ideogram).
 
 ## Gene coordinates
 
-These functions retrieve coordinates of genes in a chromosomal region.
+These functions retrieve coordinates of named genes or genes in a chromosomal region.
 
 
 | | |
 | --- | --- |
+| [gene_coord](gene_coord.qmd#geneinfo.gene_coord) | Retrieves genome (`chrom`, `start`, `end`) coordinates one or more genes. |
 | [get_genes_region](get_genes_region.qmd#geneinfo.get_genes_region) | Gets gene structure information for genes in a chromosomal region. |
 | [get_genes_region_dataframe](get_genes_region_dataframe.qmd#geneinfo.get_genes_region_dataframe) | Gets gene structure information for genes in a chromosomal region in the form |
 
