@@ -58,6 +58,51 @@ if os.path.exists(cache_path):
     with open(cache_path, 'rb') as f:
         CACHE = pickle.load(f)
 
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class Polygon:
+    def __init__(self, points):
+        self.points = points
+
+    def get_points(self):
+        return self.points
+
+def is_polygons_intersecting(a, b):
+    for x in range(2):
+        polygon = a if x == 0 else b
+
+        for i1 in range(len(polygon.get_points())):
+            i2 = (i1 + 1) % len(polygon.get_points())
+            p1 = polygon.get_points()[i1]
+            p2 = polygon.get_points()[i2]
+
+            normal = Point(p2.y - p1.y, p1.x - p2.x)
+
+            min_a = float('inf')
+            max_a = float('-inf')
+
+            for p in a.get_points():
+                projected = normal.x * p.x + normal.y * p.y
+                min_a = min(min_a, projected)
+                max_a = max(max_a, projected)
+
+            min_b = float('inf')
+            max_b = float('-inf')
+
+            for p in b.get_points():
+                projected = normal.x * p.x + normal.y * p.y
+                min_b = min(min_b, projected)
+                max_b = max(max_b, projected)
+
+            if max_a < min_b or max_b < min_a:
+                return False
+
+    return True
+
+
 class NotFound(Exception):
     """
     Exception raised when a gene or other entity is not found.
@@ -195,6 +240,10 @@ def ensembl_id(name:Union[str, list], species:str='homo_sapiens') -> str:
     [](`~geneinfo.NotFound`)
         Raises exception if no ENSEMBL ID can be found.
     """
+
+    if isinstance(name, GeneList):
+        name = list(name)
+        
     if type(name) is str:
         name_list = [name]
     else:
@@ -250,6 +299,8 @@ def hgcn_symbol(name:str) -> str:
     [](`~geneinfo.NotFound`)
         Raises exception if no HGCN gene symbol can be found.
     """ 
+    if isinstance(name, GeneList):
+        name = list(name)
     if type(name) is list or type(name) is set:
         return [ensembl2symbol(ensembl_id(n)) for n in name]
     else:
@@ -316,20 +367,22 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
     :
         Dictionary with gene names as keys and coordinates as values.       
     """
-    data = ensembl_get_gene_info_by_symbol(query, assembly=None, species='homo_sapiens')
     coords = {}
-    for name, props in data.items():
-        chrom, start, end, strand = props['seq_region_name'], props['start'], props['end'], props['strand']
-        if not chrom.lower().startswith('contig') and not chrom.lower().startswith('scaffold'):
-            chrom = 'chr'+chrom
-        if strand == -1:
-            strand = '-'
-        elif strand == 1:
-            strand = '+'
-        else:
-            strand = None
-
-        coords[name] = (chrom, start, end, strand)
+    batch_size = 100
+    for i in range(0, len(query), batch_size):
+        data = ensembl_get_gene_info_by_symbol(query[i:i+batch_size], assembly=None, species='homo_sapiens')
+        for name, props in data.items():
+            chrom, start, end, strand = props['seq_region_name'], props['start'], props['end'], props['strand']
+            if not chrom.lower().startswith('contig') and not chrom.lower().startswith('scaffold'):
+                chrom = 'chr'+chrom
+            if strand == -1:
+                strand = '-'
+            elif strand == 1:
+                strand = '+'
+            else:
+                strand = None
+    
+            coords[name] = (chrom, start, end, strand)
     return coords
 
 
@@ -347,6 +400,9 @@ def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgn
         Scopes for information search, by default 'hgnc'
     """
 
+    if isinstance(query, GeneList):
+        query = list(query)
+            
     if type(query) is not list:
         query = [query]
         
@@ -429,6 +485,9 @@ def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapien
         assembly='GRCh38'
     if assembly == 'hg19':
         assembly='GRCh37'
+
+    if isinstance(symbols, GeneList):
+        symbols = list(symbols)
 
     if type(symbols) is not list:
         symbols = [symbols]
@@ -821,7 +880,7 @@ def _get_string_ids(my_genes):
     return string_identifiers
 
 
-def show_string_network(my_genes:list, nodes:int=10) -> None:
+def show_string_network(my_genes:Union[list,str], nodes:int=10) -> None:
     """
     Display STRING network for a list of genes.
 
@@ -834,6 +893,9 @@ def show_string_network(my_genes:list, nodes:int=10) -> None:
     """
 
     if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
+
+    if isinstance(my_genes, GeneList):
+        my_genes = list(my_genes)
 
     if type(my_genes) is str:
         my_genes = list(my_genes)    
@@ -875,6 +937,9 @@ def string_network_table(my_genes:list, nodes:int=10) -> pd.DataFrame:
     :
         STRING network information for specified genes.
     """
+    if subtype(my_genes, list):
+        my_genes = list(my_genes)
+    
     if type(my_genes) is str:
         my_genes = list(my_genes)
     string_api_url = "https://string-db.org/api"
@@ -1566,6 +1631,7 @@ def go_info(terms:Union[str,List[str]]) -> None:
     terms : 
         A GO term or list of GO terms to display information for.
     """
+
     if type(terms) is pd.core.series.Series:
         terms = terms.tolist()
 
@@ -1708,7 +1774,9 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
     ```
 
     """
-
+    if subtype(gene_list, list):
+        gene_list = list(gene_list)
+    
     if type(gene_list) is pd.core.series.Series:
         gene_list = gene_list.tolist()
     if type(terms) is pd.core.series.Series:
@@ -1965,12 +2033,13 @@ def chrom_ideogram(annot:list, hspace:float=0.1, min_visible_width:int=200000, f
             ax.spines['bottom'].set_visible(False)
             ax.spines['left'].set_visible(False)
             ax.set_ylim((0, 3))
+            # ax.set_ylim((0, 5))
 
             if i in [20, 21]:   
                 x = -3500000 * 10 / figsize[1]
             else:
                 x = -2000000 * 10 / figsize[1]
-            ax.text(x, 1, chrom.replace('chr', ''), fontsize=8, horizontalalignment='right', weight='bold')
+            ax.text(x, 1, chrom.replace('chr', ''), fontsize=7, horizontalalignment='right', weight='bold')
 
             # h = ax.set_ylabel(chrom)
             # h.set_rotation(0)
@@ -1993,9 +2062,10 @@ def chrom_ideogram(annot:list, hspace:float=0.1, min_visible_width:int=200000, f
 
             # draw chrom
             g = ax.add_patch(Rectangle((start, 1), end-start, 1, 
-                                       fill=False,
-                                       color='black',
-                                       edgecolor=None,
+                                       # fill=False,
+                                       facecolor='#EBEAEA',
+                                       edgecolor='black',
+                                       # edgecolor=None,
                                        zorder=1, linewidth=0.7
                                       ))
 
@@ -2024,13 +2094,37 @@ def chrom_ideogram(annot:list, hspace:float=0.1, min_visible_width:int=200000, f
             rect = Rectangle((x, y), width, height, linewidth=1, edgecolor='none', facecolor=color, zorder=3)
             chr_axes[chrom].add_patch(rect)    
             if label is not None:
-                chr_axes[chrom].plot([x+width/2, x+width/2], [y+height, y+height+0.5], linewidth=0.5, color=color, zorder=3)
-                chr_axes[chrom].text(x+width/2, y+height+0.5, label, fontsize=4, horizontalalignment='left',# weight='bold',
+                chr_axes[chrom].plot([x+width/2, x+width/2], [y+height, y+height+0.3], linewidth=0.5, color=color, zorder=3)
+                t = chr_axes[chrom].text(x+width/2, y+height+0.3, label, fontsize=4, horizontalalignment='left',# weight='bold',
                          verticalalignment='bottom', rotation=45, zorder=3)
 
+                transf = chr_axes[chrom].transData.inverted()
+                bb = t.get_window_extent(renderer = fig.canvas.get_renderer())
+                bb_datacoords = bb.transformed(transf)
+                print(bb_datacoords)
+
         for tup in annot:
-            plot_segment(*tup)                     
-            
+            plot_segment(*tup) 
+
+        # text_labels = defaultdict(list)
+        # import textalloc as ta
+        # for tup in annot:
+        #     if len(tup) == 5:
+        #         text_labels[tup[0]].append((tup[1], 1+1+0.3, tup[3], tup[4]))
+        # for chrom in text_labels:
+        #     x, y, _, texts = zip(*text_labels[chrom])
+        #     ta.allocate(chr_axes[chrom],x,y,
+        #                 texts,
+        #                 x_scatter=x, y_scatter=y,
+        #                 textsize=5,
+        #                 # x_lines=[ (0, chrom_lengths[assembly][chrom]) ] * 3,
+        #                 # y_lines=[(1, 1), (1.5, 1.5), (2, 2)],
+        #                 # avoid_label_lines_overlap=True,
+        #                 # avoid_crossing_label_lines=True,
+        #                # direction='northeast',
+        #                # linecolor=color
+        #                )
+                
 
 # annot = [('chr1', 20000000, 20100000, 'red', 'TP53'), ('chr7', 20000000, 30000000, 'orange', 'DYNLT3')] \
 # + [('chr5', 40000000, 70000000, 'red', None, 1, 0.5), ('chr8', 90000000, 110000000)] \

@@ -1,0 +1,27 @@
+# gene_coord { #geneinfo.gene_coord }
+
+```python
+geneinfo.gene_coord(query, assembly, species='homo_sapiens')
+```
+
+Retrieves genome (`chrom`, `start`, `end`) coordinates one or more genes.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**query**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[str](`str`), [List](`typing.List`)\[[str](`str`)\]\]]{.parameter-annotation}</code>
+
+:   Gene symbol or list of gene symbols
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [ ]{.parameter-annotation}</code>
+
+:   Genome assembly.
+
+<code>[**species**]{.parameter-name} [:]{.parameter-annotation-sep} [ ]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'homo_sapiens\']{.parameter-default}</code>
+
+:   Species, by default 'homo_sapiens'.
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation}</code>
+
+:   Dictionary with gene names as keys and coordinates as values.
