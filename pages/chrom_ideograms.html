@@ -270,7 +270,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-tags="[]">
+<div id="cell-2" class="cell" data-tags="[]" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -283,67 +283,893 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo <span class="im">as</span> gi</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>gi.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-3" class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import importlib</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import geneinfo</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># importlib.reload(geneinfo)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="cell-4" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>annotation <span class="op">=</span> [</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr1'</span>, <span class="dv">50000000</span>, <span class="dv">50001000</span>),                          <span class="co"># segment color defaults to red</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr2'</span>, <span class="dv">10000000</span>, <span class="dv">1000000</span>, <span class="st">'green'</span>),                  <span class="co"># with segment color</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr3'</span>, <span class="dv">45000000</span>, <span class="dv">55000000</span>, <span class="st">'blue'</span>, <span class="st">'NAME'</span>),          <span class="co"># with name label</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr6'</span>, <span class="dv">10000000</span>, <span class="dv">15000000</span>, <span class="st">'magenta'</span>, <span class="va">None</span>, <span class="dv">0</span>, <span class="fl">0.5</span>), <span class="co"># with base and height</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr6'</span>, <span class="dv">10000000</span>, <span class="dv">15000000</span>, <span class="st">'pink'</span>, <span class="va">None</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>),  <span class="co"># with base and height</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-3" class="cell" data-execution_count="48">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>annotation <span class="op">=</span> [</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr1'</span>, <span class="dv">50000000</span>, <span class="dv">50001000</span>),                          <span class="co"># segment color defaults to red</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr2'</span>, <span class="dv">10000000</span>, <span class="dv">1000000</span>, <span class="st">'green'</span>),                  <span class="co"># with segment color</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr3'</span>, <span class="dv">45000000</span>, <span class="dv">55000000</span>, <span class="st">'blue'</span>, <span class="st">'NAME'</span>),          <span class="co"># with name label</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr6'</span>, <span class="dv">10000000</span>, <span class="dv">15000000</span>, <span class="st">'magenta'</span>, <span class="va">None</span>, <span class="dv">0</span>, <span class="fl">0.5</span>), <span class="co"># with base and height</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'chr6'</span>, <span class="dv">10000000</span>, <span class="dv">15000000</span>, <span class="st">'pink'</span>, <span class="va">None</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>),  <span class="co"># with base and height</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="chrom_ideograms_files/figure-html/cell-4-output-1.png" width="658" height="700" class="figure-img"></p>
+<p><img src="chrom_ideograms_files/figure-html/cell-3-output-1.png" width="656" height="700" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>To make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):</p>
-<div id="cell-6" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>), min_visible_width<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-5" class="cell" data-execution_count="49">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>), min_visible_width<span class="op">=</span><span class="dv">1</span>, hspace<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="chrom_ideograms_files/figure-html/cell-5-output-1.png" width="658" height="700" class="figure-img"></p>
+<p><img src="chrom_ideograms_files/figure-html/cell-4-output-1.png" width="656" height="700" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Other assembly, figure dimentions:</p>
-<div id="cell-8" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation, assembly<span class="op">=</span><span class="st">'hg19'</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-7" class="cell" data-execution_count="50">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation, assembly<span class="op">=</span><span class="st">'hg19'</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="chrom_ideograms_files/figure-html/cell-6-output-1.png" width="658" height="700" class="figure-img"></p>
+<p><img src="chrom_ideograms_files/figure-html/cell-5-output-1.png" width="656" height="700" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p><strong>You can add position markers along a chromosome like this to better see the location of some segments:</strong></p>
-<div id="cell-10" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>chrom <span class="op">=</span> <span class="st">'chr3'</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> <span class="dv">100000000</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> <span class="dv">200000000</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="dv">10000000</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>annotation2 <span class="op">=</span> annotation <span class="op">+</span> [(chrom, x[<span class="dv">0</span>], x[<span class="dv">1</span>], <span class="st">'black'</span>, <span class="bu">str</span>(x[<span class="dv">2</span>]<span class="op">/</span>width)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">zip</span>(</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">range</span>(start, end, width), </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">range</span>(start<span class="op">+</span><span class="dv">1</span>, end, width), </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">range</span>(start, end, width)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)]</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation2, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-9" class="cell" data-execution_count="51">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>chrom <span class="op">=</span> <span class="st">'chr3'</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> <span class="dv">100000000</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> <span class="dv">200000000</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="dv">10000000</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>annotation2 <span class="op">=</span> annotation <span class="op">+</span> [(chrom, x[<span class="dv">0</span>], x[<span class="dv">1</span>], <span class="st">'black'</span>, <span class="bu">str</span>(x[<span class="dv">2</span>]<span class="op">/</span>width)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">zip</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">range</span>(start, end, width), </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">range</span>(start<span class="op">+</span><span class="dv">1</span>, end, width), </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">range</span>(start, end, width)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>)]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation2, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="chrom_ideograms_files/figure-html/cell-7-output-1.png" width="658" height="700" class="figure-img"></p>
+<p><img src="chrom_ideograms_files/figure-html/cell-6-output-1.png" width="656" height="700" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-10" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>lists <span class="op">=</span> gi.GoogleSheet()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-11" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> importlib</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>importlib.<span class="bu">reload</span>(geneinfo)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> gi.gene_coord(lists.get(<span class="st">'xi_escape'</span>), assembly<span class="op">=</span><span class="st">'GRCh38'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>annotation <span class="op">=</span> [(c, s, e, <span class="st">'red'</span>, g) <span class="cf">for</span> g, (c, s, e, _) <span class="kw">in</span> coords.items()]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-12" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> gi.gene_coord([<span class="st">'ATRX'</span>, <span class="st">'MAGT1'</span>], assembly<span class="op">=</span><span class="st">'GRCh38'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>annotation <span class="op">=</span> [(c, s, e, <span class="st">'red'</span>, g) <span class="cf">for</span> g, (c, s, e, _) <span class="kw">in</span> coords.items()]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-13" class="cell" data-execution_count="713">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Point:</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x, y):</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.x <span class="op">=</span> x</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.y <span class="op">=</span> y</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Polygon:</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, points):</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.points <span class="op">=</span> points</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_points(<span class="va">self</span>):</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.points</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> nudge_y(<span class="va">self</span>, nudge):</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> point <span class="kw">in</span> <span class="va">self</span>.points:</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>            point.y <span class="op">+=</span> nudge</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> is_polygons_intersecting(a, b):</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>):</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        polygon <span class="op">=</span> a <span class="cf">if</span> x <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> b</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i1 <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(polygon.get_points())):</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>            i2 <span class="op">=</span> (i1 <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="bu">len</span>(polygon.get_points())</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>            p1 <span class="op">=</span> polygon.get_points()[i1]</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>            p2 <span class="op">=</span> polygon.get_points()[i2]</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>            normal <span class="op">=</span> Point(p2.y <span class="op">-</span> p1.y, p1.x <span class="op">-</span> p2.x)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>            min_a <span class="op">=</span> <span class="bu">float</span>(<span class="st">'inf'</span>)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>            max_a <span class="op">=</span> <span class="bu">float</span>(<span class="st">'-inf'</span>)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> p <span class="kw">in</span> a.get_points():</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>                projected <span class="op">=</span> normal.x <span class="op">*</span> p.x <span class="op">+</span> normal.y <span class="op">*</span> p.y</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>                min_a <span class="op">=</span> <span class="bu">min</span>(min_a, projected)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>                max_a <span class="op">=</span> <span class="bu">max</span>(max_a, projected)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>            min_b <span class="op">=</span> <span class="bu">float</span>(<span class="st">'inf'</span>)</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>            max_b <span class="op">=</span> <span class="bu">float</span>(<span class="st">'-inf'</span>)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> p <span class="kw">in</span> b.get_points():</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>                projected <span class="op">=</span> normal.x <span class="op">*</span> p.x <span class="op">+</span> normal.y <span class="op">*</span> p.y</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>                min_b <span class="op">=</span> <span class="bu">min</span>(min_b, projected)</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>                max_b <span class="op">=</span> <span class="bu">max</span>(max_b, projected)</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> max_a <span class="op">&lt;</span> min_b <span class="kw">or</span> max_b <span class="op">&lt;</span> min_a:</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="va">False</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">True</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="bu">list</span>(<span class="bu">zip</span>([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">2</span>], [<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">0</span>]))</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="bu">list</span>(<span class="bu">zip</span>([<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">3</span>], [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1</span>]))</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>is_polygons_intersecting(</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>    Polygon([Point(<span class="op">*</span>tup) <span class="cf">for</span> tup <span class="kw">in</span> a]),</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>    Polygon([Point(<span class="op">*</span>tup) <span class="cf">for</span> tup <span class="kw">in</span> b])</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="713">
+<pre><code>True</code></pre>
+</div>
+</div>
+<div id="cell-14" class="cell" data-execution_count="805">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.artist <span class="im">import</span> Artist</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>axes_height <span class="op">=</span> <span class="fl">1e4</span> <span class="co"># relative to length of chrom one</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>max_chrom_size <span class="op">=</span> <span class="fl">1e5</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>aspect <span class="op">=</span> axes_height <span class="op">/</span> chrom_size</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>fig_width_inches <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>axes_height_inches <span class="op">=</span> fig_width <span class="op">*</span> aspect</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>fig_height <span class="op">=</span> axes_height_inches <span class="op">*</span> nr_rows</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>nr_rows <span class="op">=</span> <span class="dv">11</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(nr_rows, <span class="dv">1</span>, figsize<span class="op">=</span>(fig_width, fig_width<span class="op">*</span>aspect<span class="op">*</span>nr_rows), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(hspace<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>]</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>xlim <span class="op">=</span> (<span class="dv">0</span>, max_chrom_size)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>ylim <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">6</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>scaled_y_lim <span class="op">=</span> xlim[<span class="dv">0</span>] <span class="op">*</span> aspect, xlim[<span class="dv">1</span>] <span class="op">*</span> aspect</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(xlim)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(scaled_y_lim)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>plt.yticks([])</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>y_unit <span class="op">=</span> <span class="op">-</span>sub(<span class="op">*</span>scaled_y_lim) <span class="op">/</span> <span class="op">-</span>sub(<span class="op">*</span>ylim)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>rel_font_height <span class="op">=</span> <span class="fl">0.07</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>font_size <span class="op">=</span> rel_font_height <span class="op">*</span> axes_height_inches <span class="op">/</span> point_size</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_text(x_pos, y_pos, text, font_size, ax, y_line_bottom<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> ax.text(x_pos, y_pos, text, fontsize<span class="op">=</span>font_size, </span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>                horizontalalignment<span class="op">=</span><span class="st">'left'</span>,</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>                verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, </span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>                rotation<span class="op">=</span><span class="dv">45</span>, zorder<span class="op">=</span><span class="dv">3</span>, </span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>                bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'square,pad=0'</span>, fc<span class="op">=</span><span class="st">'none'</span>, ec<span class="op">=</span><span class="st">'none'</span>))</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># t.set_bbox(dict(facecolor='red', pad=0, alpha=0.2, edgecolor='none'))</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    ax.plot((x_pos, x_pos, x_pos<span class="op">+</span>y_unit<span class="op">/</span><span class="dv">6</span>),</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>            (y_line_bottom, y_pos, y_pos<span class="op">+</span>y_unit<span class="op">/</span><span class="dv">6</span>), </span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>            linewidth<span class="op">=</span><span class="fl">0.5</span>, color<span class="op">=</span><span class="st">'darkgray'</span>)</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_polygon(text:<span class="bu">str</span>, x_pos:<span class="bu">int</span>, y_pos:<span class="bu">float</span>, ax:matplotlib.axes.Axes) <span class="op">-&gt;</span> Polygon:</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>    y_pos <span class="op">=</span> y_pos <span class="op">*</span> y_unit</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> ax.text(x_pos, y_pos, text, fontsize<span class="op">=</span>font_size, </span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>                horizontalalignment<span class="op">=</span><span class="st">'left'</span>,</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>                verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, </span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>                rotation<span class="op">=</span><span class="dv">0</span>, zorder<span class="op">=</span><span class="dv">3</span>, </span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>                <span class="co"># bbox=dict(boxstyle='square,pad=0', </span></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>                bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'square'</span>, </span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>                          fc<span class="op">=</span><span class="st">'none'</span>, ec<span class="op">=</span><span class="st">'none'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>))</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    transf <span class="op">=</span> ax.transData.inverted()</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    bb <span class="op">=</span> t.get_window_extent(renderer <span class="op">=</span> fig.canvas.get_renderer())</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    bbt <span class="op">=</span> bb.transformed(transf)</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> bbt.get_points()</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    Artist.remove(t)</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>    (x0, y0), (x1, y1) <span class="op">=</span> coords</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>    pad <span class="op">=</span> (y1 <span class="op">-</span> y0)<span class="op">/</span><span class="dv">3</span></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])</span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>    x, y <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span>coords)</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(x<span class="op">=</span>x, y<span class="op">=</span>y))</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'y'</span>] <span class="op">-=</span> y_pos</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'x'</span>] <span class="op">-=</span> x_pos</span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>    dfx <span class="op">=</span> df[<span class="st">'x'</span>]<span class="op">*</span>math.cos(math.radians(<span class="dv">45</span>))<span class="op">-</span>df[<span class="st">'y'</span>]<span class="op">*</span>math.sin(math.radians(<span class="dv">45</span>))</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'y'</span>] <span class="op">=</span> df[<span class="st">'x'</span>]<span class="op">*</span>math.sin(math.radians(<span class="dv">45</span>))<span class="op">+</span>df[<span class="st">'y'</span>]<span class="op">*</span>math.cos(math.radians(<span class="dv">45</span>))</span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'x'</span>] <span class="op">=</span> dfx</span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'y'</span>] <span class="op">+=</span> y_pos</span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'x'</span>] <span class="op">+=</span> x_pos</span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> np.array(<span class="bu">list</span>(<span class="bu">zip</span>(df.x, df.y)))</span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>    x_pos, y_pos <span class="op">=</span> df[<span class="st">'x'</span>][<span class="dv">0</span>] <span class="op">-</span> (df[<span class="st">'x'</span>][<span class="dv">0</span>] <span class="op">-</span> df[<span class="st">'x'</span>][<span class="dv">1</span>]), df[<span class="st">'y'</span>][<span class="dv">0</span>]</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'x'</span>] <span class="op">=</span> df.x <span class="op">+</span> np.array([<span class="op">-</span>pad, <span class="op">-</span>pad, pad, pad])</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'y'</span>] <span class="op">=</span> df.y <span class="op">+</span> np.array([<span class="op">-</span>pad, pad, pad, <span class="op">-</span>pad])</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x_pos, y_pos, Polygon([Point(x, y) <span class="cf">for</span> x, y <span class="kw">in</span> <span class="bu">zip</span>(df.x, df.y)])</span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a><span class="co"># annot = [(x, 'AKAP4') for x in range(1, int(max_chrom_size), int(max_chrom_size/100))]</span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> [(x, <span class="st">'AKAP4'</span>) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">sorted</span>(np.random.randint(<span class="dv">1</span>, max_chrom_size, <span class="dv">100</span>))]</span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>    polybuff <span class="op">=</span> []</span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pos, name <span class="kw">in</span> annot:</span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>        x, y, poly <span class="op">=</span> get_polygon(name, pos, <span class="dv">1</span>, ax)</span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="bu">any</span>(is_polygons_intersecting(poly, p) <span class="cf">for</span> p <span class="kw">in</span> polybuff):</span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>            nudge <span class="op">=</span> <span class="fl">0.1</span> <span class="op">*</span> y_unit</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>            y <span class="op">+=</span> nudge</span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>            poly.nudge_y(nudge)</span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>        draw_text(x, y, name, font_size, ax)</span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(polybuff) <span class="op">&gt;</span> <span class="dv">5</span>:</span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>            <span class="kw">del</span> polybuff[<span class="dv">0</span>]</span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>        polybuff.append(poly)</span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, t <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">reversed</span>(ax.texts)):</span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>        t.set_zorder(z<span class="op">+</span>i)</span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a><span class="co"># text = 'Tester'</span></span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a><span class="co"># x, y, poly = get_polygon(text, chrom_size/2, 2, ax)</span></span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a><span class="co"># nudge = -1 * y_unit</span></span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a><span class="co"># y += nudge</span></span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a><span class="co"># poly.nudge_y(nudge)</span></span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a><span class="co"># draw_text(x, y, text, font_size, ax)</span></span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a><span class="co"># text = 'AKAP4'</span></span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a><span class="co"># x, y, poly = get_polygon(text, chrom_size/2, 2, axes[1])</span></span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a><span class="co"># nudge = +1 * y_unit</span></span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a><span class="co"># y += nudge</span></span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a><span class="co"># poly.nudge_y(nudge)</span></span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a><span class="co"># draw_text(x, y, text, font_size, axes[1])</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-11-output-1.png" width="667" height="755" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-15" class="cell" data-execution_count="799">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import pandas as pd</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import math</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># from matplotlib.artist import Artist</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># axes_height = 1e4 # relative to length of chrom one</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># max_chrom_size = 1e5</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># aspect = axes_height / chrom_size</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># fig_width_inches = 8</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># axes_height_inches = fig_width * aspect</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># fig_height = axes_height_inches * nr_rows</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># nr_rows = 11</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># fig, axes = plt.subplots(nr_rows, 1, figsize=(fig_width, fig_width*aspect*nr_rows), sharex=True, sharey=True)</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.subplots_adjust(hspace=0)</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ax = axes[0]</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># xlim = (0, max_chrom_size)</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ylim = (0, 6)</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co"># scaled_y_lim = xlim[0] * aspect, xlim[1] * aspect</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_xlim(xlim)</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_ylim(scaled_y_lim)</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.yticks([])</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co"># y_unit = -sub(*scaled_y_lim) / -sub(*ylim)</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co"># rel_font_height = 0.1</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co"># font_size = rel_font_height * axes_height_inches / point_size</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co"># def draw_text(x_pos, y_pos, text, font_size, rel_font_height, ax, y_line_bottom=0):</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="co">#     ax.text(x_pos, y_pos, 'Tester', fontsize=font_size, </span></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="co">#                 horizontalalignment='left',# weight='bold',</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="co">#                 verticalalignment='bottom', </span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="co">#                 rotation=45, zorder=3, </span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="co">#                 bbox=dict(boxstyle='square,pad=0', fc='none', ec='none'))</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="co">#     (_, a), (_, b) = ax.transAxes.transform([(0, 0), (0, rel_font_height / 2)])</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="co">#     z = b - a    </span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a><span class="co">#     z = 300</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a><span class="co">#     z = y_unit/6</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="co">#     ax.plot((x_pos, x_pos, x_pos+z),</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="co">#             (y_line_bottom, y_pos, y_pos+z), </span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a><span class="co">#             linewidth=0.5, color='gray')</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a><span class="co"># def get_polygon(text:str, x_pos:int, y_pos:float, font_size:float, ax:matplotlib.axes.Axes) -&gt; Polygon:</span></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a><span class="co">#     y_pos = y_pos * y_unit</span></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="co">#     # x_pos, y_pos = chrom_size/2, 2*y_unit</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="co">#     # ax.scatter([x_pos], [y_pos], marker='X', color='black')</span></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a><span class="co">#     t = ax.text(x_pos, y_pos, 'Tester', fontsize=font_size, </span></span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a><span class="co">#                 horizontalalignment='left',# weight='bold',</span></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a><span class="co">#                 verticalalignment='bottom', </span></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="co">#                 rotation=0, zorder=3, </span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a><span class="co">#                 bbox=dict(boxstyle='square,pad=0', fc='none', ec='none', alpha=0.4))</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a><span class="co">#     # t.set_visible(False)</span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a><span class="co">#     transf = ax.transData.inverted()</span></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a><span class="co">#     bb = t.get_window_extent(renderer = fig.canvas.get_renderer())</span></span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="co">#     bbt = bb.transformed(transf)</span></span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a><span class="co">#     coords = bbt.get_points()</span></span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a><span class="co">#     Artist.remove(t)</span></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a><span class="co">#     (x0, y0), (x1, y1) = coords</span></span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a><span class="co">#     coords = np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])</span></span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a><span class="co">#     # ax.scatter(*coords.T, c='red')</span></span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a><span class="co">#     # ax.scatter(*zip(*coords), transform=ax.transAxes, s=1, color='green', zorder=3)</span></span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a><span class="co">#     x, y = zip(*coords)</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a><span class="co">#     df = pd.DataFrame(dict(x=x, y=y))</span></span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a><span class="co">#     df['y'] -= y_pos</span></span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a><span class="co">#     df['x'] -= x_pos</span></span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a><span class="co">#     dfx = df['x']*math.cos(math.radians(45))-df['y']*math.sin(math.radians(45))</span></span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a><span class="co">#     df['y'] = df['x']*math.sin(math.radians(45))+df['y']*math.cos(math.radians(45))</span></span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a><span class="co">#     df['x'] = dfx</span></span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a><span class="co">#     df['y'] += y_pos</span></span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a><span class="co">#     df['x'] += x_pos</span></span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a><span class="co">#     #df['x'] -= df['x'][1] - df['x'][0]</span></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a><span class="co">#     coords = np.array(list(zip(df.x, df.y)))</span></span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a><span class="co">#     x_pos, y_pos = df['x'][0] - (df['x'][0] - df['x'][1]), df['y'][0]</span></span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a><span class="co">#     # _ = ax.text(x_pos, y_pos, 'Tester', fontsize=font_size, </span></span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a><span class="co">#     #             horizontalalignment='left',# weight='bold',</span></span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a><span class="co">#     #             verticalalignment='bottom', </span></span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a><span class="co">#     #             rotation=45, zorder=3, </span></span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a><span class="co">#     #             bbox=dict(boxstyle='square,pad=0', fc='none', ec='none'))</span></span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a><span class="co">#     # ax.scatter(*coords.T, c='blue')</span></span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a><span class="co">#     # ax.plot(*zip(*coords), linewidth=0.2)</span></span>
+<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a><span class="co">#     return x_pos, y_pos, Polygon([Point(x, y) for x, y in zip(df.x, df.y)])</span></span>
+<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a><span class="co"># annot = [(x, 'AKAP4') for x in range(1, int(max_chrom_size), int(max_chrom_size/200))]</span></span>
+<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a><span class="co"># for i, ax in enumerate(axes):</span></span>
+<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a><span class="co">#     annot = [(x, 'AKAP4') for x in range(1, int(max_chrom_size), int(max_chrom_size/(10*(i+1))))]</span></span>
+<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a><span class="co">#     polybuff = []</span></span>
+<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a><span class="co">#     for pos, name in annot:</span></span>
+<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a><span class="co">#         x, y, poly = get_polygon(name, pos, 1, rel_font_height, ax)</span></span>
+<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a><span class="co">#         while any(is_polygons_intersecting(poly, p) for p in polybuff):</span></span>
+<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a><span class="co">#             nudge = 0.1 * y_unit</span></span>
+<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a><span class="co">#             y += nudge</span></span>
+<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a><span class="co">#             poly.nudge_y(nudge)</span></span>
+<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a><span class="co">#         draw_text(x, y, name, font_size, rel_font_height, ax)</span></span>
+<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-119"><a href="#cb12-119" aria-hidden="true" tabindex="-1"></a><span class="co">#         if len(polybuff) &gt; 5:</span></span>
+<span id="cb12-120"><a href="#cb12-120" aria-hidden="true" tabindex="-1"></a><span class="co">#             del polybuff[0]</span></span>
+<span id="cb12-121"><a href="#cb12-121" aria-hidden="true" tabindex="-1"></a><span class="co">#         polybuff.append(poly)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-16" class="cell" data-execution_count="559">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.transforms</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.transforms <span class="im">import</span> Bbox</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="dv">0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> ax.text(<span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="st">'Text'</span>, fontsize<span class="op">=</span><span class="dv">30</span>, horizontalalignment<span class="op">=</span><span class="st">'left'</span>,<span class="co"># weight='bold',</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                         verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, rotation<span class="op">=</span><span class="dv">0</span>, zorder<span class="op">=</span><span class="dv">3</span>, bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'square,pad=0'</span>, fc<span class="op">=</span><span class="st">'red'</span>, ec<span class="op">=</span><span class="st">'none'</span>))</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>transf <span class="op">=</span> ax.transData.inverted()</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>bb <span class="op">=</span> t.get_window_extent(renderer <span class="op">=</span> fig.canvas.get_renderer())</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>bbt <span class="op">=</span> bb.transformed(transf)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> bbt.get_points()</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(coords)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>(x0, y0), (x1, y1) <span class="op">=</span> coords</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>plt_coords <span class="op">=</span> np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>ax.scatter(<span class="op">*</span>plt_coords.T, c<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> operator <span class="im">import</span> sub</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>aspect_ratio <span class="op">=</span> sub(<span class="op">*</span>ax.get_ylim()) <span class="op">/</span> sub(<span class="op">*</span>ax.get_xlim())</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co">#x0, y0 = coords[0]</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="co"># (x0, y0), (x1, y2) = coords</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>trafo <span class="op">=</span> matplotlib.transforms.Affine2D().rotate_deg_around(x0,y0,<span class="dv">45</span>).skew(<span class="dv">1</span>, <span class="fl">1.3</span>)<span class="co">#.scale(0.5)</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> trafo.transform([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="co"># coords = trafo.transform([(x0, y0), (x1, y1)])</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="co"># coords = trafo.transform(coords)</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(coords)</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>ax.scatter(<span class="op">*</span>coords.T, zorder<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>disp_ratio <span class="op">=</span> ax.get_data_ratio()</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>bbox <span class="op">=</span> ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>disp_ratio <span class="op">=</span> bbox.width <span class="op">/</span> bbox.height</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(disp_ratio)</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>(x0, y0), (x0, y1), (x1, y1), (x1, y0) <span class="op">=</span> coords</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>ax.scatter(<span class="op">*</span>coords.T)</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>Polygon([Point(x0, y0), Point(bbt.xmin, b[<span class="dv">1</span>]<span class="op">+</span>(b[<span class="dv">0</span>]<span class="op">-</span>bbt.xmin)), Point(b[<span class="dv">2</span>], b[<span class="dv">3</span>]), Point(bbt.xmax, b[<span class="dv">3</span>]<span class="op">-</span>(b[<span class="dv">0</span>]<span class="op">-</span>bbt.xmin))])</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="co">#Bbox.count_overlaps</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.2        0.2       ]
+ [0.27711694 0.30281385]]
+[[0.51148154 0.92042049]
+ [0.55200529 0.73124667]
+ [0.6914605  0.9821989 ]
+ [0.65093675 1.17137271]]
+1.3419913419913418</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-13-output-2.png" width="554" height="417" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-17" class="cell" data-execution_count="560">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patches <span class="im">as</span> patches</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.transforms <span class="im">as</span> transforms</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># [[0.25574077 0.46021024]</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  [0.29626452 0.27103643]</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#  [0.43571973 0.52198865]</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#  [0.39519598 0.71116247]]</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># [[0.1        0.1       ]</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#  [0.17711694 0.20281385]]</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>r1 <span class="op">=</span> patches.Rectangle((<span class="fl">0.1</span>, <span class="fl">0.1</span>), <span class="fl">0.2</span>, <span class="fl">0.1</span>, color<span class="op">=</span><span class="st">"blue"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>r2 <span class="op">=</span> patches.Rectangle((<span class="fl">0.1</span>, <span class="fl">0.1</span>), <span class="fl">0.2</span>, <span class="fl">0.1</span>, color<span class="op">=</span><span class="st">"red"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fl">0.1</span>, <span class="fl">0.1</span> <span class="co"># rotate around this point</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>x_lim <span class="op">=</span> (<span class="dv">0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>y_lim <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(x_lim)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(y_lim)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>x_range <span class="op">=</span> x_lim[<span class="dv">1</span>] <span class="op">-</span> x_lim[<span class="dv">0</span>]</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>y_range <span class="op">=</span> y_lim[<span class="dv">1</span>] <span class="op">-</span> y_lim[<span class="dv">0</span>]</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>aspect_ratio <span class="op">=</span> y_range <span class="op">/</span> x_range</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>move_transform <span class="op">=</span> transforms.Affine2D().translate(<span class="op">-</span>p[<span class="dv">0</span>], <span class="op">-</span>p[<span class="dv">1</span>])</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>inverse_move_transform <span class="op">=</span> transforms.Affine2D().translate(p[<span class="dv">0</span>], p[<span class="dv">1</span>])</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>inverse_scale_transform <span class="op">=</span> transforms.Affine2D().scale(<span class="dv">1</span>, <span class="dv">1</span> <span class="op">/</span> aspect_ratio)</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>rotate_transform <span class="op">=</span> transforms.Affine2D().rotate_deg(<span class="dv">45</span>)</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>scale_transform <span class="op">=</span> transforms.Affine2D().scale(<span class="dv">1</span>, aspect_ratio)</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>total_transform <span class="op">=</span> move_transform <span class="op">+</span> inverse_scale_transform <span class="op">+</span> rotate_transform <span class="op">+</span> scale_transform <span class="op">+</span> inverse_move_transform <span class="op">+</span> ax.transData</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>r2.set_transform(total_transform)</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>ax.add_patch(r1)</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>ax.add_patch(r2)</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="co"># print(ax.transLimits.transform([(0.1, 0.1), (0.1, 0.2), (0.3, 0.2), (0.3, 0.1)]))</span></span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="co"># print(total_transform.transform([(0.1, 0.1), (0.1, 0.2), (0.3, 0.2), (0.3, 0.1)]))</span></span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="co"># print(r2.get_bbox())</span></span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a><span class="co"># x0, y0, width, height = r2.get_bbox().bounds()</span></span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="co"># print(x0, y0)</span></span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a><span class="co"># coords = [(x0, y0), </span></span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a><span class="co">#           (x0 - sqrt(height**2 / 2), y0 + sqrt(height**2 / 2)), </span></span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a><span class="co">#           (x0 - sqrt(height**2 / 2) + sqrt(width**2 / 2), y0 + sqrt(height**2 / 2)) +  + sqrt(width**2 / 2), </span></span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a><span class="co">#           (x0 + sqrt(width**2 / 2), y0 + sqrt(width**2 / 2))]</span></span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.scatter(*zip(*coords))</span></span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a><span class="co"># coords = ((0.1, 0.1), (0.1, 0.2), (0.3, 0.2), (0.3, 0.1))</span></span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.scatter(*zip(*coords))</span></span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a><span class="co"># coords = total_transform.transform(coords)</span></span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a><span class="co"># print(coords)</span></span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.scatter(*zip(*coords))</span></span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-14-output-1.png" width="554" height="417" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-18" class="cell" data-execution_count="365">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patches <span class="im">as</span> patches</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib <span class="im">as</span> mpl</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#some helper values</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>p<span class="op">=</span><span class="dv">4</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>theta<span class="op">=</span>pi<span class="op">/</span><span class="dv">6</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> p<span class="op">*</span>cos(theta<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>y1 <span class="op">=</span> p<span class="op">*</span>sin(theta<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>vertices <span class="op">=</span>[(<span class="op">-</span>x1<span class="op">-</span>p<span class="op">/</span><span class="dv">2</span>,<span class="dv">0</span>), (<span class="op">-</span>p<span class="op">/</span><span class="dv">2</span>, y1), (p<span class="op">/</span><span class="dv">2</span>, y1), (x1<span class="op">+</span>p<span class="op">/</span><span class="dv">2</span>, <span class="dv">0</span>), (p<span class="op">/</span><span class="dv">2</span>, <span class="op">-</span>y1), (<span class="op">-</span>p<span class="op">/</span><span class="dv">2</span>, <span class="op">-</span>y1)] </span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>midPoint <span class="op">=</span> [<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>endPoint <span class="op">=</span> (<span class="op">-</span>x1<span class="op">-</span>p<span class="op">/</span><span class="dv">2</span>,<span class="dv">0</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co">#set up the plot</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure()</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig.add_subplot(<span class="dv">111</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="co">#function to rotate and translate the standard shape to a new position</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_polygon(vertices, midPoint, theta, color):</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    polygon <span class="op">=</span> patches.Polygon(vertices, color<span class="op">=</span>color, alpha<span class="op">=</span><span class="fl">0.50</span>) </span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> mpl.transforms.Affine2D().rotate_around(midPoint[<span class="dv">0</span>],midPoint[<span class="dv">1</span>], theta)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># t = mpl.transforms.Affine2D().translate(midPoint[0],midPoint[1])</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    tra <span class="op">=</span> r <span class="op">+</span> ax.transData</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># r = mpl.transforms.Affine2D().rotate(theta)</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># t = mpl.transforms.Affine2D().translate(midPoint[0],midPoint[1])</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># tra = r + t + ax.transData</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>    polygon.set_transform(tra)</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>    ax.add_patch(polygon)</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> r.transform(polygon.xy)</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> plot_polygon(vertices, endPoint, <span class="dv">0</span>, <span class="st">"blue"</span>)</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="co">#plot_polygon(vertices, midPoint, theta, "blue")</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>p_ <span class="op">=</span> plot_polygon(vertices, endPoint, theta, <span class="st">"orange"</span>)</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="co"># print(p.get_xy())</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="co"># print(p_.get_xy())</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a><span class="co"># print(p.get_transform().transform(p.xy))</span></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="co"># print(p_.get_transform().transform(p_.xy))</span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a><span class="co">#The correct answer is: tra.transform(poly.xy)</span></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a>plt.scatter(<span class="op">*</span><span class="bu">zip</span>(<span class="op">*</span>p), color<span class="op">=</span><span class="st">'blue'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a>plt.scatter(<span class="op">*</span><span class="bu">zip</span>(<span class="op">*</span>p_), color<span class="op">=</span><span class="st">'orange'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlim(-10, 10)</span></span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylim(-10, 10)</span></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-15-output-1.png" width="541" height="412" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-19" class="cell" data-execution_count="596">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>chrom_size <span class="op">=</span> <span class="fl">12e5</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ylim <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">3</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>xlim <span class="op">=</span> (<span class="dv">0</span>, chrom_size)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>data_height <span class="op">=</span> (ylim[<span class="dv">1</span>] <span class="op">-</span> ylim[<span class="dv">0</span>])</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>data_width <span class="op">=</span> (xlim[<span class="dv">1</span>] <span class="op">-</span> xlim[<span class="dv">0</span>])</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>aspect <span class="op">=</span> data_height <span class="op">/</span> data_width</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>aspect</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># data_width * aspect</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ylim = ylim * sub(*ylim) / sub(*xlim)</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># chrom_size * sub(*ylim) / sub(*xlim)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="596">
+<pre><code>2.5e-06</code></pre>
+</div>
+</div>
+<div id="cell-20" class="cell" data-execution_count="586">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> operator <span class="im">import</span> sub</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">0</span>), (<span class="dv">0</span>, <span class="fl">1e4</span>), (<span class="fl">3e4</span>, <span class="fl">1e4</span>), (<span class="fl">3e4</span>, <span class="dv">0</span>)]</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>chrom_size <span class="op">=</span> <span class="fl">12e5</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>ylim <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">3</span>])</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>xlim <span class="op">=</span> np.array([<span class="dv">0</span>, chrom_size])</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>ylim <span class="op">=</span> sub()sub(ylim) <span class="op">/</span> sub(xlim) <span class="op">*</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># fig, (ax, ax2) = plt.subplots(2, 1, figsize=(10, 1), sharex=True)</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">1</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="op">-</span><span class="fl">6e5</span>, <span class="fl">6e5</span>)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="op">-</span><span class="fl">6e4</span>, <span class="fl">6e4</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'equal'</span>)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co"># t = ax.text(0, 0, 'Text', fontsize=7, horizontalalignment='left',# weight='bold',</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co">#                          verticalalignment='bottom', rotation=0, zorder=3, bbox=dict(boxstyle='square,pad=0', fc='red', ec='none', alpha=0.4))</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co"># box = t.get_bbox_patch()</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co"># fig.canvas.draw()</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.axis('equal')</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_xlim(-6e5, 6e5)</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_ylim(-4e5, 4e5)</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co"># # coords = ax.transData.inverted().transform(box.get_window_extent())</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="co"># #coords = ax.transAxes.transform(coords)</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="co"># # print(coords)</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="co"># # print(ax.transLimits.transform(coords))</span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> ax.text(<span class="dv">0</span>, <span class="dv">0</span>, <span class="st">'Text'</span>, fontsize<span class="op">=</span><span class="dv">7</span>, horizontalalignment<span class="op">=</span><span class="st">'left'</span>,<span class="co"># weight='bold',</span></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>                         verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, rotation<span class="op">=</span><span class="dv">0</span>, zorder<span class="op">=</span><span class="dv">3</span>, bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'square,pad=0'</span>, fc<span class="op">=</span><span class="st">'red'</span>, ec<span class="op">=</span><span class="st">'none'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>))</span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>transf <span class="op">=</span> ax.transData.inverted()</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>bb <span class="op">=</span> t.get_window_extent(renderer <span class="op">=</span> fig.canvas.get_renderer())</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>bbt <span class="op">=</span> bb.transformed(transf)</span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> bbt.get_points()</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>(x0, y0), (x1, y1) <span class="op">=</span> coords</span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])</span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>ax.scatter(<span class="op">*</span>coords.T, c<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.scatter(*zip(*coords), transform=ax.transAxes, s=1, color='green', zorder=3)</span></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>x, y <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span>coords)</span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(x<span class="op">=</span>x, y<span class="op">=</span>y))</span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a>dfx <span class="op">=</span> df[<span class="st">'x'</span>]<span class="op">*</span>math.cos(math.radians(<span class="dv">45</span>))<span class="op">-</span>df[<span class="st">'y'</span>]<span class="op">*</span>math.sin(math.radians(<span class="dv">45</span>))</span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'y'</span>] <span class="op">=</span> df[<span class="st">'x'</span>]<span class="op">*</span>math.sin(math.radians(<span class="dv">45</span>))<span class="op">+</span>df[<span class="st">'y'</span>]<span class="op">*</span>math.cos(math.radians(<span class="dv">45</span>))</span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'x'</span>] <span class="op">=</span> dfx</span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> np.array(<span class="bu">list</span>(<span class="bu">zip</span>(df.x, df.y)))</span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a>ax.scatter(<span class="op">*</span>coords.T, c<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a>ax.plot(<span class="op">*</span><span class="bu">zip</span>(<span class="op">*</span>coords))</span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.axis('equal')</span></span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_xlim(-6e5, 6e5)</span></span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_ylim(-4e5, 4e5)</span></span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a>rect <span class="op">=</span> patches.Rectangle((<span class="op">-</span><span class="fl">6e5</span>, <span class="op">-</span><span class="fl">2e4</span>), <span class="fl">12e5</span>, <span class="fl">1e4</span>, color<span class="op">=</span><span class="st">"blue"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a>ax.add_patch(rect) <span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-17-output-1.png" width="851" height="119" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-21" class="cell" data-execution_count="566">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="dv">0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> ax.text(<span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="st">'Text'</span>, fontsize<span class="op">=</span><span class="dv">30</span>, horizontalalignment<span class="op">=</span><span class="st">'left'</span>,<span class="co"># weight='bold',</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                         verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, rotation<span class="op">=</span><span class="dv">0</span>, zorder<span class="op">=</span><span class="dv">3</span>, bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'square,pad=0'</span>, fc<span class="op">=</span><span class="st">'red'</span>, ec<span class="op">=</span><span class="st">'none'</span>))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>transf <span class="op">=</span> ax.transData.inverted()</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>bb <span class="op">=</span> t.get_window_extent(renderer <span class="op">=</span> fig.canvas.get_renderer())</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>bbt <span class="op">=</span> bb.transformed(transf)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> bbt.get_points()</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(coords)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>(x0, y0), (x1, y1) <span class="op">=</span> coords</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>plt_coords <span class="op">=</span> np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>ax.scatter(<span class="op">*</span>plt_coords.T, c<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.2        0.2       ]
+ [1.97368952 0.30281385]]</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-18-output-2.png" width="545" height="417" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-22" class="cell" data-execution_count="391">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.transforms</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.transforms <span class="im">import</span> Bbox</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_polygon(t):</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    transf <span class="op">=</span> ax.transData.inverted()</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    bb <span class="op">=</span> t.get_window_extent(renderer <span class="op">=</span> fig.canvas.get_renderer())</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    bbt <span class="op">=</span> bb.transformed(transf)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> bbt.get_points()</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    x0, y0 <span class="op">=</span> coords[<span class="dv">0</span>]</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    trafo <span class="op">=</span> matplotlib.transforms.Affine2D().rotate_around(x0,y0,<span class="op">-</span>)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(trafo.transform(coords))</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="co"># bb = t.get_window_extent(renderer = fig.canvas.get_renderer())</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># coords = bb.get_points()</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print(coords)</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># x0, y0 = coords[0]</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print(x0, y0)</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># trafo = matplotlib.transforms.Affine2D().rotate_around(x0,y0,45)</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># coords = bb.get_points()</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print(coords)</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print(trafo.transform(coords))</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># transf = ax.transData.inverted()</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># bb = t.get_window_extent(renderer = fig.canvas.get_renderer())</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># bbt = bb.transformed(transf)</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># # return bbt</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># b = bbt.bounds</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># # print(dir(bbt), bbt.rotated(0.785398).corners())</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return Polygon([Point(b[0], b[1]), Point(bbt.xmin, b[1]+(b[0]-bbt.xmin)), Point(b[2], b[3]), Point(bbt.xmax, b[3]-(b[0]-bbt.xmin))])</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># # return Polygon([Point(bbt.xmin, bbt.ymin), Point(bbt.xmin, bbt.ymin), Point(bbt.xmin, bbt.ymin), Point(bbt.xmin, bbt.ymin)])</span></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> ax.text(<span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="st">'Text'</span>, fontsize<span class="op">=</span><span class="dv">17</span>, horizontalalignment<span class="op">=</span><span class="st">'left'</span>,<span class="co"># weight='bold',</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>                         verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, rotation<span class="op">=</span><span class="dv">45</span>, zorder<span class="op">=</span><span class="dv">3</span>, bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'square,pad=0'</span>, fc<span class="op">=</span><span class="st">'red'</span>, ec<span class="op">=</span><span class="st">'none'</span>))</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> get_polygon(t)</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a><span class="co">#xs, ys = zip(*[(p.x, p.y) for p in a.get_points()])</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a><span class="co"># print(xs, ys)</span></span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> ax.text(<span class="fl">0.1</span>, <span class="fl">0.23</span>, <span class="st">'Text'</span>, fontsize<span class="op">=</span><span class="dv">17</span>, horizontalalignment<span class="op">=</span><span class="st">'left'</span>,<span class="co"># weight='bold',</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>                         verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, rotation<span class="op">=</span><span class="dv">45</span>, zorder<span class="op">=</span><span class="dv">3</span>, bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'square,pad=0'</span>, fc<span class="op">=</span><span class="st">'red'</span>, ec<span class="op">=</span><span class="st">'none'</span>))</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a><span class="co">#ax.plot(xs,ys) </span></span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> get_polygon(t)</span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>is_polygons_intersecting(a, b)</span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a><span class="co">#print(Bbox.intersection(a, b))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.1        0.1       ]
+ [0.25716788 0.0862437 ]]
+[[0.1        0.23      ]
+ [0.25716788 0.2162437 ]]</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[391], line 48</span>
+<span class="ansi-green-fg ansi-bold">     46</span> <span style="font-style:italic;color:rgb(95,135,135)">#ax.plot(xs,ys) </span>
+<span class="ansi-green-fg ansi-bold">     47</span> b <span style="color:rgb(98,98,98)">=</span> get_polygon(t)
+<span class="ansi-green-fg">---&gt; 48</span> is_polygons_intersecting(a, b)
+
+Cell <span class="ansi-green-fg">In[30], line 17</span>, in <span class="ansi-cyan-fg">is_polygons_intersecting</span><span class="ansi-blue-fg">(a, b)</span>
+<span class="ansi-green-fg ansi-bold">     14</span> <span style="font-weight:bold;color:rgb(0,135,0)">for</span> x <span style="font-weight:bold;color:rgb(175,0,255)">in</span> <span style="color:rgb(0,135,0)">range</span>(<span style="color:rgb(98,98,98)">2</span>):
+<span class="ansi-green-fg ansi-bold">     15</span>     polygon <span style="color:rgb(98,98,98)">=</span> a <span style="font-weight:bold;color:rgb(0,135,0)">if</span> x <span style="color:rgb(98,98,98)">==</span> <span style="color:rgb(98,98,98)">0</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span> b
+<span class="ansi-green-fg">---&gt; 17</span>     <span style="font-weight:bold;color:rgb(0,135,0)">for</span> i1 <span style="font-weight:bold;color:rgb(175,0,255)">in</span> <span style="color:rgb(0,135,0)">range</span>(<span style="color:rgb(0,135,0)">len</span>(polygon<span style="color:rgb(98,98,98)">.</span>get_points())):
+<span class="ansi-green-fg ansi-bold">     18</span>         i2 <span style="color:rgb(98,98,98)">=</span> (i1 <span style="color:rgb(98,98,98)">+</span> <span style="color:rgb(98,98,98)">1</span>) <span style="color:rgb(98,98,98)">%</span> <span style="color:rgb(0,135,0)">len</span>(polygon<span style="color:rgb(98,98,98)">.</span>get_points())
+<span class="ansi-green-fg ansi-bold">     19</span>         p1 <span style="color:rgb(98,98,98)">=</span> polygon<span style="color:rgb(98,98,98)">.</span>get_points()[i1]
+
+<span class="ansi-red-fg">AttributeError</span>: 'NoneType' object has no attribute 'get_points'</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-19-output-3.png" width="554" height="417" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-23" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> importlib</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>importlib.<span class="bu">reload</span>(geneinfo)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>gi.chrom_ideogram(annotation, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bbox(x0=72266463.49999999, y0=2.299999999999999, x1=78844788.63027559, y1=4.219218090860526)
+Bbox(x0=38185129.999999985, y0=2.299999999999999, x1=43874492.27483292, y1=3.959864294798294)
+Bbox(x0=2916660.500000015, y0=2.299999999999999, x1=8677139.803268358, y1=3.9806125984832725)
+Bbox(x0=1428450.5, y0=2.299999999999999, x1=8042334.144493267, y1=4.229592242703012)
+Bbox(x0=44533249.000000015, y0=2.299999999999999, x1=52320563.613677576, y1=4.571939253505164)
+Bbox(x0=6908011.500000015, y0=2.299999999999999, x1=12632932.289050654, y1=3.9702384466407814)
+Bbox(x0=53064702.000000015, y0=2.299999999999999, x1=60531989.985718235, y1=4.478571886922758)
+Bbox(x0=119654546.99999999, y0=2.299999999999999, x1=127619654.1847661, y1=4.623810012717609)
+Bbox(x0=48684013.500000015, y0=2.299999999999999, x1=53626646.976261124, y1=3.7420071061060156)
+Bbox(x0=15840368.500000015, y0=2.299999999999999, x1=22169784.03075163, y1=4.146599027963099)
+Bbox(x0=16742475.999999985, y0=2.299999999999999, x1=23107450.044969335, y1=4.15697317980559)
+Bbox(x0=111713229.99999999, y0=2.299999999999999, x1=118042645.53075166, y1=4.146599027963099)
+Bbox(x0=1597062.000000015, y0=2.299999999999999, x1=10059988.383813992, y1=4.769048138512458)
+Bbox(x0=40692081.499999985, y0=2.299999999999999, x1=47341523.65871097, y1=4.239966394545505)
+Bbox(x0=56565747.500000015, y0=2.299999999999999, x1=64246386.57102446, y1=4.540816797977694)
+Bbox(x0=53398438.500000015, y0=2.299999999999999, x1=60225673.229799524, y1=4.29183715375795)
+Bbox(x0=14016183.500000015, y0=2.299999999999999, x1=21447912.97150053, y1=4.468197735080267)
+Bbox(x0=2784270.0, y0=2.299999999999999, x1=6482355.478641406, y1=3.37891179161889)
+Bbox(x0=41161011.999999985, y0=2.299999999999999, x1=47739337.13027556, y1=4.219218090860526)
+Bbox(x0=48896799.500000015, y0=2.299999999999999, x1=55510683.1444933, y1=4.2295922427030135)
+Bbox(x0=44992983.500000015, y0=2.299999999999999, x1=51784659.71558182, y1=4.281463001915462)
+Bbox(x0=53609424.000000015, y0=2.299999999999999, x1=60792243.87197657, y1=4.395578672182843)
+Bbox(x0=13699816.000000015, y0=2.299999999999999, x1=20313699.644493297, y1=4.2295922427030135)
+Bbox(x0=72646566.50000001, y0=2.299999999999999, x1=79260450.1444933, y1=4.2295922427030135)
+Bbox(x0=20061809.999999985, y0=2.299999999999999, x1=27742449.071024433, y1=4.540816797977694)
+Bbox(x0=70285815.99999999, y0=2.299999999999999, x1=77575311.41462968, y1=4.426701127710309)
+Bbox(x0=40637241.000000015, y0=2.299999999999999, x1=47926736.41462971, y1=4.426701127710309)
+Bbox(x0=76429526.00000001, y0=2.299999999999999, x1=84430191.6989838, y1=4.6341841645601)
+Bbox(x0=2361155.5, y0=2.299999999999999, x1=9295065.772452638, y1=4.322959609285416)
+Bbox(x0=85954370.49999999, y0=2.299999999999999, x1=90968121.0046965, y1=3.7627554097909943)
+Bbox(x0=148750640.0, y0=2.299999999999999, x1=154048858.61843812, y1=3.845748624530909)
+Bbox(x0=150437800.0, y0=2.299999999999999, x1=158331790.1563307, y1=4.60306170903263)
+Bbox(x0=13667538.000000015, y0=2.299999999999999, x1=21597086.670548394, y1=4.613435860875121)
+Bbox(x0=129754242.50000001, y0=2.299999999999999, x1=138430519.9691202, y1=4.831293049567396)
+Bbox(x0=13723439.500000015, y0=2.299999999999999, x1=22399716.96912022, y1=4.831293049567396)
+Bbox(x0=11766965.500000015, y0=2.299999999999999, x1=17242976.68952672, y1=3.897619383743354)
+Bbox(x0=20133181.500000015, y0=2.299999999999999, x1=27031533.258234933, y1=4.312585457442928)
+Bbox(x0=66215769.000000015, y0=2.299999999999999, x1=72082923.8459215, y1=4.011735054010739)
+Bbox(x0=311072.0, y0=2.299999999999999, x1=7885035.528371349, y1=4.509694342450224)
+Bbox(x0=154553122.5, y0=2.299999999999999, x1=160704745.4596631, y1=4.094728268750654)
+Bbox(x0=16815475.499999985, y0=2.299999999999999, x1=23464917.658711, y1=4.239966394545505)
+Bbox(x0=2716248.0, y0=2.299999999999999, x1=8156700.6753089875, y1=3.887245231900865)
+Bbox(x0=30568287.499999985, y0=2.299999999999999, x1=35795389.09000276, y1=3.8250003208459304)
+Bbox(x0=3327608.5, y0=2.299999999999999, x1=10190401.744017228, y1=4.302211305600441)
+Bbox(x0=71099693.00000001, y0=2.299999999999999, x1=77855810.70136411, y1=4.271088850072971)
+Bbox(x0=7475797.500000015, y0=2.299999999999999, x1=11920611.77721323, y1=3.5967689803111647)
+Bbox(x0=103357475.49999999, y0=2.299999999999999, x1=110753646.4572828, y1=4.457823583237779)
+Bbox(x0=47202994.499999985, y0=2.299999999999999, x1=52750122.7179621, y1=3.918367687428333)
+Bbox(x0=115172356.00000001, y0=2.299999999999999, x1=121786239.6444933, y1=4.2295922427030135)
+Bbox(x0=41348910.000000015, y0=2.299999999999999, x1=47998352.158711, y1=4.239966394545505)
+Bbox(x0=2855820.0, y0=2.299999999999999, x1=8616299.303268328, y1=3.9806125984832725)
+Bbox(x0=18297000.500000015, y0=2.299999999999999, x1=24910884.144493297, y1=4.2295922427030135)
+Bbox(x0=15810425.000000015, y0=2.299999999999999, x1=22388750.130275592, y1=4.219218090860526)
+Bbox(x0=2493695.0, y0=2.299999999999999, x1=8965344.587622449, y1=4.188095635333056)
+Bbox(x0=74007178.49999999, y0=2.299999999999999, x1=78309758.72034238, y1=3.5552723729412072)
+Bbox(x0=136179030.5, y0=2.299999999999999, x1=141477249.11843812, y1=3.845748624530909)
+Bbox(x0=81157805.99999999, y0=2.299999999999999, x1=88269508.84354116, y1=4.374830368497864)
+Bbox(x0=140783972.0, y0=2.299999999999999, x1=146473334.2748329, y1=3.959864294798294)
+Bbox(x0=53273589.000000015, y0=2.299999999999999, x1=60456408.8719766, y1=4.395578672182843)
+Bbox(x0=47223928.500000015, y0=2.299999999999999, x1=53695578.08762245, y1=4.188095635333056)
+Bbox(x0=72036297.50000001, y0=2.299999999999999, x1=78543505.60184015, y1=4.198469787175547)
+Bbox(x0=16854822.500000015, y0=2.299999999999999, x1=23397589.116057888, y1=4.208843939018035)
+Bbox(x0=73836686.00000001, y0=2.299999999999999, x1=78743760.96204342, y1=3.731632954263528)
+Bbox(x0=24066878.000000015, y0=2.299999999999999, x1=30751878.672928706, y1=4.250340546387992)
+Bbox(x0=1389132.5, y0=2.299999999999999, x1=9567590.770072356, y1=4.686054923772543)
+Bbox(x0=17555597.000000015, y0=2.299999999999999, x1=22320437.9051726, y1=3.6901363468935706)
+Bbox(x0=24182714.000000015, y0=2.299999999999999, x1=28591969.762995526, y1=3.586394828468677)
+Bbox(x0=138918752.0, y0=2.299999999999999, x1=145248167.53075165, y1=4.146599027963099)
+Bbox(x0=68835590.50000001, y0=2.299999999999999, x1=75342798.60184018, y1=4.198469787175547)
+Bbox(x0=78954529.50000001, y0=2.299999999999999, x1=86208466.40041198, y1=4.416326975867822)
+Bbox(x0=1499883.000000015, y0=2.299999999999999, x1=7864857.044969365, y1=4.156973179805588)
+Bbox(x0=1359652.5, y0=2.299999999999999, x1=7155690.317486033, y1=3.9909867503257583)
+Bbox(x0=3658994.5, y0=2.299999999999999, x1=9348356.774832949, y1=3.959864294798294)
+Bbox(x0=153932152.5, y0=2.299999999999999, x1=160403802.08762246, y1=4.188095635333056)
+Bbox(x0=71105338.50000001, y0=2.299999999999999, x1=78394833.91462971, y1=4.426701127710309)
+Bbox(x0=77903407.99999999, y0=2.299999999999999, x1=84659525.70136409, y1=4.271088850072971)
+Bbox(x0=7912993.000000015, y0=2.299999999999999, x1=15344722.47150053, y1=4.468197735080267)
+Bbox(x0=48514886.500000015, y0=2.299999999999999, x1=55591030.829323485, y1=4.364456216655377)
+Bbox(x0=153959687.5, y0=2.299999999999999, x1=160680246.68714643, y1=4.260714698230483)
+Bbox(x0=79160003.00000001, y0=2.299999999999999, x1=86627290.9857182, y1=4.478571886922758)
+Bbox(x0=289839.0000000149, y0=2.299999999999999, x1=7792685.49993594, y1=4.488946038765246)
+Bbox(x0=132049622.49999999, y0=2.299999999999999, x1=138272362.4880985, y1=4.115476572435632)
+Bbox(x0=13756349.000000015, y0=2.299999999999999, x1=19339035.732179835, y1=3.928741839270824)
+Bbox(x0=360444.0000000149, y0=2.299999999999999, x1=8823370.383814022, y1=4.769048138512458)
+Bbox(x0=53200849.500000015, y0=2.299999999999999, x1=60063642.74401723, y1=4.302211305600441)
+Bbox(x0=15738620.500000015, y0=2.299999999999999, x1=21285748.71796213, y1=3.918367687428333)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-20-output-2.png" width="660" height="700" class="figure-img"></p>
 </figure>
 </div>
 </div>

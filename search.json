@@ -473,275 +473,117 @@
     ]
   },
   {
-    "objectID": "api/get_genes_region.html",
-    "href": "api/get_genes_region.html",
-    "title": "get_genes_region",
+    "objectID": "api/gene_coord.html",
+    "href": "api/gene_coord.html",
+    "title": "gene_coord",
     "section": "",
-    "text": "geneinfo.get_genes_region(\n    chrom\n    window_start\n    window_end\n    assembly='GRCh38'\n    db='ncbiRefSeq'\n)\nGets gene structure information for genes in a chromosomal region.\n\n\n\nchrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’\n\n\n\n\n\n\n : list\n\nList of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - gene strand - list of exons (start, end)",
+    "text": "geneinfo.gene_coord(query, assembly, species='homo_sapiens')\nRetrieves genome (chrom, start, end) coordinates one or more genes.\n\n\n\nquery : Union[str, List[str]]\n\nGene symbol or list of gene symbols\n\nassembly : \n\nGenome assembly.\n\nspecies :  = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’.\n\n\n\n\n\n\n : dict\n\nDictionary with gene names as keys and coordinates as values.",
     "crumbs": [
       "Gene coordinates",
-      "get_genes_region"
+      "gene_coord"
     ]
   },
   {
-    "objectID": "api/get_genes_region.html#parameters",
-    "href": "api/get_genes_region.html#parameters",
-    "title": "get_genes_region",
+    "objectID": "api/gene_coord.html#parameters",
+    "href": "api/gene_coord.html#parameters",
+    "title": "gene_coord",
     "section": "",
-    "text": "chrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’",
+    "text": "query : Union[str, List[str]]\n\nGene symbol or list of gene symbols\n\nassembly : \n\nGenome assembly.\n\nspecies :  = 'homo_sapiens'\n\nSpecies, by default ‘homo_sapiens’.",
     "crumbs": [
       "Gene coordinates",
-      "get_genes_region"
+      "gene_coord"
     ]
   },
   {
-    "objectID": "api/get_genes_region.html#returns",
-    "href": "api/get_genes_region.html#returns",
-    "title": "get_genes_region",
+    "objectID": "api/gene_coord.html#returns",
+    "href": "api/gene_coord.html#returns",
+    "title": "gene_coord",
     "section": "",
-    "text": ": list\n\nList of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - gene strand - list of exons (start, end)",
+    "text": ": dict\n\nDictionary with gene names as keys and coordinates as values.",
     "crumbs": [
       "Gene coordinates",
-      "get_genes_region"
+      "gene_coord"
     ]
   },
   {
-    "objectID": "api/show_go_evidence_codes.html",
-    "href": "api/show_go_evidence_codes.html",
-    "title": "show_go_evidence_codes",
+    "objectID": "api/get_terms_for_go_regex.html",
+    "href": "api/get_terms_for_go_regex.html",
+    "title": "get_terms_for_go_regex",
     "section": "",
-    "text": "show_go_evidence_codes\ngeneinfo.show_go_evidence_codes()\nDisplay list of GO evidence categories and their codes.",
+    "text": "geneinfo.get_terms_for_go_regex(regex, taxid=9606, add_children=False)\nGet GO terms for terms matching a regular expression in their description string.\n\n\n\nregex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\nadd_children : bool = False\n\nAdd GO terms nested under GO terms found, by default False\n\n\n\n\n\n\n : list\n\nList of GO terms.",
     "crumbs": [
-      "GO enrichment",
-      "show_go_evidence_codes"
+      "GO information",
+      "get_terms_for_go_regex"
     ]
   },
   {
-    "objectID": "api/download_data.html",
-    "href": "api/download_data.html",
-    "title": "download_data",
+    "objectID": "api/get_terms_for_go_regex.html#parameters",
+    "href": "api/get_terms_for_go_regex.html#parameters",
+    "title": "get_terms_for_go_regex",
     "section": "",
-    "text": "download_data\ngeneinfo.download_data(prt=sys.stdout)",
+    "text": "regex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\nadd_children : bool = False\n\nAdd GO terms nested under GO terms found, by default False",
     "crumbs": [
-      "GO enrichment",
-      "download_data"
+      "GO information",
+      "get_terms_for_go_regex"
     ]
   },
   {
-    "objectID": "pages/google_sheets.html",
-    "href": "pages/google_sheets.html",
-    "title": "Gene lists",
+    "objectID": "api/get_terms_for_go_regex.html#returns",
+    "href": "api/get_terms_for_go_regex.html#returns",
+    "title": "get_terms_for_go_regex",
     "section": "",
-    "text": "import geneinfo as gi\ngi.email('your@email.com')\n\nLoad Google spreadsheet with gene lists\n\ngene_lists = gi.GoogleSheet()\ngene_lists\n\n\n\n\n\n\n\n\nlabel\ndescription\n\n\n\n\nall_npx\nall NPX genes\n\n\nneuron_genome_proteome\nNeuron proteome (whole genome)\n\n\nneuron_npx_proteome\nNPX neuron proteome\n\n\nmatos_neuron\nMatos neuron genes\n\n\nmatos_common\nMatos neuron genes expressed in spermatids\n\n\nhpa_brain_prot\nBrain genes form Human protein atlas\n\n\nmeritxell_spermatid_expr\n\n\n\nintersection(nDEG, matos_neuron)\n\n\n\nunion(H,matos_common)\n\n\n\nmult_copy\n\n\n\nall_post_mei_expr\nMulti copy genes\n\n\nmsci\nall post.mei.expr. X genes\n\n\nmsci_esc\nMSCI genes\n\n\nmy_primate_codeml\nMSCI-escaping\n\n\ncDEG\nPrimate codeml site model\n\n\nnDEG\ncDEG\n\n\nprimate_ampl_multi\nnDEG\n\n\ngametologs\nAmpliconic or multicopy in some primates\n\n\nxi\nGametologs in some primates\n\n\nxi_escape\nSubject to somatic X inactivation (XI)\n\n\nxi_uncertain\nEscaping somatic X inactivation (XI)\n\n\nxi_any_evidence\nX genes uncertain XI status\n\n\nexpr_mod_xi_copynr_fibrobl\nUnion of certain and uncertain XI status\n\n\nexpr_mod_xi_copynr_lcl\nExpression modulated by Xi copy number (Fibroblast)\n\n\nreg_sa_pheno\nExpression modulated by Xi copy number (LCL)\n\n\nari_relate_EUR\nX-chromosome genes associated with regional SA phenotypes\n\n\nari_relate_ASIA\n\n\n\nari_relate_AFR\n\n\n\nari_nonPUR\n\n\n\nari_relate_PUR\n\n\n\nari_all\n\n\n\ncandidates\n\n\n\nech75_regions\nCandidate for explaining human and baboon sweeps\n\n\nech90_regions\nOverlapping human sweeps (75% ECH regions)\n\n\naccel_reg_simiiformes_br\nOverlapping human sweeps (90% ECH regions)\n\n\nsfari_all_conf\nGenes with accelerated regions Simiiformes branch\n\n\nintel_seiz_lang\nX SFARI genes (including all confidence levels)\n\n\nintelect_disabil\nIntellectual disability or Seizures or Language impairment\n\n\nmatos_common_no_xy_gametologs\nIntelectual disbility\n\n\n\n\n\n\n\n\nIndividual gene lists behaves like normal lists, but when displayed they render in columns to make them easier to read:\n\nech90_regions = gene_lists.get('ech90_regions')\nech90_regions\n\nABCB7        CNKSR2       FRMD8P1      LOC101928627 MIR500A      PGAM4        TRPC5        \nACTRT1       COX7B        FTX          LOC729609    MIR500B      PHF8         TSIX         \nAKAP4        CYBB         FUNDC2       LRCH2        MIR501       PRRG1        UPRT         \nALG13        DCX          GAB3         MAGT1        MIR502       RAB39B       USP27X       \nARHGAP36     DKC1         GPC3         MAP7D2       MIR660       RAP2C        USP27X-DT    \nATP7A        DYNLT3       H2AB1        MBNL3        MIR664B      RAP2C-AS1    VBP1         \nATRX         ENOX2        HTR2C        MIR1184-1    MPP1         RLIM         WNK3         \nBCLAF3       ENOX2-AS1    IL13RA2      MIR188       MSN          SERTM2       XIST         \nBRCC3        EZHIP        JPX          MIR23C       MTCP1        SH3KBP1      XK           \nCAPN6        F8           LANCL3       MIR362       NEXMIF       SMIM9        ZC3H12B      \nCCNB3        F8A1         LAS1L        MIR374B      NUDT10       SNORA35B                  \nCFAP47       FAM120C      LINC01201    MIR374C      NUDT11       SNORA36A                  \nCLCN5        FGF16        LINC01284    MIR421       PAGE4        SNORA56                   \nCMC4         FRMD7        LINC01496    MIR448       PAK3         STK26"
+    "text": ": list\n\nList of GO terms.",
+    "crumbs": [
+      "GO information",
+      "get_terms_for_go_regex"
+    ]
   },
   {
-    "objectID": "pages/getting_started.html",
-    "href": "pages/getting_started.html",
-    "title": "Overview",
+    "objectID": "api/go_name2term.html",
+    "href": "api/go_name2term.html",
+    "title": "go_name2term",
     "section": "",
-    "text": "geneinfo is a compilation of gene information APIs adapted for use in a Jupyter notebook and some additional utilities. Its API lets you retrieve of information about genes and gene ontologies, plot data together with gene structures (genome browser style), show data on chromosome ideograms, perform gene ontology enrichment analyses and more.",
+    "text": "geneinfo.go_name2term(name)\nConverts a GO term name to its term.\n\n\n\nname : str\n\nGO term name\n\n\n\n\n\n\n : str\n\nGO term.",
     "crumbs": [
-      "Overview"
+      "GO information",
+      "go_name2term"
     ]
   },
   {
-    "objectID": "pages/getting_started.html#installation",
-    "href": "pages/getting_started.html#installation",
-    "title": "Overview",
-    "section": "Installation",
-    "text": "Installation\nconda install -c conda-forge -c munch-group geneinfo",
-    "crumbs": [
-      "Overview"
-    ]
-  },
-  {
-    "objectID": "pages/getting_started.html#interpreting-data-in-a-gene-context",
-    "href": "pages/getting_started.html#interpreting-data-in-a-gene-context",
-    "title": "Overview",
-    "section": "Interpreting data in a gene context",
-    "text": "Interpreting data in a gene context\nAmong many other things, geneinfo lets you plot data in chromosome coordinates and view overlapping gene annotation using gene_plot.\n\nimport geneinfo as gi\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19')\nax.scatter(x, y, s=2, c='tab:blue') ;\n\n\n\n\n\n\n\n\nYou can get brief summaries using gene_info.\n\ngi.gene_info(['ATRX', 'MAGT1'])\n\nSymbol: ATRX (protein-coding)         Aliases: JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX\nATRX chromatin remodeler\nSummary: The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].\nGenomic position: X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)\nGene card\n\n\n\nSymbol: MAGT1 (protein-coding)         Aliases: CDG1CC, IAP, MRX95, OST3B, PRO0756, SLC58A1, XMEN, bA217H1.1\nmagnesium transporter 1\nSummary: This gene encodes a ubiquitously expressed magnesium cation transporter protein that localizes to the cell membrane. This protein also associates with N-oligosaccharyl transferase and therefore may have a role in N-glycosylation. Mutations in this gene cause a form of X-linked intellectual disability (XLID). This gene may have multiple in-frame translation initiation sites, one of which would encode a shorter protein with an N-terminus containing a signal peptide at amino acids 1-29. [provided by RefSeq, Jul 2017].\nGenomic position: X:77825747-77899271 (hg38), HG1426_PATCH:77087318-77156547, X:77081861-77151090 (hg19)\nGene card\n\n\n\nGet gene ontology terms associated with genes.\n\ngo_terms = gi.get_go_terms_for_genes(['ATRX', 'MAGT1'], evidence=['IDA', 'EXP', 'HTP'])\ngo_terms[:10]\n\n823       546\n5032    84061\nName: GeneID, dtype: int64\n\n\n['GO:0003682',\n 'GO:0005654',\n 'GO:0005783',\n 'GO:0006334',\n 'GO:0006338',\n 'GO:0008250',\n 'GO:0015616',\n 'GO:0016604',\n 'GO:0035064',\n 'GO:0042393']\n\n\nShow graph for those terms.\n\ngi.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\nShow definitions of those terms.\n\ngi.go_info(go_terms)\n\nGO:0003682: chromatin binding\nBinding to chromatin, the network of fibers of DNA, protein, and sometimes RNA, that make up the chromosomes of the eukaryotic nucleus during interphase.\n\n\n\nGO:0005654: nucleoplasm\nThat part of the nuclear content other than the chromosomes or the nucleolus.\n\n\n\nGO:0005783: endoplasmic reticulum\nThe irregular network of unit membranes, visible only by electron microscopy, that occurs in the cytoplasm of many eukaryotic cells. The membranes form a complex meshwork of tubular channels, which are often expanded into slitlike cavities called cisternae. The ER takes two forms, rough (or granular), with ribosomes adhering to the outer surface, and smooth (with no ribosomes attached).\n\n\n\nGO:0006334: nucleosome assembly\nThe aggregation, arrangement and bonding together of a nucleosome, the beadlike structural units of eukaryotic chromatin composed of histones and DNA.\n\n\n\nGO:0006338: chromatin remodeling\nA dynamic process of chromatin reorganization resulting in changes to chromatin structure. These changes allow DNA metabolic processes such as transcriptional regulation, DNA recombination, DNA repair, and DNA replication.\n\n\n\nGO:0008250: oligosaccharyltransferase complex\nA protein complex that is found in the endoplasmic reticulum membrane of eukaryotes and transfers lipid-linked oligosaccharide precursor to asparagine residues on nascent proteins. The complex includes at least eight non-identical subunits. Different forms of the complex containing distinct subunits have been detected in mammals.\n\n\n\nGO:0015616: DNA translocase activity\nGeneration of movement along a single- or double-stranded DNA molecule, driven by ATP hydrolysis.\n\n\n\nGO:0016604: nuclear body\nExtra-nucleolar nuclear domains usually visualized by confocal microscopy and fluorescent antibodies to specific proteins.\n\n\n\nGO:0035064: methylated histone binding\nBinding to a histone in which a residue has been modified by methylation.\n\n\n\nGO:0042393: histone binding\nBinding to a histone, any of a group of water-soluble proteins found in association with the DNA of eukaryotic or archaeal chromosomes. They are involved in the condensation and coiling of chromosomes during cell division and have also been implicated in gene regulation and DNA replication. They may be chemically modified (methylated, acetlyated and others) to regulate gene transcription.\n\n\n\nGO:0099115: chromosome, subtelomeric region\nA region of the chromosome, adjacent to the telomere (on the centromeric side) that contains repetitive DNA and sometimes genes. This region is usually heterochromatin.",
-    "crumbs": [
-      "Overview"
-    ]
-  },
-  {
-    "objectID": "pages/go_info.html",
-    "href": "pages/go_info.html",
-    "title": "GO information",
+    "objectID": "api/go_name2term.html#parameters",
+    "href": "api/go_name2term.html#parameters",
+    "title": "go_name2term",
     "section": "",
-    "text": "import pandas as pd\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\nclass left:\n    def __rlshift__(self, df):\n        \"Left align columns of data frame: df &lt;&lt; left()\"\n        left_aligned_df = df.style.set_properties(**{'text-align': 'left'})\n        left_aligned_df = left_aligned_df.set_table_styles(\n        [dict(selector = 'th', props=[('text-align', 'left')])])\n        display(left_aligned_df)\n        \ndf = pd.DataFrame(dict(name=['A', 'B'], desc=['bla bla bla bla', 'bla']))\ndf\n\n\n\n\n\n\n\n\nname\ndesc\n\n\n\n\n0\nA\nbla bla bla bla\n\n\n1\nB\nbla\nNB: The first time you use the GO utilities, it will spend a very long time downloading data. If you do not want to wait that out in the notebook, you can execute this command in the folder where you store your notebooks:\nGet info for one or more GO terms:\ngi.go_info('GO:0000776')\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\ngi.go_info(['GO:0000776', 'GO:0005634'])\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\nGet GO terms for a one or more genes:\ngo_terms = gi.get_go_terms_for_genes(['DYNLT3'])\ngo_terms[:10]\n\n10741    6990\nName: GeneID, dtype: int64\n\n\n['GO:0000776',\n 'GO:0005515',\n 'GO:0005634',\n 'GO:0005737',\n 'GO:0005868',\n 'GO:0007018',\n 'GO:0007346',\n 'GO:0042802',\n 'GO:0045505',\n 'GO:0045931']\nDescriptions for GO terms for one or more genes:\ngi.go_info(gi.get_go_terms_for_genes(['DYNLT3']))\n\n10741    6990\nName: GeneID, dtype: int64\n\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005515: protein binding\nBinding to a protein.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\n\n\n\nGO:0005737: cytoplasm\nThe contents of a cell excluding the plasma membrane and nucleus, but including other subcellular structures.\n\n\n\nGO:0005868: cytoplasmic dynein complex\nAny dynein complex with a homodimeric dynein heavy chain core that catalyzes movement along a microtubule. Cytoplasmic dynein complexes participate in many cytoplasmic transport activities in eukaryotes, such as mRNA localization, intermediate filament transport, nuclear envelope breakdown, apoptosis, transport of centrosomal proteins, mitotic spindle assembly, virus transport, kinetochore functions, and movement of signaling and spindle checkpoint proteins. Some complexes participate in intraflagellar transport. Subunits associated with the dynein heavy chain mediate association between dynein heavy chain and cargoes, and may include light chains and light intermediate chains.\n\n\n\nGO:0007018: microtubule-based movement\nA microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.\n\n\n\nGO:0007346: regulation of mitotic cell cycle\nAny process that modulates the rate or extent of progress through the mitotic cell cycle.\n\n\n\nGO:0042802: identical protein binding\nBinding to an identical protein or proteins.\n\n\n\nGO:0045505: dynein intermediate chain binding\nBinding to an intermediate chain of the dynein complex.\n\n\n\nGO:0045931: positive regulation of mitotic cell cycle\nAny process that activates or increases the rate or extent of progression through the mitotic cell cycle.\n\n\n\nGO:0051301: cell division\nThe process resulting in division and partitioning of components of a cell to form more cells; may or may not be accompanied by the physical separation of a cell into distinct, individually membrane-bounded daughter cells.\n\n\n\nGO:0061673: mitotic spindle astral microtubule\nAny of the mitotic spindle microtubules that radiate in all directions from the spindle poles and are thought to contribute to the forces that separate the poles and position them in relation to the rest of the cell.",
+    "text": "name : str\n\nGO term name",
     "crumbs": [
-      "Gene ontology",
-      "GO information"
+      "GO information",
+      "go_name2term"
     ]
   },
   {
-    "objectID": "pages/go_info.html#go-graphs",
-    "href": "pages/go_info.html#go-graphs",
-    "title": "GO information",
-    "section": "GO graphs",
-    "text": "GO graphs\nShow the sub-graph for a list of GO terms:\n\nimport geneinfo\nimport importlib\nimportlib.reload(geneinfo)\n#geneinfo.go_info('GO:0000776')\ngeneinfo.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\n\ngi.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\nShow the sub-graph for the GO terms of a single gene:\n\ngi.show_go_dag_for_gene('DYNLT3')\n\n10741    6990\nName: GeneID, dtype: int64\n\n\n\n\n\n\n\n\n\nSame but using GO annotation backed by certain kinds of evidence:\n\ngi.show_go_dag_for_gene('DYNLT3', evidence=['IDA', 'EXP', 'HTP'])\n\n10741    6990\nName: GeneID, dtype: int64\n\n\n\n\n\n\n\n\n\nShow the categories of evidence backing GO annotations:\n\ngi.show_go_evidence_codes()\n\nExperimental evidence codes:  Inferred from Experiment (EXP)  Inferred from Direct Assay (IDA)  Inferred from Physical Interaction (IPI)  Inferred from Mutant Phenotype (IMP)  Inferred from Genetic Interaction (IGI)  Inferred from Expression Pattern (IEP)  Inferred from High Throughput Experiment (HTP)  Inferred from High Throughput Direct Assay (HDA)  Inferred from High Throughput Mutant Phenotype (HMP)  Inferred from High Throughput Genetic Interaction (HGI)  Inferred from High Throughput Expression Pattern (HEP)\nPhylogenetically-inferred annotations:  Inferred from Biological aspect of Ancestor (IBA)  Inferred from Biological aspect of Descendant (IBD)  Inferred from Key Residues (IKR)  Inferred from Rapid Divergence (IRD)\nComputational analysis evidence codes  Inferred from Sequence or structural Similarity (ISS)  Inferred from Sequence Orthology (ISO)  Inferred from Sequence Alignment (ISA)  Inferred from Sequence Model (ISM)  Inferred from Genomic Context (IGC)  Inferred from Reviewed Computational Analysis (RCA)\nAuthor statement evidence codes:  Traceable Author Statement (TAS)  Non-traceable Author Statement (NAS)\nCurator statement evidence codes:  Inferred by Curator (IC)  No biological Data available (ND)\nElectronic annotation evidence code:  Inferred from Electronic Annotation (IEA)",
-    "crumbs": [
-      "Gene ontology",
-      "GO information"
-    ]
-  },
-  {
-    "objectID": "pages/go_info.html#find-genes-based-on-go-info",
-    "href": "pages/go_info.html#find-genes-based-on-go-info",
-    "title": "GO information",
-    "section": "Find genes based on GO info",
-    "text": "Find genes based on GO info\nFind genes matching a regular expression in any associated GO term description:\n\nmotor_genes_df = gi.get_genes_for_go_regex('kinesin|dynein')\nmotor_genes_df.head() &lt;&lt; left()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n \nsymbol\nname\nchrom\nstart\nend\n\n\n\n\n0\nSPAG1\nsperm associated antigen 1\n8\n100158037\n100241903\n\n\n1\nBLOC1S2\nbiogenesis of lysosomal organelles complex 1 subunit 2\n10\n100286679\n100273277\n\n\n2\nLZTS2\nleucine zipper tumor suppressor 2\n10\n100996587\n101007832\n\n\n3\nDYNC1H1\ndynein cytoplasmic 1 heavy chain 1\n14\n101964572\n102056442\n\n\n4\nKIF1B\nkinesin family member 1B\n1\n10210569\n10381602",
-    "crumbs": [
-      "Gene ontology",
-      "GO information"
-    ]
-  },
-  {
-    "objectID": "pages/chrom_ideograms.html",
-    "href": "pages/chrom_ideograms.html",
-    "title": "Chromosome ideograms",
+    "objectID": "api/go_name2term.html#returns",
+    "href": "api/go_name2term.html#returns",
+    "title": "go_name2term",
     "section": "",
-    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nsns.set_style('white')\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\n\n\n# import importlib\n# import geneinfo\n# importlib.reload(geneinfo)\n\n\nannotation = [\n    ('chr1', 50000000, 50001000),                          # segment color defaults to red\n    ('chr2', 10000000, 1000000, 'green'),                  # with segment color\n    ('chr3', 45000000, 55000000, 'blue', 'NAME'),          # with name label\n    ('chr6', 10000000, 15000000, 'magenta', None, 0, 0.5), # with base and height\n    ('chr6', 10000000, 15000000, 'pink', None, 0.5, 0.5),  # with base and height\n]\n\ngi.chrom_ideogram(annotation, figsize=(8, 8))\n\n\n\n\n\n\n\n\nTo make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):\n\ngi.chrom_ideogram(annotation, figsize=(8, 8), min_visible_width=1)\n\n\n\n\n\n\n\n\nOther assembly, figure dimentions:\n\ngi.chrom_ideogram(annotation, assembly='hg19', figsize=(8, 8))\n\n\n\n\n\n\n\n\nYou can add position markers along a chromosome like this to better see the location of some segments:\n\nchrom = 'chr3'\nstart = 100000000\nend = 200000000\nwidth = 10000000\nannotation2 = annotation + [(chrom, x[0], x[1], 'black', str(x[2]/width)) for x in zip(\n    range(start, end, width), \n    range(start+1, end, width), \n    range(start, end, width)\n)]\ngi.chrom_ideogram(annotation2, figsize=(8, 8))",
+    "text": ": str\n\nGO term.",
     "crumbs": [
-      "Gene plots",
-      "Chromosome ideograms"
+      "GO information",
+      "go_name2term"
     ]
   },
   {
-    "objectID": "pages/string_nets.html",
-    "href": "pages/string_nets.html",
-    "title": "String networks",
+    "objectID": "pages/basics.html",
+    "href": "pages/basics.html",
+    "title": "Basic use",
     "section": "",
-    "text": "import geneinfo as gi\ngi.email('your@email.com')",
-    "crumbs": [
-      "Gene plots",
-      "String networks"
-    ]
+    "text": "Etiam non efficitur urna, quis elementum nisi. Mauris posuere a augue vel gravida. Praesent luctus erat et ex iaculis interdum. Nulla vestibulum quam ac nunc consequat vulputate. Nullam iaculis lobortis sem sit amet fringilla. Aliquam semper, metus ut blandit semper, nulla velit fermentum sapien, fermentum ultrices dolor sapien sed leo. Vestibulum molestie faucibus magna, at feugiat nulla ullamcorper a. Aliquam erat volutpat. Praesent scelerisque magna a justo maximus, sit amet suscipit mauris tempor. Nulla nec dolor eget ipsum pellentesque lobortis a in ipsum. Morbi turpis turpis, fringilla a eleifend maximus, viverra nec neque. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.\nVestibulum ultrices, tortor at mattis porta, odio nisi rutrum nulla, sit amet tincidunt eros quam facilisis tellus. Fusce eleifend lectus in elementum lacinia. Nam auctor nunc in massa ullamcorper, sit amet auctor ante accumsan. Nam ut varius metus. Curabitur eget tristique leo. Cras finibus euismod erat eget elementum. Integer vel placerat ex. Ut id eros quis lectus lacinia venenatis hendrerit vel ante."
   },
   {
-    "objectID": "pages/string_nets.html#show-string-interaction-network",
-    "href": "pages/string_nets.html#show-string-interaction-network",
-    "title": "String networks",
-    "section": "Show STRING interaction network",
-    "text": "Show STRING interaction network\n\ngi.show_string_network(['ATRX', 'TP53', 'RAD51'], nodes=10)",
-    "crumbs": [
-      "Gene plots",
-      "String networks"
-    ]
-  },
-  {
-    "objectID": "pages/gene_plots.html",
-    "href": "pages/gene_plots.html",
-    "title": "Gene plots",
-    "section": "",
-    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nsns.set_style('white')\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')",
-    "crumbs": [
-      "Gene plots",
-      "Gene plots"
-    ]
-  },
-  {
-    "objectID": "pages/gene_plots.html#plot-data-over-gene-annotation",
-    "href": "pages/gene_plots.html#plot-data-over-gene-annotation",
-    "title": "Gene plots",
-    "section": "Plot data over gene annotation",
-    "text": "Plot data over gene annotation\n\n# x = np.linspace(1, 1520300000, 100000)\n# y = np.random.random(100000)\n# dummy manhattan data\nx = np.linspace(76500000, 77500000, 10000)\nrng = np.random.default_rng()\ny = rng.exponential(scale=1, size=x.size)\n\nStandard plot:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg38')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nSame on older hg19 assembly:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nTwo subplots for data:\n\nax1, ax2 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=2)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nThree subplots for data and adjusted aspect ratio:\n\nax1, ax2, ax3 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=3, aspect=0.5)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nax3.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nHighlight a list of genes:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=['ATRX', 'ATP7A'])\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nCombinatorial hightlighting:\nCombining text weight, style, color and bbox:\n\nhighlight = defaultdict(dict)\nfor gene in ['ATRX', 'COX7B', 'PGK1']:\n    highlight[gene].update(dict(weight='bold'))\nfor gene in ['MAGT1']:\n    highlight[gene].update(dict(style='italic'))\nfor gene in ['ATP7A', 'ATRX']:\n    highlight[gene].update(dict(color='red'))\nfor gene in ['PGK1', 'ATRX']:\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\n\nhighlight = defaultdict(dict)\nfor gene in gene_list('xi_any_evidence'):\n    highlight[gene].update(dict(weight='bold'))\nfor gene in gene_list('ech75_regions'):\n    highlight[gene].update(dict(style='italic'))\nfor gene in gene_list('sfari_all_conf') + gene_list('intelect_disabil'):\n    highlight[gene].update(dict(color='red'))\nfor gene in gene_list('gametologs') +  gene_list('mult_copy') + gene_list('xi_escape') + gene_list('cDEG') + gene_list('nDEG'):\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nLarger with colors:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight, figsize=(7, 4))\n\nax.scatter(x, y, s=2, c=y, cmap='viridis_r')\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nOther features:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19',\n                  figsize=(7, 4),          # larger figure\n                  collapse_splice_var=False, # show all splice variants separately\n                  exact_exons=False,        # allow exons to be wide enough to be visible on large plots\n                  hard_limits=True,          # truncate genes that overlap the borders of the specified range\n                 )\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()",
-    "crumbs": [
-      "Gene plots",
-      "Gene plots"
-    ]
-  },
-  {
-    "objectID": "pages/gene_coord.html",
-    "href": "pages/gene_coord.html",
-    "title": "Gene coordinates",
-    "section": "",
-    "text": "import geneinfo as gi\ngi.email('your@email.com')"
-  },
-  {
-    "objectID": "pages/gene_coord.html#get-coordinates-for-genes-in-a-region",
-    "href": "pages/gene_coord.html#get-coordinates-for-genes-in-a-region",
-    "title": "Gene coordinates",
-    "section": "Get coordinates for genes in a region",
-    "text": "Get coordinates for genes in a region\n\ngi.get_genes_region('chrX', 76500000, 77000000, assembly='hg19')\n\n[('FGF16',\n  76709642,\n  76712769,\n  '+',\n  [(76709642, 76709751), (76711767, 76712769)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76949312, 76949426),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)])]"
-  },
-  {
-    "objectID": "pages/gene_ids.html",
-    "href": "pages/gene_ids.html",
-    "title": "ID conversion",
-    "section": "",
-    "text": "import geneinfo as gi\ngi.email('your@email.com')",
-    "crumbs": [
-      "Gene information",
-      "ID conversion"
-    ]
-  },
-  {
-    "objectID": "pages/gene_ids.html#conversion-from-ensembl-ids",
-    "href": "pages/gene_ids.html#conversion-from-ensembl-ids",
-    "title": "ID conversion",
-    "section": "Conversion from ENSEMBL IDs:",
-    "text": "Conversion from ENSEMBL IDs:\n\ngi.ensembl2ncbi('ENSG00000128573')\n\n93986\n\n\n\ngi.ensembl2symbol('ENSG00000128573')\n\n'FOXP2'",
-    "crumbs": [
-      "Gene information",
-      "ID conversion"
-    ]
-  },
-  {
-    "objectID": "pages/gene_ids.html#conversion-to-ensembl-ids",
-    "href": "pages/gene_ids.html#conversion-to-ensembl-ids",
-    "title": "ID conversion",
-    "section": "Conversion to ENSEMBL IDs:",
-    "text": "Conversion to ENSEMBL IDs:\n\ngi.ensembl_id('FOXP2')\n\n['ENSG00000128573']\n\n\n\ngi.ensembl_id(['FOXP2', '93986'])\n\n['ENSG00000128573', 'ENSG00000128573']",
-    "crumbs": [
-      "Gene information",
-      "ID conversion"
-    ]
-  },
-  {
-    "objectID": "pages/gene_ids.html#conversion-to-hgcn-gene-symbols",
-    "href": "pages/gene_ids.html#conversion-to-hgcn-gene-symbols",
-    "title": "ID conversion",
-    "section": "Conversion to HGCN gene symbols",
-    "text": "Conversion to HGCN gene symbols\n\ngi.hgcn_symbol(['CXorf23', 'BCLAF3', 'ENSG00000173681'])\n\n['BCLAF3', 'BCLAF3', 'BCLAF3']",
-    "crumbs": [
-      "Gene information",
-      "ID conversion"
-    ]
-  },
-  {
-    "objectID": "pages/go_enrichment.html",
-    "href": "pages/go_enrichment.html",
-    "title": "GO enrichment",
-    "section": "",
-    "text": "import pandas as pd\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\nclass left:\n    def __rlshift__(self, df):\n        \"Left align columns of data frame: df &lt;&lt; left()\"\n        left_aligned_df = df.style.set_properties(**{'text-align': 'left'})\n        left_aligned_df = left_aligned_df.set_table_styles(\n        [dict(selector = 'th', props=[('text-align', 'left')])])\n        display(left_aligned_df)\n        \ndf = pd.DataFrame(dict(name=['A', 'B'], desc=['bla bla bla bla', 'bla']))\ndf",
-    "crumbs": [
-      "Gene ontology",
-      "GO enrichment"
-    ]
-  },
-  {
-    "objectID": "pages/go_enrichment.html#global-go-enrichment",
-    "href": "pages/go_enrichment.html#global-go-enrichment",
-    "title": "GO enrichment",
-    "section": "Global GO enrichment",
-    "text": "Global GO enrichment\nEnrichment against all GO terms with all protein coding genes as background:\n\nimport importlib\nimport geneinfo\nimportlib.reload(geneinfo)\n\n&lt;module 'geneinfo' from '/Users/kmt/geneinfo/geneinfo/__init__.py'&gt;\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol)\ngo_results.head(10)\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nCC\nGO:0005874\ne\n3.174662e-104\n5.793757e-101\n0.296407\n0.014664\n&lt;GO:0005874&gt;\n\n\n1\nBP\nGO:0007018\ne\n3.469444e-87\n4.220231e-83\n0.152695\n0.002719\n&lt;GO:0007018&gt;\n\n\n2\nCC\nGO:0005871\ne\n1.323152e-82\n1.207376e-79\n0.134731\n0.002185\n&lt;GO:0005871&gt;\n\n\n3\nMF\nGO:0008017\ne\n2.849730e-80\n1.305176e-76\n0.239521\n0.012819\n&lt;GO:0008017&gt;\n\n\n4\nCC\nGO:0005813\ne\n1.960675e-77\n1.192744e-74\n0.314371\n0.030444\n&lt;GO:0005813&gt;\n\n\n5\nMF\nGO:0019894\ne\n4.661206e-77\n1.067416e-73\n0.125749\n0.002039\n&lt;GO:0019894&gt;\n\n\n6\nCC\nGO:0032391\ne\n3.269844e-75\n1.491866e-72\n0.122754\n0.001991\n&lt;GO:0032391&gt;\n\n\n7\nMF\nGO:0003777\ne\n5.259928e-70\n8.030157e-67\n0.125749\n0.002331\n&lt;GO:0003777&gt;\n\n\n8\nMF\nGO:0045505\ne\n7.657838e-68\n8.768225e-65\n0.110778\n0.001797\n&lt;GO:0045505&gt;\n\n\n9\nCC\nGO:0016235\ne\n3.632820e-64\n1.325979e-61\n0.104790\n0.001699\n&lt;GO:0016235&gt;\n\n\n\n\n\n\n\nShow GO DAG for enrichment results:\n\ngi.show_go_dag_enrichment_results(go_results.obj)\n\n\n\n\n\n\n\n\nSame but only for top 10 GO terms:\n\ngi.show_go_dag_enrichment_results(go_results.obj[:10])\n\n\n\n\n\n\n\n\nDescriptions of the same 10 GO terms:\n\ngi.go_info(go_results.term_id[:10])\n\nGO:0005874: microtubule\nAny of the long, generally straight, hollow tubes of internal diameter 12-15 nm and external diameter 24 nm found in a wide variety of eukaryotic cells; each consists (usually) of 13 protofilaments of polymeric tubulin, staggered in such a manner that the tubulin monomers are arranged in a helical pattern on the microtubular surface, and with the alpha/beta axes of the tubulin subunits parallel to the long axis of the tubule; exist in equilibrium with pool of tubulin monomers and can be rapidly assembled or disassembled in response to physiological stimuli; concerned with force generation, e.g. in the spindle.\n\n\n\nGO:0007018: microtubule-based movement\nA microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.\n\n\n\nGO:0005871: kinesin complex\nAny complex that includes a dimer of molecules from the kinesin superfamily, a group of related proteins that contain an extended region of predicted alpha-helical coiled coil in the main chain that likely produces dimerization. The native complexes of several kinesin family members have also been shown to contain additional peptides, often designated light chains as all of the noncatalytic subunits that are currently known are smaller than the chain that contains the motor unit. Kinesin complexes generally possess a force-generating enzymatic activity, or motor, which converts the free energy of the gamma phosphate bond of ATP into mechanical work.\n\n\n\nGO:0008017: microtubule binding\nBinding to a microtubule, a filament composed of tubulin monomers.\n\n\n\nGO:0005813: centrosome\nA structure comprised of a core structure (in most organisms, a pair of centrioles) and peripheral material from which a microtubule-based structure, such as a spindle apparatus, is organized. Centrosomes occur close to the nucleus during interphase in many eukaryotic cells, though in animal cells it changes continually during the cell-division cycle.\n\n\n\nGO:0019894: kinesin binding\nInteracting selectively and non-covalently and stoichiometrically with kinesin, a member of a superfamily of microtubule-based motor proteins that perform force-generating tasks such as organelle transport and chromosome segregation.\n\n\n\nGO:0032391: photoreceptor connecting cilium\nThe portion of the photoreceptor cell cilium linking the photoreceptor inner and outer segments. It’s considered to be equivalent to the ciliary transition zone.\n\n\n\nGO:0003777: microtubule motor activity\nA motor activity that generates movement along a microtubule, driven by ATP hydrolysis.\n\n\n\nGO:0045505: dynein intermediate chain binding\nBinding to an intermediate chain of the dynein complex.\n\n\n\nGO:0016235: aggresome\nAn inclusion body formed by dynein-dependent retrograde transport of an aggregated protein on microtubules.\n\n\n\nShow the GO DAG for a set of GO terms and their parent terms:\n\ngi.show_go_dag_for_terms(go_results.term_id[:10])\n\n\n\n\n\n\n\n\nSpecifying a custom set of background genes:\nThe query genes should be a subset of the background genes:\n\nall_protein_coding = set(pd.read_csv('geneinfo_cache/9606_protein_genes.txt', sep='\\t').Symbol)\n# only the first 50 genes:\nsubset_background = list(all_protein_coding)[:50] + motor_genes_df.symbol.tolist()\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, background_genes=subset_background)\ngo_results\n\nCould not map gene symbol \"KIF28P\" to ncbi id\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nCC\nGO:0005813\ne\n8.279747e-07\n0.000378\n0.314371\n0.276042\n&lt;GO:0005813&gt;\n\n\n1\nCC\nGO:0005874\ne\n2.975553e-06\n0.000678\n0.296407\n0.260417\n&lt;GO:0005874&gt;\n\n\n2\nCC\nGO:0005737\ne\n2.878076e-05\n0.004375\n0.538922\n0.497396\n&lt;GO:0005737&gt;\n\n\n3\nMF\nGO:0000981\np\n9.358545e-05\n0.018951\n0.011976\n0.028646\n&lt;GO:0000981&gt;\n\n\n4\nMF\nGO:0008017\ne\n6.502644e-05\n0.018951\n0.239521\n0.210938\n&lt;GO:0008017&gt;\n\n\n5\nCC\nGO:0005929\ne\n3.614207e-04\n0.032962\n0.164671\n0.143229\n&lt;GO:0005929&gt;\n\n\n6\nCC\nGO:0036064\ne\n3.598807e-04\n0.032962\n0.167665\n0.145833\n&lt;GO:0036064&gt;\n\n\n7\nCC\nGO:0005930\ne\n6.152330e-04\n0.046758\n0.155689\n0.135417\n&lt;GO:0005930&gt;\n\n\n8\nCC\nGO:0005829\ne\n7.499627e-04\n0.048855\n0.494012\n0.460938\n&lt;GO:0005829&gt;\n\n\n\n\n\n\n\nUse only the X chromosome as background:\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, background_chrom='X')\ngo_results\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nMF\nGO:0045505\ne\n0.000041\n0.010017\n0.333333\n0.002345\n&lt;GO:0045505&gt;\n\n\n1\nMF\nGO:0070840\ne\n0.000041\n0.010017\n0.333333\n0.002345\n&lt;GO:0070840&gt;\n\n\n2\nMF\nGO:0008017\ne\n0.000031\n0.010017\n0.500000\n0.012896\n&lt;GO:0008017&gt;\n\n\n3\nCC\nGO:0016235\ne\n0.000041\n0.020475\n0.333333\n0.002345\n&lt;GO:0016235&gt;",
-    "crumbs": [
-      "Gene ontology",
-      "GO enrichment"
-    ]
-  },
-  {
-    "objectID": "pages/go_enrichment.html#enrichment-among-a-subset-of-go-terms",
-    "href": "pages/go_enrichment.html#enrichment-among-a-subset-of-go-terms",
-    "title": "GO enrichment",
-    "section": "Enrichment among a subset of GO terms",
-    "text": "Enrichment among a subset of GO terms\nExtract terms matching regular expression:\n\n#target_terms = gi.get_terms_for_go_regex('brain')\n#target_terms = gi.get_terms_for_go_regex('microtubul')\n# target_terms = gi.get_terms_for_go_regex('spindle')\ntarget_terms = gi.get_terms_for_go_regex(r'neuron\\S* migration')\ngi.show_go_dag_for_terms(target_terms)\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, terms=target_terms, list_study_genes=True)\ngo_results.head()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(def relationship)\n\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\nstudy_genes\n\n\n\n\n0\nCC\nGO:0005615\np\n0.000016\n0.000063\n0.020958\n0.076426\n&lt;GO:0005615&gt;\n[ACTB, BLOC1S1, HSPA1A, SNCA, LRP8, DYNC2I1, T...\n\n\n1\nCC\nGO:0032991\ne\n0.000155\n0.000310\n0.071856\n0.031027\n&lt;GO:0032991&gt;\n[ACTB, HTT, HNRNPU, HSPA1A, HSPA1B, HSP90AB1, ...\n\n\n2\nBP\nGO:0140650\ne\n0.000778\n0.031519\n0.005988\n0.000146\n&lt;GO:0140650&gt;\n[PAFAH1B1, NDEL1]\n\n\n3\nBP\nGO:0001764\ne\n0.000515\n0.031519\n0.023952\n0.005487\n&lt;GO:0001764&gt;\n[BBS4, PAFAH1B1, PCM1, PSEN1, DISC1, DCDC2, ND...\n\n\n\n\n\n\n\n\ngi.show_go_dag_enrichment_results(go_results.obj)\n\n\n\n\n\n\n\n\nExtract terms matching two regular expressions in any order:\n\npattern_one = r'microtub\\S*'\npattern_two = r'spindle'\nregex = fr\"(?=.*({pattern_one}))(?=.*({pattern_two}))(?=.*)\"\n\ntarget_terms = gi.get_terms_for_go_regex(regex)\ngi.show_go_dag_for_terms(target_terms)\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, terms=target_terms, list_study_genes=True)\ngo_results.head()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(def relationship)\n\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\nstudy_genes\n\n\n\n\n0\nCC\nGO:0005874\ne\n3.174662e-104\n1.428598e-102\n0.296407\n0.014664\n&lt;GO:0005874&gt;\n[APC, KIF1A, CENPE, DCTN1, DNAH5, DNAH6, DNAH8...\n\n\n1\nBP\nGO:0007018\ne\n3.469444e-87\n3.816388e-85\n0.152695\n0.002719\n&lt;GO:0007018&gt;\n[CENPE, DYNC1I2, DYNC1LI2, KIF2A, KIF3C, KIF5A...\n\n\n2\nCC\nGO:0005813\ne\n1.960675e-77\n4.411518e-76\n0.314371\n0.030444\n&lt;GO:0005813&gt;\n[APC, ARL3, BBS4, BICD1, CENPF, CETN1, CETN2, ...\n\n\n3\nCC\nGO:0005868\ne\n3.150407e-42\n4.725610e-41\n0.068862\n0.001117\n&lt;GO:0005868&gt;\n[DYNC1H1, DYNC1I1, DYNC1I2, DYNC1LI2, DYNLT3, ...\n\n\n4\nCC\nGO:0030286\ne\n5.844463e-35\n6.575021e-34\n0.056886\n0.000923\n&lt;GO:0030286&gt;\n[DCTN1, DNAH6, DNAH9, DYNC1H1, DYNC1I2, DYNC1L...\n\n\n\n\n\n\n\n\ngi.show_go_dag_enrichment_results(go_results.obj)",
-    "crumbs": [
-      "Gene ontology",
-      "GO enrichment"
-    ]
+    "objectID": "pages/basics.html#some-topic",
+    "href": "pages/basics.html#some-topic",
+    "title": "Basic use",
+    "section": "Some topic",
+    "text": "Some topic\nFinding Python objects to document involves two pieces of configuration:\n\nthe package name.\na list of objects for content.\n\nquartodoc can look up a wide variety of objects, including functions, modules, classes, attributes, and methods:"
   },
   {
     "objectID": "pages/gene_information.html",
@@ -788,83 +630,274 @@
     ]
   },
   {
-    "objectID": "pages/basics.html",
-    "href": "pages/basics.html",
-    "title": "Basic use",
+    "objectID": "pages/go_enrichment.html",
+    "href": "pages/go_enrichment.html",
+    "title": "GO enrichment",
     "section": "",
-    "text": "Maecenas turpis velit, ultricies non elementum vel, luctus nec nunc. Nulla a diam interdum, faucibus sapien viverra, finibus metus. Donec non tortor diam. In ut elit aliquet, bibendum sem et, aliquam tortor. Donec congue, sem at rhoncus ultrices, nunc augue cursus erat, quis porttitor mauris libero ut ex. Nullam quis leo urna. Donec faucibus ligula eget pellentesque interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean rhoncus interdum erat ut ultricies. Aenean tempus ex non elit suscipit, quis dignissim enim efficitur. Proin laoreet enim massa, vitae laoreet nulla mollis quis.\nDuis ornare ex ac iaculis pretium. Maecenas sagittis odio id erat pharetra, sit amet consectetur quam sollicitudin. Vivamus pharetra quam purus, nec sagittis risus pretium at. Nullam feugiat, turpis ac accumsan interdum, sem tellus blandit neque, id vulputate diam quam semper nisl. Donec sit amet enim at neque porttitor aliquet. Phasellus facilisis nulla eget placerat eleifend. Vestibulum non egestas eros, eget lobortis ipsum. Nulla rutrum massa eget enim aliquam, id porttitor erat luctus. Nunc sagittis quis eros eu sagittis. Pellentesque dictum, erat at pellentesque sollicitudin, justo augue pulvinar metus, quis rutrum est mi nec felis. Vestibulum efficitur mi lorem, at elementum purus tincidunt a. Aliquam finibus enim magna, vitae pellentesque erat faucibus at. Nulla mauris tellus, imperdiet id lobortis et, dignissim condimentum ipsum. Morbi nulla orci, varius at aliquet sed, facilisis id tortor. Donec ut urna nisi."
-  },
-  {
-    "objectID": "pages/basics.html#some-topic",
-    "href": "pages/basics.html#some-topic",
-    "title": "Basic use",
-    "section": "Some topic",
-    "text": "Some topic\nFinding Python objects to document involves two pieces of configuration:\n\nthe package name.\na list of objects for content.\n\nquartodoc can look up a wide variety of objects, including functions, modules, classes, attributes, and methods:"
-  },
-  {
-    "objectID": "api/go_name2term.html",
-    "href": "api/go_name2term.html",
-    "title": "go_name2term",
-    "section": "",
-    "text": "geneinfo.go_name2term(name)\nConverts a GO term name to its term.\n\n\n\nname : str\n\nGO term name\n\n\n\n\n\n\n : str\n\nGO term.",
+    "text": "import pandas as pd\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\nclass left:\n    def __rlshift__(self, df):\n        \"Left align columns of data frame: df &lt;&lt; left()\"\n        left_aligned_df = df.style.set_properties(**{'text-align': 'left'})\n        left_aligned_df = left_aligned_df.set_table_styles(\n        [dict(selector = 'th', props=[('text-align', 'left')])])\n        display(left_aligned_df)\n        \ndf = pd.DataFrame(dict(name=['A', 'B'], desc=['bla bla bla bla', 'bla']))\ndf",
     "crumbs": [
-      "GO information",
-      "go_name2term"
+      "Gene ontology",
+      "GO enrichment"
     ]
   },
   {
-    "objectID": "api/go_name2term.html#parameters",
-    "href": "api/go_name2term.html#parameters",
-    "title": "go_name2term",
-    "section": "",
-    "text": "name : str\n\nGO term name",
+    "objectID": "pages/go_enrichment.html#global-go-enrichment",
+    "href": "pages/go_enrichment.html#global-go-enrichment",
+    "title": "GO enrichment",
+    "section": "Global GO enrichment",
+    "text": "Global GO enrichment\nEnrichment against all GO terms with all protein coding genes as background:\n\nimport importlib\nimport geneinfo\nimportlib.reload(geneinfo)\n\n&lt;module 'geneinfo' from '/Users/kmt/geneinfo/geneinfo/__init__.py'&gt;\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol)\ngo_results.head(10)\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nCC\nGO:0005874\ne\n3.174662e-104\n5.793757e-101\n0.296407\n0.014664\n&lt;GO:0005874&gt;\n\n\n1\nBP\nGO:0007018\ne\n3.469444e-87\n4.220231e-83\n0.152695\n0.002719\n&lt;GO:0007018&gt;\n\n\n2\nCC\nGO:0005871\ne\n1.323152e-82\n1.207376e-79\n0.134731\n0.002185\n&lt;GO:0005871&gt;\n\n\n3\nMF\nGO:0008017\ne\n2.849730e-80\n1.305176e-76\n0.239521\n0.012819\n&lt;GO:0008017&gt;\n\n\n4\nCC\nGO:0005813\ne\n1.960675e-77\n1.192744e-74\n0.314371\n0.030444\n&lt;GO:0005813&gt;\n\n\n5\nMF\nGO:0019894\ne\n4.661206e-77\n1.067416e-73\n0.125749\n0.002039\n&lt;GO:0019894&gt;\n\n\n6\nCC\nGO:0032391\ne\n3.269844e-75\n1.491866e-72\n0.122754\n0.001991\n&lt;GO:0032391&gt;\n\n\n7\nMF\nGO:0003777\ne\n5.259928e-70\n8.030157e-67\n0.125749\n0.002331\n&lt;GO:0003777&gt;\n\n\n8\nMF\nGO:0045505\ne\n7.657838e-68\n8.768225e-65\n0.110778\n0.001797\n&lt;GO:0045505&gt;\n\n\n9\nCC\nGO:0016235\ne\n3.632820e-64\n1.325979e-61\n0.104790\n0.001699\n&lt;GO:0016235&gt;\n\n\n\n\n\n\n\nShow GO DAG for enrichment results:\n\ngi.show_go_dag_enrichment_results(go_results.obj)\n\n\n\n\n\n\n\n\nSame but only for top 10 GO terms:\n\ngi.show_go_dag_enrichment_results(go_results.obj[:10])\n\n\n\n\n\n\n\n\nDescriptions of the same 10 GO terms:\n\ngi.go_info(go_results.term_id[:10])\n\nGO:0005874: microtubule\nAny of the long, generally straight, hollow tubes of internal diameter 12-15 nm and external diameter 24 nm found in a wide variety of eukaryotic cells; each consists (usually) of 13 protofilaments of polymeric tubulin, staggered in such a manner that the tubulin monomers are arranged in a helical pattern on the microtubular surface, and with the alpha/beta axes of the tubulin subunits parallel to the long axis of the tubule; exist in equilibrium with pool of tubulin monomers and can be rapidly assembled or disassembled in response to physiological stimuli; concerned with force generation, e.g. in the spindle.\n\n\n\nGO:0007018: microtubule-based movement\nA microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.\n\n\n\nGO:0005871: kinesin complex\nAny complex that includes a dimer of molecules from the kinesin superfamily, a group of related proteins that contain an extended region of predicted alpha-helical coiled coil in the main chain that likely produces dimerization. The native complexes of several kinesin family members have also been shown to contain additional peptides, often designated light chains as all of the noncatalytic subunits that are currently known are smaller than the chain that contains the motor unit. Kinesin complexes generally possess a force-generating enzymatic activity, or motor, which converts the free energy of the gamma phosphate bond of ATP into mechanical work.\n\n\n\nGO:0008017: microtubule binding\nBinding to a microtubule, a filament composed of tubulin monomers.\n\n\n\nGO:0005813: centrosome\nA structure comprised of a core structure (in most organisms, a pair of centrioles) and peripheral material from which a microtubule-based structure, such as a spindle apparatus, is organized. Centrosomes occur close to the nucleus during interphase in many eukaryotic cells, though in animal cells it changes continually during the cell-division cycle.\n\n\n\nGO:0019894: kinesin binding\nInteracting selectively and non-covalently and stoichiometrically with kinesin, a member of a superfamily of microtubule-based motor proteins that perform force-generating tasks such as organelle transport and chromosome segregation.\n\n\n\nGO:0032391: photoreceptor connecting cilium\nThe portion of the photoreceptor cell cilium linking the photoreceptor inner and outer segments. It’s considered to be equivalent to the ciliary transition zone.\n\n\n\nGO:0003777: microtubule motor activity\nA motor activity that generates movement along a microtubule, driven by ATP hydrolysis.\n\n\n\nGO:0045505: dynein intermediate chain binding\nBinding to an intermediate chain of the dynein complex.\n\n\n\nGO:0016235: aggresome\nAn inclusion body formed by dynein-dependent retrograde transport of an aggregated protein on microtubules.\n\n\n\nShow the GO DAG for a set of GO terms and their parent terms:\n\ngi.show_go_dag_for_terms(go_results.term_id[:10])\n\n\n\n\n\n\n\n\nSpecifying a custom set of background genes:\nThe query genes should be a subset of the background genes:\n\nall_protein_coding = set(pd.read_csv('geneinfo_cache/9606_protein_genes.txt', sep='\\t').Symbol)\n# only the first 50 genes:\nsubset_background = list(all_protein_coding)[:50] + motor_genes_df.symbol.tolist()\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, background_genes=subset_background)\ngo_results\n\nCould not map gene symbol \"KIF28P\" to ncbi id\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nCC\nGO:0005813\ne\n8.279747e-07\n0.000378\n0.314371\n0.276042\n&lt;GO:0005813&gt;\n\n\n1\nCC\nGO:0005874\ne\n2.975553e-06\n0.000678\n0.296407\n0.260417\n&lt;GO:0005874&gt;\n\n\n2\nCC\nGO:0005737\ne\n2.878076e-05\n0.004375\n0.538922\n0.497396\n&lt;GO:0005737&gt;\n\n\n3\nMF\nGO:0000981\np\n9.358545e-05\n0.018951\n0.011976\n0.028646\n&lt;GO:0000981&gt;\n\n\n4\nMF\nGO:0008017\ne\n6.502644e-05\n0.018951\n0.239521\n0.210938\n&lt;GO:0008017&gt;\n\n\n5\nCC\nGO:0005929\ne\n3.614207e-04\n0.032962\n0.164671\n0.143229\n&lt;GO:0005929&gt;\n\n\n6\nCC\nGO:0036064\ne\n3.598807e-04\n0.032962\n0.167665\n0.145833\n&lt;GO:0036064&gt;\n\n\n7\nCC\nGO:0005930\ne\n6.152330e-04\n0.046758\n0.155689\n0.135417\n&lt;GO:0005930&gt;\n\n\n8\nCC\nGO:0005829\ne\n7.499627e-04\n0.048855\n0.494012\n0.460938\n&lt;GO:0005829&gt;\n\n\n\n\n\n\n\nUse only the X chromosome as background:\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, background_chrom='X')\ngo_results\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\n\n\n\n\n0\nMF\nGO:0045505\ne\n0.000041\n0.010017\n0.333333\n0.002345\n&lt;GO:0045505&gt;\n\n\n1\nMF\nGO:0070840\ne\n0.000041\n0.010017\n0.333333\n0.002345\n&lt;GO:0070840&gt;\n\n\n2\nMF\nGO:0008017\ne\n0.000031\n0.010017\n0.500000\n0.012896\n&lt;GO:0008017&gt;\n\n\n3\nCC\nGO:0016235\ne\n0.000041\n0.020475\n0.333333\n0.002345\n&lt;GO:0016235&gt;",
     "crumbs": [
-      "GO information",
-      "go_name2term"
+      "Gene ontology",
+      "GO enrichment"
     ]
   },
   {
-    "objectID": "api/go_name2term.html#returns",
-    "href": "api/go_name2term.html#returns",
-    "title": "go_name2term",
-    "section": "",
-    "text": ": str\n\nGO term.",
+    "objectID": "pages/go_enrichment.html#enrichment-among-a-subset-of-go-terms",
+    "href": "pages/go_enrichment.html#enrichment-among-a-subset-of-go-terms",
+    "title": "GO enrichment",
+    "section": "Enrichment among a subset of GO terms",
+    "text": "Enrichment among a subset of GO terms\nExtract terms matching regular expression:\n\n#target_terms = gi.get_terms_for_go_regex('brain')\n#target_terms = gi.get_terms_for_go_regex('microtubul')\n# target_terms = gi.get_terms_for_go_regex('spindle')\ntarget_terms = gi.get_terms_for_go_regex(r'neuron\\S* migration')\ngi.show_go_dag_for_terms(target_terms)\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, terms=target_terms, list_study_genes=True)\ngo_results.head()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(def relationship)\n\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\nstudy_genes\n\n\n\n\n0\nCC\nGO:0005615\np\n0.000016\n0.000063\n0.020958\n0.076426\n&lt;GO:0005615&gt;\n[ACTB, BLOC1S1, HSPA1A, SNCA, LRP8, DYNC2I1, T...\n\n\n1\nCC\nGO:0032991\ne\n0.000155\n0.000310\n0.071856\n0.031027\n&lt;GO:0032991&gt;\n[ACTB, HTT, HNRNPU, HSPA1A, HSPA1B, HSP90AB1, ...\n\n\n2\nBP\nGO:0140650\ne\n0.000778\n0.031519\n0.005988\n0.000146\n&lt;GO:0140650&gt;\n[PAFAH1B1, NDEL1]\n\n\n3\nBP\nGO:0001764\ne\n0.000515\n0.031519\n0.023952\n0.005487\n&lt;GO:0001764&gt;\n[BBS4, PAFAH1B1, PCM1, PSEN1, DISC1, DCDC2, ND...\n\n\n\n\n\n\n\n\ngi.show_go_dag_enrichment_results(go_results.obj)\n\n\n\n\n\n\n\n\nExtract terms matching two regular expressions in any order:\n\npattern_one = r'microtub\\S*'\npattern_two = r'spindle'\nregex = fr\"(?=.*({pattern_one}))(?=.*({pattern_two}))(?=.*)\"\n\ntarget_terms = gi.get_terms_for_go_regex(regex)\ngi.show_go_dag_for_terms(target_terms)\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n\n\n\ngo_results = gi.go_enrichment(motor_genes_df.symbol, terms=target_terms, list_study_genes=True)\ngo_results.head()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-09-08) 44,296 Terms; optional_attrs(def relationship)\n\n\nCould not map gene symbol \"KIF28P\" to ncbi id\n\n\n\n\n\n\n\n\n\nnamespace\nterm_id\ne/p\npval_uncorr\np_fdr_bh\nratio\nbg_ratio\nobj\nstudy_genes\n\n\n\n\n0\nCC\nGO:0005874\ne\n3.174662e-104\n1.428598e-102\n0.296407\n0.014664\n&lt;GO:0005874&gt;\n[APC, KIF1A, CENPE, DCTN1, DNAH5, DNAH6, DNAH8...\n\n\n1\nBP\nGO:0007018\ne\n3.469444e-87\n3.816388e-85\n0.152695\n0.002719\n&lt;GO:0007018&gt;\n[CENPE, DYNC1I2, DYNC1LI2, KIF2A, KIF3C, KIF5A...\n\n\n2\nCC\nGO:0005813\ne\n1.960675e-77\n4.411518e-76\n0.314371\n0.030444\n&lt;GO:0005813&gt;\n[APC, ARL3, BBS4, BICD1, CENPF, CETN1, CETN2, ...\n\n\n3\nCC\nGO:0005868\ne\n3.150407e-42\n4.725610e-41\n0.068862\n0.001117\n&lt;GO:0005868&gt;\n[DYNC1H1, DYNC1I1, DYNC1I2, DYNC1LI2, DYNLT3, ...\n\n\n4\nCC\nGO:0030286\ne\n5.844463e-35\n6.575021e-34\n0.056886\n0.000923\n&lt;GO:0030286&gt;\n[DCTN1, DNAH6, DNAH9, DYNC1H1, DYNC1I2, DYNC1L...\n\n\n\n\n\n\n\n\ngi.show_go_dag_enrichment_results(go_results.obj)",
     "crumbs": [
-      "GO information",
-      "go_name2term"
+      "Gene ontology",
+      "GO enrichment"
     ]
   },
   {
-    "objectID": "api/get_terms_for_go_regex.html",
-    "href": "api/get_terms_for_go_regex.html",
-    "title": "get_terms_for_go_regex",
+    "objectID": "pages/gene_ids.html",
+    "href": "pages/gene_ids.html",
+    "title": "ID conversion",
     "section": "",
-    "text": "geneinfo.get_terms_for_go_regex(regex, taxid=9606, add_children=False)\nGet GO terms for terms matching a regular expression in their description string.\n\n\n\nregex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\nadd_children : bool = False\n\nAdd GO terms nested under GO terms found, by default False\n\n\n\n\n\n\n : list\n\nList of GO terms.",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')",
     "crumbs": [
-      "GO information",
-      "get_terms_for_go_regex"
+      "Gene information",
+      "ID conversion"
     ]
   },
   {
-    "objectID": "api/get_terms_for_go_regex.html#parameters",
-    "href": "api/get_terms_for_go_regex.html#parameters",
-    "title": "get_terms_for_go_regex",
-    "section": "",
-    "text": "regex : str\n\nRegular expression to match GO term descriptions.\n\ntaxid : int = 9606\n\nNCBI taxonomy ID, by default 9606 (which is human)\n\nadd_children : bool = False\n\nAdd GO terms nested under GO terms found, by default False",
+    "objectID": "pages/gene_ids.html#conversion-from-ensembl-ids",
+    "href": "pages/gene_ids.html#conversion-from-ensembl-ids",
+    "title": "ID conversion",
+    "section": "Conversion from ENSEMBL IDs:",
+    "text": "Conversion from ENSEMBL IDs:\n\ngi.ensembl2ncbi('ENSG00000128573')\n\n93986\n\n\n\ngi.ensembl2symbol('ENSG00000128573')\n\n'FOXP2'",
     "crumbs": [
-      "GO information",
-      "get_terms_for_go_regex"
+      "Gene information",
+      "ID conversion"
     ]
   },
   {
-    "objectID": "api/get_terms_for_go_regex.html#returns",
-    "href": "api/get_terms_for_go_regex.html#returns",
-    "title": "get_terms_for_go_regex",
-    "section": "",
-    "text": ": list\n\nList of GO terms.",
+    "objectID": "pages/gene_ids.html#conversion-to-ensembl-ids",
+    "href": "pages/gene_ids.html#conversion-to-ensembl-ids",
+    "title": "ID conversion",
+    "section": "Conversion to ENSEMBL IDs:",
+    "text": "Conversion to ENSEMBL IDs:\n\ngi.ensembl_id('FOXP2')\n\n['ENSG00000128573']\n\n\n\ngi.ensembl_id(['FOXP2', '93986'])\n\n['ENSG00000128573', 'ENSG00000128573']",
     "crumbs": [
-      "GO information",
-      "get_terms_for_go_regex"
+      "Gene information",
+      "ID conversion"
+    ]
+  },
+  {
+    "objectID": "pages/gene_ids.html#conversion-to-hgcn-gene-symbols",
+    "href": "pages/gene_ids.html#conversion-to-hgcn-gene-symbols",
+    "title": "ID conversion",
+    "section": "Conversion to HGCN gene symbols",
+    "text": "Conversion to HGCN gene symbols\n\ngi.hgcn_symbol(['CXorf23', 'BCLAF3', 'ENSG00000173681'])\n\n['BCLAF3', 'BCLAF3', 'BCLAF3']",
+    "crumbs": [
+      "Gene information",
+      "ID conversion"
+    ]
+  },
+  {
+    "objectID": "pages/gene_coord.html",
+    "href": "pages/gene_coord.html",
+    "title": "Gene coordinates",
+    "section": "",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')"
+  },
+  {
+    "objectID": "pages/gene_coord.html#get-coordinates-for-genes-in-a-region",
+    "href": "pages/gene_coord.html#get-coordinates-for-genes-in-a-region",
+    "title": "Gene coordinates",
+    "section": "Get coordinates for genes in a region",
+    "text": "Get coordinates for genes in a region\n\ngi.get_genes_region('chrX', 76500000, 77000000, assembly='hg19')\n\n[('FGF16',\n  76709642,\n  76712769,\n  '+',\n  [(76709642, 76709751), (76711767, 76712769)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76949312, 76949426),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)]),\n ('ATRX',\n  76760357,\n  77041702,\n  '-',\n  [(76760357, 76764107),\n   (76776265, 76776394),\n   (76776880, 76776976),\n   (76777740, 76777866),\n   (76778729, 76778879),\n   (76812921, 76813116),\n   (76814139, 76814317),\n   (76829714, 76829823),\n   (76845303, 76845410),\n   (76849165, 76849319),\n   (76854879, 76855049),\n   (76855200, 76855289),\n   (76855902, 76856033),\n   (76872080, 76872198),\n   (76874273, 76874449),\n   (76875862, 76876000),\n   (76888694, 76888872),\n   (76889053, 76889200),\n   (76890084, 76890194),\n   (76891405, 76891547),\n   (76907603, 76907843),\n   (76909587, 76909690),\n   (76912049, 76912143),\n   (76918870, 76919047),\n   (76920133, 76920267),\n   (76931720, 76931793),\n   (76937011, 76940085),\n   (76940430, 76940498),\n   (76944310, 76944420),\n   (76952064, 76952192),\n   (76953070, 76953123),\n   (76954061, 76954117),\n   (76972607, 76972720),\n   (77041467, 77041702)])]"
+  },
+  {
+    "objectID": "pages/gene_plots.html",
+    "href": "pages/gene_plots.html",
+    "title": "Gene plots",
+    "section": "",
+    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nsns.set_style('white')\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')",
+    "crumbs": [
+      "Gene plots",
+      "Gene plots"
+    ]
+  },
+  {
+    "objectID": "pages/gene_plots.html#plot-data-over-gene-annotation",
+    "href": "pages/gene_plots.html#plot-data-over-gene-annotation",
+    "title": "Gene plots",
+    "section": "Plot data over gene annotation",
+    "text": "Plot data over gene annotation\n\n# x = np.linspace(1, 1520300000, 100000)\n# y = np.random.random(100000)\n# dummy manhattan data\nx = np.linspace(76500000, 77500000, 10000)\nrng = np.random.default_rng()\ny = rng.exponential(scale=1, size=x.size)\n\nStandard plot:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg38')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nSame on older hg19 assembly:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19')\nax.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nTwo subplots for data:\n\nax1, ax2 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=2)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nThree subplots for data and adjusted aspect ratio:\n\nax1, ax2, ax3 = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg38', return_axes=3, aspect=0.5)\nax1.scatter(x, y, s=2)\nax2.scatter(x, y, s=2)\nax3.scatter(x, y, s=2)\nplt.tight_layout()\n\n\n\n\n\n\n\n\nHighlight a list of genes:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=['ATRX', 'ATP7A'])\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nCombinatorial hightlighting:\nCombining text weight, style, color and bbox:\n\nhighlight = defaultdict(dict)\nfor gene in ['ATRX', 'COX7B', 'PGK1']:\n    highlight[gene].update(dict(weight='bold'))\nfor gene in ['MAGT1']:\n    highlight[gene].update(dict(style='italic'))\nfor gene in ['ATP7A', 'ATRX']:\n    highlight[gene].update(dict(color='red'))\nfor gene in ['PGK1', 'ATRX']:\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\n\nhighlight = defaultdict(dict)\nfor gene in gene_list('xi_any_evidence'):\n    highlight[gene].update(dict(weight='bold'))\nfor gene in gene_list('ech75_regions'):\n    highlight[gene].update(dict(style='italic'))\nfor gene in gene_list('sfari_all_conf') + gene_list('intelect_disabil'):\n    highlight[gene].update(dict(color='red'))\nfor gene in gene_list('gametologs') +  gene_list('mult_copy') + gene_list('xi_escape') + gene_list('cDEG') + gene_list('nDEG'):\n    highlight[gene].update(dict(bbox=dict(edgecolor='black', facecolor='none', linewidth=0.2)))\n\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight)\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nLarger with colors:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, 'hg19', highlight=highlight, figsize=(7, 4))\n\nax.scatter(x, y, s=2, c=y, cmap='viridis_r')\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()\n\n\n\n\n\n\n\n\nOther features:\n\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19',\n                  figsize=(7, 4),          # larger figure\n                  collapse_splice_var=False, # show all splice variants separately\n                  exact_exons=False,        # allow exons to be wide enough to be visible on large plots\n                  hard_limits=True,          # truncate genes that overlap the borders of the specified range\n                 )\n\nax.scatter(x, y, s=2)\nsns.despine(ax=ax) # make it look nicer\nplt.tight_layout()",
+    "crumbs": [
+      "Gene plots",
+      "Gene plots"
+    ]
+  },
+  {
+    "objectID": "pages/string_nets.html",
+    "href": "pages/string_nets.html",
+    "title": "String networks",
+    "section": "",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')",
+    "crumbs": [
+      "Gene plots",
+      "String networks"
+    ]
+  },
+  {
+    "objectID": "pages/string_nets.html#show-string-interaction-network",
+    "href": "pages/string_nets.html#show-string-interaction-network",
+    "title": "String networks",
+    "section": "Show STRING interaction network",
+    "text": "Show STRING interaction network\n\ngi.show_string_network(['ATRX', 'TP53', 'RAD51'], nodes=10)",
+    "crumbs": [
+      "Gene plots",
+      "String networks"
+    ]
+  },
+  {
+    "objectID": "pages/chrom_ideograms.html",
+    "href": "pages/chrom_ideograms.html",
+    "title": "Chromosome ideograms",
+    "section": "",
+    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nsns.set_style('white')\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\n\n\nannotation = [\n    ('chr1', 50000000, 50001000),                          # segment color defaults to red\n    ('chr2', 10000000, 1000000, 'green'),                  # with segment color\n    ('chr3', 45000000, 55000000, 'blue', 'NAME'),          # with name label\n    ('chr6', 10000000, 15000000, 'magenta', None, 0, 0.5), # with base and height\n    ('chr6', 10000000, 15000000, 'pink', None, 0.5, 0.5),  # with base and height\n]\n\ngi.chrom_ideogram(annotation, figsize=(8, 8))\n\n\n\n\n\n\n\n\nTo make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):\n\ngi.chrom_ideogram(annotation, figsize=(8, 8), min_visible_width=1, hspace=0)\n\n\n\n\n\n\n\n\nOther assembly, figure dimentions:\n\ngi.chrom_ideogram(annotation, assembly='hg19', figsize=(8, 8))\n\n\n\n\n\n\n\n\nYou can add position markers along a chromosome like this to better see the location of some segments:\n\nchrom = 'chr3'\nstart = 100000000\nend = 200000000\nwidth = 10000000\nannotation2 = annotation + [(chrom, x[0], x[1], 'black', str(x[2]/width)) for x in zip(\n    range(start, end, width), \n    range(start+1, end, width), \n    range(start, end, width)\n)]\ngi.chrom_ideogram(annotation2, figsize=(8, 8))\n\n\n\n\n\n\n\n\n\nlists = gi.GoogleSheet()\n\n\nimport importlib\nimport geneinfo\nimportlib.reload(geneinfo)\n\ncoords = gi.gene_coord(lists.get('xi_escape'), assembly='GRCh38')\nannotation = [(c, s, e, 'red', g) for g, (c, s, e, _) in coords.items()]\n\n\ncoords = gi.gene_coord(['ATRX', 'MAGT1'], assembly='GRCh38')\nannotation = [(c, s, e, 'red', g) for g, (c, s, e, _) in coords.items()]\n\n\nclass Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\nclass Polygon:\n    def __init__(self, points):\n        self.points = points\n\n    def get_points(self):\n        return self.points\n\n    def nudge_y(self, nudge):\n        for point in self.points:\n            point.y += nudge\n\ndef is_polygons_intersecting(a, b):\n    for x in range(2):\n        polygon = a if x == 0 else b\n\n        for i1 in range(len(polygon.get_points())):\n            i2 = (i1 + 1) % len(polygon.get_points())\n            p1 = polygon.get_points()[i1]\n            p2 = polygon.get_points()[i2]\n\n            normal = Point(p2.y - p1.y, p1.x - p2.x)\n\n            min_a = float('inf')\n            max_a = float('-inf')\n\n            for p in a.get_points():\n                projected = normal.x * p.x + normal.y * p.y\n                min_a = min(min_a, projected)\n                max_a = max(max_a, projected)\n\n            min_b = float('inf')\n            max_b = float('-inf')\n\n            for p in b.get_points():\n                projected = normal.x * p.x + normal.y * p.y\n                min_b = min(min_b, projected)\n                max_b = max(max_b, projected)\n\n            if max_a &lt; min_b or max_b &lt; min_a:\n                return False\n\n    return True\n\na = list(zip([0, 0, 2, 2], [0, 2, 2, 0]))\nb = list(zip([1, 1, 3, 3], [1, 3, 3, 1]))\n\nis_polygons_intersecting(\n    Polygon([Point(*tup) for tup in a]),\n    Polygon([Point(*tup) for tup in b])\n)\n\nTrue\n\n\n\nimport pandas as pd\nimport math\nfrom matplotlib.artist import Artist\n\n\naxes_height = 1e4 # relative to length of chrom one\nmax_chrom_size = 1e5\naspect = axes_height / chrom_size\n\nfig_width_inches = 8\naxes_height_inches = fig_width * aspect\nfig_height = axes_height_inches * nr_rows\n\nnr_rows = 11\nfig, axes = plt.subplots(nr_rows, 1, figsize=(fig_width, fig_width*aspect*nr_rows), sharex=True, sharey=True)\nplt.subplots_adjust(hspace=0)\nax = axes[0]\n\nxlim = (0, max_chrom_size)\nylim = (0, 6)\nscaled_y_lim = xlim[0] * aspect, xlim[1] * aspect\nax.set_xlim(xlim)\nax.set_ylim(scaled_y_lim)\nplt.yticks([])\ny_unit = -sub(*scaled_y_lim) / -sub(*ylim)\n\nrel_font_height = 0.07\nfont_size = rel_font_height * axes_height_inches / point_size\n\n\ndef draw_text(x_pos, y_pos, text, font_size, ax, y_line_bottom=0):\n \n    t = ax.text(x_pos, y_pos, text, fontsize=font_size, \n                horizontalalignment='left',\n                verticalalignment='bottom', \n                rotation=45, zorder=3, \n                bbox=dict(boxstyle='square,pad=0', fc='none', ec='none'))\n    # t.set_bbox(dict(facecolor='red', pad=0, alpha=0.2, edgecolor='none'))\n    ax.plot((x_pos, x_pos, x_pos+y_unit/6),\n            (y_line_bottom, y_pos, y_pos+y_unit/6), \n            linewidth=0.5, color='darkgray')\n\n\ndef get_polygon(text:str, x_pos:int, y_pos:float, ax:matplotlib.axes.Axes) -&gt; Polygon:\n\n    y_pos = y_pos * y_unit\n    \n    t = ax.text(x_pos, y_pos, text, fontsize=font_size, \n                horizontalalignment='left',\n                verticalalignment='bottom', \n                rotation=0, zorder=3, \n                # bbox=dict(boxstyle='square,pad=0', \n                bbox=dict(boxstyle='square', \n                          fc='none', ec='none', alpha=0.4))\n    \n    transf = ax.transData.inverted()\n    bb = t.get_window_extent(renderer = fig.canvas.get_renderer())\n    bbt = bb.transformed(transf)\n    coords = bbt.get_points()\n    \n    Artist.remove(t)\n    \n    (x0, y0), (x1, y1) = coords\n    pad = (y1 - y0)/3\n    coords = np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])\n        \n    x, y = zip(*coords)\n    df = pd.DataFrame(dict(x=x, y=y))\n    df['y'] -= y_pos\n    df['x'] -= x_pos\n    dfx = df['x']*math.cos(math.radians(45))-df['y']*math.sin(math.radians(45))\n    df['y'] = df['x']*math.sin(math.radians(45))+df['y']*math.cos(math.radians(45))\n    df['x'] = dfx\n    df['y'] += y_pos\n    df['x'] += x_pos\n        \n    coords = np.array(list(zip(df.x, df.y)))\n    \n    x_pos, y_pos = df['x'][0] - (df['x'][0] - df['x'][1]), df['y'][0]\n\n    df['x'] = df.x + np.array([-pad, -pad, pad, pad])\n    df['y'] = df.y + np.array([-pad, pad, pad, -pad])\n    \n    return x_pos, y_pos, Polygon([Point(x, y) for x, y in zip(df.x, df.y)])\n\n\n\n# annot = [(x, 'AKAP4') for x in range(1, int(max_chrom_size), int(max_chrom_size/100))]\nannot = [(x, 'AKAP4') for x in sorted(np.random.randint(1, max_chrom_size, 100))]\n\nfor ax in axes:\n    polybuff = []\n    for pos, name in annot:\n        x, y, poly = get_polygon(name, pos, 1, ax)\n\n        while any(is_polygons_intersecting(poly, p) for p in polybuff):\n            nudge = 0.1 * y_unit\n            y += nudge\n            poly.nudge_y(nudge)\n        draw_text(x, y, name, font_size, ax)\n\n        if len(polybuff) &gt; 5:\n            del polybuff[0]\n        polybuff.append(poly)\n\n    z = 10\n    for i, t in enumerate(reversed(ax.texts)):\n        t.set_zorder(z+i)\n\n\n# text = 'Tester'\n# x, y, poly = get_polygon(text, chrom_size/2, 2, ax)\n# nudge = -1 * y_unit\n# y += nudge\n# poly.nudge_y(nudge)\n# draw_text(x, y, text, font_size, ax)\n\n\n# text = 'AKAP4'\n# x, y, poly = get_polygon(text, chrom_size/2, 2, axes[1])\n# nudge = +1 * y_unit\n# y += nudge\n# poly.nudge_y(nudge)\n# draw_text(x, y, text, font_size, axes[1])\n\n\n\n\n\n\n\n\n\n# import pandas as pd\n# import math\n# from matplotlib.artist import Artist\n\n\n# axes_height = 1e4 # relative to length of chrom one\n# max_chrom_size = 1e5\n# aspect = axes_height / chrom_size\n\n# fig_width_inches = 8\n# axes_height_inches = fig_width * aspect\n# fig_height = axes_height_inches * nr_rows\n\n# nr_rows = 11\n# fig, axes = plt.subplots(nr_rows, 1, figsize=(fig_width, fig_width*aspect*nr_rows), sharex=True, sharey=True)\n# plt.subplots_adjust(hspace=0)\n# ax = axes[0]\n\n# xlim = (0, max_chrom_size)\n# ylim = (0, 6)\n# scaled_y_lim = xlim[0] * aspect, xlim[1] * aspect\n# ax.set_xlim(xlim)\n# ax.set_ylim(scaled_y_lim)\n# plt.yticks([])\n# y_unit = -sub(*scaled_y_lim) / -sub(*ylim)\n\n# rel_font_height = 0.1\n# font_size = rel_font_height * axes_height_inches / point_size\n\n\n# def draw_text(x_pos, y_pos, text, font_size, rel_font_height, ax, y_line_bottom=0):\n \n#     ax.text(x_pos, y_pos, 'Tester', fontsize=font_size, \n#                 horizontalalignment='left',# weight='bold',\n#                 verticalalignment='bottom', \n#                 rotation=45, zorder=3, \n#                 bbox=dict(boxstyle='square,pad=0', fc='none', ec='none'))\n#     (_, a), (_, b) = ax.transAxes.transform([(0, 0), (0, rel_font_height / 2)])\n#     z = b - a    \n#     z = 300\n#     z = y_unit/6\n\n#     ax.plot((x_pos, x_pos, x_pos+z),\n#             (y_line_bottom, y_pos, y_pos+z), \n#             linewidth=0.5, color='gray')\n\n\n# def get_polygon(text:str, x_pos:int, y_pos:float, font_size:float, ax:matplotlib.axes.Axes) -&gt; Polygon:\n\n#     y_pos = y_pos * y_unit\n#     # x_pos, y_pos = chrom_size/2, 2*y_unit\n    \n#     # ax.scatter([x_pos], [y_pos], marker='X', color='black')\n    \n    \n#     t = ax.text(x_pos, y_pos, 'Tester', fontsize=font_size, \n#                 horizontalalignment='left',# weight='bold',\n#                 verticalalignment='bottom', \n#                 rotation=0, zorder=3, \n#                 bbox=dict(boxstyle='square,pad=0', fc='none', ec='none', alpha=0.4))\n#     # t.set_visible(False)\n    \n#     transf = ax.transData.inverted()\n#     bb = t.get_window_extent(renderer = fig.canvas.get_renderer())\n#     bbt = bb.transformed(transf)\n#     coords = bbt.get_points()\n    \n#     Artist.remove(t)\n    \n#     (x0, y0), (x1, y1) = coords\n#     coords = np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])\n#     # ax.scatter(*coords.T, c='red')\n    \n#     # ax.scatter(*zip(*coords), transform=ax.transAxes, s=1, color='green', zorder=3)\n    \n#     x, y = zip(*coords)\n#     df = pd.DataFrame(dict(x=x, y=y))\n#     df['y'] -= y_pos\n#     df['x'] -= x_pos\n#     dfx = df['x']*math.cos(math.radians(45))-df['y']*math.sin(math.radians(45))\n#     df['y'] = df['x']*math.sin(math.radians(45))+df['y']*math.cos(math.radians(45))\n#     df['x'] = dfx\n#     df['y'] += y_pos\n#     df['x'] += x_pos\n    \n#     #df['x'] -= df['x'][1] - df['x'][0]\n    \n#     coords = np.array(list(zip(df.x, df.y)))\n    \n#     x_pos, y_pos = df['x'][0] - (df['x'][0] - df['x'][1]), df['y'][0]\n#     # _ = ax.text(x_pos, y_pos, 'Tester', fontsize=font_size, \n#     #             horizontalalignment='left',# weight='bold',\n#     #             verticalalignment='bottom', \n#     #             rotation=45, zorder=3, \n#     #             bbox=dict(boxstyle='square,pad=0', fc='none', ec='none'))\n    \n#     # ax.scatter(*coords.T, c='blue')\n    \n#     # ax.plot(*zip(*coords), linewidth=0.2)\n\n#     return x_pos, y_pos, Polygon([Point(x, y) for x, y in zip(df.x, df.y)])\n\n\n# annot = [(x, 'AKAP4') for x in range(1, int(max_chrom_size), int(max_chrom_size/200))]\n\n# for i, ax in enumerate(axes):\n#     annot = [(x, 'AKAP4') for x in range(1, int(max_chrom_size), int(max_chrom_size/(10*(i+1))))]\n\n#     polybuff = []\n#     for pos, name in annot:\n#         x, y, poly = get_polygon(name, pos, 1, rel_font_height, ax)\n\n#         while any(is_polygons_intersecting(poly, p) for p in polybuff):\n#             nudge = 0.1 * y_unit\n#             y += nudge\n#             poly.nudge_y(nudge)\n#         draw_text(x, y, name, font_size, rel_font_height, ax)\n\n#         if len(polybuff) &gt; 5:\n#             del polybuff[0]\n#         polybuff.append(poly)\n\n\nimport matplotlib.transforms\n\nfrom matplotlib.transforms import Bbox\nfig, ax = plt.subplots()\nplt.xlim(0, 0.5)\nplt.ylim(0, 1)\n\nt = ax.text(0.2, 0.2, 'Text', fontsize=30, horizontalalignment='left',# weight='bold',\n                         verticalalignment='bottom', rotation=0, zorder=3, bbox=dict(boxstyle='square,pad=0', fc='red', ec='none'))\ntransf = ax.transData.inverted()\nbb = t.get_window_extent(renderer = fig.canvas.get_renderer())\nbbt = bb.transformed(transf)\ncoords = bbt.get_points()\nprint(coords)\n(x0, y0), (x1, y1) = coords\nplt_coords = np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])\n\nax.scatter(*plt_coords.T, c='red')\n\n\nfrom operator import sub\naspect_ratio = sub(*ax.get_ylim()) / sub(*ax.get_xlim())\n\n#x0, y0 = coords[0]\n# (x0, y0), (x1, y2) = coords\ntrafo = matplotlib.transforms.Affine2D().rotate_deg_around(x0,y0,45).skew(1, 1.3)#.scale(0.5)\n\ncoords = trafo.transform([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])\n# coords = trafo.transform([(x0, y0), (x1, y1)])\n# coords = trafo.transform(coords)\nprint(coords)\n\nax.scatter(*coords.T, zorder=10)\n\ndisp_ratio = ax.get_data_ratio()\nbbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())\ndisp_ratio = bbox.width / bbox.height\nprint(disp_ratio)\n\n\n\n(x0, y0), (x0, y1), (x1, y1), (x1, y0) = coords\ncoords = np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])\n\nax.scatter(*coords.T)\n\n\nPolygon([Point(x0, y0), Point(bbt.xmin, b[1]+(b[0]-bbt.xmin)), Point(b[2], b[3]), Point(bbt.xmax, b[3]-(b[0]-bbt.xmin))])\n\n\n#Bbox.count_overlaps\n\n[[0.2        0.2       ]\n [0.27711694 0.30281385]]\n[[0.51148154 0.92042049]\n [0.55200529 0.73124667]\n [0.6914605  0.9821989 ]\n [0.65093675 1.17137271]]\n1.3419913419913418\n\n\n\n\n\n\n\n\n\n\nimport matplotlib.pyplot as plt\nimport matplotlib.patches as patches\nimport matplotlib.transforms as transforms\n\nfig, ax = plt.subplots()\n\n# [[0.25574077 0.46021024]\n#  [0.29626452 0.27103643]\n#  [0.43571973 0.52198865]\n#  [0.39519598 0.71116247]]\n\n# [[0.1        0.1       ]\n#  [0.17711694 0.20281385]]\nr1 = patches.Rectangle((0.1, 0.1), 0.2, 0.1, color=\"blue\", alpha=0.5)\nr2 = patches.Rectangle((0.1, 0.1), 0.2, 0.1, color=\"red\", alpha=0.5)\n\n\np = 0.1, 0.1 # rotate around this point\n\nx_lim = (0, 0.5)\ny_lim = (0, 1)\nax.set_xlim(x_lim)\nax.set_ylim(y_lim)\n\nx_range = x_lim[1] - x_lim[0]\ny_range = y_lim[1] - y_lim[0]\naspect_ratio = y_range / x_range\n\nmove_transform = transforms.Affine2D().translate(-p[0], -p[1])\ninverse_move_transform = transforms.Affine2D().translate(p[0], p[1])\ninverse_scale_transform = transforms.Affine2D().scale(1, 1 / aspect_ratio)\nrotate_transform = transforms.Affine2D().rotate_deg(45)\nscale_transform = transforms.Affine2D().scale(1, aspect_ratio)\n\ntotal_transform = move_transform + inverse_scale_transform + rotate_transform + scale_transform + inverse_move_transform + ax.transData\n\nr2.set_transform(total_transform)\n\nax.add_patch(r1)\nax.add_patch(r2)\n\n# print(ax.transLimits.transform([(0.1, 0.1), (0.1, 0.2), (0.3, 0.2), (0.3, 0.1)]))\n# print(total_transform.transform([(0.1, 0.1), (0.1, 0.2), (0.3, 0.2), (0.3, 0.1)]))\n# print(r2.get_bbox())\n# x0, y0, width, height = r2.get_bbox().bounds()\n# print(x0, y0)\n# coords = [(x0, y0), \n#           (x0 - sqrt(height**2 / 2), y0 + sqrt(height**2 / 2)), \n#           (x0 - sqrt(height**2 / 2) + sqrt(width**2 / 2), y0 + sqrt(height**2 / 2)) +  + sqrt(width**2 / 2), \n#           (x0 + sqrt(width**2 / 2), y0 + sqrt(width**2 / 2))]\n# plt.scatter(*zip(*coords))\n\n# coords = ((0.1, 0.1), (0.1, 0.2), (0.3, 0.2), (0.3, 0.1))\n# plt.scatter(*zip(*coords))\n# coords = total_transform.transform(coords)\n# print(coords)\n# plt.scatter(*zip(*coords))\n\nplt.grid(True)\nplt.show()\n\n\n\n\n\n\n\n\n\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport matplotlib.patches as patches\nimport matplotlib as mpl\nfrom math import *\n\n#some helper values\np=4\ntheta=pi/6\nx1 = p*cos(theta/2)\ny1 = p*sin(theta/2)\nvertices =[(-x1-p/2,0), (-p/2, y1), (p/2, y1), (x1+p/2, 0), (p/2, -y1), (-p/2, -y1)] \nmidPoint = [3,4]\nendPoint = (-x1-p/2,0)\n\n#set up the plot\nfig = plt.figure()\nax = fig.add_subplot(111)\n\n#function to rotate and translate the standard shape to a new position\ndef plot_polygon(vertices, midPoint, theta, color):\n    polygon = patches.Polygon(vertices, color=color, alpha=0.50) \n    r = mpl.transforms.Affine2D().rotate_around(midPoint[0],midPoint[1], theta)\n    # t = mpl.transforms.Affine2D().translate(midPoint[0],midPoint[1])\n    tra = r + ax.transData\n    # r = mpl.transforms.Affine2D().rotate(theta)\n    # t = mpl.transforms.Affine2D().translate(midPoint[0],midPoint[1])\n    # tra = r + t + ax.transData\n    polygon.set_transform(tra)\n    ax.add_patch(polygon)\n\n    return r.transform(polygon.xy)\n\np = plot_polygon(vertices, endPoint, 0, \"blue\")\n#plot_polygon(vertices, midPoint, theta, \"blue\")\np_ = plot_polygon(vertices, endPoint, theta, \"orange\")\n\n# print(p.get_xy())\n# print(p_.get_xy())\n# print(p.get_transform().transform(p.xy))\n# print(p_.get_transform().transform(p_.xy))\n#The correct answer is: tra.transform(poly.xy)\n\n\nplt.scatter(*zip(*p), color='blue', alpha=0.5)\nplt.scatter(*zip(*p_), color='orange', alpha=0.5)\n\n# plt.xlim(-10, 10)\n# plt.ylim(-10, 10)\n\nplt.grid(True)\n\nplt.show()\n\n\n\n\n\n\n\n\n\nchrom_size = 12e5\nylim = (0, 3)\nxlim = (0, chrom_size)\ndata_height = (ylim[1] - ylim[0])\ndata_width = (xlim[1] - xlim[0])\naspect = data_height / data_width\naspect\n# data_width * aspect\n# ylim = ylim * sub(*ylim) / sub(*xlim)\n# chrom_size * sub(*ylim) / sub(*xlim)\n\n2.5e-06\n\n\n\nimport pandas as pd\nimport math\nfrom operator import sub\ncoords = [(0, 0), (0, 1e4), (3e4, 1e4), (3e4, 0)]\n\n\nchrom_size = 12e5\nylim = np.array([0, 3])\nxlim = np.array([0, chrom_size])\nylim = sub()sub(ylim) / sub(xlim) *\n\n# fig, (ax, ax2) = plt.subplots(2, 1, figsize=(10, 1), sharex=True)\nfig, ax = plt.subplots(1, 1, figsize=(10, 1), sharex=True)\nax.set_xlim(-6e5, 6e5)\nax.set_ylim(-6e4, 6e4)\nax.axis('equal')\n\n# t = ax.text(0, 0, 'Text', fontsize=7, horizontalalignment='left',# weight='bold',\n#                          verticalalignment='bottom', rotation=0, zorder=3, bbox=dict(boxstyle='square,pad=0', fc='red', ec='none', alpha=0.4))\n# box = t.get_bbox_patch()\n# fig.canvas.draw()\n# ax.axis('equal')\n# ax.set_xlim(-6e5, 6e5)\n# ax.set_ylim(-4e5, 4e5)\n# # coords = ax.transData.inverted().transform(box.get_window_extent())\n# #coords = ax.transAxes.transform(coords)\n\n# # print(coords)\n# # print(ax.transLimits.transform(coords))\n\nt = ax.text(0, 0, 'Text', fontsize=7, horizontalalignment='left',# weight='bold',\n                         verticalalignment='bottom', rotation=0, zorder=3, bbox=dict(boxstyle='square,pad=0', fc='red', ec='none', alpha=0.4))\ntransf = ax.transData.inverted()\nbb = t.get_window_extent(renderer = fig.canvas.get_renderer())\nbbt = bb.transformed(transf)\ncoords = bbt.get_points()\n\n(x0, y0), (x1, y1) = coords\ncoords = np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])\nax.scatter(*coords.T, c='red')\n\n# ax.scatter(*zip(*coords), transform=ax.transAxes, s=1, color='green', zorder=3)\n\nx, y = zip(*coords)\ndf = pd.DataFrame(dict(x=x, y=y))\ndfx = df['x']*math.cos(math.radians(45))-df['y']*math.sin(math.radians(45))\ndf['y'] = df['x']*math.sin(math.radians(45))+df['y']*math.cos(math.radians(45))\ndf['x'] = dfx\ncoords = np.array(list(zip(df.x, df.y)))\n\nax.scatter(*coords.T, c='blue')\n\nax.plot(*zip(*coords))\n\n# ax.axis('equal')\n# ax.set_xlim(-6e5, 6e5)\n# ax.set_ylim(-4e5, 4e5)\n\nrect = patches.Rectangle((-6e5, -2e4), 12e5, 1e4, color=\"blue\", alpha=0.5)\nax.add_patch(rect) ;\n\n\n\n\n\n\n\n\n\nfig, ax = plt.subplots()\nplt.xlim(0, 0.5)\nplt.ylim(0, 1)\nt = ax.text(0.2, 0.2, 'Text', fontsize=30, horizontalalignment='left',# weight='bold',\n                         verticalalignment='bottom', rotation=0, zorder=3, bbox=dict(boxstyle='square,pad=0', fc='red', ec='none'))\n\n\ntransf = ax.transData.inverted()\nbb = t.get_window_extent(renderer = fig.canvas.get_renderer())\nbbt = bb.transformed(transf)\ncoords = bbt.get_points()\nprint(coords)\n(x0, y0), (x1, y1) = coords\nplt_coords = np.array([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])\n\nax.scatter(*plt_coords.T, c='red')\n\n\n[[0.2        0.2       ]\n [1.97368952 0.30281385]]\n\n\n\n\n\n\n\n\n\n\nimport matplotlib.transforms\n\nfrom matplotlib.transforms import Bbox\nfig, ax = plt.subplots()\n\ndef get_polygon(t):\n\n    transf = ax.transData.inverted()\n    bb = t.get_window_extent(renderer = fig.canvas.get_renderer())\n    bbt = bb.transformed(transf)\n    coords = bbt.get_points()\n\n    x0, y0 = coords[0]\n    trafo = matplotlib.transforms.Affine2D().rotate_around(x0,y0,-)\n    print(trafo.transform(coords))\n\n# bb = t.get_window_extent(renderer = fig.canvas.get_renderer())\n    # coords = bb.get_points()\n    # print(coords)\n    # x0, y0 = coords[0]\n    # print(x0, y0)\n    # trafo = matplotlib.transforms.Affine2D().rotate_around(x0,y0,45)\n\n    # coords = bb.get_points()\n    # print(coords)\n    # print(trafo.transform(coords))\n\n    # transf = ax.transData.inverted()\n    # bb = t.get_window_extent(renderer = fig.canvas.get_renderer())\n    # bbt = bb.transformed(transf)\n    # # return bbt\n    # b = bbt.bounds\n    # # print(dir(bbt), bbt.rotated(0.785398).corners())\n\n    # return Polygon([Point(b[0], b[1]), Point(bbt.xmin, b[1]+(b[0]-bbt.xmin)), Point(b[2], b[3]), Point(bbt.xmax, b[3]-(b[0]-bbt.xmin))])\n    # # return Polygon([Point(bbt.xmin, bbt.ymin), Point(bbt.xmin, bbt.ymin), Point(bbt.xmin, bbt.ymin), Point(bbt.xmin, bbt.ymin)])\n\nt = ax.text(0.1, 0.1, 'Text', fontsize=17, horizontalalignment='left',# weight='bold',\n                         verticalalignment='bottom', rotation=45, zorder=3, bbox=dict(boxstyle='square,pad=0', fc='red', ec='none'))\na = get_polygon(t)\n#xs, ys = zip(*[(p.x, p.y) for p in a.get_points()])\n# print(xs, ys)\n\nt = ax.text(0.1, 0.23, 'Text', fontsize=17, horizontalalignment='left',# weight='bold',\n                         verticalalignment='bottom', rotation=45, zorder=3, bbox=dict(boxstyle='square,pad=0', fc='red', ec='none'))\n#ax.plot(xs,ys) \nb = get_polygon(t)\nis_polygons_intersecting(a, b)\n\n#print(Bbox.intersection(a, b))\n\n[[0.1        0.1       ]\n [0.25716788 0.0862437 ]]\n[[0.1        0.23      ]\n [0.25716788 0.2162437 ]]\n\n\n\n---------------------------------------------------------------------------\nAttributeError                            Traceback (most recent call last)\nCell In[391], line 48\n     46 #ax.plot(xs,ys) \n     47 b = get_polygon(t)\n---&gt; 48 is_polygons_intersecting(a, b)\n\nCell In[30], line 17, in is_polygons_intersecting(a, b)\n     14 for x in range(2):\n     15     polygon = a if x == 0 else b\n---&gt; 17     for i1 in range(len(polygon.get_points())):\n     18         i2 = (i1 + 1) % len(polygon.get_points())\n     19         p1 = polygon.get_points()[i1]\n\nAttributeError: 'NoneType' object has no attribute 'get_points'\n\n\n\n\n\n\n\n\n\n\n\nimport importlib\nimport geneinfo\nimportlib.reload(geneinfo)\n\ngi.chrom_ideogram(annotation, figsize=(8, 8))\n\nBbox(x0=72266463.49999999, y0=2.299999999999999, x1=78844788.63027559, y1=4.219218090860526)\nBbox(x0=38185129.999999985, y0=2.299999999999999, x1=43874492.27483292, y1=3.959864294798294)\nBbox(x0=2916660.500000015, y0=2.299999999999999, x1=8677139.803268358, y1=3.9806125984832725)\nBbox(x0=1428450.5, y0=2.299999999999999, x1=8042334.144493267, y1=4.229592242703012)\nBbox(x0=44533249.000000015, y0=2.299999999999999, x1=52320563.613677576, y1=4.571939253505164)\nBbox(x0=6908011.500000015, y0=2.299999999999999, x1=12632932.289050654, y1=3.9702384466407814)\nBbox(x0=53064702.000000015, y0=2.299999999999999, x1=60531989.985718235, y1=4.478571886922758)\nBbox(x0=119654546.99999999, y0=2.299999999999999, x1=127619654.1847661, y1=4.623810012717609)\nBbox(x0=48684013.500000015, y0=2.299999999999999, x1=53626646.976261124, y1=3.7420071061060156)\nBbox(x0=15840368.500000015, y0=2.299999999999999, x1=22169784.03075163, y1=4.146599027963099)\nBbox(x0=16742475.999999985, y0=2.299999999999999, x1=23107450.044969335, y1=4.15697317980559)\nBbox(x0=111713229.99999999, y0=2.299999999999999, x1=118042645.53075166, y1=4.146599027963099)\nBbox(x0=1597062.000000015, y0=2.299999999999999, x1=10059988.383813992, y1=4.769048138512458)\nBbox(x0=40692081.499999985, y0=2.299999999999999, x1=47341523.65871097, y1=4.239966394545505)\nBbox(x0=56565747.500000015, y0=2.299999999999999, x1=64246386.57102446, y1=4.540816797977694)\nBbox(x0=53398438.500000015, y0=2.299999999999999, x1=60225673.229799524, y1=4.29183715375795)\nBbox(x0=14016183.500000015, y0=2.299999999999999, x1=21447912.97150053, y1=4.468197735080267)\nBbox(x0=2784270.0, y0=2.299999999999999, x1=6482355.478641406, y1=3.37891179161889)\nBbox(x0=41161011.999999985, y0=2.299999999999999, x1=47739337.13027556, y1=4.219218090860526)\nBbox(x0=48896799.500000015, y0=2.299999999999999, x1=55510683.1444933, y1=4.2295922427030135)\nBbox(x0=44992983.500000015, y0=2.299999999999999, x1=51784659.71558182, y1=4.281463001915462)\nBbox(x0=53609424.000000015, y0=2.299999999999999, x1=60792243.87197657, y1=4.395578672182843)\nBbox(x0=13699816.000000015, y0=2.299999999999999, x1=20313699.644493297, y1=4.2295922427030135)\nBbox(x0=72646566.50000001, y0=2.299999999999999, x1=79260450.1444933, y1=4.2295922427030135)\nBbox(x0=20061809.999999985, y0=2.299999999999999, x1=27742449.071024433, y1=4.540816797977694)\nBbox(x0=70285815.99999999, y0=2.299999999999999, x1=77575311.41462968, y1=4.426701127710309)\nBbox(x0=40637241.000000015, y0=2.299999999999999, x1=47926736.41462971, y1=4.426701127710309)\nBbox(x0=76429526.00000001, y0=2.299999999999999, x1=84430191.6989838, y1=4.6341841645601)\nBbox(x0=2361155.5, y0=2.299999999999999, x1=9295065.772452638, y1=4.322959609285416)\nBbox(x0=85954370.49999999, y0=2.299999999999999, x1=90968121.0046965, y1=3.7627554097909943)\nBbox(x0=148750640.0, y0=2.299999999999999, x1=154048858.61843812, y1=3.845748624530909)\nBbox(x0=150437800.0, y0=2.299999999999999, x1=158331790.1563307, y1=4.60306170903263)\nBbox(x0=13667538.000000015, y0=2.299999999999999, x1=21597086.670548394, y1=4.613435860875121)\nBbox(x0=129754242.50000001, y0=2.299999999999999, x1=138430519.9691202, y1=4.831293049567396)\nBbox(x0=13723439.500000015, y0=2.299999999999999, x1=22399716.96912022, y1=4.831293049567396)\nBbox(x0=11766965.500000015, y0=2.299999999999999, x1=17242976.68952672, y1=3.897619383743354)\nBbox(x0=20133181.500000015, y0=2.299999999999999, x1=27031533.258234933, y1=4.312585457442928)\nBbox(x0=66215769.000000015, y0=2.299999999999999, x1=72082923.8459215, y1=4.011735054010739)\nBbox(x0=311072.0, y0=2.299999999999999, x1=7885035.528371349, y1=4.509694342450224)\nBbox(x0=154553122.5, y0=2.299999999999999, x1=160704745.4596631, y1=4.094728268750654)\nBbox(x0=16815475.499999985, y0=2.299999999999999, x1=23464917.658711, y1=4.239966394545505)\nBbox(x0=2716248.0, y0=2.299999999999999, x1=8156700.6753089875, y1=3.887245231900865)\nBbox(x0=30568287.499999985, y0=2.299999999999999, x1=35795389.09000276, y1=3.8250003208459304)\nBbox(x0=3327608.5, y0=2.299999999999999, x1=10190401.744017228, y1=4.302211305600441)\nBbox(x0=71099693.00000001, y0=2.299999999999999, x1=77855810.70136411, y1=4.271088850072971)\nBbox(x0=7475797.500000015, y0=2.299999999999999, x1=11920611.77721323, y1=3.5967689803111647)\nBbox(x0=103357475.49999999, y0=2.299999999999999, x1=110753646.4572828, y1=4.457823583237779)\nBbox(x0=47202994.499999985, y0=2.299999999999999, x1=52750122.7179621, y1=3.918367687428333)\nBbox(x0=115172356.00000001, y0=2.299999999999999, x1=121786239.6444933, y1=4.2295922427030135)\nBbox(x0=41348910.000000015, y0=2.299999999999999, x1=47998352.158711, y1=4.239966394545505)\nBbox(x0=2855820.0, y0=2.299999999999999, x1=8616299.303268328, y1=3.9806125984832725)\nBbox(x0=18297000.500000015, y0=2.299999999999999, x1=24910884.144493297, y1=4.2295922427030135)\nBbox(x0=15810425.000000015, y0=2.299999999999999, x1=22388750.130275592, y1=4.219218090860526)\nBbox(x0=2493695.0, y0=2.299999999999999, x1=8965344.587622449, y1=4.188095635333056)\nBbox(x0=74007178.49999999, y0=2.299999999999999, x1=78309758.72034238, y1=3.5552723729412072)\nBbox(x0=136179030.5, y0=2.299999999999999, x1=141477249.11843812, y1=3.845748624530909)\nBbox(x0=81157805.99999999, y0=2.299999999999999, x1=88269508.84354116, y1=4.374830368497864)\nBbox(x0=140783972.0, y0=2.299999999999999, x1=146473334.2748329, y1=3.959864294798294)\nBbox(x0=53273589.000000015, y0=2.299999999999999, x1=60456408.8719766, y1=4.395578672182843)\nBbox(x0=47223928.500000015, y0=2.299999999999999, x1=53695578.08762245, y1=4.188095635333056)\nBbox(x0=72036297.50000001, y0=2.299999999999999, x1=78543505.60184015, y1=4.198469787175547)\nBbox(x0=16854822.500000015, y0=2.299999999999999, x1=23397589.116057888, y1=4.208843939018035)\nBbox(x0=73836686.00000001, y0=2.299999999999999, x1=78743760.96204342, y1=3.731632954263528)\nBbox(x0=24066878.000000015, y0=2.299999999999999, x1=30751878.672928706, y1=4.250340546387992)\nBbox(x0=1389132.5, y0=2.299999999999999, x1=9567590.770072356, y1=4.686054923772543)\nBbox(x0=17555597.000000015, y0=2.299999999999999, x1=22320437.9051726, y1=3.6901363468935706)\nBbox(x0=24182714.000000015, y0=2.299999999999999, x1=28591969.762995526, y1=3.586394828468677)\nBbox(x0=138918752.0, y0=2.299999999999999, x1=145248167.53075165, y1=4.146599027963099)\nBbox(x0=68835590.50000001, y0=2.299999999999999, x1=75342798.60184018, y1=4.198469787175547)\nBbox(x0=78954529.50000001, y0=2.299999999999999, x1=86208466.40041198, y1=4.416326975867822)\nBbox(x0=1499883.000000015, y0=2.299999999999999, x1=7864857.044969365, y1=4.156973179805588)\nBbox(x0=1359652.5, y0=2.299999999999999, x1=7155690.317486033, y1=3.9909867503257583)\nBbox(x0=3658994.5, y0=2.299999999999999, x1=9348356.774832949, y1=3.959864294798294)\nBbox(x0=153932152.5, y0=2.299999999999999, x1=160403802.08762246, y1=4.188095635333056)\nBbox(x0=71105338.50000001, y0=2.299999999999999, x1=78394833.91462971, y1=4.426701127710309)\nBbox(x0=77903407.99999999, y0=2.299999999999999, x1=84659525.70136409, y1=4.271088850072971)\nBbox(x0=7912993.000000015, y0=2.299999999999999, x1=15344722.47150053, y1=4.468197735080267)\nBbox(x0=48514886.500000015, y0=2.299999999999999, x1=55591030.829323485, y1=4.364456216655377)\nBbox(x0=153959687.5, y0=2.299999999999999, x1=160680246.68714643, y1=4.260714698230483)\nBbox(x0=79160003.00000001, y0=2.299999999999999, x1=86627290.9857182, y1=4.478571886922758)\nBbox(x0=289839.0000000149, y0=2.299999999999999, x1=7792685.49993594, y1=4.488946038765246)\nBbox(x0=132049622.49999999, y0=2.299999999999999, x1=138272362.4880985, y1=4.115476572435632)\nBbox(x0=13756349.000000015, y0=2.299999999999999, x1=19339035.732179835, y1=3.928741839270824)\nBbox(x0=360444.0000000149, y0=2.299999999999999, x1=8823370.383814022, y1=4.769048138512458)\nBbox(x0=53200849.500000015, y0=2.299999999999999, x1=60063642.74401723, y1=4.302211305600441)\nBbox(x0=15738620.500000015, y0=2.299999999999999, x1=21285748.71796213, y1=3.918367687428333)",
+    "crumbs": [
+      "Gene plots",
+      "Chromosome ideograms"
+    ]
+  },
+  {
+    "objectID": "pages/go_info.html",
+    "href": "pages/go_info.html",
+    "title": "GO information",
+    "section": "",
+    "text": "import pandas as pd\n\n%matplotlib inline\n%config InlineBackend.figure_format = 'retina'\n\nimport geneinfo as gi\ngi.email('your@email.com')\nclass left:\n    def __rlshift__(self, df):\n        \"Left align columns of data frame: df &lt;&lt; left()\"\n        left_aligned_df = df.style.set_properties(**{'text-align': 'left'})\n        left_aligned_df = left_aligned_df.set_table_styles(\n        [dict(selector = 'th', props=[('text-align', 'left')])])\n        display(left_aligned_df)\n        \ndf = pd.DataFrame(dict(name=['A', 'B'], desc=['bla bla bla bla', 'bla']))\ndf\n\n\n\n\n\n\n\n\nname\ndesc\n\n\n\n\n0\nA\nbla bla bla bla\n\n\n1\nB\nbla\nNB: The first time you use the GO utilities, it will spend a very long time downloading data. If you do not want to wait that out in the notebook, you can execute this command in the folder where you store your notebooks:\nGet info for one or more GO terms:\ngi.go_info('GO:0000776')\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\ngi.go_info(['GO:0000776', 'GO:0005634'])\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\nGet GO terms for a one or more genes:\ngo_terms = gi.get_go_terms_for_genes(['DYNLT3'])\ngo_terms[:10]\n\n10741    6990\nName: GeneID, dtype: int64\n\n\n['GO:0000776',\n 'GO:0005515',\n 'GO:0005634',\n 'GO:0005737',\n 'GO:0005868',\n 'GO:0007018',\n 'GO:0007346',\n 'GO:0042802',\n 'GO:0045505',\n 'GO:0045931']\nDescriptions for GO terms for one or more genes:\ngi.go_info(gi.get_go_terms_for_genes(['DYNLT3']))\n\n10741    6990\nName: GeneID, dtype: int64\n\n\nGO:0000776: kinetochore\nA multisubunit complex that is located at the centromeric region of DNA and provides an attachment point for the spindle microtubules.\n\n\n\nGO:0005515: protein binding\nBinding to a protein.\n\n\n\nGO:0005634: nucleus\nA membrane-bounded organelle of eukaryotic cells in which chromosomes are housed and replicated. In most cells, the nucleus contains all of the cell’s chromosomes except the organellar chromosomes, and is the site of RNA synthesis and processing. In some species, or in specialized cell types, RNA metabolism or DNA replication may be absent.\n\n\n\nGO:0005737: cytoplasm\nThe contents of a cell excluding the plasma membrane and nucleus, but including other subcellular structures.\n\n\n\nGO:0005868: cytoplasmic dynein complex\nAny dynein complex with a homodimeric dynein heavy chain core that catalyzes movement along a microtubule. Cytoplasmic dynein complexes participate in many cytoplasmic transport activities in eukaryotes, such as mRNA localization, intermediate filament transport, nuclear envelope breakdown, apoptosis, transport of centrosomal proteins, mitotic spindle assembly, virus transport, kinetochore functions, and movement of signaling and spindle checkpoint proteins. Some complexes participate in intraflagellar transport. Subunits associated with the dynein heavy chain mediate association between dynein heavy chain and cargoes, and may include light chains and light intermediate chains.\n\n\n\nGO:0007018: microtubule-based movement\nA microtubule-based process that results in the movement of organelles, other microtubules, or other cellular components. Examples include motor-driven movement along microtubules and movement driven by polymerization or depolymerization of microtubules.\n\n\n\nGO:0007346: regulation of mitotic cell cycle\nAny process that modulates the rate or extent of progress through the mitotic cell cycle.\n\n\n\nGO:0042802: identical protein binding\nBinding to an identical protein or proteins.\n\n\n\nGO:0045505: dynein intermediate chain binding\nBinding to an intermediate chain of the dynein complex.\n\n\n\nGO:0045931: positive regulation of mitotic cell cycle\nAny process that activates or increases the rate or extent of progression through the mitotic cell cycle.\n\n\n\nGO:0051301: cell division\nThe process resulting in division and partitioning of components of a cell to form more cells; may or may not be accompanied by the physical separation of a cell into distinct, individually membrane-bounded daughter cells.\n\n\n\nGO:0061673: mitotic spindle astral microtubule\nAny of the mitotic spindle microtubules that radiate in all directions from the spindle poles and are thought to contribute to the forces that separate the poles and position them in relation to the rest of the cell.",
+    "crumbs": [
+      "Gene ontology",
+      "GO information"
+    ]
+  },
+  {
+    "objectID": "pages/go_info.html#go-graphs",
+    "href": "pages/go_info.html#go-graphs",
+    "title": "GO information",
+    "section": "GO graphs",
+    "text": "GO graphs\nShow the sub-graph for a list of GO terms:\n\nimport geneinfo\nimport importlib\nimportlib.reload(geneinfo)\n#geneinfo.go_info('GO:0000776')\ngeneinfo.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\n\ngi.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\nShow the sub-graph for the GO terms of a single gene:\n\ngi.show_go_dag_for_gene('DYNLT3')\n\n10741    6990\nName: GeneID, dtype: int64\n\n\n\n\n\n\n\n\n\nSame but using GO annotation backed by certain kinds of evidence:\n\ngi.show_go_dag_for_gene('DYNLT3', evidence=['IDA', 'EXP', 'HTP'])\n\n10741    6990\nName: GeneID, dtype: int64\n\n\n\n\n\n\n\n\n\nShow the categories of evidence backing GO annotations:\n\ngi.show_go_evidence_codes()\n\nExperimental evidence codes:  Inferred from Experiment (EXP)  Inferred from Direct Assay (IDA)  Inferred from Physical Interaction (IPI)  Inferred from Mutant Phenotype (IMP)  Inferred from Genetic Interaction (IGI)  Inferred from Expression Pattern (IEP)  Inferred from High Throughput Experiment (HTP)  Inferred from High Throughput Direct Assay (HDA)  Inferred from High Throughput Mutant Phenotype (HMP)  Inferred from High Throughput Genetic Interaction (HGI)  Inferred from High Throughput Expression Pattern (HEP)\nPhylogenetically-inferred annotations:  Inferred from Biological aspect of Ancestor (IBA)  Inferred from Biological aspect of Descendant (IBD)  Inferred from Key Residues (IKR)  Inferred from Rapid Divergence (IRD)\nComputational analysis evidence codes  Inferred from Sequence or structural Similarity (ISS)  Inferred from Sequence Orthology (ISO)  Inferred from Sequence Alignment (ISA)  Inferred from Sequence Model (ISM)  Inferred from Genomic Context (IGC)  Inferred from Reviewed Computational Analysis (RCA)\nAuthor statement evidence codes:  Traceable Author Statement (TAS)  Non-traceable Author Statement (NAS)\nCurator statement evidence codes:  Inferred by Curator (IC)  No biological Data available (ND)\nElectronic annotation evidence code:  Inferred from Electronic Annotation (IEA)",
+    "crumbs": [
+      "Gene ontology",
+      "GO information"
+    ]
+  },
+  {
+    "objectID": "pages/go_info.html#find-genes-based-on-go-info",
+    "href": "pages/go_info.html#find-genes-based-on-go-info",
+    "title": "GO information",
+    "section": "Find genes based on GO info",
+    "text": "Find genes based on GO info\nFind genes matching a regular expression in any associated GO term description:\n\nmotor_genes_df = gi.get_genes_for_go_regex('kinesin|dynein')\nmotor_genes_df.head() &lt;&lt; left()\n\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)\ngeneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)\n\n\n\n\n\n\n\n \nsymbol\nname\nchrom\nstart\nend\n\n\n\n\n0\nSPAG1\nsperm associated antigen 1\n8\n100158037\n100241903\n\n\n1\nBLOC1S2\nbiogenesis of lysosomal organelles complex 1 subunit 2\n10\n100286679\n100273277\n\n\n2\nLZTS2\nleucine zipper tumor suppressor 2\n10\n100996587\n101007832\n\n\n3\nDYNC1H1\ndynein cytoplasmic 1 heavy chain 1\n14\n101964572\n102056442\n\n\n4\nKIF1B\nkinesin family member 1B\n1\n10210569\n10381602",
+    "crumbs": [
+      "Gene ontology",
+      "GO information"
+    ]
+  },
+  {
+    "objectID": "pages/getting_started.html",
+    "href": "pages/getting_started.html",
+    "title": "Overview",
+    "section": "",
+    "text": "geneinfo is a compilation of gene information APIs adapted for use in a Jupyter notebook and some additional utilities. Its API lets you retrieve of information about genes and gene ontologies, plot data together with gene structures (genome browser style), show data on chromosome ideograms, perform gene ontology enrichment analyses and more.",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "pages/getting_started.html#installation",
+    "href": "pages/getting_started.html#installation",
+    "title": "Overview",
+    "section": "Installation",
+    "text": "Installation\nconda install -c conda-forge -c munch-group geneinfo",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "pages/getting_started.html#interpreting-data-in-a-gene-context",
+    "href": "pages/getting_started.html#interpreting-data-in-a-gene-context",
+    "title": "Overview",
+    "section": "Interpreting data in a gene context",
+    "text": "Interpreting data in a gene context\nAmong many other things, geneinfo lets you plot data in chromosome coordinates and view overlapping gene annotation using gene_plot.\n\nimport geneinfo as gi\nax = gi.gene_plot('chrX', 76500000, 77500000, assembly='hg19')\nax.scatter(x, y, s=2, c='tab:blue') ;\n\n\n\n\n\n\n\n\nYou can get brief summaries using gene_info.\n\ngi.gene_info(['ATRX', 'MAGT1'])\n\nSymbol: ATRX (protein-coding)         Aliases: JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX\nATRX chromatin remodeler\nSummary: The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].\nGenomic position: X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)\nGene card\n\n\n\nSymbol: MAGT1 (protein-coding)         Aliases: CDG1CC, IAP, MRX95, OST3B, PRO0756, SLC58A1, XMEN, bA217H1.1\nmagnesium transporter 1\nSummary: This gene encodes a ubiquitously expressed magnesium cation transporter protein that localizes to the cell membrane. This protein also associates with N-oligosaccharyl transferase and therefore may have a role in N-glycosylation. Mutations in this gene cause a form of X-linked intellectual disability (XLID). This gene may have multiple in-frame translation initiation sites, one of which would encode a shorter protein with an N-terminus containing a signal peptide at amino acids 1-29. [provided by RefSeq, Jul 2017].\nGenomic position: X:77825747-77899271 (hg38), HG1426_PATCH:77087318-77156547, X:77081861-77151090 (hg19)\nGene card\n\n\n\nGet gene ontology terms associated with genes.\n\ngo_terms = gi.get_go_terms_for_genes(['ATRX', 'MAGT1'], evidence=['IDA', 'EXP', 'HTP'])\ngo_terms[:10]\n\n823       546\n5032    84061\nName: GeneID, dtype: int64\n\n\n['GO:0003682',\n 'GO:0005654',\n 'GO:0005783',\n 'GO:0006334',\n 'GO:0006338',\n 'GO:0008250',\n 'GO:0015616',\n 'GO:0016604',\n 'GO:0035064',\n 'GO:0042393']\n\n\nShow graph for those terms.\n\ngi.show_go_dag_for_terms(go_terms)\n\n\n\n\n\n\n\n\nShow definitions of those terms.\n\ngi.go_info(go_terms)\n\nGO:0003682: chromatin binding\nBinding to chromatin, the network of fibers of DNA, protein, and sometimes RNA, that make up the chromosomes of the eukaryotic nucleus during interphase.\n\n\n\nGO:0005654: nucleoplasm\nThat part of the nuclear content other than the chromosomes or the nucleolus.\n\n\n\nGO:0005783: endoplasmic reticulum\nThe irregular network of unit membranes, visible only by electron microscopy, that occurs in the cytoplasm of many eukaryotic cells. The membranes form a complex meshwork of tubular channels, which are often expanded into slitlike cavities called cisternae. The ER takes two forms, rough (or granular), with ribosomes adhering to the outer surface, and smooth (with no ribosomes attached).\n\n\n\nGO:0006334: nucleosome assembly\nThe aggregation, arrangement and bonding together of a nucleosome, the beadlike structural units of eukaryotic chromatin composed of histones and DNA.\n\n\n\nGO:0006338: chromatin remodeling\nA dynamic process of chromatin reorganization resulting in changes to chromatin structure. These changes allow DNA metabolic processes such as transcriptional regulation, DNA recombination, DNA repair, and DNA replication.\n\n\n\nGO:0008250: oligosaccharyltransferase complex\nA protein complex that is found in the endoplasmic reticulum membrane of eukaryotes and transfers lipid-linked oligosaccharide precursor to asparagine residues on nascent proteins. The complex includes at least eight non-identical subunits. Different forms of the complex containing distinct subunits have been detected in mammals.\n\n\n\nGO:0015616: DNA translocase activity\nGeneration of movement along a single- or double-stranded DNA molecule, driven by ATP hydrolysis.\n\n\n\nGO:0016604: nuclear body\nExtra-nucleolar nuclear domains usually visualized by confocal microscopy and fluorescent antibodies to specific proteins.\n\n\n\nGO:0035064: methylated histone binding\nBinding to a histone in which a residue has been modified by methylation.\n\n\n\nGO:0042393: histone binding\nBinding to a histone, any of a group of water-soluble proteins found in association with the DNA of eukaryotic or archaeal chromosomes. They are involved in the condensation and coiling of chromosomes during cell division and have also been implicated in gene regulation and DNA replication. They may be chemically modified (methylated, acetlyated and others) to regulate gene transcription.\n\n\n\nGO:0099115: chromosome, subtelomeric region\nA region of the chromosome, adjacent to the telomere (on the centromeric side) that contains repetitive DNA and sometimes genes. This region is usually heterochromatin.",
+    "crumbs": [
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "pages/google_sheets.html",
+    "href": "pages/google_sheets.html",
+    "title": "Gene lists",
+    "section": "",
+    "text": "import geneinfo as gi\ngi.email('your@email.com')\n\nLoad Google spreadsheet with gene lists\n\ngene_lists = gi.GoogleSheet()\ngene_lists\n\n\n\n\n\n\n\n\nlabel\ndescription\n\n\n\n\nall_npx\nall NPX genes\n\n\nneuron_genome_proteome\nNeuron proteome (whole genome)\n\n\nneuron_npx_proteome\nNPX neuron proteome\n\n\nmatos_neuron\nMatos neuron genes\n\n\nmatos_common\nMatos neuron genes expressed in spermatids\n\n\nhpa_brain_prot\nBrain genes form Human protein atlas\n\n\nmeritxell_spermatid_expr\n\n\n\nintersection(nDEG, matos_neuron)\n\n\n\nunion(H,matos_common)\n\n\n\nmult_copy\n\n\n\nall_post_mei_expr\nMulti copy genes\n\n\nmsci\nall post.mei.expr. X genes\n\n\nmsci_esc\nMSCI genes\n\n\nmy_primate_codeml\nMSCI-escaping\n\n\ncDEG\nPrimate codeml site model\n\n\nnDEG\ncDEG\n\n\nprimate_ampl_multi\nnDEG\n\n\ngametologs\nAmpliconic or multicopy in some primates\n\n\nxi\nGametologs in some primates\n\n\nxi_escape\nSubject to somatic X inactivation (XI)\n\n\nxi_uncertain\nEscaping somatic X inactivation (XI)\n\n\nxi_any_evidence\nX genes uncertain XI status\n\n\nexpr_mod_xi_copynr_fibrobl\nUnion of certain and uncertain XI status\n\n\nexpr_mod_xi_copynr_lcl\nExpression modulated by Xi copy number (Fibroblast)\n\n\nreg_sa_pheno\nExpression modulated by Xi copy number (LCL)\n\n\nari_relate_EUR\nX-chromosome genes associated with regional SA phenotypes\n\n\nari_relate_ASIA\n\n\n\nari_relate_AFR\n\n\n\nari_nonPUR\n\n\n\nari_relate_PUR\n\n\n\nari_all\n\n\n\ncandidates\n\n\n\nech75_regions\nCandidate for explaining human and baboon sweeps\n\n\nech90_regions\nOverlapping human sweeps (75% ECH regions)\n\n\naccel_reg_simiiformes_br\nOverlapping human sweeps (90% ECH regions)\n\n\nsfari_all_conf\nGenes with accelerated regions Simiiformes branch\n\n\nintel_seiz_lang\nX SFARI genes (including all confidence levels)\n\n\nintelect_disabil\nIntellectual disability or Seizures or Language impairment\n\n\nmatos_common_no_xy_gametologs\nIntelectual disbility\n\n\n\n\n\n\n\n\nIndividual gene lists behaves like normal lists, but when displayed they render in columns to make them easier to read:\n\nech90_regions = gene_lists.get('ech90_regions')\nech90_regions\n\nABCB7        CNKSR2       FRMD8P1      LOC101928627 MIR500A      PGAM4        TRPC5        \nACTRT1       COX7B        FTX          LOC729609    MIR500B      PHF8         TSIX         \nAKAP4        CYBB         FUNDC2       LRCH2        MIR501       PRRG1        UPRT         \nALG13        DCX          GAB3         MAGT1        MIR502       RAB39B       USP27X       \nARHGAP36     DKC1         GPC3         MAP7D2       MIR660       RAP2C        USP27X-DT    \nATP7A        DYNLT3       H2AB1        MBNL3        MIR664B      RAP2C-AS1    VBP1         \nATRX         ENOX2        HTR2C        MIR1184-1    MPP1         RLIM         WNK3         \nBCLAF3       ENOX2-AS1    IL13RA2      MIR188       MSN          SERTM2       XIST         \nBRCC3        EZHIP        JPX          MIR23C       MTCP1        SH3KBP1      XK           \nCAPN6        F8           LANCL3       MIR362       NEXMIF       SMIM9        ZC3H12B      \nCCNB3        F8A1         LAS1L        MIR374B      NUDT10       SNORA35B                  \nCFAP47       FAM120C      LINC01201    MIR374C      NUDT11       SNORA36A                  \nCLCN5        FGF16        LINC01284    MIR421       PAGE4        SNORA56                   \nCMC4         FRMD7        LINC01496    MIR448       PAK3         STK26"
+  },
+  {
+    "objectID": "api/download_data.html",
+    "href": "api/download_data.html",
+    "title": "download_data",
+    "section": "",
+    "text": "download_data\ngeneinfo.download_data(prt=sys.stdout)",
+    "crumbs": [
+      "GO enrichment",
+      "download_data"
+    ]
+  },
+  {
+    "objectID": "api/show_go_evidence_codes.html",
+    "href": "api/show_go_evidence_codes.html",
+    "title": "show_go_evidence_codes",
+    "section": "",
+    "text": "show_go_evidence_codes\ngeneinfo.show_go_evidence_codes()\nDisplay list of GO evidence categories and their codes.",
+    "crumbs": [
+      "GO enrichment",
+      "show_go_evidence_codes"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region.html",
+    "href": "api/get_genes_region.html",
+    "title": "get_genes_region",
+    "section": "",
+    "text": "geneinfo.get_genes_region(\n    chrom\n    window_start\n    window_end\n    assembly='GRCh38'\n    db='ncbiRefSeq'\n)\nGets gene structure information for genes in a chromosomal region.\n\n\n\nchrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’\n\n\n\n\n\n\n : list\n\nList of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - gene strand - list of exons (start, end)",
+    "crumbs": [
+      "Gene coordinates",
+      "get_genes_region"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region.html#parameters",
+    "href": "api/get_genes_region.html#parameters",
+    "title": "get_genes_region",
+    "section": "",
+    "text": "chrom : str\n\nChromosome identifier\n\nwindow_start : int\n\nStart of region\n\nwindow_end : int\n\nEnd of region (end base not included)\n\nassembly : str = 'GRCh38'\n\nGenome assembly, by default ‘GRCh38’\n\ndb : str = 'ncbiRefSeq'\n\nDatabase, by default ‘ncbiRefSeq’",
+    "crumbs": [
+      "Gene coordinates",
+      "get_genes_region"
+    ]
+  },
+  {
+    "objectID": "api/get_genes_region.html#returns",
+    "href": "api/get_genes_region.html#returns",
+    "title": "get_genes_region",
+    "section": "",
+    "text": ": list\n\nList of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - gene strand - list of exons (start, end)",
+    "crumbs": [
+      "Gene coordinates",
+      "get_genes_region"
     ]
   },
   {
