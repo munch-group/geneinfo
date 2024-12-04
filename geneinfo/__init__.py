@@ -1740,7 +1740,7 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
     gene_list : 
         List of gene symbols or NCBI gene ids.
     taxid : 
-        NCBI taxonomy ID, by default 9606, which is human
+        NCBI taxonomy ID, 9606 (human) or 1758 (mouse), by default 9606.
     background_chrom : 
         Name of chromosome, by default None. Limits analysis to this named chromosome
     background_genes : 
@@ -1774,6 +1774,9 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
     ```
 
     """
+    if taxid not in [9606, 17580]:
+        raise ValueError('Only human and mouse (tax id 9606 and 17580) are supported')
+    
     if subtype(gene_list, list):
         gene_list = list(gene_list)
     
