@@ -58,49 +58,49 @@ if os.path.exists(cache_path):
     with open(cache_path, 'rb') as f:
         CACHE = pickle.load(f)
 
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+# class Point:
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
 
-class Polygon:
-    def __init__(self, points):
-        self.points = points
+# class Polygon:
+#     def __init__(self, points):
+#         self.points = points
 
-    def get_points(self):
-        return self.points
+#     def get_points(self):
+#         return self.points
 
-def is_polygons_intersecting(a, b):
-    for x in range(2):
-        polygon = a if x == 0 else b
+# def is_polygons_intersecting(a, b):
+#     for x in range(2):
+#         polygon = a if x == 0 else b
 
-        for i1 in range(len(polygon.get_points())):
-            i2 = (i1 + 1) % len(polygon.get_points())
-            p1 = polygon.get_points()[i1]
-            p2 = polygon.get_points()[i2]
+#         for i1 in range(len(polygon.get_points())):
+#             i2 = (i1 + 1) % len(polygon.get_points())
+#             p1 = polygon.get_points()[i1]
+#             p2 = polygon.get_points()[i2]
 
-            normal = Point(p2.y - p1.y, p1.x - p2.x)
+#             normal = Point(p2.y - p1.y, p1.x - p2.x)
 
-            min_a = float('inf')
-            max_a = float('-inf')
+#             min_a = float('inf')
+#             max_a = float('-inf')
 
-            for p in a.get_points():
-                projected = normal.x * p.x + normal.y * p.y
-                min_a = min(min_a, projected)
-                max_a = max(max_a, projected)
+#             for p in a.get_points():
+#                 projected = normal.x * p.x + normal.y * p.y
+#                 min_a = min(min_a, projected)
+#                 max_a = max(max_a, projected)
 
-            min_b = float('inf')
-            max_b = float('-inf')
+#             min_b = float('inf')
+#             max_b = float('-inf')
 
-            for p in b.get_points():
-                projected = normal.x * p.x + normal.y * p.y
-                min_b = min(min_b, projected)
-                max_b = max(max_b, projected)
+#             for p in b.get_points():
+#                 projected = normal.x * p.x + normal.y * p.y
+#                 min_b = min(min_b, projected)
+#                 max_b = max(max_b, projected)
 
-            if max_a < min_b or max_b < min_a:
-                return False
+#             if max_a < min_b or max_b < min_a:
+#                 return False
 
-    return True
+#     return True
 
 
 class NotFound(Exception):
