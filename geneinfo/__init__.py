@@ -2104,7 +2104,7 @@ def chrom_ideogram(annot:list, hspace:float=0.1, min_visible_width:int=200000, f
                 transf = chr_axes[chrom].transData.inverted()
                 bb = t.get_window_extent(renderer = fig.canvas.get_renderer())
                 bb_datacoords = bb.transformed(transf)
-                print(bb_datacoords)
+                # print(bb_datacoords)
 
         for tup in annot:
             plot_segment(*tup) 
