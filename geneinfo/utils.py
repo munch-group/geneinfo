@@ -15,109 +15,154 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from math import isclose, floor, log10
 
-def horizon(row, i, cut):
-    """
-    Compute the values for the three 
-    positive and negative intervals.
-    """
-    val = getattr(row, i)
 
-    if np.isnan(val):
-        for i in range(8):
-            yield 0
-        # for nan color
-        yield cut
-    else:
-        if val < 0:
-            for i in range(4):
-                yield 0
+from IPython.display import Markdown, display, Image, SVG, HTML
+import numpy as np
+from collections import defaultdict
+from contextlib import redirect_stdout, redirect_stderr
+import importlib
+import io
+import sys
+import os
+import re
+import json
+import pickle
+import subprocess
+import pandas as pd
+from pandas.api.types import is_object_dtype
+from math import log10, sqrt
+import shutil
+from collections.abc import Callable
+from typing import Any, TypeVar, List, Tuple, Dict, Union
+from itertools import zip_longest
 
-        val = abs(val)
-        for i in range(3):
-            yield min(cut, val)
-            val = max(0, val-cut)
-        yield int(not isclose(val, 0, abs_tol=1e-8)) * cut
+import matplotlib.axes
+from matplotlib.patches import Rectangle, Polygon
+import matplotlib.pyplot as plt
+from matplotlib_inline.backend_inline import set_matplotlib_formats
+set_matplotlib_formats('retina', 'png')
 
-        if val >= 0:
-            for i in range(4):
-                yield 0
+from goatools.base import download_go_basic_obo
+#from goatools.base import download_ncbi_associations
+from goatools.obo_parser import GODag, OBOReader
+from goatools.gosubdag.gosubdag import GoSubDag
+from goatools.gosubdag.plot.gosubdag_plot import GoSubDagPlot
+from goatools.cli.ncbi_gene_results_to_python import ncbi_tsv_to_py
+from goatools.goea.go_enrichment_ns import GOEnrichmentStudyNS
+from goatools.go_enrichment import GOEnrichmentRecord
+from goatools.anno.genetogo_reader import Gene2GoReader
+from goatools.go_search import GoSearch
+from goatools.godag.go_tasks import CurNHigher
+from goatools.godag_plot import plot_gos, plot_goid2goobj, plot_results, plt_goea_results
+import requests
+from Bio import Entrez
 
-        # for nan color
-        yield 0
-    
-def horizonplot(df, y=None, ax=None,
-                cut=None, # float, takes precedence over quantile_span
-                quantile_span = None,
-                start='start',
-                beginzero=True, 
-                colors = ['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue',
-                          '#F2DE9A', '#DA8630', '#972428', 'darkred',
-                          '#D3D3D3']):
-                # colours = ['#314E9F', '#36AAA8', '#D7E2D4'] + ['midnightblue'] + \
-                #           ['#F5DE90', '#F5DE90', '#A51023'] + ['darkred'] + ['whitesmoke']):
-                # colors = sns.color_palette("Blues", 3) + ['midnightblue'] + \
-                #           sns.color_palette("Reds", 3) + ['darkred'] + ['lightgrey']):
+from .intervals import *
 
-    """
-    Horizon bar plot made allowing multiple chromosomes and multiple samples.
-    """
+def map_interval(chrom, start, end, strand, map_from, map_to, species='homo_sapiens'):
+    if chrom.startswith('chr'):
+        chrom = chrom[3:]
+    start, end = int(start), int(end)    
+    api_url = f"http://rest.ensembl.org/map/{species}/{map_from}/{chrom}:{start}..{end}:{strand}/{map_to}"
+    params = {'content-type': 'application/json'}
+    response = requests.get(api_url, params=params)
+    if not response.ok:
+        response.raise_for_status()
+    #null = '' # json may include 'null' variables 
+    return response.json()#eval(response.content.decode())
 
-    # set cut if not set
-    if cut is None:
-        cut = np.max([np.max(df[y]), np.max(-df[y])]) / 3
-    elif quantile_span:
-        cut=max(np.abs(np.nanquantile(df[col], quantile_span[0])), 
-                np.abs(np.nanquantile(df[col], quantile_span[1]))) / 3,
 
-    # make the data frame to plot
-    row_iter = df.itertuples()
-    col_iterators = zip(*(horizon(row, y, cut) for row in row_iter))
-    col_names = ['yp1', 'yp2', 'yp3', 'yp4', 
-                 'yn1', 'yn2', 'yn3', 'yn4', 'nan']
+class nice:
 
-    df2 = (df[[y, start]]
-           .assign(**dict(zip(col_names, col_iterators)))
-          )
-    df2 = pd.DataFrame(dict((col, list(chain.from_iterable(zip(df2[col].values, df2[col].values)))) for col in df2))
+    def __rlshift__(self, df):
+        "Left align columns of params frame: df << nice()"
 
-    # make the plot
-    with sns.axes_style("ticks"):
+        def make_pretty(styler):
 
-        # ingore UserWarning from seaborn that tight_layout is not applied
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+            def commas(v):
+                if type(v) is int:
+                    s = str(v)[::-1]
+                    return ','.join([s[i:i+3] for i in range(0, len(s), 3)])[::-1]
+                else:
+                    return v
 
+            return styler.format(commas)
+
+        s = df.style.pipe(make_pretty)
+        s.set_table_styles(
+            {c: [{'selector': '', 'props': [('text-align', 'left')]}] 
+                 for c in df.columns if is_object_dtype(df[c]) and c != 'strand'},
+            overwrite=False
+        )
+        display(s)
+
+
+def tabulate_genes(words, ncols=None):
+    n = len(words)
+    col_width = max(map(len, words)) + 1
+    if ncols is None:
+        ncols = max(100//col_width, 1+sqrt(n/col_width))
+    nrows = int(n/ncols) + 1
+    rows = []
+    for r in range(0, n, nrows):
+        rows.append(words[r:r+nrows])
+    for row in list(zip_longest(*rows, fillvalue='')):
+        line = []
+        for gene in row:
+            line.append(gene.ljust(col_width))
+        print(''.join(line))
+
+
+class GeneList(list):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        n = len(self)
+        col_width = max(map(len, self)) + 1
+        ncols = max(100//col_width, 1+sqrt(n/col_width))
+        nrows = int(n/ncols) + 1
+        rows = []
+        for r in range(0, n, nrows):
+            rows.append(self[r:r+nrows])
+        repr = []
+        for row in list(zip_longest(*rows, fillvalue='')):
+            line = []
+            for gene in row:
+                line.append(gene.ljust(col_width))
+            repr.append(''.join(line))
+        return('\n'.join(repr))
+
+
+class GoogleSheet(object):
+
+    def __init__(self, SHEET_ID='1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk', SHEET_NAME='Sheet1'):
+        url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
+        self.desc = []
+        for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
+            if str(desc) == 'nan':
+                self.desc.append('')
+            else:
+                self.desc.append(desc.replace('\n', ' '))
+        self.df = pd.read_csv(url, header=1, low_memory=False)
+        self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
+        self.names = self.df.columns.tolist()
+
+    def get(self, name):
+        sr = self.df[name]
+        return GeneList(sorted(sr[~sr.isnull()]))
+
+    def _repr_html_(self):
+        out = ['| label | description |', '|:---|:---|']
+        for name, desc in zip(self.names, self.desc):
+            if pd.isnull(desc):
+                desc = ''
+            # out.append(f"- **{(name+':**').ljust(130)} {desc}")
+            out.append(f"| **{name}** | {desc} |")
             
-            # first y tick
-            ytic1 = round(cut/3, -int(floor(log10(abs(cut/3)))))
+        display(Markdown('\n'.join(out)))
 
-            for col_name, color in zip(col_names, colors):
-                plt.setp(g.fig.texts, text="") # hack to make y facet labels align...
-                # map barplots to each facet
-                ax.fill_between(
-                    df2[start], 
-                    df2[col_name], 
-                    y2=0,
-                    color=color,
-                    linewidth=0,
-                    capstyle='butt')
-
-n = 1000
-
-fig, ax = plt.subplots(1, 1, figsize=(10, 0.5))
-
-df = pd.DataFrame({'chrom': ['chr1']*n,
-                'start': list(range(1*n)), 
-                 'pi': list(np.sin(np.linspace(-np.pi, 10*np.pi, 1*n)))                   
-                  })
-sample = n
-Fs = ci.max_chrom_size
-# f = 50
-f = np.linspace(5, 50, sample)
-x = np.linspace(0, Fs, sample)
-y = np.sin(2* np.pi * f * x / Fs)
-df['pi'] = y
-
-
-horizonplot(df, y='pi', ax=ax)
-ax.set_axis_off()
+    def __repr__(self):
+        return ""
+  
