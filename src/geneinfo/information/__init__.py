@@ -1,4 +1,5 @@
 
+from dis import Positions
 from IPython.display import Markdown, display
 from collections import defaultdict
 import sys
@@ -8,10 +9,15 @@ import pickle
 import pandas as pd
 from typing import Any, TypeVar, List, Tuple, Dict, Union
 import requests
+from pathlib import Path
 
 from ..intervals import *
 
 from ..utils import GeneList
+
+from ..utils import shelve_it
+cache_dir = Path(os.path.dirname(__file__)).parent / 'data'
+
 
 class NotFound(Exception):
     """
@@ -23,6 +29,7 @@ class NotFound(Exception):
     pass
 
 
+@shelve_it()
 def _ensembl_id(name:str, species:str='homo_sapiens') -> str:
     server = "https://rest.ensembl.org"
     ext = f"/xrefs/symbol/{species}/{name}?"
@@ -68,6 +75,7 @@ def ensembl_id(name:Union[str, list], species:str='homo_sapiens') -> str:
     return [_ensembl_id(x) for x in name_list]
 
 
+@shelve_it()
 def ensembl2symbol(ensembl_id:str) -> str:
     """
     Converts ENSEMBL ID to gene HGCN gene symbol    
@@ -126,6 +134,7 @@ def hgcn_symbol(name:str) -> str:
         return ensembl2symbol(ensembl_id(name))
 
 
+@shelve_it()
 def ensembl2ncbi(ensembl_id):
     """
     Converts ENSEMBL ID to gene NCBI ID
@@ -157,6 +166,7 @@ def ensembl2ncbi(ensembl_id):
     return int(ids[0])
 
 
+@shelve_it()
 def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
     api_url = f"https://mygene.info/v3/query?q={query}&scopes={scopes}&species={species}&fields={fields}"    
     response = requests.get(api_url)
@@ -170,9 +180,10 @@ def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,a
     print(f"Gene not found: {query}", file=sys.stderr)
 
 
-def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens') -> dict:
+@shelve_it()
+def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens', pos_list=False) -> dict:
     """
-    Retrieves genome (`chrom`, `start`, `end`) coordinates one or more genes.
+    Retrieves genome coordinates one or more genes.
 
     Parameters
     ----------
@@ -182,13 +193,16 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
         Genome assembly.
     species :  
         Species, by default 'homo_sapiens'.
-
+    pos_list :
+        Wether to instead return a list of (chrom, position, name) tuples.
 
     Returns
     -------
     :
-        Dictionary with gene names as keys and coordinates as values.       
+        Dictionary with gene names as keys and (chrom, start, end, strand) tuples as values, or a list of 
+        (chrom, position, name) tuples.
     """
+
     coords = {}
     batch_size = 100
     for i in range(0, len(query), batch_size):
@@ -205,9 +219,17 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
                 strand = None
     
             coords[name] = (chrom, start, end, strand)
+
+    if pos_list:
+        annot = []
+        for (name, (chrom, start, end, strand)) in coords.items():
+            annot.append((chrom, int((start+end)/2), name))
+        return sorted(annot, key=lambda x: x[1:])
+
     return coords
 
 
+@shelve_it()
 def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgnc') -> None:
     """
     Displays HTML formatted information about one or more genes.
@@ -277,6 +299,7 @@ def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgn
         display(Markdown(tmpl.format(**top_hit)))
 
 
+@shelve_it()
 def _ensembl_get_features_region(chrom, window_start, window_end, features=['gene', 'exon'], assembly=None, species='homo_sapiens'):
     if chrom.startswith('chr'):
         chrom = chrom[3:]
@@ -301,6 +324,7 @@ def _ensembl_get_features_region(chrom, window_start, window_end, features=['gen
     return genes
 
 
+@shelve_it()
 def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapiens'):
 
     if assembly == 'hg38':
@@ -345,6 +369,7 @@ def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, spe
     return gene_info
 
 
+@shelve_it()
 def get_genes_region(chrom:str, window_start:int, window_end:int, 
                      assembly:str='GRCh38', db:str='ncbiRefSeq') -> list:
     """

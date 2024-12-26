@@ -3,7 +3,6 @@ from .information import (
     ensembl_id, ensembl2symbol, hgcn_symbol, ensembl2ncbi, gene_coord, 
     gene_info, get_genes_region, get_genes_region_dataframe, gene_info_region
 )
-from .utils import *
 
 
 

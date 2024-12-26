@@ -28,9 +28,9 @@ from goatools.godag_plot import plot_gos, plot_goid2goobj, plot_results, plt_goe
 
 from Bio import Entrez
 
-from .intervals import *
+from ..intervals import *
 
-from .gene_information import hgcn_symbol, ensembl_id, NotFound
+from ..information import hgcn_symbol, ensembl_id, NotFound
 
 
 def email(email_address:str) -> None:
@@ -632,7 +632,7 @@ Inferred from Electronic Annotation (IEA)
     display(Markdown(s))  
                     
         
-def  _write_go_hdf():
+def _write_go_hdf():
 
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 

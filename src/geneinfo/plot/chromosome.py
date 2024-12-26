@@ -7,6 +7,8 @@ from collections.abc import Callable
 from typing import Any, TypeVar, List, Tuple, Dict, Union
 
 from ..intervals import *
+from ..utils import horizon
+from ..information import gene_coord
 
 import math
 from math import isclose, floor, log10
@@ -324,10 +326,12 @@ class GenomeIdeogram(object):
     def __init__(self, axes_height_inches=1, axes_width_inches=12, hspace=0, ylim=(0, 1), 
                  rel_font_height=0.05, assembly:str='hg38', min_stick_height=0.3):
 
+        self.assemembly = assembly
         self.ideogram_base = None
         self.ideogram_height = None
         self.min_stick_height = min_stick_height
         self.legend_handles = []
+        self.zooms = []
         self.zoom_axes = []
         
         self.end_padding = 300000
@@ -380,12 +384,12 @@ class GenomeIdeogram(object):
             self.chr_axes = dict(zip(self.chr_names, self.ax_list))
     
             for ax in self.ax_list[:-4]:
-                xlim = (-end_padding, self.max_chrom_size+end_padding)
+                xlim = (-self.end_padding, self.max_chrom_size+self.end_padding)
                 scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect
                 ax.set_xlim(xlim)
                 ax.set_ylim(scaled_y_lim)
             for ax in ax_list[-4:]:
-                xlim = (-end_padding, ((25-9)/25)*self.max_chrom_size+end_padding)
+                xlim = (-self.end_padding, ((25-9)/25)*self.max_chrom_size+self.end_padding)
                 scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect
                 ax.set_xlim(xlim)
                 ax.set_ylim(scaled_y_lim)
@@ -695,6 +699,13 @@ class GenomeIdeogram(object):
     # def add_labels(self, data, labels='name', chrom='chrom', x='pos'):
     def add_labels(self, annot, y0=None, y1=None, bold=[], italic=[], colored=[], framed=[], filled=[], pad=0):
 
+        if type(annot[0]) is str:
+            _annot = []
+            # annot is a list of gene names, not a list of tuples
+            for gene_name, (chrom, start, end, strand) in gene_coord(annot, assembly=self.assembly).items():
+                _annot.append((chrom, (start + end)/2, gene_name))
+            annot = _annot
+
         if y0 is None:
             y0 = self.ideogram_base + self.ideogram_height
         if y1 is None:
@@ -860,11 +871,13 @@ class GenomeIdeogram(object):
 
         grouped = data.groupby(chrom_col, observed=True)
         for chrom, group in grouped:
+            if chrom not in self.chr_axes:
+                continue
             ax = self.chr_axes[chrom]
             bottom, top = yaxis            
             scaled_y_lim = ax.get_ylim()
             if 'ylim' in kwargs:
-                dy = -sub(*ylim)
+                dy = -sub(*kwargs['ylim'])
             else:
                 dy = -sub(*self.ylim)
             df = group.reset_index() # create independent dataframe
@@ -882,7 +895,7 @@ class GenomeIdeogram(object):
             for ax in self.zoom_axes:
                 scaled_y_lim = ax.get_ylim()
                 if 'ylim' in kwargs:
-                    dy = -sub(*ylim)
+                    dy = -sub(*kwargs['ylim'])
                 else:
                     dy = -sub(*self.ylim)
                 df = group.reset_index() # create independent dataframe
@@ -909,10 +922,12 @@ class GenomeIdeogram(object):
             
         grouped = data.groupby(chrom_col, observed=True)
         for chrom, group in grouped:
+            if chrom not in self.chr_axes:
+                continue
             ax = self.chr_axes[chrom]
             scaled_y_lim = ax.get_ylim()
             if 'ylim' in kwargs:
-                dy = -sub(*ylim)
+                dy = -sub(*kwargs['ylim'])
             else:
                 dy = -sub(*self.ylim)
             df = group.copy()
@@ -927,7 +942,7 @@ class GenomeIdeogram(object):
             for ax in self.zoom_axes:
                 scaled_y_lim = ax.get_ylim()
                 if 'ylim' in kwargs:
-                    dy = -sub(*ylim)
+                    dy = -sub(*kwargs['ylim'])
                 else:
                     dy = -sub(*self.ylim)
                 df = group.copy()
@@ -954,116 +969,35 @@ class GenomeIdeogram(object):
             ax.legend(handles=handles, loc=loc, bbox_to_anchor=bbox_to_anchor, frameon=frameon, **kwargs)
 
 
-    def _horizon(self, row, i, cut):
-        """
-        Compute the values for the three 
-        positive and negative intervals.
-        """
-        val = getattr(row, i)
-    
-        if np.isnan(val):
-            for i in range(8):
-                yield 0
-            # for nan color
-            yield cut
-        else:
-            if val < 0:
-                for i in range(4):
-                    yield 0
-    
-            val = abs(val)
-            for i in range(3):
-                yield min(cut, val)
-                val = max(0, val-cut)
-            yield int(not isclose(val, 0, abs_tol=1e-8)) * cut
-    
-            if val >= 0:
-                for i in range(4):
-                    yield 0
-    
-            # for nan color
-            yield 0
 
-    def _horizonplot(self, df, y=None, ax=None,
+
+    def add_horizon(self, data=None, chrom_col='chrom', y='y', 
                     cut=None, # float, takes precedence over quantile_span
                     quantile_span = None,
-                    x='start',
+                    x='x',
                     beginzero=True, 
-                    offset=0,
+                    base=None,
                     height=None,
                     colors = ['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue',
                               '#F2DE9A', '#DA8630', '#972428', 'darkred',
                               '#D3D3D3'],
                     **kwargs):
-                    # colours = ['#314E9F', '#36AAA8', '#D7E2D4'] + ['midnightblue'] + \
-                    #           ['#F5DE90', '#F5DE90', '#A51023'] + ['darkred'] + ['whitesmoke']):
-                    # colors = sns.color_palette("Blues", 3) + ['midnightblue'] + \
-                    #           sns.color_palette("Reds", 3) + ['darkred'] + ['lightgrey']):
-    
-        """
-        Horizon bar plot made allowing multiple chromosomes and multiple samples.
-        """
-        
-        # set cut if not set
-        if cut is None:
-            cut = np.max([np.max(df[y]), np.max(-df[y])]) / 3
-        elif quantile_span:
-            cut=max(np.abs(np.nanquantile(df[col], quantile_span[0])), 
-                    np.abs(np.nanquantile(df[col], quantile_span[1]))) / 3,
-    
-        # make the data frame to plot
-        row_iter = df.itertuples()
-        col_iterators = zip(*(self._horizon(row, y, cut) for row in row_iter))
-        col_names = ['yp1', 'yp2', 'yp3', 'yp4', 
-                     'yn1', 'yn2', 'yn3', 'yn4', 'nan']
-    
-        df2 = (df[[y, x]]
-               .assign(**dict(zip(col_names, col_iterators)))
-              )
-        df2 = pd.DataFrame(dict((col, list(chain.from_iterable(zip(df2[col].values, df2[col].values)))) for col in df2))
-    
-        # make the plot
-        with sns.axes_style("ticks"):
-    
-            # ingore UserWarning from seaborn that tight_layout is not applied
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                
-                # first y tick
-                ytic1 = round(cut/3, -int(floor(log10(abs(cut/3)))))
-    
-                scale = 1
-                if height is not None:
-                    ymax = max(df2[col_name].max() for col_name in col_names)
-                    ymin = max(df2[col_name].min() for col_name in col_names)
-                    scale = height/(ymax-ymin)
-    
-                for col_name, color in zip(col_names, colors):
-                    # plt.setp(fig.texts, text="") # hack to make y facet labels align...
-                    ax.fill_between(
-                        df2[x], 
-                        df2[col_name]*scale+offset, 
-                        y2=offset,
-                        color=color,
-                        linewidth=0,
-                        capstyle='butt',
-                    **kwargs)
-    
 
-    def horizon(self, data=None, chrom_col='chrom', y=None, 
-                    cut=None, # float, takes precedence over quantile_span
-                    quantile_span = None,
-                    x='start',
-                    beginzero=True, 
-                    base=0,
-                    height=1,
-                    colors = ['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue',
-                              '#F2DE9A', '#DA8630', '#972428', 'darkred',
-                              '#D3D3D3'],
-                    **kwargs):
+        if base is None:
+            if self.ideogram_base is not None:
+                base = self.ideogram_base
+            else:
+                base = 0
+        if height is None:
+            if self.ideogram_height is not None:
+                height = self.ideogram_height
+            else:
+                height = 1
 
         grouped = data.groupby(chrom_col, observed=True)
         for chrom, group in grouped:
+            if chrom not in self.chr_axes:
+                continue
             ax = self.chr_axes[chrom]
             
             df = group.reset_index() # make copy
@@ -1081,7 +1015,7 @@ class GenomeIdeogram(object):
             #     df['y'] /= df.y.max()
             #     df['y'] = df.y * ((top-bottom) * -sub(*scaled_y_lim)) / -sub(*self.ylim) + bottom /  -sub(*self.ylim) * -sub(*scaled_y_lim)
             # g = fun(df, ax=ax, **kwargs)
-            self._horizonplot(df, y=y, ax=ax,
+            horizon(df, y=y, ax=ax,
                     cut=cut, # float, takes precedence over quantile_span
                     quantile_span = quantile_span,
                     x=x,
@@ -1105,7 +1039,7 @@ class GenomeIdeogram(object):
                 #     df['y'] -= df.y.min()
                 #     df['y'] /= df.y.max()
                 #     df['y'] = df.y * ((top-bottom) * -sub(*scaled_y_lim)) / -sub(*self.ylim) + bottom /  -sub(*self.ylim) * -sub(*scaled_y_lim)
-                self._horizonplot(df, y=y, ax=ax,
+                horizon(df, y=y, ax=ax,
                     cut=cut, # float, takes precedence over quantile_span
                     quantile_span = quantile_span,
                     x=x,
@@ -1130,6 +1064,7 @@ class ChromIdeogram(GenomeIdeogram):
                  ylim=(0, 1), zooms=[], wspace=None,
                  rel_font_height=0.05, assembly:str='hg38', min_stick_height=0.5):
 
+        self.assemembly = assembly
         self.ideogram_base = None
         self.ideogram_height = None
         self.legend_handles = []

@@ -2,7 +2,7 @@
 Install in development mode. 
 
 
-    conda develop ../conda-build
+    conda develop ../src
 
 
 
@@ -28,4 +28,4 @@ To render documentation as markdown:
 
 Uninstall 
 
-    conda develop ../conda-build -u
+    conda develop ../src -u
