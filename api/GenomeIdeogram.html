@@ -520,6 +520,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#geneinfo.plot.GenomeIdeogram.add_legend" id="toc-geneinfo.plot.GenomeIdeogram.add_legend" class="nav-link" data-scroll-target="#geneinfo.plot.GenomeIdeogram.add_legend">add_legend</a></li>
   <li><a href="#geneinfo.plot.GenomeIdeogram.add_segments" id="toc-geneinfo.plot.GenomeIdeogram.add_segments" class="nav-link" data-scroll-target="#geneinfo.plot.GenomeIdeogram.add_segments">add_segments</a></li>
   <li><a href="#geneinfo.plot.GenomeIdeogram.add_vlines" id="toc-geneinfo.plot.GenomeIdeogram.add_vlines" class="nav-link" data-scroll-target="#geneinfo.plot.GenomeIdeogram.add_vlines">add_vlines</a></li>
+  <li><a href="#geneinfo.plot.GenomeIdeogram.annotate" id="toc-geneinfo.plot.GenomeIdeogram.annotate" class="nav-link" data-scroll-target="#geneinfo.plot.GenomeIdeogram.annotate">annotate</a></li>
   <li><a href="#geneinfo.plot.GenomeIdeogram.draw_chromosomes" id="toc-geneinfo.plot.GenomeIdeogram.draw_chromosomes" class="nav-link" data-scroll-target="#geneinfo.plot.GenomeIdeogram.draw_chromosomes">draw_chromosomes</a></li>
   <li><a href="#geneinfo.plot.GenomeIdeogram.draw_text" id="toc-geneinfo.plot.GenomeIdeogram.draw_text" class="nav-link" data-scroll-target="#geneinfo.plot.GenomeIdeogram.draw_text">draw_text</a></li>
   <li><a href="#geneinfo.plot.GenomeIdeogram.get_polygon" id="toc-geneinfo.plot.GenomeIdeogram.get_polygon" class="nav-link" data-scroll-target="#geneinfo.plot.GenomeIdeogram.get_polygon">get_polygon</a></li>
@@ -580,26 +581,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Adds vertical lines to the chromosome ideograms.</td>
 </tr>
 <tr class="even">
+<td><a href="#geneinfo.plot.GenomeIdeogram.annotate">annotate</a></td>
+<td>Draws an annotation with an arrow to a point from a text box.</td>
+</tr>
+<tr class="odd">
 <td><a href="#geneinfo.plot.GenomeIdeogram.draw_chromosomes">draw_chromosomes</a></td>
 <td>Draws chromosome ideograms.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.plot.GenomeIdeogram.draw_text">draw_text</a></td>
 <td>Draws text with a line pointing to a position on the y-axis.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.plot.GenomeIdeogram.get_polygon">get_polygon</a></td>
 <td>Computes polygon for rotated text label.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.plot.GenomeIdeogram.map_fun">map_fun</a></td>
 <td>Map a plotting function like seaborn.scatterplot to each ideogram panel (axis).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.plot.GenomeIdeogram.map_method">map_method</a></td>
 <td>Map a matplotib axes method like plot and scatter to each ideogram panel (axis).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.plot.GenomeIdeogram.map_y">map_y</a></td>
 <td>Maps y-axis values from user-specified ylim to actual plotting coordinates.</td>
 </tr>
@@ -811,19 +816,65 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dl>
 </section>
 </section>
-<section id="geneinfo.plot.GenomeIdeogram.draw_chromosomes" class="level3">
-<h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.draw_chromosomes">draw_chromosomes</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.draw_chromosomes(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    base<span class="op">=</span><span class="dv">4</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">2</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    facecolor<span class="op">=</span><span class="st">'#EBEAEA'</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    edgecolor<span class="op">=</span><span class="st">'black'</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">0.7</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Draws chromosome ideograms.</p>
+<section id="geneinfo.plot.GenomeIdeogram.annotate" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.annotate">annotate</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.annotate(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    xy<span class="op">=</span><span class="va">None</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    testxy<span class="op">=</span><span class="va">None</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    text<span class="op">=</span><span class="va">None</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    wrap<span class="op">=</span><span class="dv">30</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Draws an annotation with an arrow to a point from a text box.</p>
 <section id="parameters-5" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<dl>
+<dt><code><span class="parameter-name"><strong>xy</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>tuple</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Coordinate to point to as a tuple of chromosome position and y plotting coordinate</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>testxy</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>tuple</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Coordinate to text box as a tuple of chromosome position and y plotting coordinate</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>text</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Text for text box</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>chrom</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Chromosome to annotate, by default the first or only chromosome in the plot</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>ax</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>matplotlib</code>.<code>axes</code>.<code>Axes</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Axis with the point the arrow points to, by default the axis for the chromosome ideogram.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>wrap</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">30</span></code></dt>
+<dd>
+<p>Line wrap for text box, by default 30</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>kwargs</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>dict</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">{}</span></code></dt>
+<dd>
+<p>Additional keyword arguments passed to matplotlib’s annotate</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="geneinfo.plot.GenomeIdeogram.draw_chromosomes" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.draw_chromosomes">draw_chromosomes</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.draw_chromosomes(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    base<span class="op">=</span><span class="dv">4</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">2</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    facecolor<span class="op">=</span><span class="st">'#EBEAEA'</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    edgecolor<span class="op">=</span><span class="st">'black'</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">0.7</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Draws chromosome ideograms.</p>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>base</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">4</span></code></dt>
 <dd>
@@ -854,21 +905,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.plot.GenomeIdeogram.draw_text" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.draw_text">draw_text</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.draw_text(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    x_pos</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    y_pos</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    text</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    textcolor</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    textsize</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    linecolor</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    y_line_bottom<span class="op">=</span><span class="dv">0</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    highlight<span class="op">=</span><span class="va">None</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.draw_text(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    x_pos</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    y_pos</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    text</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    textcolor</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    textsize</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    linecolor</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    y_line_bottom<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    highlight<span class="op">=</span><span class="va">None</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Draws text with a line pointing to a position on the y-axis.</p>
-<section id="parameters-6" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<section id="parameters-7" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>x_pos</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span></code></dt>
 <dd>
@@ -907,10 +958,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.plot.GenomeIdeogram.get_polygon" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.get_polygon">get_polygon</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.get_polygon(text, x_pos, y_pos, ax, pad<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.get_polygon(text, x_pos, y_pos, ax, pad<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Computes polygon for rotated text label.</p>
-<section id="parameters-7" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
+<section id="parameters-8" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>text</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
 <dd>
@@ -946,16 +997,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.plot.GenomeIdeogram.map_fun" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.map_fun">map_fun</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.map_fun(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    fun</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span><span class="va">None</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    ch<span class="op">=</span><span class="st">'chrom'</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">3.5</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.map_fun(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    fun</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span><span class="va">None</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    ch<span class="op">=</span><span class="st">'chrom'</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">3.5</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Map a plotting function like seaborn.scatterplot to each ideogram panel (axis).</p>
-<section id="parameters-8" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
+<section id="parameters-9" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>fun</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Callable</code></span></code></dt>
 <dd>
@@ -990,16 +1041,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.plot.GenomeIdeogram.map_method" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.map_method">map_method</h3>
-<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.map_method(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    method</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span><span class="va">None</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    ch<span class="op">=</span><span class="st">'chrom'</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">3.5</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.map_method(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    method</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span><span class="va">None</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    ch<span class="op">=</span><span class="st">'chrom'</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">3.5</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Map a matplotib axes method like plot and scatter to each ideogram panel (axis).</p>
-<section id="parameters-9" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
+<section id="parameters-10" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>method</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Callable</code></span></code></dt>
 <dd>
@@ -1034,10 +1085,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.plot.GenomeIdeogram.map_y" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.map_y">map_y</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.map_y(y, ax, bottom<span class="op">=</span><span class="dv">0</span>, top<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.map_y(y, ax, bottom<span class="op">=</span><span class="dv">0</span>, top<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Maps y-axis values from user-specified ylim to actual plotting coordinates.</p>
-<section id="parameters-10" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
+<section id="parameters-11" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>y</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span></code></dt>
 <dd>

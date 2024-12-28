@@ -260,8 +260,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </div>
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
- <span class="menu-text">pages/cashing.ipynb</span>
-  </li>
+  <div class="sidebar-item-container"> 
+  <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Caching</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -611,9 +614,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>segments_with_alpha <span class="op">=</span> [(<span class="op">*</span>t, np.random.random()) <span class="cf">for</span> t <span class="kw">in</span> segments]</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>segments_with_alpha[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>[('chr1', 10065165, 12961789, 0.8436340944814724),
- ('chr1', 15568967, 18751672, 0.9366558594839778),
- ('chr1', 19444467, 23071285, 0.15548690510483776)]</code></pre>
+<pre><code>[('chr1', 10065165, 12961789, 0.2502654656052019),
+ ('chr1', 15568967, 18751672, 0.2699629946231804),
+ ('chr1', 19444467, 23071285, 0.6966184055125196)]</code></pre>
 </div>
 </div>
 <div id="cell-21" class="cell" data-execution_count="11">
@@ -707,17 +710,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>['A1BG', 'A1CF', 'A2M']</code></pre>
 </div>
 </div>
-<div id="cell-32" class="cell" data-execution_count="19">
+<div id="cell-32" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sample_gene_coord <span class="op">=</span> gi.gene_coord(random.sample(sample_genes, <span class="dv">100</span>), assembly<span class="op">=</span><span class="st">'hg38'</span>, pos_list<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>[('chr16', 285189, 'PDIA2'),
  ('chr10', 1105264, 'WDR37'),
  ('chr4', 2157019, 'POLN')]</code></pre>
 </div>
 </div>
 <p>Add gene labels to positions:</p>
-<div id="cell-34" class="cell" data-execution_count="20">
+<div id="cell-34" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -734,7 +737,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>ticks <span class="op">=</span> [(c, s, <span class="ss">f'</span><span class="sc">{</span><span class="bu">round</span>(s<span class="op">/</span><span class="dv">1000000</span>, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">'</span>) <span class="cf">for</span> c, l <span class="kw">in</span> utils.chrom_lengths[<span class="st">'hg38'</span>].items() <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, l, <span class="dv">2_500_000</span>)]</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>gid.add_labels(ticks, base<span class="op">=</span>ci.ideogram_base, min_height<span class="op">=</span>ci.ideogram_height<span class="op">+</span><span class="dv">1</span>, color<span class="op">=</span><span class="st">'black'</span>, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>gid.add_labels(ticks, base<span class="op">=</span>gid.ideogram_base, min_height<span class="op">=</span>gid.ideogram_height<span class="op">+</span><span class="dv">1</span>, color<span class="op">=</span><span class="st">'black'</span>, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -771,10 +774,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  ('chr4', 2157019, 'POLN', '#08ff00')]</code></pre>
 </div>
 </div>
-<div id="cell-42" class="cell" data-execution_count="24">
+<div id="cell-42" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram(rel_font_height<span class="op">=</span><span class="fl">0.15</span>) </span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span>ci.ideogram_base, min_height<span class="op">=</span>ci.ideogram_height, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span>gid.ideogram_base, min_height<span class="op">=</span>gid.ideogram_height, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -784,13 +787,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Or with a single color scale to visually evaluate significance:</p>
-<div id="cell-44" class="cell" data-execution_count="25">
+<div id="cell-44" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram(rel_font_height<span class="op">=</span><span class="fl">0.15</span>) </span>
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span>ci.ideogram_base, min_height<span class="op">=</span>ci.ideogram_height, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span>gid.ideogram_base, min_height<span class="op">=</span>gid.ideogram_height, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -799,13 +802,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-45" class="cell" data-execution_count="29">
+<div id="cell-45" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'viridis'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes()</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>ci.add_labels(sample_gene_coord_with_colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>cid.add_labels(sample_gene_coord_with_colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -814,7 +817,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-46" class="cell" data-execution_count="30">
+<div id="cell-46" class="cell" data-execution_count="28">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">4</span>)</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_sizes <span class="op">=</span> [(<span class="op">*</span>t, <span class="st">'black'</span>, random.random()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
@@ -832,7 +835,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="combinatorial-highlighting" class="level2">
 <h2 class="anchored" data-anchor-id="combinatorial-highlighting">Combinatorial highlighting</h2>
-<div id="cell-48" class="cell" data-execution_count="33">
+<div id="cell-48" class="cell" data-execution_count="29">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>cid.add_labels(sample_gene_coord,</span>
@@ -850,7 +853,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-49" class="cell" data-execution_count="34">
+<div id="cell-49" class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>cid.add_labels(sample_gene_coord_with_sizes,</span>
@@ -869,7 +872,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>You can do all the same things as with <code>GenomeIdeogram</code>:</p>
-<div id="cell-51" class="cell" data-execution_count="37">
+<div id="cell-51" class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>, rel_font_height<span class="op">=</span><span class="fl">0.05</span>)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.draw_chromosomes(base=1, height=0.10, facecolor='lightgray')</span></span>
@@ -904,7 +907,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="additional-axes" class="level3">
 <h3 class="anchored" data-anchor-id="additional-axes">Additional axes</h3>
-<div id="cell-53" class="cell" data-execution_count="39">
+<div id="cell-53" class="cell" data-execution_count="32">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>) <span class="co"># plots chromosome</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -937,7 +940,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="floating-annotations" class="level2">
 <h2 class="anchored" data-anchor-id="floating-annotations">Floating annotations</h2>
-<div id="cell-55" class="cell" data-execution_count="117">
+<div id="cell-55" class="cell" data-execution_count="33">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>) </span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>) </span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -952,75 +955,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
 <span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
 <span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.text <span class="im">import</span> OffsetFrom</span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> textwrap</span>
-<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>annot_kwargs<span class="op">=</span><span class="bu">dict</span>(fontsize<span class="op">=</span><span class="dv">7</span>, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"bottom"</span>,</span>
-<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>                  bbox<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">"white"</span>, edgecolor<span class="op">=</span><span class="st">"red"</span>, linewidth<span class="op">=</span><span class="dv">1</span>),</span>
-<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>                  arrowprops<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">'red'</span>, <span class="co"># color of arrow</span></span>
-<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>                                  shrink<span class="op">=</span><span class="fl">0.01</span>, <span class="co"># distance from point</span></span>
-<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>                                  width<span class="op">=</span><span class="fl">1.5</span>, <span class="co"># width of arrow</span></span>
-<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>                                  headwidth<span class="op">=</span><span class="dv">5</span>, <span class="co"># width of arrow head</span></span>
-<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>                                  headlength<span class="op">=</span><span class="dv">7</span>, <span class="co"># length of arrow head</span></span>
-<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>                                  connectionstyle<span class="op">=</span><span class="st">"angle3,angleA=0,angleB=-90"</span>))</span>
-<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.ax.annotate(textwrap.fill("This is the beginning of the chromosome.", 20), </span></span>
-<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a><span class="co">#                xy=(0, ci.map_y(4, ci.ax)), xycoords="data", </span></span>
-<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a><span class="co">#                # xytext=(10000000, ci.map_y(8, ci.ax)), textcoords="data", </span></span>
-<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a><span class="co">#                xytext=(50, 50), textcoords=OffsetFrom(ci.ax.bbox, (0, 0), "points"),</span></span>
-<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a><span class="co">#                **annot_kwargs)</span></span>
-<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>           </span>
-<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.ax.annotate(textwrap.fill("This is the centromere.", 20),</span></span>
-<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a><span class="co">#                xy=(60000000, ci.map_y(4, ci.ax)), xycoords="data", </span></span>
-<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a><span class="co">#                # xytext=(40000000, ci.map_y(9, ci.ax)), textcoords="data", </span></span>
-<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a><span class="co">#                xytext=(261, 50), textcoords=OffsetFrom(ci.ax.bbox, (0, 0), "points"),</span></span>
-<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a><span class="co">#                **annot_kwargs) ;</span></span>
-<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a><span class="co"># new_ax2.annotate(textwrap.fill("This is something you might want to say about a plot in another axes", 30), </span></span>
-<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a><span class="co">#                 xy=(120000000, 1), xycoords="data",</span></span>
-<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a><span class="co">#                 xytext=(120000000/point_in_bases, ci.map_y(4, ci.ax)/point_in_bases), textcoords=OffsetFrom(ci.ax.bbox, (0, 0), "points"),</span></span>
-<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a><span class="co">#                 **annot_kwargs) ;</span></span>
-<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> annotate(ax, point, testpos, text):</span>
-<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>    annot_kwargs<span class="op">=</span><span class="bu">dict</span>(fontsize<span class="op">=</span><span class="dv">7</span>, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"bottom"</span>,</span>
-<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>                  bbox<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">"white"</span>, edgecolor<span class="op">=</span><span class="st">"red"</span>, linewidth<span class="op">=</span><span class="dv">1</span>),</span>
-<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>                  arrowprops<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">'red'</span>, <span class="co"># color of arrow</span></span>
-<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>                                  shrink<span class="op">=</span><span class="fl">0.01</span>, <span class="co"># distance from point</span></span>
-<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>                                  width<span class="op">=</span><span class="fl">1.5</span>, <span class="co"># width of arrow</span></span>
-<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>                                  headwidth<span class="op">=</span><span class="dv">5</span>, <span class="co"># width of arrow head</span></span>
-<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>                                  headlength<span class="op">=</span><span class="dv">7</span>, <span class="co"># length of arrow head</span></span>
-<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a>                                  connectionstyle<span class="op">=</span><span class="st">"angle3,angleA=0,angleB=-90"</span>))</span>
-<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> ci.fig</span>
-<span id="cb37-56"><a href="#cb37-56" aria-hidden="true" tabindex="-1"></a>    bbox <span class="op">=</span> ci.ax.get_window_extent()</span>
-<span id="cb37-57"><a href="#cb37-57" aria-hidden="true" tabindex="-1"></a>    dpi <span class="op">=</span> fig.dpi</span>
-<span id="cb37-58"><a href="#cb37-58" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> bbox.height <span class="op">/</span> dpi  <span class="co"># in inches</span></span>
-<span id="cb37-59"><a href="#cb37-59" aria-hidden="true" tabindex="-1"></a>    width <span class="op">=</span> bbox.width <span class="op">/</span> dpi  <span class="co"># in inches</span></span>
-<span id="cb37-60"><a href="#cb37-60" aria-hidden="true" tabindex="-1"></a>    point_in_bases <span class="op">=</span> ci.ax.get_xlim()[<span class="dv">1</span>]<span class="op">/</span>(width<span class="op">*</span><span class="dv">72</span>)</span>
-<span id="cb37-61"><a href="#cb37-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ax <span class="op">==</span> ci.ax:</span>
-<span id="cb37-62"><a href="#cb37-62" aria-hidden="true" tabindex="-1"></a>       point <span class="op">=</span> (point[<span class="dv">0</span>], ci.map_y(point[<span class="dv">1</span>], ci.ax))</span>
-<span id="cb37-63"><a href="#cb37-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-64"><a href="#cb37-64" aria-hidden="true" tabindex="-1"></a>    ax.annotate(textwrap.fill(text, <span class="dv">30</span>), </span>
-<span id="cb37-65"><a href="#cb37-65" aria-hidden="true" tabindex="-1"></a>                xy<span class="op">=</span>point, </span>
-<span id="cb37-66"><a href="#cb37-66" aria-hidden="true" tabindex="-1"></a>                xycoords<span class="op">=</span><span class="st">"data"</span>,</span>
-<span id="cb37-67"><a href="#cb37-67" aria-hidden="true" tabindex="-1"></a>                xytext<span class="op">=</span>(testpos[<span class="dv">0</span>]<span class="op">/</span>point_in_bases, ci.map_y(testpos[<span class="dv">1</span>], ci.ax)<span class="op">/</span>point_in_bases), textcoords<span class="op">=</span>OffsetFrom(ci.ax.bbox, (<span class="dv">0</span>, <span class="dv">0</span>), <span class="st">"points"</span>),</span>
-<span id="cb37-68"><a href="#cb37-68" aria-hidden="true" tabindex="-1"></a>                <span class="op">**</span>annot_kwargs) <span class="op">;</span></span>
-<span id="cb37-69"><a href="#cb37-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-70"><a href="#cb37-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-71"><a href="#cb37-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-72"><a href="#cb37-72" aria-hidden="true" tabindex="-1"></a>annotate(ci.ax, (<span class="dv">0</span>, <span class="dv">4</span>), (<span class="dv">10000000</span>, <span class="dv">4</span>), <span class="st">"This is the beginning of the chromosome"</span>)</span>
-<span id="cb37-73"><a href="#cb37-73" aria-hidden="true" tabindex="-1"></a>annotate(ci.ax, (<span class="dv">61000000</span>, <span class="dv">4</span>), (<span class="dv">40000000</span>, <span class="dv">4</span>), <span class="st">"This is the centromere"</span>)</span>
-<span id="cb37-74"><a href="#cb37-74" aria-hidden="true" tabindex="-1"></a>annotate(new_ax2, (<span class="dv">90000000</span>, <span class="dv">1</span>), (<span class="dv">90000000</span>, <span class="dv">5</span>), <span class="st">"Something important in another axes"</span>)</span>
-<span id="cb37-75"><a href="#cb37-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-76"><a href="#cb37-76" aria-hidden="true" tabindex="-1"></a><span class="co"># fig = ci.fig</span></span>
-<span id="cb37-77"><a href="#cb37-77" aria-hidden="true" tabindex="-1"></a><span class="co"># bbox = ci.ax.get_window_extent()</span></span>
-<span id="cb37-78"><a href="#cb37-78" aria-hidden="true" tabindex="-1"></a><span class="co"># dpi = fig.dpi</span></span>
-<span id="cb37-79"><a href="#cb37-79" aria-hidden="true" tabindex="-1"></a><span class="co"># height = bbox.height / dpi  # in inches</span></span>
-<span id="cb37-80"><a href="#cb37-80" aria-hidden="true" tabindex="-1"></a><span class="co"># width = bbox.width / dpi  # in inches</span></span>
-<span id="cb37-81"><a href="#cb37-81" aria-hidden="true" tabindex="-1"></a><span class="co"># point_in_bases = ci.ax.get_xlim()[1]/(width*72)</span></span>
-<span id="cb37-82"><a href="#cb37-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-83"><a href="#cb37-83" aria-hidden="true" tabindex="-1"></a><span class="co"># 500* point_in_bases</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>ci.annotate(<span class="st">'chrX'</span>, (<span class="dv">0</span>, <span class="dv">4</span>), (<span class="dv">10000000</span>, <span class="dv">4</span>), </span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>         <span class="st">"This is the beginning of the chromosome"</span>)</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>ci.annotate(<span class="st">'chrX'</span>, (<span class="dv">61000000</span>, <span class="dv">4</span>), (<span class="dv">40000000</span>, <span class="dv">4</span>), </span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>         <span class="st">"This is the centromere"</span>)</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>ci.annotate(<span class="st">'chrX'</span>, (<span class="dv">90000000</span>, <span class="dv">1</span>), (<span class="dv">90000000</span>, <span class="dv">5</span>), </span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Something important in another axes"</span>, </span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>         ax<span class="op">=</span>new_ax2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1029,38 +971,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-56" class="cell" data-execution_count="61">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="dv">11</span> <span class="op">*</span> <span class="dv">72</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="61">
-<pre><code>720</code></pre>
-</div>
+<div id="cell-56" class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from shapely import normalize, Polygon, coverage_union, convex_hull</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co"># p1 = Polygon([(0, 0), (0, 1), (1, 1), (1, 0), (0, 0)])</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co"># p2 = Polygon([(3, 0), (3, 1), (4, 1), (4, 0), (3, 0)])</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># convex_hull(normalize(coverage_union(p1, p2)))</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># #&lt;POLYGON ((0 0, 0 1, 4 1, 4 0, 0 0))&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="zooms" class="level2">
 <h2 class="anchored" data-anchor-id="zooms">Zooms</h2>
-<div id="cell-58" class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> ChromIdeogram</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>,</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>                   rel_font_height<span class="op">=</span><span class="fl">0.01</span>, </span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>                   zooms<span class="op">=</span>[(<span class="dv">45_000_000</span>, <span class="dv">55_000_000</span>), </span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>                          <span class="co"># (65_000_000, 90_000_000), </span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>                           (<span class="dv">100_000_000</span>, <span class="dv">120_000_000</span>),</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>                         ]) </span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="fl">3.5</span>, height<span class="op">=</span><span class="dv">1</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>ci.add_horizon(data<span class="op">=</span>df, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co">#ci.add_vlines()</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>ci.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.plot, data<span class="op">=</span>fit_lowess(df, <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.02</span>), x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_lowess(df.x, df.y, ax=new_ax2, frac=0.02, c='red', label='Lowess')</span></span>
-<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>ci.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-58" class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> ChromIdeogram</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                   rel_font_height<span class="op">=</span><span class="fl">0.01</span>, </span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                   zooms<span class="op">=</span>[(<span class="dv">45_000_000</span>, <span class="dv">55_000_000</span>), </span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>                          <span class="co"># (65_000_000, 90_000_000), </span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>                           (<span class="dv">100_000_000</span>, <span class="dv">120_000_000</span>),</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>                         ]) </span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="fl">3.5</span>, height<span class="op">=</span><span class="dv">1</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>ci.add_horizon(data<span class="op">=</span>df, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="co">#ci.add_vlines()</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>ci.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.plot, data<span class="op">=</span>fit_lowess(df, <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.02</span>), x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_lowess(df.x, df.y, ax=new_ax2, frac=0.02, c='red', label='Lowess')</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>ci.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-34-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 
 
