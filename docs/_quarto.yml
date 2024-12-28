@@ -61,7 +61,7 @@ website:
             - pages/gene_information.ipynb                  
         - section: "Gene plots"
           contents:
-            - pages/gene_plots.ipynb 
+            - pages/gene_plots.ipynb
             - pages/chrom_ideograms.ipynb              
             - pages/string_nets.ipynb
             - pages/go_graphs.ipynb                   

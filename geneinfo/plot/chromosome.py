@@ -31,6 +31,9 @@ from mpl_toolkits.axes_grid1.inset_locator import (BboxConnector,
                                                    BboxPatch)
 import seaborn as sns
 
+from matplotlib.text import OffsetFrom
+import textwrap
+
 from ..utils import chrom_lengths, centromeres
 
 class Point:
@@ -1096,6 +1099,58 @@ class GenomeIdeogram:
                     colors = colors,
                     **kwargs)
     
+
+    def annotate(self, xy:tuple=None, testxy:tuple=None, text:str=None, 
+                 chrom:str=None, ax:matplotlib.axes.Axes=None, wrap:int=30, **kwargs:dict) -> None:
+        """
+        Draws an annotation with an arrow to a point from a text box.
+
+        Parameters
+        ----------
+        xy : 
+            Coordinate to point to as a tuple of chromosome position and y plotting coordinate
+        testxy : 
+            Coordinate to text box as a tuple of chromosome position and y plotting coordinate
+        text : 
+            Text for text box
+        chrom : 
+            Chromosome to annotate, by default the first or only chromosome in the plot
+        ax : 
+            Axis with the point the arrow points to, by default the axis for the chromosome ideogram.
+        wrap : 
+            Line wrap for text box, by default 30
+        kwargs : 
+            Additional keyword arguments passed to matplotlib's annotate
+        """
+        kwargs.setdefault('fontsize', 7)
+        kwargs.setdefault('ha', 'left')
+        kwargs.setdefault('va', 'bottom')
+        kwargs.setdefault('bbox', dict(facecolor='white', edgecolor='red', linewidth=1))
+        kwargs.setdefault('arrowprops', dict(facecolor='red', # color of arrow
+                                            shrink=0.01, # distance from point
+                                            width=1.5, # width of arrow
+                                            headwidth=5, # width of arrow head
+                                            headlength=7, # length of arrow head
+                                            connectionstyle='angle3,angleA=0,angleB=-90'))
+        if chrom is None:
+            chrom = self.chr_names[0]
+        _ax = self.chr_axes[chrom]
+        if ax is None:
+            ax = _ax
+            xy = (xy[0], self.map_y(xy[1], _ax))
+
+        dpi = self.fig.dpi
+        bbox = _ax.get_window_extent()
+        width_inches = bbox.width / dpi  # in inches
+        point_in_bases = _ax.get_xlim()[1]/(width_inches*72)
+
+        ax.annotate(textwrap.fill(text, wrap), 
+                    xy=xy, 
+                    xycoords="data",
+                    xytext=(testxy[0]/point_in_bases, self.map_y(testxy[1], _ax)/point_in_bases), 
+                    textcoords=OffsetFrom(_ax.bbox, (0, 0), "points"),
+                    **kwargs) 
+
 
 class ChromIdeogram(GenomeIdeogram):
     """

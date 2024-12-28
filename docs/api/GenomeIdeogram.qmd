@@ -23,6 +23,7 @@ Class to plot ideograms of chromosomes in a genome assembly.
 | [add_legend](#geneinfo.plot.GenomeIdeogram.add_legend) | Adds a legend to the chromosome ideograms. |
 | [add_segments](#geneinfo.plot.GenomeIdeogram.add_segments) | Add segments (rectangles) to the chromosome ideograms. |
 | [add_vlines](#geneinfo.plot.GenomeIdeogram.add_vlines) | Adds vertical lines to the chromosome ideograms. |
+| [annotate](#geneinfo.plot.GenomeIdeogram.annotate) | Draws an annotation with an arrow to a point from a text box. |
 | [draw_chromosomes](#geneinfo.plot.GenomeIdeogram.draw_chromosomes) | Draws chromosome ideograms. |
 | [draw_text](#geneinfo.plot.GenomeIdeogram.draw_text) | Draws text with a line pointing to a position on the y-axis. |
 | [get_polygon](#geneinfo.plot.GenomeIdeogram.get_polygon) | Computes polygon for rotated text label. |
@@ -235,6 +236,52 @@ Adds vertical lines to the chromosome ideograms.
 <code>[**zorder**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [100]{.parameter-default}</code>
 
 :   zorder of lines, by default 100
+
+### annotate { #geneinfo.plot.GenomeIdeogram.annotate }
+
+```python
+geneinfo.plot.GenomeIdeogram.annotate(
+    xy=None
+    testxy=None
+    text=None
+    chrom=None
+    ax=None
+    wrap=30
+    **kwargs
+)
+```
+
+Draws an annotation with an arrow to a point from a text box.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**xy**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Coordinate to point to as a tuple of chromosome position and y plotting coordinate
+
+<code>[**testxy**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Coordinate to text box as a tuple of chromosome position and y plotting coordinate
+
+<code>[**text**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Text for text box
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Chromosome to annotate, by default the first or only chromosome in the plot
+
+<code>[**ax**]{.parameter-name} [:]{.parameter-annotation-sep} [[matplotlib](`matplotlib`).[axes](`matplotlib.axes`).[Axes](`matplotlib.axes.Axes`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Axis with the point the arrow points to, by default the axis for the chromosome ideogram.
+
+<code>[**wrap**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [30]{.parameter-default}</code>
+
+:   Line wrap for text box, by default 30
+
+<code>[**kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
+
+:   Additional keyword arguments passed to matplotlib's annotate
 
 ### draw_chromosomes { #geneinfo.plot.GenomeIdeogram.draw_chromosomes }
 
