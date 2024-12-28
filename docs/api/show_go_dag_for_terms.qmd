@@ -1,7 +1,7 @@
-# show_go_dag_for_terms { #geneinfo.show_go_dag_for_terms }
+# show_go_dag_for_terms { #geneinfo.ontology.show_go_dag_for_terms }
 
 ```python
-geneinfo.show_go_dag_for_terms(terms, add_relationships=True)
+geneinfo.ontology.show_go_dag_for_terms(terms, add_relationships=True)
 ```
 
 Display GO graph for a list of GO terms.

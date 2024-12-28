@@ -1,7 +1,7 @@
-# go_term2name { #geneinfo.go_term2name }
+# go_term2name { #geneinfo.ontology.go_term2name }
 
 ```python
-geneinfo.go_term2name(term)
+geneinfo.ontology.go_term2name(term)
 ```
 
 Converts a GO term to its name.

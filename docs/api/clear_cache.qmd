@@ -1,0 +1,7 @@
+# clear_cache { #geneinfo.utils.clear_cache }
+
+```python
+geneinfo.utils.clear_cache(func_name=None)
+```
+
+Clear the cache of a shelve file.

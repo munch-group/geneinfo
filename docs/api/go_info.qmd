@@ -1,7 +1,7 @@
-# go_info { #geneinfo.go_info }
+# go_info { #geneinfo.ontology.go_info }
 
 ```python
-geneinfo.go_info(terms)
+geneinfo.ontology.go_info(terms)
 ```
 
 Displays HML formatted information about the given GO terms.

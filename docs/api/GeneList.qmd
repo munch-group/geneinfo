@@ -1,0 +1,6 @@
+# GeneList { #geneinfo.utils.GeneList }
+
+```python
+geneinfo.utils.GeneList(self, *args, **kwargs)
+```
+

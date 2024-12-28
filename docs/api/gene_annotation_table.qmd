@@ -1,7 +1,7 @@
-# gene_annotation_table { #geneinfo.gene_annotation_table }
+# gene_annotation_table { #geneinfo.ontology.gene_annotation_table }
 
 ```python
-geneinfo.gene_annotation_table(taxid=9606)
+geneinfo.ontology.gene_annotation_table(taxid=9606)
 ```
 
 Gene annotations for a given taxonomy id as a pandas.DataFrame.

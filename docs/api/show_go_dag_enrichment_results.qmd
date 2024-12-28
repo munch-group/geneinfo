@@ -1,7 +1,7 @@
-# show_go_dag_enrichment_results { #geneinfo.show_go_dag_enrichment_results }
+# show_go_dag_enrichment_results { #geneinfo.ontology.show_go_dag_enrichment_results }
 
 ```python
-geneinfo.show_go_dag_enrichment_results(results)
+geneinfo.ontology.show_go_dag_enrichment_results(results)
 ```
 
 Displays a GO enrichment analysis results.

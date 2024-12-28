@@ -1,7 +1,7 @@
-# string_network_table { #geneinfo.string_network_table }
+# string_network_table { #geneinfo.string.string_network_table }
 
 ```python
-geneinfo.string_network_table(my_genes, nodes=10)
+geneinfo.string.string_network_table(my_genes, nodes=10)
 ```
 
 Retrieves STRING network for a list of genes and returns it as a pandas.DataFrame.

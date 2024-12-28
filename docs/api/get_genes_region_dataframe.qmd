@@ -1,7 +1,7 @@
-# get_genes_region_dataframe { #geneinfo.get_genes_region_dataframe }
+# get_genes_region_dataframe { #geneinfo.information.get_genes_region_dataframe }
 
 ```python
-geneinfo.get_genes_region_dataframe(
+geneinfo.information.get_genes_region_dataframe(
     chrom
     window_start
     window_end

@@ -1,7 +1,7 @@
-# get_genes_for_go_terms { #geneinfo.get_genes_for_go_terms }
+# get_genes_for_go_terms { #geneinfo.ontology.get_genes_for_go_terms }
 
 ```python
-geneinfo.get_genes_for_go_terms(terms, taxid=9606)
+geneinfo.ontology.get_genes_for_go_terms(terms, taxid=9606)
 ```
 
 Get gene information for genes with specified GO terms.

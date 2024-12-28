@@ -1,7 +1,7 @@
-# show_go_dag_for_gene { #geneinfo.show_go_dag_for_gene }
+# show_go_dag_for_gene { #geneinfo.ontology.show_go_dag_for_gene }
 
 ```python
-geneinfo.show_go_dag_for_gene(
+geneinfo.ontology.show_go_dag_for_gene(
     gene
     taxid=9606
     evidence=None

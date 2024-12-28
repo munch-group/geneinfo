@@ -1,7 +1,7 @@
-# hgcn_symbol { #geneinfo.hgcn_symbol }
+# hgcn_symbol { #geneinfo.information.hgcn_symbol }
 
 ```python
-geneinfo.hgcn_symbol(name)
+geneinfo.information.hgcn_symbol(name)
 ```
 
 Get HGCN gene symbol for some gene identifier

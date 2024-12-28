@@ -8,7 +8,8 @@ website:
       section: Gene information
     - contents:
       - api/gene_plot.qmd
-      - api/chrom_ideogram.qmd
+      - api/GenomeIdeogram.qmd
+      - api/ChromIdeogram.qmd
       section: Gene plots
     - contents:
       - api/gene_coord.qmd
@@ -40,6 +41,7 @@ website:
       - api/download_data.qmd
       section: GO enrichment
     - contents:
+      - api/email.qmd
       - api/show_go_dag_for_gene.qmd
       - api/show_go_dag_for_terms.qmd
       - api/show_go_dag_enrichment_results.qmd
@@ -50,8 +52,12 @@ website:
       - api/gene_annotation_table.qmd
       section: Gene annotation
     - contents:
-      - api/email.qmd
       - api/tabulate_genes.qmd
+      - api/horizon.qmd
+      - api/stairs.qmd
+      - api/clear_cache.qmd
+      - api/GeneList.qmd
+      - api/GoogleSheet.qmd
       section: Utilities
     id: api
   - id: dummy-sidebar

@@ -1,7 +1,7 @@
-# email { #geneinfo.email }
+# email { #geneinfo.ontology.email }
 
 ```python
-geneinfo.email(email_address)
+geneinfo.ontology.email(email_address)
 ```
 
 Registers your email address for Entrez queries. Thay way, NCBI will contect you

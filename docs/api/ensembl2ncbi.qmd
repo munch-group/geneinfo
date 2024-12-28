@@ -1,7 +1,7 @@
-# ensembl2ncbi { #geneinfo.ensembl2ncbi }
+# ensembl2ncbi { #geneinfo.information.ensembl2ncbi }
 
 ```python
-geneinfo.ensembl2ncbi(ensembl_id)
+geneinfo.information.ensembl2ncbi(ensembl_id)
 ```
 
 Converts ENSEMBL ID to gene NCBI ID

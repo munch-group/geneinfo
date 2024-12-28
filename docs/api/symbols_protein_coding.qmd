@@ -1,7 +1,7 @@
-# symbols_protein_coding { #geneinfo.symbols_protein_coding }
+# symbols_protein_coding { #geneinfo.ontology.symbols_protein_coding }
 
 ```python
-geneinfo.symbols_protein_coding(taxid=9606)
+geneinfo.ontology.symbols_protein_coding(taxid=9606)
 ```
 
 List of protein coding gene symbols for a given taxonomy id.

@@ -1,0 +1,7 @@
+# stairs { #geneinfo.utils.stairs }
+
+```python
+geneinfo.utils.stairs(df, start='start', end='end', pos='pos', endtrim=0)
+```
+
+Turn a df with start, end into one with pos to plot as stairs

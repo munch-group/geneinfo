@@ -41,10 +41,10 @@ website:
   page-navigation: true
   navbar:
     left:
-      # - file: examples/
-      #   text: Examples
       - href: api/
         text: API reference
+      - href: gallery/
+        text: Gallery
     right:
       - icon: github
         href: https://github.com/munch-group/geneinfo/
@@ -58,16 +58,21 @@ website:
         - section: "Gene information"
           contents:
             - pages/gene_ids.ipynb                   
-            - pages/gene_information.ipynb                   
+            - pages/gene_information.ipynb                  
         - section: "Gene plots"
           contents:
-            - pages/gene_plots.ipynb  
-            - pages/chrom_ideograms.ipynb  
-            - pages/string_nets.ipynb                   
+            - pages/gene_plots.ipynb 
+            - pages/chrom_ideograms.ipynb              
+            - pages/string_nets.ipynb
+            - pages/go_graphs.ipynb                   
         - section: "Gene ontology"
           contents:
             - pages/go_info.ipynb                   
             - pages/go_enrichment.ipynb                   
+        - section: "Utils"
+          contents:
+            - pages/cashing.ipynb                   
+
 
 
 format:
@@ -82,9 +87,11 @@ format:
     # highlight-style: arrow
 
 quartodoc:
+  # package: null
+  # source_dir: ../src
+  package: geneinfo
   style: pkgdown
   dir: api
-  package: geneinfo
   render_interlinks: true
   options:
     signature_name: full
@@ -108,12 +115,15 @@ quartodoc:
         These functions display information graphically together with each 
         either gene structures in a genomic region (gene_plot) or chromosomal
         ideograms (chrom_ideogram).
+      package: geneinfo.plot
       contents:
         - gene_plot
-        - chrom_ideogram
+        - GenomeIdeogram
+        - ChromIdeogram
     - title: Gene coordinates
       desc: |
         These functions retrieve coordinates of named genes or genes in a chromosomal region.
+      package: geneinfo.information
       contents:
         - gene_coord
         - get_genes_region
@@ -121,6 +131,7 @@ quartodoc:
     - title: ID conversion
       desc: |
         These functions converts between NCBI, ENSEMBL and HGCN gene identifiers.
+      package: geneinfo.information
       contents:
         - ensembl_id
         - hgcn_symbol
@@ -129,12 +140,14 @@ quartodoc:
     - title: STRING networks
       desc: |
         These functions retrieve and display STRING network information.
+      package: geneinfo.string
       contents:    
         - string_network_table
         - show_string_network
     - title: GO information
       desc:  |
         These functions retrieve gene ontology information.
+      package: geneinfo.ontology
       contents:
         - go_info
         - go_term2name
@@ -145,6 +158,7 @@ quartodoc:
     - title: GO enrichment
       desc: |
         These functions allow gene ontology enrichment analyses.
+      package: geneinfo.ontology
       contents:
         - go_enrichment
         - show_go_evidence_codes
@@ -153,13 +167,16 @@ quartodoc:
     - title: GO graphs
       desc: |
         These functions display directed graphs representing sets of connected GO terms.
+      package: geneinfo.ontology
       contents:
+        - email
         - show_go_dag_for_gene
         - show_go_dag_for_terms
         - show_go_dag_enrichment_results
     - title: Gene annotation
       desc: |
         These functions retrieves genes based on their GO annotation.
+      package: geneinfo.ontology
       contents:
         - get_genes_for_go_regex
         - get_genes_for_go_terms
@@ -167,6 +184,11 @@ quartodoc:
     - title: Utilities
       desc: |
         These are utility functions to record your email in queries and to tabulate genes.
+      package: geneinfo.utils
       contents:
-        - email
         - tabulate_genes
+        - horizon
+        - stairs
+        - clear_cache
+        - GeneList
+        - GoogleSheet

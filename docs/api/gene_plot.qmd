@@ -1,7 +1,7 @@
-# gene_plot { #geneinfo.gene_plot }
+# gene_plot { #geneinfo.plot.gene_plot }
 
 ```python
-geneinfo.gene_plot(
+geneinfo.plot.gene_plot(
     chrom
     start
     end
@@ -42,7 +42,7 @@ plotting along the same chromosome coordinates.
 
 :   Genome assembly identifier
 
-<code>[**highlight**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\[\]]{.parameter-default}</code>
+<code>[**highlight**]{.parameter-name} [:]{.parameter-annotation-sep} [[List](`typing.List`)\[[Dict](`typing.Dict`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [\[\]]{.parameter-default}</code>
 
 :   List or dictionary of genes to highlight on gene plot (see Examples), by default []
 

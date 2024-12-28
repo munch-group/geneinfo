@@ -1,7 +1,7 @@
-# ensembl_id { #geneinfo.ensembl_id }
+# ensembl_id { #geneinfo.information.ensembl_id }
 
 ```python
-geneinfo.ensembl_id(name, species='homo_sapiens')
+geneinfo.information.ensembl_id(name, species='homo_sapiens')
 ```
 
 Get ENSEMBL ID for some gene identifier

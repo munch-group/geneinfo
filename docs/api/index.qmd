@@ -21,8 +21,9 @@ ideograms (chrom_ideogram).
 
 | | |
 | --- | --- |
-| [gene_plot](gene_plot.qmd#geneinfo.gene_plot) | Plots gene ideograms for a chromosomal region and returns axes for  |
-| [chrom_ideogram](chrom_ideogram.qmd#geneinfo.chrom_ideogram) | Plots an ideogram of the human chromosomes with annotations. |
+| [gene_plot](gene_plot.qmd#geneinfo.plot.gene_plot) | Plots gene ideograms for a chromosomal region and returns axes for  |
+| [GenomeIdeogram](GenomeIdeogram.qmd#geneinfo.plot.GenomeIdeogram) | Class to plot ideograms of chromosomes in a genome assembly. |
+| [ChromIdeogram](ChromIdeogram.qmd#geneinfo.plot.ChromIdeogram) | Child class of GenomeIdeogram for plotting single chromosome ideograms. |
 
 ## Gene coordinates
 
@@ -31,9 +32,9 @@ These functions retrieve coordinates of named genes or genes in a chromosomal re
 
 | | |
 | --- | --- |
-| [gene_coord](gene_coord.qmd#geneinfo.gene_coord) | Retrieves genome (`chrom`, `start`, `end`) coordinates one or more genes. |
-| [get_genes_region](get_genes_region.qmd#geneinfo.get_genes_region) | Gets gene structure information for genes in a chromosomal region. |
-| [get_genes_region_dataframe](get_genes_region_dataframe.qmd#geneinfo.get_genes_region_dataframe) | Gets gene structure information for genes in a chromosomal region in the form |
+| [gene_coord](gene_coord.qmd#geneinfo.information.gene_coord) | Retrieves genome coordinates one or more genes. |
+| [get_genes_region](get_genes_region.qmd#geneinfo.information.get_genes_region) | Gets gene structure information for genes in a chromosomal region. |
+| [get_genes_region_dataframe](get_genes_region_dataframe.qmd#geneinfo.information.get_genes_region_dataframe) | Gets gene structure information for genes in a chromosomal region in the form |
 
 ## ID conversion
 
@@ -42,10 +43,10 @@ These functions converts between NCBI, ENSEMBL and HGCN gene identifiers.
 
 | | |
 | --- | --- |
-| [ensembl_id](ensembl_id.qmd#geneinfo.ensembl_id) | Get ENSEMBL ID for some gene identifier |
-| [hgcn_symbol](hgcn_symbol.qmd#geneinfo.hgcn_symbol) | Get HGCN gene symbol for some gene identifier |
-| [ensembl2symbol](ensembl2symbol.qmd#geneinfo.ensembl2symbol) | Converts ENSEMBL ID to gene HGCN gene symbol     |
-| [ensembl2ncbi](ensembl2ncbi.qmd#geneinfo.ensembl2ncbi) | Converts ENSEMBL ID to gene NCBI ID |
+| [ensembl_id](ensembl_id.qmd#geneinfo.information.ensembl_id) | Get ENSEMBL ID for some gene identifier |
+| [hgcn_symbol](hgcn_symbol.qmd#geneinfo.information.hgcn_symbol) | Get HGCN gene symbol for some gene identifier |
+| [ensembl2symbol](ensembl2symbol.qmd#geneinfo.information.ensembl2symbol) | Converts ENSEMBL ID to gene HGCN gene symbol     |
+| [ensembl2ncbi](ensembl2ncbi.qmd#geneinfo.information.ensembl2ncbi) | Converts ENSEMBL ID to gene NCBI ID |
 
 ## STRING networks
 
@@ -54,8 +55,8 @@ These functions retrieve and display STRING network information.
 
 | | |
 | --- | --- |
-| [string_network_table](string_network_table.qmd#geneinfo.string_network_table) | Retrieves STRING network for a list of genes and returns it as a pandas.DataFrame. |
-| [show_string_network](show_string_network.qmd#geneinfo.show_string_network) | Display STRING network for a list of genes. |
+| [string_network_table](string_network_table.qmd#geneinfo.string.string_network_table) | Retrieves STRING network for a list of genes and returns it as a pandas.DataFrame. |
+| [show_string_network](show_string_network.qmd#geneinfo.string.show_string_network) | Display STRING network for a list of genes. |
 
 ## GO information
 
@@ -64,12 +65,12 @@ These functions retrieve gene ontology information.
 
 | | |
 | --- | --- |
-| [go_info](go_info.qmd#geneinfo.go_info) | Displays HML formatted information about the given GO terms. |
-| [go_term2name](go_term2name.qmd#geneinfo.go_term2name) | Converts a GO term to its name. |
-| [go_name2term](go_name2term.qmd#geneinfo.go_name2term) | Converts a GO term name to its term. |
-| [get_go_terms_for_genes](get_go_terms_for_genes.qmd#geneinfo.get_go_terms_for_genes) | Get the union of GO terms for a list of genes. |
-| [get_terms_for_go_regex](get_terms_for_go_regex.qmd#geneinfo.get_terms_for_go_regex) | Get GO terms for terms matching a regular expression in their description string. |
-| [go_annotation_table](go_annotation_table.qmd#geneinfo.go_annotation_table) | GO annotations for a given taxonomy id as a pandas.DataFrame. |
+| [go_info](go_info.qmd#geneinfo.ontology.go_info) | Displays HML formatted information about the given GO terms. |
+| [go_term2name](go_term2name.qmd#geneinfo.ontology.go_term2name) | Converts a GO term to its name. |
+| [go_name2term](go_name2term.qmd#geneinfo.ontology.go_name2term) | Converts a GO term name to its term. |
+| [get_go_terms_for_genes](get_go_terms_for_genes.qmd#geneinfo.ontology.get_go_terms_for_genes) | Get the union of GO terms for a list of genes. |
+| [get_terms_for_go_regex](get_terms_for_go_regex.qmd#geneinfo.ontology.get_terms_for_go_regex) | Get GO terms for terms matching a regular expression in their description string. |
+| [go_annotation_table](go_annotation_table.qmd#geneinfo.ontology.go_annotation_table) | GO annotations for a given taxonomy id as a pandas.DataFrame. |
 
 ## GO enrichment
 
@@ -78,10 +79,10 @@ These functions allow gene ontology enrichment analyses.
 
 | | |
 | --- | --- |
-| [go_enrichment](go_enrichment.qmd#geneinfo.go_enrichment) | Runs a GO enrichment analysis. |
-| [show_go_evidence_codes](show_go_evidence_codes.qmd#geneinfo.show_go_evidence_codes) | Display list of GO evidence categories and their codes. |
-| [symbols_protein_coding](symbols_protein_coding.qmd#geneinfo.symbols_protein_coding) | List of protein coding gene symbols for a given taxonomy id. |
-| [download_data](download_data.qmd#geneinfo.download_data) |  |
+| [go_enrichment](go_enrichment.qmd#geneinfo.ontology.go_enrichment) | Runs a GO enrichment analysis. |
+| [show_go_evidence_codes](show_go_evidence_codes.qmd#geneinfo.ontology.show_go_evidence_codes) | Display list of GO evidence categories and their codes. |
+| [symbols_protein_coding](symbols_protein_coding.qmd#geneinfo.ontology.symbols_protein_coding) | List of protein coding gene symbols for a given taxonomy id. |
+| [download_data](download_data.qmd#geneinfo.ontology.download_data) |  |
 
 ## GO graphs
 
@@ -90,9 +91,10 @@ These functions display directed graphs representing sets of connected GO terms.
 
 | | |
 | --- | --- |
-| [show_go_dag_for_gene](show_go_dag_for_gene.qmd#geneinfo.show_go_dag_for_gene) | Displays GO graph for a given gene. |
-| [show_go_dag_for_terms](show_go_dag_for_terms.qmd#geneinfo.show_go_dag_for_terms) | Display GO graph for a list of GO terms. |
-| [show_go_dag_enrichment_results](show_go_dag_enrichment_results.qmd#geneinfo.show_go_dag_enrichment_results) | Displays a GO enrichment analysis results. |
+| [email](email.qmd#geneinfo.ontology.email) | Registers your email address for Entrez queries. Thay way, NCBI will contect you |
+| [show_go_dag_for_gene](show_go_dag_for_gene.qmd#geneinfo.ontology.show_go_dag_for_gene) | Displays GO graph for a given gene. |
+| [show_go_dag_for_terms](show_go_dag_for_terms.qmd#geneinfo.ontology.show_go_dag_for_terms) | Display GO graph for a list of GO terms. |
+| [show_go_dag_enrichment_results](show_go_dag_enrichment_results.qmd#geneinfo.ontology.show_go_dag_enrichment_results) | Displays a GO enrichment analysis results. |
 
 ## Gene annotation
 
@@ -101,9 +103,9 @@ These functions retrieves genes based on their GO annotation.
 
 | | |
 | --- | --- |
-| [get_genes_for_go_regex](get_genes_for_go_regex.qmd#geneinfo.get_genes_for_go_regex) | Get gene information for GO terms matching a regular expression in their description string. |
-| [get_genes_for_go_terms](get_genes_for_go_terms.qmd#geneinfo.get_genes_for_go_terms) | Get gene information for genes with specified GO terms. |
-| [gene_annotation_table](gene_annotation_table.qmd#geneinfo.gene_annotation_table) | Gene annotations for a given taxonomy id as a pandas.DataFrame. |
+| [get_genes_for_go_regex](get_genes_for_go_regex.qmd#geneinfo.ontology.get_genes_for_go_regex) | Get gene information for GO terms matching a regular expression in their description string. |
+| [get_genes_for_go_terms](get_genes_for_go_terms.qmd#geneinfo.ontology.get_genes_for_go_terms) | Get gene information for genes with specified GO terms. |
+| [gene_annotation_table](gene_annotation_table.qmd#geneinfo.ontology.gene_annotation_table) | Gene annotations for a given taxonomy id as a pandas.DataFrame. |
 
 ## Utilities
 
@@ -112,5 +114,9 @@ These are utility functions to record your email in queries and to tabulate gene
 
 | | |
 | --- | --- |
-| [email](email.qmd#geneinfo.email) | Registers your email address for Entrez queries. Thay way, NCBI will contect you |
-| [tabulate_genes](tabulate_genes.qmd#geneinfo.tabulate_genes) |  |
+| [tabulate_genes](tabulate_genes.qmd#geneinfo.utils.tabulate_genes) |  |
+| [horizon](horizon.qmd#geneinfo.utils.horizon) | Horizon bar plot made allowing multiple chromosomes and multiple samples. |
+| [stairs](stairs.qmd#geneinfo.utils.stairs) | Turn a df with start, end into one with pos to plot as stairs |
+| [clear_cache](clear_cache.qmd#geneinfo.utils.clear_cache) | Clear the cache of a shelve file. |
+| [GeneList](GeneList.qmd#geneinfo.utils.GeneList) |  |
+| [GoogleSheet](GoogleSheet.qmd#geneinfo.utils.GoogleSheet) |  |

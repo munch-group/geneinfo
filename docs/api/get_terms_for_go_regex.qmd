@@ -1,7 +1,7 @@
-# get_terms_for_go_regex { #geneinfo.get_terms_for_go_regex }
+# get_terms_for_go_regex { #geneinfo.ontology.get_terms_for_go_regex }
 
 ```python
-geneinfo.get_terms_for_go_regex(regex, taxid=9606, add_children=False)
+geneinfo.ontology.get_terms_for_go_regex(regex, taxid=9606, add_children=False)
 ```
 
 Get GO terms for terms matching a regular expression in their description string.

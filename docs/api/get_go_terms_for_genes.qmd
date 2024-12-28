@@ -1,7 +1,7 @@
-# get_go_terms_for_genes { #geneinfo.get_go_terms_for_genes }
+# get_go_terms_for_genes { #geneinfo.ontology.get_go_terms_for_genes }
 
 ```python
-geneinfo.get_go_terms_for_genes(genes, taxid=9606, evidence=None)
+geneinfo.ontology.get_go_terms_for_genes(genes, taxid=9606, evidence=None)
 ```
 
 Get the union of GO terms for a list of genes.

@@ -1,7 +1,7 @@
-# get_genes_region { #geneinfo.get_genes_region }
+# get_genes_region { #geneinfo.information.get_genes_region }
 
 ```python
-geneinfo.get_genes_region(
+geneinfo.information.get_genes_region(
     chrom
     window_start
     window_end

@@ -1,7 +1,7 @@
-# ensembl2symbol { #geneinfo.ensembl2symbol }
+# ensembl2symbol { #geneinfo.information.ensembl2symbol }
 
 ```python
-geneinfo.ensembl2symbol(ensembl_id)
+geneinfo.information.ensembl2symbol(ensembl_id)
 ```
 
 Converts ENSEMBL ID to gene HGCN gene symbol    

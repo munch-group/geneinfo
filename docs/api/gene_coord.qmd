@@ -1,10 +1,15 @@
-# gene_coord { #geneinfo.gene_coord }
+# gene_coord { #geneinfo.information.gene_coord }
 
 ```python
-geneinfo.gene_coord(query, assembly, species='homo_sapiens')
+geneinfo.information.gene_coord(
+    query
+    assembly
+    species='homo_sapiens'
+    pos_list=False
+)
 ```
 
-Retrieves genome (`chrom`, `start`, `end`) coordinates one or more genes.
+Retrieves genome coordinates one or more genes.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
@@ -20,8 +25,12 @@ Retrieves genome (`chrom`, `start`, `end`) coordinates one or more genes.
 
 :   Species, by default 'homo_sapiens'.
 
+<code>[**pos_list**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Wether to instead return a list of (chrom, position, name) tuples.
+
 ## Returns {.doc-section .doc-section-returns}
 
 <code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation}</code>
 
-:   Dictionary with gene names as keys and coordinates as values.
+:   Dictionary with gene names as keys and (chrom, start, end, strand) tuples as values, or a list of  (chrom, position, name) tuples.

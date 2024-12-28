@@ -1,7 +1,7 @@
-# go_enrichment { #geneinfo.go_enrichment }
+# go_enrichment { #geneinfo.ontology.go_enrichment }
 
 ```python
-geneinfo.go_enrichment(
+geneinfo.ontology.go_enrichment(
     gene_list
     taxid=9606
     background_chrom=None
@@ -22,7 +22,7 @@ Runs a GO enrichment analysis.
 
 <code>[**taxid**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [9606]{.parameter-default}</code>
 
-:   NCBI taxonomy ID, by default 9606, which is human
+:   NCBI taxonomy ID, 9606 (human) or 1758 (mouse), by default 9606.
 
 <code>[**background_chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 

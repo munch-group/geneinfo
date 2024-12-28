@@ -1,7 +1,7 @@
-# get_genes_for_go_regex { #geneinfo.get_genes_for_go_regex }
+# get_genes_for_go_regex { #geneinfo.ontology.get_genes_for_go_regex }
 
 ```python
-geneinfo.get_genes_for_go_regex(regex, taxid=9606)
+geneinfo.ontology.get_genes_for_go_regex(regex, taxid=9606)
 ```
 
 Get gene information for GO terms matching a regular expression in their description string.

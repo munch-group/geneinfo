@@ -1,0 +1,10 @@
+# GoogleSheet { #geneinfo.utils.GoogleSheet }
+
+```python
+geneinfo.utils.GoogleSheet(
+    self
+    SHEET_ID='1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk'
+    SHEET_NAME='Sheet1'
+)
+```
+

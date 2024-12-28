@@ -1,7 +1,7 @@
-# show_go_evidence_codes { #geneinfo.show_go_evidence_codes }
+# show_go_evidence_codes { #geneinfo.ontology.show_go_evidence_codes }
 
 ```python
-geneinfo.show_go_evidence_codes()
+geneinfo.ontology.show_go_evidence_codes()
 ```
 
 Display list of GO evidence categories and their codes.

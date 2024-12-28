@@ -1,0 +1,36 @@
+# ChromIdeogram { #geneinfo.plot.ChromIdeogram }
+
+```python
+geneinfo.plot.ChromIdeogram(
+    self
+    chrom
+    axes_height_inches=2
+    axes_width_inches=12
+    hspace=0.3
+    ylim=(0, 10)
+    zooms=[]
+    wspace=0.1
+    rel_font_height=0.05
+    assembly='hg38'
+)
+```
+
+Child class of GenomeIdeogram for plotting single chromosome ideograms.
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [zoom_effect](#geneinfo.plot.ChromIdeogram.zoom_effect) | ax1 : the main Axes |
+
+### zoom_effect { #geneinfo.plot.ChromIdeogram.zoom_effect }
+
+```python
+geneinfo.plot.ChromIdeogram.zoom_effect(ax1, ax2, **kwargs)
+```
+
+ax1 : the main Axes
+ax1 : the zoomed Axes
+
+Similar to zoom_effect01.  The xmin & xmax will be taken from the
+ax1.viewLim.

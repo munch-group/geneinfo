@@ -1,14 +1,14 @@
-# show_string_network { #geneinfo.show_string_network }
+# show_string_network { #geneinfo.string.show_string_network }
 
 ```python
-geneinfo.show_string_network(my_genes, nodes=10)
+geneinfo.string.show_string_network(my_genes, nodes=10)
 ```
 
 Display STRING network for a list of genes.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**my_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation}</code>
+<code>[**my_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[list](`list`), [str](`str`)\]]{.parameter-annotation}</code>
 
 :   List of gene symbols
 

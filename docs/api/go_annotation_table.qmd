@@ -1,7 +1,7 @@
-# go_annotation_table { #geneinfo.go_annotation_table }
+# go_annotation_table { #geneinfo.ontology.go_annotation_table }
 
 ```python
-geneinfo.go_annotation_table(taxid=9606)
+geneinfo.ontology.go_annotation_table(taxid=9606)
 ```
 
 GO annotations for a given taxonomy id as a pandas.DataFrame.
