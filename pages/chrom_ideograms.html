@@ -129,6 +129,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../api/"> 
 <span class="menu-text">API reference</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery/"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -215,6 +219,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">String networks</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/go_graphs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GO graphs</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -240,13 +250,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Utils</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+ <span class="menu-text">pages/cashing.ipynb</span>
+  </li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#dummy-sample-data" id="toc-dummy-sample-data" class="nav-link active" data-scroll-target="#dummy-sample-data">Dummy sample data</a></li>
+  <li><a href="#all-chromosome-ideogram" id="toc-all-chromosome-ideogram" class="nav-link" data-scroll-target="#all-chromosome-ideogram">All chromosome ideogram</a></li>
+  <li><a href="#single-chromosome-ideogram" id="toc-single-chromosome-ideogram" class="nav-link" data-scroll-target="#single-chromosome-ideogram">Single chromosome ideogram</a></li>
+  <li><a href="#the-coordinate-system" id="toc-the-coordinate-system" class="nav-link" data-scroll-target="#the-coordinate-system">The coordinate system</a></li>
+  <li><a href="#ideogram-size-and-plament" id="toc-ideogram-size-and-plament" class="nav-link" data-scroll-target="#ideogram-size-and-plament">Ideogram size and plament</a></li>
+  <li><a href="#showing-data-on-ideograms" id="toc-showing-data-on-ideograms" class="nav-link" data-scroll-target="#showing-data-on-ideograms">Showing data on ideograms</a></li>
+  <li><a href="#todo-the-segments-are-offset-on-x-and-y" id="toc-todo-the-segments-are-offset-on-x-and-y" class="nav-link" data-scroll-target="#todo-the-segments-are-offset-on-x-and-y">TODO: the segments are offset on X and Y!</a>
+  <ul class="collapse">
+  <li><a href="#labelled-positions" id="toc-labelled-positions" class="nav-link" data-scroll-target="#labelled-positions">Labelled positions</a></li>
+  </ul></li>
+  <li><a href="#todo-the-ticks-do-not-exactly-align-witht-the-x-axis" id="toc-todo-the-ticks-do-not-exactly-align-witht-the-x-axis" class="nav-link" data-scroll-target="#todo-the-ticks-do-not-exactly-align-witht-the-x-axis">TODO: the ticks do not exactly align witht the x axis!</a>
+  <ul class="collapse">
+  <li><a href="#combinatorial-highlighting" id="toc-combinatorial-highlighting" class="nav-link" data-scroll-target="#combinatorial-highlighting">Combinatorial highlighting</a>
+  <ul class="collapse">
+  <li><a href="#additional-axes" id="toc-additional-axes" class="nav-link" data-scroll-target="#additional-axes">Additional axes</a></li>
+  </ul></li>
+  <li><a href="#floating-annotations" id="toc-floating-annotations" class="nav-link" data-scroll-target="#floating-annotations">Floating annotations</a></li>
+  <li><a href="#zooms" id="toc-zooms" class="nav-link" data-scroll-target="#zooms">Zooms</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -270,41 +318,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-tags="[]" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy  <span class="im">as</span> np</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> GenomeIdeogram, ChromIdeogram</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> stairs, fit_lowess, horizon</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.axes <span class="im">import</span> Axes</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># %config InlineBackend.figure_format = 'retina'</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'svg'</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo <span class="im">as</span> gi</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#gi.email('your@email.com')</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> chrom_ideogram</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo <span class="im">import</span> utils</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-2" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>load_ext autoreload</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>autoreload <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>To make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):</p>
-<div id="cell-4" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># chrom_ideogram(annotation, figsize=(8, 8), min_visible_width=1, hspace=0)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-3" class="cell" data-tags="[]" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">7</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy  <span class="im">as</span> np</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> random <span class="im">import</span> randint</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> GenomeIdeogram, ChromIdeogram</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> stairs, fit_lowess, horizon</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.axes <span class="im">import</span> Axes</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># %config InlineBackend.figure_format = 'retina'</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'svg'</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#gi.email('your@email.com')</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo <span class="im">import</span> utils</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Other assembly, figure dimentions:</p>
-<div id="cell-6" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#chrom_ideogram(annotation, assembly='hg19', figsize=(8, 8))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><strong>You can add position markers along a chromosome like this to better see the location of some segments:</strong></p>
-<div id="cell-8" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lists <span class="op">=</span> utils.GoogleSheet()</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lists</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-4" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>lists <span class="op">=</span> utils.GoogleSheet()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lists</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -477,904 +523,147 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code></code></pre>
 </div>
 </div>
+<section id="dummy-sample-data" class="level2">
+<h2 class="anchored" data-anchor-id="dummy-sample-data">Dummy sample data</h2>
+<div id="cell-6" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> utils.dummy_data()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>segments <span class="op">=</span> utils.dummy_segments()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="all-chromosome-ideogram" class="level2">
+<h2 class="anchored" data-anchor-id="all-chromosome-ideogram">All chromosome ideogram</h2>
+<p>Segments:</p>
 <div id="cell-9" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>meritxell_spermatid_expr <span class="op">=</span> lists.get(<span class="st">'meritxell_spermatid_expr'</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>meritxell_spermatid_expr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>ABCB7             CT47A5            G6PD              LINC01285         MID1IP1           PPP4R3C           SSX2B             ZC3H12B           
-ABCD1             CT47A6            GAB3              LINC01456         MID2              PQBP1             SSX5              ZC4H2             
-ACE2              CT47A7            GABRA3            LINC01545         MIR325HG          PRAF2             SSX7              ZCCHC13           
-ACOT9             CT47A8            GABRE             LINC01560         MMGT1             PRDX4             STAG2             ZDHHC15           
-ACSL4             CT47A9            GAGE1             LINC02154         MORC4             PRICKLE3          STEEP1            ZDHHC9            
-ADGRG2            CT47B1            GAGE10            LL0XNC01-250H12.3 MORF4L2           PRKX              STK26             ZFX               
-ADGRG4            CT55              GAGE12B           LOC101928128      MOSPD1            PRKX-AS1          STS               ZIC3              
-AFF2              CT83              GAGE12C           LOC101928336      MOSPD2            PRPS1             SUPT20HL1         ZMAT1             
-AIFM1             CTAG1A            GAGE12D           LOC101928415      MPC1L             PRPS2             SUPT20HL2         ZMYM3             
-AKAP14            CTAG1B            GAGE12E           LOC101928437      MPP1              PRRG1             SYAP1             ZNF157            
-AKAP4             CTAG2             GAGE12F           LOC101928832      MSL3              PSMD10            SYN1              ZNF182            
-ALG13             CTPS2             GAGE12G           LOC102724150      MSN               PTCHD1            SYP               ZNF185            
-AMMECR1           CUL4B             GAGE12H           LOC105373133      MTM1              PTCHD1-AS         SYP-AS1           ZNF280C           
-AMOT              CXorf38           GAGE12J           LOC105373137      MTMR1             PUDP              SYTL4             ZNF41             
-ANOS1             CXorf49           GAGE13            LOC105373146      MTMR8             PWWP3B            SYTL5             ZNF449            
-AP1S2             CXorf49B          GAGE2A            LOC105373150      MTRNR2L10         RAB33A            TAB3              ZNF674            
-APOO              CXorf51A          GATA1             LOC105373151      NAA10             RAB41             TAF1              ZNF711            
-APOOL             CXorf51B          GCNA              LOC105373153      NALF2             RAB9A             TAF7L             ZNF75D            
-AR                CXorf58           GDI1              LOC105373154      NBDY              RAB9B             TAF9B             ZNF81             
-ARAF              CXorf65           GEMIN8            LOC105373155      NCBP2L            RADX              TAFAZZIN          ZRSR2             
-ARHGAP4           CXorf66           GK                LOC105373182      NDUFA1            RAI2              TBC1D25                             
-ARHGAP6           CYLC1             GLA               LOC105373184      NDUFB11           RAP2C             TBC1D8B                             
-ARHGEF6           CYSLTR1           GLOD5             LOC105373188      NEXMIF            RAP2C-AS1         TBL1X                               
-ARHGEF9           DACH2             GLRA2             LOC105373191      NHS               RBBP7             TCEAL1                              
-ARL13A            DANT2             GNL3L             LOC105373194      NHSL2             RBM10             TCEAL2                              
-ARMCX4            DCAF12L1          GPC3              LOC105373195      NKAP              RBM3              TCEAL3                              
-ARMCX5-GPRASP2    DCAF8L2           GPC4              LOC105373292      NKRF              RBM41             TCEAL4                              
-ARSD              DDX3X             GPKOW             LOC105373298      NLGN3             RBMX              TCEAL5                              
-ASB9              DDX53             GPM6B             LOC105373302      NLGN4X            RBMX2             TCEAL6                              
-ATG4A             DGKK              GPR143            LOC105373303      NONO              RBMXL3            TCEAL8                              
-ATP11C            DIAPH2            GPR173            LOC105373313      NRK               RENBP             TCEAL9                              
-ATP6AP1           DIPK2B            GPR34             LOC105373323      NSDHL             REPS2             TCP11X1                             
-ATP6AP2           DKC1              GPR82             LOC105373335      NUDT10            RHOXF1            TCP11X2                             
-ATP7A             DLG3              GRIA3             LOC105373347      NUDT11            RHOXF1-AS1        TENM1                               
-ATRX              DMD               GRIPAP1           LOC105373369      NUP62CL           RHOXF2            TENT5D                              
-ATXN3L            DMRTC1            GSPT2             LOC105373370      NXF2              RHOXF2B           TEX11                               
-BCAP31            DMRTC1B           GUCY2F            LOC105373383      NXF2B             RIBC1             TEX13A                              
-BCLAF3            DNAAF6            GYG2              LOC105373386      NXF3              RLIM              TEX28                               
-BCOR              DNASE1L1          H2AB1             LOC105373387      NXF5              RNF128            TFDP3                               
-BCORL1            DOCK11            H2AB2             LOC107985634      NXT2              RP2               TFE3                                
-BEND2             DUSP21            H2AB3             LOC107985664      OCRL              RPGR              TGIF2LX                             
-BEX1              DUSP9             H2AP              LOC107985675      OFD1              RPL10             THOC2                               
-BEX2              DYNLT3            HAUS7             LOC107985678      OGT               RPL36A            TIMM17B                             
-BEX3              EBP               HCCS              LOC107985694      OPHN1             RPL36A-HNRNPH2    TIMM8A                              
-BEX4              EDA               HCFC1             LOC107985695      OTC               RPL39             TIMP1                               
-BHLHB9            EFHC2             HDAC6             LOC107985698      OTUD5             RPS4X             TKTL1                               
-BRCC3             EIF1AX            HDAC8             LOC107985701      OTUD6A            RPS6KA3           TMEM164                             
-BRWD3             EIF2S3            HDX               LOC107985704      P2RY8             RPS6KA6           TMEM185A                            
-BTK               ELF4              HMGB3             LOC107985707      PABIR2            RRAGB             TMEM187                             
-C1GALT1C1         ELK1              HMGN5             LOC107985713      PABIR3            RS1               TMEM31                              
-CA5B              EMD               HNRNPH2           LOC107985714      PABPC1L2A         RTL4              TMEM47                              
-CA5BP1-CA5B       ENOX2             HPRT1             LOC107985717      PABPC1L2B         RTL8A             TMLHE                               
-CASK              EOLA1             HS6ST2            LOC107985719      PAGE1             SAGE1             TMSB15A                             
-CBLL2             EOLA2             HSD17B10          LOC112268302      PAGE2             SAT1              TMSB15B-AS1                         
-CCDC120           ESX1              HSFX1             LOC728660         PAGE2B            SATL1             TMSB4X                              
-CCDC160           ETD1              HSFX2             LONRF3            PAGE3             SCML1             TRMT2B                              
-CCNQ              ETD1B             HSFX3             LRCH2             PAGE4             SCML2             TRPC5                               
-CD99L2            EZHIP             HSFX4             LUZP4             PAGE5             SEPTIN6           TRPC5OS                             
-CDK16             F8                HTATSF1           MAGEA1            PAK3              SH3BGRL           TSC22D3                             
-CDKL5             F8A1              HTR2C             MAGEA10           PASD1             SH3KBP1           TSPAN6                              
-CENPI             F8A2              HUWE1             MAGEA10-MAGEA5    PBDC1             SHROOM2           TSPAN7                              
-CETN2             F8A3              IDH3G             MAGEA11           PCDH11X           SHROOM4           TSPYL2                              
-CFAP47            FAAH2             IDS               MAGEA12           PCDH19            SLC16A2           TSR2                                
-CH17-340M24.3     FAM104B           IDS2              MAGEA2            PCSK1N            SLC25A14          TXLNG                               
-CHIC1             FAM120C           IGBP1             MAGEA2B           PCYT1B            SLC25A43          UBA1                                
-CHM               FAM133A           IKBKG             MAGEA3            PDHA1             SLC25A5           UBE2A                               
-CHRDL1            FAM156A           IL13RA1           MAGEA4            PDK3              SLC25A5-AS1       UPF3B                               
-CHST7             FAM156B           IL13RA2           MAGEA4-AS1        PDZD11            SLC25A53          UPRT                                
-CITED1            FAM199X           IL1RAPL1          MAGEA6            PDZD4             SLC25A6           USP11                               
-CLCN4             FAM236A           IL1RAPL2          MAGEA6-DT         PFKFB1            SLC35A2           USP26                               
-CLCN5             FAM236B           IL3RA             MAGEA9            PGAM4             SLC6A8            USP51                               
-CLIC2             FAM236C           INTS6L            MAGEA9B           PGK1              SLC9A6            USP9X                               
-CLTRN             FAM236D           IQSEC2            MAGEB1            PGRMC1            SLC9A7            UTP14A                              
-CMC4              FAM3A             IRAK1             MAGEB16           PHEX              SMARCA1           UXT                                 
-CNKSR2            FAM47A            JADE3             MAGEB17           PHF6              SMC1A             VBP1                                
-COL4A5            FAM47B            JPX               MAGEB2            PHF8              SMIM10L2B-AS1     VCX                                 
-COL4A6            FAM47C            KANTR             MAGEB3            PHKA1             SMS               VCX2                                
-COX7B             FAM50A            KDM5C             MAGEB6            PHKA1-AS1         SNX12             VCX3A                               
-CPXCR1            FAM9A             KDM6A             MAGEC1            PHKA2             SPACA5            VCX3B                               
-CSAG1             FAM9B             KIAA1210          MAGEC2            PIGA              SPACA5B           VEGFD                               
-CSAG2             FAM9C             KIF4A             MAGEC3            PIN4              SPANXA1           VMA21                               
-CSAG3             FANCB             KLF8              MAGED1            PIR               SPANXA2           VSIG1                               
-CSTF2             FATE1             KLHL13            MAGED2            PIR-FIGF          SPANXA2-OT1       WDR13                               
-CT45A1            FGD1              KLHL15            MAGT1             PJA1              SPANXB1           WDR44                               
-CT45A10           FGF13             KLHL4             MAMLD1            PLAC1             SPANXC            WDR45                               
-CT45A2            FHL1              KRBOX4            MAOA              PLP2              SPANXD            WNK3                                
-CT45A3            FIRRE             LAGE3             MAOB              PLS3              SPANXN1           WWC3                                
-CT45A6            FLJ44635          LAMP2             MAP3K15           PLS3-AS1          SPANXN2           XAGE1A                              
-CT45A7            FLNA              LANCL3            MAP7D2            PLXNA3            SPANXN3           XAGE1B                              
-CT45A8            FMR1              LAS1L             MAP7D3            PNCK              SPANXN4           XAGE3                               
-CT45A9            FMR1-AS1          LDOC1             MBNL3             PNMA5             SPANXN5           XAGE5                               
-CT47A1            FMR1NB            LINC00630         MBTPS2            PNMA6E            SPIN4-AS1         XIAP                                
-CT47A10           FRMPD3            LINC00632         MCF2              PNPLA4            SRPX              XIST                                
-CT47A11           FRMPD4            LINC00893         MCTS1             POLA1             SRPX2             XK                                  
-CT47A12           FTSJ1             LINC00894         MECP2             PORCN             SS344B            XKRX                                
-CT47A2            FTX               LINC01203         MED12             PPEF1             SSR4              YIPF6                               
-CT47A3            FUNDC1            LINC01278         MED14             PPP1R2C           SSX1              YY2                                 
-CT47A4            FUNDC2            LINC01284         MID1              PPP1R3F           SSX2              ZBTB33                              </code></pre>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-6-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
 </div>
 </div>
-<div id="cell-10" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ls <span class="op">-</span>lah ..<span class="op">/</span>..<span class="op">/</span>data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>total 8
-drwxr-xr-x@  3 kmt  staff    96B 26 Dec 12:11 .
-drwxr-xr-x@ 23 kmt  staff   736B 25 Dec 11:05 ..
--rw-r--r--@  1 kmt  staff    32B 20 Dec 16:01 Readme.md</code></pre>
+</div>
+</section>
+<section id="single-chromosome-ideogram" class="level2">
+<h2 class="anchored" data-anchor-id="single-chromosome-ideogram">Single chromosome ideogram</h2>
+<div id="cell-11" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-7-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
 </div>
 </div>
-<div id="cell-11" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>utils.clear_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-12" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>coord <span class="op">=</span> gi.gene_coord(meritxell_spermatid_expr, assembly<span class="op">=</span><span class="st">'hg38'</span>, pos_list<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>coord</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<pre><code>[('chrY', 1359652, 'IL3RA'),
- ('chrY', 1389132, 'SLC25A6'),
- ('chrY', 1499883, 'P2RY8'),
- ('chrX', 2855820, 'GYG2'),
- ('chrX', 2916660, 'ARSD'),
- ('chrX', 3658994, 'PRKX'),
- ('chrX', 3663839, 'PRKX-AS1'),
- ('chrX', 6034752, 'NLGN4X'),
- ('chrX', 6534368, 'VCX3A'),
- ('chrX', 6908011, 'PUDP'),
- ('chrX', 7475797, 'STS'),
- ('chrX', 7843202, 'VCX'),
- ('chrX', 7912993, 'PNPLA4'),
- ('chrX', 8170605, 'VCX2'),
- ('chrX', 8465670, 'VCX3B'),
- ('chrX', 8630505, 'ANOS1'),
- ('chrX', 8796089, 'FAM9A'),
- ('chrX', 9159957, 'FAM9B'),
- ('chrX', 9602178, 'TBL1X'),
- ('chrX', 9755821, 'GPR143'),
- ('chrX', 9867936, 'SHROOM2'),
- ('chrX', 10079864, 'WWC3'),
- ('chrX', 10197317, 'CLCN4'),
- ('chrX', 10639482, 'MID1'),
- ('chrX', 11117193, 'HCCS'),
- ('chrX', 11391785, 'ARHGAP6'),
- ('chrX', 11766965, 'MSL3'),
- ('chrX', 12273473, 'FRMPD4'),
- ('chrX', 12807788, 'PRPS2'),
- ('chrX', 12976168, 'TMSB4X'),
- ('chrX', 13040149, 'FAM9C'),
- ('chrX', 13287334, 'LINC02154'),
- ('chrX', 13319350, 'ATXN3L'),
- ('chrX', 13368493, 'LINC01203'),
- ('chrX', 13699816, 'RAB9A'),
- ('chrX', 13756349, 'OFD1'),
- ('chrX', 13854788, 'GPM6B'),
- ('chrX', 14016183, 'GEMIN8'),
- ('chrX', 14630555, 'GLRA2'),
- ('chrX', 14781821, 'FANCB'),
- ('chrX', 14897874, 'MOSPD2'),
- ('chrX', 15252877, 'ASB9'),
- ('chrX', 15327503, 'PIGA'),
- ('chrX', 15365004, 'VEGFD'),
- ('chrX', 15439181, 'PIR'),
- ('chrX', 15550901, 'ACE2'),
- ('chrX', 15651165, 'CLTRN'),
- ('chrX', 15738620, 'CA5B'),
- ('chrX', 15810425, 'ZRSR2'),
- ('chrX', 15840368, 'AP1S2'),
- ('chrX', 16169472, 'MAGEB17'),
- ('chrX', 16650467, 'CTPS2'),
- ('chrX', 16742476, 'SYAP1'),
- ('chrX', 16815475, 'TXLNG'),
- ('chrX', 16854822, 'RBBP7'),
- ('chrX', 17049965, 'REPS2'),
- ('chrX', 17555597, 'NHS'),
- ('chrX', 17746218, 'SCML1'),
- ('chrX', 17830693, 'RAI2'),
- ('chrX', 17994705, 'LINC01456'),
- ('chrX', 18191908, 'BEND2'),
- ('chrX', 18297000, 'SCML2'),
- ('chrX', 18539606, 'CDKL5'),
- ('chrX', 18655898, 'RS1'),
- ('chrX', 18751915, 'PPEF1'),
- ('chrX', 18938206, 'PHKA2'),
- ('chrX', 19055972, 'ADGRG2'),
- ('chrX', 19352805, 'PDHA1'),
- ('chrX', 19437782, 'MAP3K15'),
- ('chrX', 19710788, 'SH3KBP1'),
- ('chrX', 19951960, 'BCLAF3'),
- ('chrX', 20061810, 'MAP7D2'),
- ('chrX', 20133181, 'EIF1AX'),
- ('chrX', 20208715, 'RPS6KA3'),
- ('chrX', 21513748, 'CNKSR2'),
- ('chrX', 21857363, 'YY2'),
- ('chrX', 21862520, 'MBTPS2'),
- ('chrX', 21967773, 'SMS'),
- ('chrX', 22263519, 'PHEX'),
- ('chrX', 22273687, 'CBLL2'),
- ('chrX', 22748206, 'PTCHD1-AS'),
- ('chrX', 23001774, 'DDX53'),
- ('chrX', 23369611, 'PTCHD1'),
- ('chrX', 23675329, 'PRDX4'),
- ('chrX', 23733765, 'ACOT9'),
- ('chrX', 23784691, 'SAT1'),
- ('chrX', 23870645, 'APOO'),
- ('chrX', 23923757, 'CXorf58'),
- ('chrX', 24005451, 'KLHL15'),
- ('chrX', 24066878, 'EIF2S3'),
- ('chrX', 24182714, 'ZFX'),
- ('chrX', 24311139, 'SUPT20HL2'),
- ('chrX', 24364239, 'SUPT20HL1'),
- ('chrX', 24507855, 'PDK3'),
- ('chrX', 24615382, 'PCYT1B'),
- ('chrX', 24845429, 'POLA1'),
- ('chrX', 26194043, 'MAGEB6'),
- ('chrX', 27461774, 'PPP4R3C'),
- ('chrX', 27670143, 'DCAF8L2'),
- ('chrX', 29272082, 'IL1RAPL1'),
- ('chrX', 30217826, 'MAGEB2'),
- ('chrX', 30234076, 'MAGEB3'),
- ('chrX', 30247877, 'MAGEB1'),
- ('chrX', 30692410, 'GK'),
- ('chrX', 30901263, 'TAB3'),
- ('chrX', 32218643, 'DMD'),
- ('chrX', 34131033, 'FAM47A'),
- ('chrX', 34642180, 'TMEM47'),
- ('chrX', 34943855, 'FAM47B'),
- ('chrX', 35801057, 'MAGEB16'),
- ('chrX', 36152525, 'CFAP47'),
- ('chrX', 37010015, 'FAM47C'),
- ('chrX', 37421005, 'PRRG1'),
- ('chrX', 37628016, 'LANCL3'),
- ('chrX', 37708960, 'XK'),
- ('chrX', 37842164, 'DYNLT3'),
- ('chrX', 37991046, 'H2AP'),
- ('chrX', 38067686, 'SYTL5'),
- ('chrX', 38185130, 'SRPX'),
- ('chrX', 38298353, 'RPGR'),
- ('chrX', 38375253, 'OTC'),
- ('chrX', 38625231, 'TSPAN7'),
- ('chrX', 38803988, 'MID1IP1'),
- ('chrX', 40113572, 'BCOR'),
- ('chrX', 40593110, 'ATP6AP2'),
- ('chrX', 40623782, 'MPC1L'),
- ('chrX', 40637241, 'CXorf38'),
- ('chrX', 40692081, 'MED14'),
- ('chrX', 41161012, 'USP9X'),
- ('chrX', 41348910, 'DDX3X'),
- ('chrX', 41693124, 'GPR34'),
- ('chrX', 41719244, 'CASK'),
- ('chrX', 41727155, 'GPR82'),
- ('chrX', 42777764, 'PPP1R2C'),
- ('chrX', 43700862, 'MAOA'),
- ('chrX', 43824530, 'MAOB'),
- ('chrX', 44245772, 'EFHC2'),
- ('chrX', 44533249, 'FUNDC1'),
- ('chrX', 44844454, 'DUSP21'),
- ('chrX', 44992983, 'KDM6A'),
- ('chrX', 45174637, 'DIPK2B'),
- ('chrX', 46472357, 'KRBOX4'),
- ('chrX', 46521591, 'ZNF674'),
- ('chrX', 46586130, 'CHST7'),
- ('chrX', 46679184, 'SLC9A7'),
- ('chrX', 46859700, 'RP2'),
- ('chrX', 46899724, 'LINC01545'),
- ('chrX', 46986759, 'JADE3'),
- ('chrX', 47143768, 'NDUFB11'),
- ('chrX', 47166017, 'RBM10'),
- ('chrX', 47202994, 'UBA1'),
- ('chrX', 47223928, 'CDK16'),
- ('chrX', 47240597, 'USP11'),
- ('chrX', 47392538, 'ZNF157'),
- ('chrX', 47464200, 'ZNF41'),
- ('chrX', 47484197, 'LINC01560'),
- ('chrX', 47566556, 'ARAF'),
- ('chrX', 47584598, 'TIMP1'),
- ('chrX', 47595879, 'SYN1'),
- ('chrX', 47643062, 'ELK1'),
- ('chrX', 47655488, 'UXT'),
- ('chrX', 47919731, 'ZNF81'),
- ('chrX', 47989420, 'ZNF182'),
- ('chrX', 48007034, 'SPACA5'),
- ('chrX', 48131623, 'SPACA5B'),
- ('chrX', 48191507, 'SSX5'),
- ('chrX', 48261418, 'SSX1'),
- ('chrX', 48481192, 'FTSJ1'),
- ('chrX', 48514886, 'PORCN'),
- ('chrX', 48525257, 'EBP'),
- ('chrX', 48551161, 'TBC1D25'),
- ('chrX', 48577805, 'RBM3'),
- ('chrX', 48599455, 'WDR13'),
- ('chrX', 48767697, 'GLOD5'),
- ('chrX', 48790425, 'GATA1'),
- ('chrX', 48813179, 'HDAC6'),
- ('chrX', 48833353, 'PCSK1N'),
- ('chrX', 48895795, 'TIMM17B'),
- ('chrX', 48896799, 'PQBP1'),
- ('chrX', 48907569, 'SLC35A2'),
- ('chrX', 48940205, 'OTUD5'),
- ('chrX', 48987992, 'GRIPAP1'),
- ('chrX', 49036068, 'TFE3'),
- ('chrX', 49061714, 'CCDC120'),
- ('chrX', 49072581, 'PRAF2'),
- ('chrX', 49087801, 'WDR45'),
- ('chrX', 49118571, 'GPKOW'),
- ('chrX', 49173566, 'PLP2'),
- ('chrX', 49180665, 'PRICKLE3'),
- ('chrX', 49194016, 'SYP'),
- ('chrX', 49200645, 'SYP-AS1'),
- ('chrX', 49285627, 'PPP1R3F'),
- ('chrX', 49311743, 'GAGE10'),
- ('chrX', 49325710, 'GAGE12J'),
- ('chrX', 49335265, 'GAGE13'),
- ('chrX', 49529927, 'GAGE12B'),
- ('chrX', 49535857, 'GAGE12C'),
- ('chrX', 49545413, 'GAGE12D'),
- ('chrX', 49554967, 'GAGE12E'),
- ('chrX', 49559748, 'GAGE12F'),
- ('chrX', 49574077, 'GAGE12G'),
- ('chrX', 49583625, 'GAGE12H'),
- ('chrX', 49593160, 'GAGE2A'),
- ('chrX', 49603779, 'GAGE1'),
- ('chrX', 49691715, 'PAGE1'),
- ('chrX', 49813958, 'PAGE4'),
- ('chrX', 50010915, 'CLCN5'),
- ('chrX', 50195892, 'AKAP4'),
- ('chrX', 50418117, 'DGKK'),
- ('chrX', 50700549, 'SHROOM4'),
- ('chrX', 51237972, 'LINC01284'),
- ('chrX', 51334878, 'NUDT10'),
- ('chrX', 51407895, 'EZHIP'),
- ('chrX', 51493301, 'NUDT11'),
- ('chrX', 51744837, 'GSPT2'),
- ('chrX', 51852680, 'MAGED1'),
- ('chrX', 52498310, 'XAGE1A'),
- ('chrX', 52516440, 'XAGE1B'),
- ('chrX', 52649480, 'SSX7'),
- ('chrX', 52702037, 'SSX2'),
- ('chrX', 52770718, 'SSX2B'),
- ('chrX', 52796785, 'SPANXN5'),
- ('chrX', 52814794, 'XAGE5'),
- ('chrX', 52865304, 'XAGE3'),
- ('chrX', 52899933, 'FAM156B'),
- ('chrX', 52960937, 'FAM156A'),
- ('chrX', 53064702, 'GPR173'),
- ('chrX', 53085453, 'TSPYL2'),
- ('chrX', 53132528, 'KANTR'),
- ('chrX', 53200849, 'KDM5C'),
- ('chrX', 53273589, 'IQSEC2'),
- ('chrX', 53398438, 'SMC1A'),
- ('chrX', 53426905, 'RIBC1'),
- ('chrX', 53432814, 'HSD17B10'),
- ('chrX', 53609424, 'HUWE1'),
- ('chrX', 53992817, 'PHF8'),
- ('chrX', 54125802, 'FAM120C'),
- ('chrX', 54275732, 'WNK3'),
- ('chrX', 54444218, 'TSR2'),
- ('chrX', 54470844, 'FGD1'),
- ('chrX', 54575852, 'GNL3L'),
- ('chrX', 54811807, 'MAGED2'),
- ('chrX', 54965747, 'PFKFB1'),
- ('chrX', 55076969, 'PAGE2B'),
- ('chrX', 55090930, 'PAGE2'),
- ('chrX', 55222227, 'PAGE5'),
- ('chrX', 55261665, 'PAGE3'),
- ('chrX', 55487232, 'USP51'),
- ('chrX', 55738261, 'RRAGB'),
- ('chrX', 56261943, 'KLF8'),
- ('chrX', 56774210, 'NBDY'),
- ('chrX', 57387949, 'FAAH2'),
- ('chrX', 63350912, 'SPIN4-AS1'),
- ('chrX', 63392044, 'LINC01278'),
- ('chrX', 63722120, 'ARHGEF9'),
- ('chrX', 64331766, 'MTMR8'),
- ('chrX', 64975257, 'ZC4H2'),
- ('chrX', 65271337, 'ZC3H12B'),
- ('chrX', 65486679, 'LAS1L'),
- ('chrX', 65665154, 'MSN'),
- ('chrX', 67637320, 'AR'),
- ('chrX', 68191631, 'OPHN1'),
- ('chrX', 68517922, 'YIPF6'),
- ('chrX', 69163186, 'PJA1'),
- ('chrX', 69518417, 'NALF2'),
- ('chrX', 69827769, 'EDA'),
- ('chrX', 70063318, 'OTUD6A'),
- ('chrX', 70149885, 'IGBP1'),
- ('chrX', 70283547, 'RAB41'),
- ('chrX', 70285816, 'PDZD11'),
- ('chrX', 70355495, 'KIF4A'),
- ('chrX', 70475162, 'DLG3'),
- ('chrX', 70718825, 'TEX11'),
- ('chrX', 71064879, 'SNX12'),
- ('chrX', 71105338, 'CXorf65'),
- ('chrX', 71131323, 'MED12'),
- ('chrX', 71160038, 'NLGN3'),
- ('chrX', 71247385, 'ZMYM3'),
- ('chrX', 71278168, 'NONO'),
- ('chrX', 71449255, 'TAF1'),
- ('chrX', 71554489, 'OGT'),
- ('chrX', 71596010, 'GCNA'),
- ('chrX', 71716328, 'CXorf49'),
- ('chrX', 71765276, 'CXorf49B'),
- ('chrX', 72036297, 'NHSL2'),
- ('chrX', 72242139, 'PIN4'),
- ('chrX', 72266463, 'RPS4X'),
- ('chrX', 72304412, 'CITED1'),
- ('chrX', 72451308, 'HDAC8'),
- ('chrX', 72646566, 'PHKA1'),
- ('chrX', 72700649, 'PHKA1-AS1'),
- ('chrX', 72782262, 'FAM236B'),
- ('chrX', 72807817, 'FAM236D'),
- ('chrX', 72812846, 'DMRTC1B'),
- ('chrX', 72907931, 'DMRTC1'),
- ('chrX', 72913008, 'FAM236C'),
- ('chrX', 72938560, 'FAM236A'),
- ('chrX', 73004522, 'PABPC1L2B'),
- ('chrX', 73078394, 'PABPC1L2A'),
- ('chrX', 73625154, 'CHIC1'),
- ('chrX', 73836686, 'XIST'),
- ('chrX', 74007178, 'JPX'),
- ('chrX', 74117004, 'FTX'),
- ('chrX', 74304607, 'ZCCHC13'),
- ('chrX', 74477705, 'SLC16A2'),
- ('chrX', 74598800, 'RLIM'),
- ('chrX', 74829164, 'NEXMIF'),
- ('chrX', 75103890, 'ABCB7'),
- ('chrX', 75230636, 'UPRT'),
- ('chrX', 75445964, 'ZDHHC15'),
- ('chrX', 76175897, 'PBDC1'),
- ('chrX', 76835699, 'MIR325HG'),
- ('chrX', 77645556, 'ATRX'),
- ('chrX', 77862509, 'MAGT1'),
- ('chrX', 77903408, 'COX7B'),
- ('chrX', 77968793, 'PGAM4'),
- ('chrX', 77980542, 'ATP7A'),
- ('chrX', 78020017, 'PGK1'),
- ('chrX', 78134699, 'TAF9B'),
- ('chrX', 78299579, 'CYSLTR1'),
- ('chrX', 80390407, 'TENT5D'),
- ('chrX', 80739690, 'BRWD3'),
- ('chrX', 81157806, 'HMGN5'),
- ('chrX', 81250324, 'SH3BGRL'),
- ('chrX', 83873912, 'CYLC1'),
- ('chrX', 84132351, 'RPS6KA6'),
- ('chrX', 84410176, 'HDX'),
- ('chrX', 85048596, 'APOOL'),
- ('chrX', 85168097, 'SATL1'),
- ('chrX', 85258676, 'ZNF711'),
- ('chrX', 85954370, 'CHM'),
- ('chrX', 86490527, 'DACH2'),
- ('chrX', 87593729, 'KLHL4'),
- ('chrX', 88751005, 'CPXCR1'),
- ('chrX', 89922395, 'TGIF2LX'),
- ('chrX', 92201245, 'PCDH11X'),
- ('chrX', 93693143, 'FAM133A'),
- ('chrX', 97144854, 'DIAPH2'),
- ('chrX', 100350958, 'PCDH19'),
- ('chrX', 100633549, 'TSPAN6'),
- ('chrX', 100659991, 'SRPX2'),
- ('chrX', 100701953, 'SYTL4'),
- ('chrX', 100830955, 'CSTF2'),
- ('chrX', 100921439, 'XKRX'),
- ('chrX', 100980269, 'ARL13A'),
- ('chrX', 101030731, 'TRMT2B'),
- ('chrX', 101132157, 'CENPI'),
- ('chrX', 101280655, 'TAF7L'),
- ('chrX', 101347201, 'TIMM8A'),
- ('chrX', 101370067, 'BTK'),
- ('chrX', 101393489, 'RPL36A'),
- ('chrX', 101400642, 'GLA'),
- ('chrX', 101401654, 'RPL36A-HNRNPH2'),
- ('chrX', 101411177, 'HNRNPH2'),
- ('chrX', 101475873, 'ARMCX4'),
- ('chrX', 101837907, 'NXF5'),
- ('chrX', 101907159, 'ZMAT1'),
- ('chrX', 102133052, 'TCEAL2'),
- ('chrX', 102141723, 'TCEAL6'),
- ('chrX', 102222415, 'TCP11X1'),
- ('chrX', 102286944, 'NXF2'),
- ('chrX', 102400201, 'NXF2B'),
- ('chrX', 102464352, 'TCP11X2'),
- ('chrX', 102515210, 'TMSB15A'),
- ('chrX', 102733012, 'ARMCX5-GPRASP2'),
- ('chrX', 102858943, 'LINC00630'),
- ('chrX', 103063411, 'BEX1'),
- ('chrX', 103084476, 'NXF3'),
- ('chrX', 103216177, 'BEX4'),
- ('chrX', 103254093, 'TCEAL8'),
- ('chrX', 103275220, 'TCEAL5'),
- ('chrX', 103310176, 'BEX2'),
- ('chrX', 103357475, 'TCEAL9'),
- ('chrX', 103377279, 'BEX3'),
- ('chrX', 103461731, 'LL0XNC01-250H12.3'),
- ('chrX', 103581980, 'TCEAL4'),
- ('chrX', 103618570, 'TCEAL3'),
- ('chrX', 103629828, 'TCEAL1'),
- ('chrX', 103681827, 'MORF4L2'),
- ('chrX', 103712470, 'TMEM31'),
- ('chrX', 103827292, 'RAB9B'),
- ('chrX', 103882349, 'TMSB15B-AS1'),
- ('chrX', 104128111, 'SLC25A53'),
- ('chrX', 104181177, 'FAM199X'),
- ('chrX', 104252485, 'ESX1'),
- ('chrX', 105167014, 'IL1RAPL2'),
- ('chrX', 105219811, 'TEX13A'),
- ('chrX', 105890574, 'NRK'),
- ('chrX', 106188630, 'PWWP3B'),
- ('chrX', 106645684, 'RADX'),
- ('chrX', 106745405, 'RNF128'),
- ('chrX', 106839411, 'TBC1D8B'),
- ('chrX', 106907041, 'MORC4'),
- ('chrX', 107085459, 'RBM41'),
- ('chrX', 107164930, 'NUP62CL'),
- ('chrX', 107225429, 'DNAAF6'),
- ('chrX', 107527453, 'FRMPD3'),
- ('chrX', 107640210, 'PRPS1'),
- ('chrX', 107745281, 'TSC22D3'),
- ('chrX', 107785364, 'NCBP2L'),
- ('chrX', 107878696, 'MID2'),
- ('chrX', 108062077, 'VSIG1'),
- ('chrX', 108087878, 'PSMD10'),
- ('chrX', 108123169, 'ATG4A'),
- ('chrX', 108297552, 'COL4A6'),
- ('chrX', 108568691, 'COL4A5'),
- ('chrX', 109427496, 'GUCY2F'),
- ('chrX', 109540239, 'NXT2'),
- ('chrX', 109678823, 'ACSL4'),
- ('chrX', 110093439, 'TMEM164'),
- ('chrX', 110317252, 'AMMECR1'),
- ('chrX', 110734837, 'CHRDL1'),
- ('chrX', 111085823, 'PAK3'),
- ('chrX', 111713230, 'ALG13'),
- ('chrX', 111890020, 'TRPC5OS'),
- ('chrX', 111925393, 'TRPC5'),
- ('chrX', 112270265, 'RTL4'),
- ('chrX', 112807667, 'AMOT'),
- ('chrX', 114747069, 'HTR2C'),
- ('chrX', 115011976, 'IL13RA2'),
- ('chrX', 115172356, 'LRCH2'),
- ('chrX', 115191139, 'RBMXL3'),
- ('chrX', 115298639, 'LUZP4'),
- ('chrX', 115540456, 'PLS3-AS1'),
- ('chrX', 115606017, 'PLS3'),
- ('chrX', 115831853, 'DANT2'),
- ('chrX', 116462331, 'CT83'),
- ('chrX', 118007576, 'KLHL13'),
- ('chrX', 118398017, 'WDR44'),
- ('chrX', 118590989, 'DOCK11'),
- ('chrX', 118760834, 'IL13RA1'),
- ('chrX', 118879603, 'LINC01285'),
- ('chrX', 118998769, 'LONRF3'),
- ('chrX', 119114607, 'KIAA1210'),
- ('chrX', 119240355, 'PGRMC1'),
- ('chrX', 119426907, 'SLC25A43'),
- ('chrX', 119467884, 'SLC25A5-AS1'),
- ('chrX', 119469909, 'SLC25A5'),
- ('chrX', 119532942, 'UBE2A'),
- ('chrX', 119551779, 'STEEP1'),
- ('chrX', 119597390, 'NKRF'),
- ('chrX', 119654547, 'SEPTIN6'),
- ('chrX', 119789067, 'RPL39'),
- ('chrX', 119843510, 'UPF3B'),
- ('chrX', 119874247, 'NDUFA1'),
- ('chrX', 119908276, 'AKAP14'),
- ('chrX', 119932211, 'NKAP'),
- ('chrX', 120074977, 'RHOXF2B'),
- ('chrX', 120091545, 'RHOXF1-AS1'),
- ('chrX', 120162121, 'RHOXF2'),
- ('chrX', 120177159, 'RHOXF1'),
- ('chrX', 120254575, 'ZBTB33'),
- ('chrX', 120447756, 'LAMP2'),
- ('chrX', 120554997, 'CUL4B'),
- ('chrX', 120607584, 'MCTS1'),
- ('chrX', 120627864, 'C1GALT1C1'),
- ('chrX', 120874236, 'CT47B1'),
- ('chrX', 120931275, 'CT47A12'),
- ('chrX', 120935499, 'CT47A11'),
- ('chrX', 120940362, 'CT47A10'),
- ('chrX', 120945222, 'CT47A9'),
- ('chrX', 120950083, 'CT47A8'),
- ('chrX', 120954941, 'CT47A7'),
- ('chrX', 120959826, 'CT47A6'),
- ('chrX', 120964687, 'CT47A5'),
- ('chrX', 120969547, 'CT47A4'),
- ('chrX', 120974407, 'CT47A3'),
- ('chrX', 120979267, 'CT47A2'),
- ('chrX', 120984118, 'CT47A1'),
- ('chrX', 123337534, 'GRIA3'),
- ('chrX', 123666808, 'THOC2'),
- ('chrX', 123886842, 'XIAP'),
- ('chrX', 124191438, 'STAG2'),
- ('chrX', 124790107, 'TENM1'),
- ('chrX', 126551098, 'DCAF12L1'),
- ('chrX', 129485000, 'SMARCA1'),
- ('chrX', 129566205, 'OCRL'),
- ('chrX', 129823598, 'ZDHHC9'),
- ('chrX', 129917941, 'UTP14A'),
- ('chrX', 130019589, 'BCORL1'),
- ('chrX', 130087335, 'ELF4'),
- ('chrX', 130145272, 'AIFM1'),
- ('chrX', 130178416, 'RAB33A'),
- ('chrX', 130235803, 'ZNF280C'),
- ('chrX', 130356624, 'SLC25A14'),
- ('chrX', 130407821, 'RBMX2'),
- ('chrX', 130762779, 'ENOX2'),
- ('chrX', 131759853, 'FIRRE'),
- ('chrX', 132049622, 'STK26'),
- ('chrX', 132211252, 'RAP2C'),
- ('chrX', 132297274, 'RAP2C-AS1'),
- ('chrX', 132429644, 'MBNL3'),
- ('chrX', 132793705, 'HS6ST2'),
- ('chrX', 133060138, 'USP26'),
- ('chrX', 133217508, 'TFDP3'),
- ('chrX', 133357796, 'GPC4'),
- ('chrX', 133761422, 'GPC3'),
- ('chrX', 134241944, 'CCDC160'),
- ('chrX', 134401039, 'PHF6'),
- ('chrX', 134490339, 'HPRT1'),
- ('chrX', 134665080, 'PLAC1'),
- ('chrX', 134783399, 'PABIR2'),
- ('chrX', 134825615, 'PABIR3'),
- ('chrX', 134901444, 'MOSPD1'),
- ('chrX', 135051564, 'RTL8A'),
- ('chrX', 135091818, 'SMIM10L2B-AS1'),
- ('chrX', 135163969, 'CT55'),
- ('chrX', 135296349, 'ZNF75D'),
- ('chrX', 135354104, 'ZNF449'),
- ('chrX', 135551584, 'INTS6L'),
- ('chrX', 135718589, 'CT45A1'),
- ('chrX', 135764018, 'CT45A3'),
- ('chrX', 135798736, 'CT45A6'),
- ('chrX', 135815840, 'CT45A2'),
- ('chrX', 135833254, 'CT45A7'),
- ('chrX', 135850517, 'CT45A8'),
- ('chrX', 135867615, 'CT45A9'),
- ('chrX', 135887253, 'CT45A10'),
- ('chrX', 135901622, 'SAGE1'),
- ('chrX', 135967308, 'MMGT1'),
- ('chrX', 136010555, 'SLC9A6'),
- ('chrX', 136179030, 'FHL1'),
- ('chrX', 136234851, 'MAP7D3'),
- ('chrX', 136358926, 'ADGRG4'),
- ('chrX', 136504712, 'HTATSF1'),
- ('chrX', 136723239, 'ARHGEF6'),
- ('chrX', 136864384, 'RBMX'),
- ('chrX', 137571909, 'ZIC3'),
- ('chrX', 138918752, 'FGF13'),
- ('chrX', 139644993, 'MCF2'),
- ('chrX', 139835811, 'ATP11C'),
- ('chrX', 139960624, 'CXorf66'),
- ('chrX', 140751388, 'LINC00632'),
- ('chrX', 141003150, 'SPANXB1'),
- ('chrX', 141144367, 'LDOC1'),
- ('chrX', 141241990, 'SPANXC'),
- ('chrX', 141413335, 'SPANXA2-OT1'),
- ('chrX', 141584206, 'SPANXA1'),
- ('chrX', 141590235, 'SPANXA2'),
- ('chrX', 141698075, 'SPANXD'),
- ('chrX', 141868074, 'MAGEC3'),
- ('chrX', 141906634, 'MAGEC1'),
- ('chrX', 142203816, 'MAGEC2'),
- ('chrX', 143030315, 'SPANXN4'),
- ('chrX', 143513105, 'SPANXN3'),
- ('chrX', 143716353, 'SPANXN2'),
- ('chrX', 145251855, 'SPANXN1'),
- ('chrX', 146810091, 'CXorf51B'),
- ('chrX', 146814425, 'CXorf51A'),
- ('chrX', 147901899, 'FMR1-AS1'),
- ('chrX', 147931522, 'FMR1'),
- ('chrX', 148004001, 'FMR1NB'),
- ('chrX', 148750640, 'AFF2'),
- ('chrX', 149499042, 'IDS'),
- ('chrX', 149545432, 'EOLA1'),
- ('chrX', 149549067, 'HSFX3'),
- ('chrX', 149584556, 'MAGEA9B'),
- ('chrX', 149593913, 'HSFX2'),
- ('chrX', 149614234, 'TMEM185A'),
- ('chrX', 149702748, 'MAGEA11'),
- ('chrX', 149775467, 'HSFX1'),
- ('chrX', 149784833, 'MAGEA9'),
- ('chrX', 149930430, 'HSFX4'),
- ('chrX', 149934113, 'EOLA2'),
- ('chrX', 150437800, 'MAMLD1'),
- ('chrX', 150620780, 'MTM1'),
- ('chrX', 150729039, 'MTMR1'),
- ('chrX', 150832576, 'CD99L2'),
- ('chrX', 150985640, 'HMGB3'),
- ('chrX', 151402939, 'VMA21'),
- ('chrX', 151620207, 'PASD1'),
- ('chrX', 151719614, 'FATE1'),
- ('chrX', 151912004, 'MAGEA4-AS1'),
- ('chrX', 151918833, 'MAGEA4'),
- ('chrX', 151963902, 'GABRE'),
- ('chrX', 152135944, 'MAGEA10'),
- ('chrX', 152308774, 'GABRA3'),
- ('chrX', 152700557, 'MAGEA3'),
- ('chrX', 152714961, 'CSAG2'),
- ('chrX', 152716596, 'MAGEA2B'),
- ('chrX', 152730609, 'CSAG1'),
- ('chrX', 152735713, 'MAGEA12'),
- ('chrX', 152751873, 'MAGEA2'),
- ('chrX', 152757071, 'CSAG3'),
- ('chrX', 152767926, 'MAGEA6'),
- ('chrX', 152781016, 'MAGEA6-DT'),
- ('chrX', 152828875, 'CETN2'),
- ('chrX', 152850348, 'NSDHL'),
- ('chrX', 152935774, 'ZNF185'),
- ('chrX', 152991470, 'PNMA5'),
- ('chrX', 153181582, 'MAGEA1'),
- ('chrX', 153398515, 'PNMA6E'),
- ('chrX', 153471592, 'HAUS7'),
- ('chrX', 153593985, 'CCNQ'),
- ('chrX', 153646909, 'DUSP9'),
- ('chrX', 153679371, 'PNCK'),
- ('chrX', 153692257, 'SLC6A8'),
- ('chrX', 153712528, 'BCAP31'),
- ('chrX', 153734805, 'ABCD1'),
- ('chrX', 153790139, 'IDH3G'),
- ('chrX', 153796007, 'SSR4'),
- ('chrX', 153816365, 'PDZD4'),
- ('chrX', 153921183, 'ARHGAP4'),
- ('chrX', 153932152, 'NAA10'),
- ('chrX', 153939978, 'RENBP'),
- ('chrX', 153959687, 'HCFC1'),
- ('chrX', 153977974, 'TMEM187'),
- ('chrX', 154015204, 'IRAK1'),
- ('chrX', 154079338, 'MECP2'),
- ('chrX', 154283559, 'TEX28'),
- ('chrX', 154313072, 'TKTL1'),
- ('chrX', 154361579, 'FLNA'),
- ('chrX', 154380423, 'EMD'),
- ('chrX', 154399561, 'RPL10'),
- ('chrX', 154406674, 'DNASE1L1'),
- ('chrX', 154416625, 'TAFAZZIN'),
- ('chrX', 154432574, 'ATP6AP1'),
- ('chrX', 154440190, 'GDI1'),
- ('chrX', 154447397, 'FAM50A'),
- ('chrX', 154468030, 'PLXNA3'),
- ('chrX', 154478528, 'LAGE3'),
- ('chrX', 154511200, 'FAM3A'),
- ('chrX', 154532698, 'G6PD'),
- ('chrX', 154553122, 'IKBKG'),
- ('chrX', 154585974, 'CTAG1A'),
- ('chrX', 154618445, 'CTAG1B'),
- ('chrX', 154652775, 'CTAG2'),
- ('chrX', 154713416, 'GAB3'),
- ('chrX', 154770215, 'DKC1'),
- ('chrX', 154799845, 'MPP1'),
- ('chrX', 154885265, 'H2AB1'),
- ('chrX', 154887208, 'F8A1'),
- ('chrX', 154931364, 'F8'),
- ('chrX', 155043142, 'FUNDC2'),
- ('chrX', 155066379, 'CMC4'),
- ('chrX', 155097248, 'BRCC3'),
- ('chrX', 155218424, 'VBP1'),
- ('chrX', 155305434, 'CLIC2'),
- ('chrX', 155381004, 'H2AB2'),
- ('chrX', 155382948, 'F8A2'),
- ('chrX', 155457767, 'F8A3'),
- ('chrX', 155459710, 'H2AB3'),
- ('chrX', 155604054, 'TMLHE')]</code></pre>
+</section>
+<section id="the-coordinate-system" class="level2">
+<h2 class="anchored" data-anchor-id="the-coordinate-system">The coordinate system</h2>
+<p>The x-axis follow the chromosome coordinates along the ideogram. Behind the scenes, the y-axis for each ideogram has the same scale as its x-axis. But this is mapped to a more sensible range that is <code>(0, 10)</code> by default can be controlled by the <code>ylim</code> keyword argument:</p>
+<div id="cell-14" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">30</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-8-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
 </div>
 </div>
-<div id="cell-13" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> lists.get(label)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> gi.gene_coord(names, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> []</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (name, (chrom, start, end, strand)) <span class="kw">in</span> coords.items():</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    annot.append((name, chrom, <span class="bu">int</span>((start<span class="op">+</span>end)<span class="op">/</span><span class="dv">2</span>)))</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="bu">sorted</span>(annot, key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>:])</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>cDEG_genes_coords <span class="op">=</span> <span class="bu">sorted</span>(((name, chrom, <span class="bu">int</span>((start<span class="op">+</span>end)<span class="op">/</span><span class="dv">2</span>)) <span class="cf">for</span> (name, (chrom, start, end, strand)) <span class="kw">in</span> coords.items()), key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>:])</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>cDEG_genes_coords</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<pre><code>[('CDKL5', 'chrX', 18539606.0),
- ('PPEF1', 'chrX', 18751915.0),
- ('EIF1AX', 'chrX', 20133181.5),
- ('PRDX4', 'chrX', 23675329.5),
- ('PDK3', 'chrX', 24507855.0),
- ('RPGR', 'chrX', 38298353.5),
- ('HDAC6', 'chrX', 48813179.5),
- ('PRICKLE3', 'chrX', 49180665.0),
- ('SYP', 'chrX', 49194016.5),
- ('IQSEC2', 'chrX', 53273589.0),
- ('HUWE1', 'chrX', 53609424.0),
- ('PHF8', 'chrX', 53992817.0),
- ('IGBP1', 'chrX', 70149885.5),
- ('DIAPH2', 'chrX', 97144854.5),
- ('SRPX2', 'chrX', 100659991.5),
- ('LL0XNC01-250H12.3', 'chrX', 103461731.0),
- ('HTR2C', 'chrX', 114747069.5),
- ('UPF3B', 'chrX', 119843510.0),
- ('OCRL', 'chrX', 129566205.0),
- ('PABIR3', 'chrX', 134825615.0),
- ('FHL1', 'chrX', 136179030.5),
- ('AFF2', 'chrX', 148750640.0)]</code></pre>
+</div>
+</section>
+<section id="ideogram-size-and-plament" class="level2">
+<h2 class="anchored" data-anchor-id="ideogram-size-and-plament">Ideogram size and plament</h2>
+<div id="cell-16" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes(base<span class="op">=</span><span class="dv">1</span>, height<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-9-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
 </div>
 </div>
-<div id="cell-14" class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import pickle</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># # def gene_list_coords(gene_list):</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># #     append_list = []</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># #     for gene in gene_list:</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># #         coord = gi.gene_coord(gene, assembly='hg38')</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># #         if coord:</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># #             chrom, start, end, strand = gi.gene_coord(gene, assembly='hg38')[gene]</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># #             append_list.append((chrom, (start + end)/2, gene))</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># #         else:</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co"># #             print('skipped', gene)</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># #     return append_list</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co"># def get_genelist_coords(label):    </span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#     names = lists.get(label)</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#     coords = gi.gene_coord(xi_escape_genes, assembly='hg38')</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#     with open(f'{label}.pickle', 'wb') as f:</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#         pickle.dump(names, f)</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#     with open(f'{label}_coords.pickle', 'wb') as f:</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">#         pickle.dump(coords, f)</span></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#     return names, coords</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co"># # with open('annot_spermatid_expr_genes.pickle', 'rb') as f:</span></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co"># #     annot_spermatid_expr_genes = pickle.load(f)</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co"># xi_escape_genes = lists.get('xi_escape')</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co"># annot_xi_escape = gi.gene_coord(xi_escape_genes, assembly='hg38')</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="co"># with open('annot_xi_escape.pickle', 'wb') as f:</span></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="co">#     pickle.dump(annot_xi_escape, f)</span></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="co"># sfari_genes = lists.get('sfari_all_conf')</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="co"># annot_sfari_all_conf = gi.gene_coord(sfari_genes, assembly='hg38')</span></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="co"># with open('annot_sfari_all_conf.pickle', 'wb') as f:</span></span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="co">#     pickle.dump(annot_sfari_all_conf, f)</span></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="co"># cDEG_genes = lists.get('cDEG')</span></span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="co"># annot_sfari_all_conf = gi.gene_coord(sfari_genes, assembly='hg38')</span></span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a><span class="co"># with open('annot_cDEG_genes.pickle', 'wb') as f:</span></span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a><span class="co">#     pickle.dump(annot_cDEG_genes, f)</span></span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="co"># nDEG_genes = lists.get('nDEG')</span></span>
-<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="co"># annot_nDEG_genes = gi.gene_coord(nDEG_genes, assembly='hg38')</span></span>
-<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a><span class="co"># with open('annot_nDEG_genes.pickle', 'wb') as f:</span></span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="co">#     pickle.dump(annot_nDEG_genes, f)</span></span>
-<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a><span class="co"># accel_reg_genes = lists.get('accel_reg_simiiformes_br')</span></span>
-<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a><span class="co"># annot_sfari_all_conf = gi.gene_coord(accel_reg_genes, assembly='hg38')</span></span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a><span class="co"># with open('annot_sfari_all_conf.pickle', 'wb') as f:</span></span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="co">#     pickle.dump(annot_sfari_all_conf, f)</span></span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a><span class="co"># spermatid_expr_genes = lists.get('meritxell_spermatid_expr')</span></span>
-<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a><span class="co"># annot_spermatid_expr_genes = gi.gene_coord(spermatid_expr_genes, assembly='hg38')</span></span>
-<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a><span class="co"># with open('annot_spermatid_expr_genes.pickle', 'wb') as f:</span></span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a><span class="co">#     pickle.dump(annot_spermatid_expr_genes, f)</span></span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a><span class="co"># # with open('annot_spermatid_expr_genes.pickle', 'rb') as f:</span></span>
-<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a><span class="co"># #     annot_spermatid_expr_genes = pickle.load(f)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-15" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> annot_spermatid_expr_genes</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> [a[:<span class="dv">3</span>] <span class="cf">for</span> a <span class="kw">in</span> annot <span class="cf">if</span> a[<span class="dv">0</span>] <span class="op">==</span> <span class="st">'chrX'</span>]</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>annot <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(<span class="bu">set</span>(annot)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="showing-data-on-ideograms" class="level2">
+<h2 class="anchored" data-anchor-id="showing-data-on-ideograms">Showing data on ideograms</h2>
+<div id="cell-18" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>gid.add_segments(segments, facecolor<span class="op">=</span><span class="st">'tab:blue'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-10-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
 </div>
-<div id="cell-16" class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>load_ext autoreload</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-17" class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_list <span class="op">=</span> []</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> chrom, length <span class="kw">in</span> GenomeIdeogram.chrom_lengths[<span class="st">'hg38'</span>].items():</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    sample <span class="op">=</span> length <span class="op">//</span> <span class="dv">500_000</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    Fs <span class="op">=</span> length</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    f <span class="op">=</span> np.linspace(<span class="dv">5</span>, <span class="dv">30</span>, sample)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.linspace(<span class="dv">0</span>, Fs, sample)</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.sin(<span class="dv">2</span><span class="op">*</span> np.pi <span class="op">*</span> f <span class="op">*</span> x <span class="op">/</span> Fs)</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    chrom <span class="op">=</span> [chrom]<span class="op">*</span>sample</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(x<span class="op">=</span>x, y<span class="op">=</span>y, chrom<span class="op">=</span>chrom)).sort_values(<span class="st">'x'</span>)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'start'</span>] <span class="op">=</span> df.x.shift()</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'end'</span>] <span class="op">=</span> df.x</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.iloc[<span class="dv">1</span>:<span class="op">-</span><span class="dv">1</span>, :]</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> stairs(df)</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    df_list.append(df)</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.concat(df_list)</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>segments <span class="op">=</span> [(<span class="st">'chrY'</span>, <span class="fl">25e6</span>, <span class="fl">55e6</span>), (<span class="st">'chrX'</span>, <span class="fl">98e6</span>, <span class="fl">102e6</span>), (<span class="st">'chr1'</span>, <span class="fl">25e6</span>, <span class="fl">55e6</span>), </span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'chr3'</span>, <span class="fl">98e6</span>, <span class="fl">102e6</span>), (<span class="st">'chr5'</span>, <span class="fl">78e6</span>, <span class="fl">110e6</span>), (<span class="st">'chr6'</span>, <span class="fl">8e6</span>, <span class="fl">10e6</span>), </span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>            (<span class="st">'chr12'</span>, <span class="fl">100e6</span>, <span class="fl">120e6</span>), (<span class="st">'chr19'</span>, <span class="fl">10e6</span>, <span class="fl">20e6</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-18" class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> GenomeIdeogram(axes_width_inches<span class="op">=</span><span class="dv">8</span>, axes_height_inches<span class="op">=</span><span class="fl">0.3</span>) </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="fl">0.3</span>, height<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>ci.add_segments(segments, facecolor<span class="op">=</span><span class="st">'tab:blue'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):</p>
+<div id="cell-20" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>segments_with_alpha <span class="op">=</span> [(<span class="op">*</span>t, np.random.random()) <span class="cf">for</span> t <span class="kw">in</span> segments]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>segments_with_alpha[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>[('chr1', 10065165, 12961789, 0.8436340944814724),
+ ('chr1', 15568967, 18751672, 0.9366558594839778),
+ ('chr1', 19444467, 23071285, 0.15548690510483776)]</code></pre>
+</div>
+</div>
+<div id="cell-21" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>gid.add_segments(segments_with_alpha, facecolor<span class="op">=</span><span class="st">'tab:blue'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-12-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>You can also make consequtive segments with individual alpha values to evalutate a statistic across the chromosomes. Below I make 100kb windows with sin values:</p>
+<div id="cell-23" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>length <span class="op">=</span> utils.chrom_lengths[<span class="st">'hg38'</span>][<span class="st">'chrX'</span>]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>win <span class="op">=</span> <span class="dv">100_000</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="bu">range</span>(<span class="dv">0</span>, length, win)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> np.linspace(<span class="dv">5</span>, <span class="dv">10</span>, <span class="bu">len</span>(x))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sin(<span class="dv">2</span><span class="op">*</span> np.pi <span class="op">*</span> f <span class="op">*</span> x <span class="op">/</span> length) <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span><span class="op">/</span><span class="dv">2</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>chrom <span class="op">=</span> [<span class="st">'chrX'</span>]<span class="op">*</span><span class="bu">len</span>(x)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>shaded_segments <span class="op">=</span> [(<span class="st">'chrX'</span>, s, s<span class="op">+</span>win, a) <span class="cf">for</span> s, a <span class="kw">in</span> <span class="bu">zip</span>(x, y)]</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>shaded_segments[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>[('chrX', 0, 100000, 0.5),
+ ('chrX', 100000, 200000, 0.5100723398623864),
+ ('chrX', 200000, 300000, 0.5201534872481727)]</code></pre>
+</div>
+</div>
+<div id="cell-24" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>) </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>cid.add_segments(shaded_segments, facecolor<span class="op">=</span><span class="st">'tab:red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-14-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="todo-the-segments-are-offset-on-x-and-y" class="level1">
+<h1>TODO: the segments are offset on X and Y!</h1>
+<p>Even better, you can use the <code>add_horizon</code> method to plot a horizon plot on the ideograms:</p>
+<div id="cell-27" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes(base<span class="op">=</span><span class="dv">3</span>, height<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>gid.add_horizon(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1383,11 +672,11 @@ drwxr-xr-x@ 23 kmt  staff   736B 25 Dec 11:05 ..
 </div>
 </div>
 </div>
-<div id="cell-19" class="cell" data-execution_count="42">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> GenomeIdeogram(axes_width_inches<span class="op">=</span><span class="dv">10</span>, axes_height_inches<span class="op">=</span><span class="fl">0.5</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>)) </span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">4</span>, height<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>ci.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>ci.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-28" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>gid.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'sin curve scatter'</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>gid.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1396,10 +685,11 @@ drwxr-xr-x@ 23 kmt  staff   736B 25 Dec 11:05 ..
 </div>
 </div>
 </div>
-<div id="cell-20" class="cell" data-execution_count="39">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> GenomeIdeogram(axes_width_inches<span class="op">=</span><span class="dv">10</span>, axes_height_inches<span class="op">=</span><span class="fl">0.4</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>)) </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">3</span>, height<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>ci.add_horizon(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-29" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>) </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>cid.map_fun(sns.lineplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>), linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'sin curve line'</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>cid.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1408,38 +698,29 @@ drwxr-xr-x@ 23 kmt  staff   736B 25 Dec 11:05 ..
 </div>
 </div>
 </div>
-<div id="cell-21" class="cell" data-execution_count="40">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> GenomeIdeogram(axes_width_inches<span class="op">=</span><span class="dv">10</span>, axes_height_inches<span class="op">=</span><span class="fl">0.4</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>)) </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">4</span>, height<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>ci.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>ci.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="chrom_ideograms_files/figure-html/cell-18-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
+<section id="labelled-positions" class="level3">
+<h3 class="anchored" data-anchor-id="labelled-positions">Labelled positions</h3>
+<div id="cell-31" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sample_genes <span class="op">=</span> lists.get(<span class="st">'neuron_genome_proteome'</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>sample_genes[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>['A1BG', 'A1CF', 'A2M']</code></pre>
 </div>
 </div>
-</div>
-<div id="cell-22" class="cell" data-execution_count="52">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> GenomeIdeogram(axes_width_inches<span class="op">=</span><span class="dv">10</span>, axes_height_inches<span class="op">=</span><span class="fl">0.4</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>), rel_font_height<span class="op">=</span><span class="fl">0.15</span>) </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>ticks <span class="op">=</span> [(c, s, <span class="ss">f'</span><span class="sc">{</span><span class="bu">int</span>(s<span class="op">/</span><span class="dv">1000000</span>)<span class="sc">}</span><span class="ss">'</span>) <span class="cf">for</span> c, l <span class="kw">in</span> GenomeIdeogram.chrom_lengths[<span class="st">'hg38'</span>].items() <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, l, <span class="dv">10_000_000</span>)]</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">4</span>, height<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>ci.add_labels(ticks)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="chrom_ideograms_files/figure-html/cell-19-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
+<div id="cell-32" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sample_gene_coord <span class="op">=</span> gi.gene_coord(random.sample(sample_genes, <span class="dv">100</span>), assembly<span class="op">=</span><span class="st">'hg38'</span>, pos_list<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>[('chr16', 285189, 'PDIA2'),
+ ('chr10', 1105264, 'WDR37'),
+ ('chr4', 2157019, 'POLN')]</code></pre>
 </div>
 </div>
-</div>
-<div id="cell-23" class="cell" data-execution_count="54">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> GenomeIdeogram(axes_width_inches<span class="op">=</span><span class="dv">10</span>, axes_height_inches<span class="op">=</span><span class="fl">0.5</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>), rel_font_height<span class="op">=</span><span class="fl">0.03</span>) </span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">4</span>, height<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>ci.add_vlines()</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>ci.legend()</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>ci.add_labels(annot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Add gene labels to positions:</p>
+<div id="cell-34" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1448,96 +729,12 @@ drwxr-xr-x@ 23 kmt  staff   736B 25 Dec 11:05 ..
 </div>
 </div>
 </div>
-<div id="cell-24" class="cell" data-execution_count="62">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>, axes_width_inches<span class="op">=</span><span class="dv">14</span>, axes_height_inches<span class="op">=</span><span class="dv">3</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">3</span>), rel_font_height<span class="op">=</span><span class="fl">0.03</span>) <span class="co"># plots chromosome</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.draw_chromosomes(base=1, height=0.10, facecolor='lightgray')</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">1</span>, height<span class="op">=</span><span class="fl">0.20</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>ci.add_labels(annot)</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>ci.add_segments([(<span class="st">'chrX'</span>, <span class="fl">25e6</span>, <span class="fl">55e6</span>), </span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">98e6</span>, <span class="fl">102e6</span>)], label<span class="op">=</span><span class="st">'segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>ci.add_segments([(<span class="st">'chrX'</span>, <span class="fl">115e6</span>, <span class="fl">135e6</span>)], facecolor<span class="op">=</span><span class="st">'red'</span>, base<span class="op">=</span><span class="dv">1</span>, height<span class="op">=</span><span class="fl">0.1</span>, label<span class="op">=</span><span class="st">'red segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>ci.add_segments([(<span class="st">'chrX'</span>, <span class="fl">125e6</span>, <span class="fl">145e6</span>)], facecolor<span class="op">=</span><span class="st">'green'</span>, base<span class="op">=</span><span class="fl">1.1</span>, height<span class="op">=</span><span class="fl">0.1</span>, label<span class="op">=</span><span class="st">'green segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>ci.add_segments([(<span class="st">'chrX'</span>, <span class="fl">35e6</span>, <span class="fl">45e6</span>), </span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">100e6</span>, <span class="fl">102e6</span>), </span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">120e6</span>, <span class="fl">132e6</span>)], facecolor<span class="op">=</span><span class="st">'blue'</span>, base<span class="op">=</span><span class="fl">0.8</span>, height<span class="op">=</span><span class="fl">0.1</span>, label<span class="op">=</span><span class="st">'blue segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>ci.add_vlines()</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using function that takes data and column name keyword args for dimensions (like seaborn's sns.scatterplot)</span></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>ci.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.1</span>, <span class="fl">0.3</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using matplotlib Axes method that x and y positional arguments (like matplotlib's Axes.scatter)</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>ci.legend()</span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="co">##########################################################################################</span></span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a><span class="co"># add axis</span></span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a><span class="co">##########################################################################################</span></span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>new_ax, new_ax2, new_ax3 <span class="op">=</span> ci.add_axes(<span class="dv">3</span>, height_ratio<span class="op">=</span><span class="fl">0.3</span>, hspace<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>new_ax.vlines(<span class="bu">list</span>(<span class="bu">range</span>(<span class="op">*</span><span class="bu">map</span>(<span class="bu">int</span>, new_ax.get_xlim()), <span class="dv">2_000_000</span>)), <span class="op">*</span>new_ax.get_ylim(), color<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.1</span>)</span>
-<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a><span class="co"># new_ax.plot(np.linspace(*new_ax.get_xlim(), 100), np.random.random(100), label='Line')</span></span>
-<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>_df <span class="op">=</span> stairs(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>])</span>
-<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>new_ax.plot(_df.pos, _df.y, label<span class="op">=</span><span class="st">'Stairs'</span>)</span>
-<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>new_ax.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
-<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a><span class="co"># new_ax2.scatter(np.linspace(*new_ax.get_xlim(), 100), np.random.random(100), s=5, label='Scatter')</span></span>
-<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>new_ax2.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
-<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>)</span>
-<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
-<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
-<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a><span class="co">#ci.map_method(Axes.plot, data=fit_lowess(df, 'x', 'y', frac=0.02), x='x', y='y', yaxis=(1.5, 2.4), c='red', label='Lowess')</span></span>
-<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a><span class="co">#horizon(df, y='y', ax=new_ax3)</span></span>
-<span id="cb25-50"><a href="#cb25-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-51"><a href="#cb25-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-52"><a href="#cb25-52" aria-hidden="true" tabindex="-1"></a><span class="co">##########################################################################################</span></span>
-<span id="cb25-53"><a href="#cb25-53" aria-hidden="true" tabindex="-1"></a><span class="co"># info annotation</span></span>
-<span id="cb25-54"><a href="#cb25-54" aria-hidden="true" tabindex="-1"></a><span class="co">##########################################################################################</span></span>
-<span id="cb25-55"><a href="#cb25-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-56"><a href="#cb25-56" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.text <span class="im">import</span> OffsetFrom</span>
-<span id="cb25-57"><a href="#cb25-57" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> textwrap</span>
-<span id="cb25-58"><a href="#cb25-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-59"><a href="#cb25-59" aria-hidden="true" tabindex="-1"></a>strs <span class="op">=</span> <span class="st">"DYNLT3: lka dflaks dlfkajs ldkajs dlfkajsd fasdfasdfl lakjsd las dflasd jflaksdj flaksjdf laksdjf laksdjf a flaksdj fla"</span></span>
-<span id="cb25-60"><a href="#cb25-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-61"><a href="#cb25-61" aria-hidden="true" tabindex="-1"></a>annot_kwargs<span class="op">=</span><span class="bu">dict</span>(fontsize<span class="op">=</span><span class="dv">5</span>, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"bottom"</span>,</span>
-<span id="cb25-62"><a href="#cb25-62" aria-hidden="true" tabindex="-1"></a>             bbox<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb25-63"><a href="#cb25-63" aria-hidden="true" tabindex="-1"></a>                 <span class="co"># fc="0.97", </span></span>
-<span id="cb25-64"><a href="#cb25-64" aria-hidden="true" tabindex="-1"></a>                 fc<span class="op">=</span><span class="st">"w"</span>,</span>
-<span id="cb25-65"><a href="#cb25-65" aria-hidden="true" tabindex="-1"></a>                 ec<span class="op">=</span><span class="st">"red"</span>,</span>
-<span id="cb25-66"><a href="#cb25-66" aria-hidden="true" tabindex="-1"></a>                       <span class="co"># alpha=0.2, </span></span>
-<span id="cb25-67"><a href="#cb25-67" aria-hidden="true" tabindex="-1"></a>                 linewidth<span class="op">=</span><span class="fl">0.7</span>),</span>
-<span id="cb25-68"><a href="#cb25-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-69"><a href="#cb25-69" aria-hidden="true" tabindex="-1"></a>    arrowprops<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb25-70"><a href="#cb25-70" aria-hidden="true" tabindex="-1"></a>        facecolor<span class="op">=</span><span class="st">'red'</span>, <span class="co"># color of arrow</span></span>
-<span id="cb25-71"><a href="#cb25-71" aria-hidden="true" tabindex="-1"></a>        shrink<span class="op">=</span><span class="fl">0.01</span>, <span class="co"># distance from point</span></span>
-<span id="cb25-72"><a href="#cb25-72" aria-hidden="true" tabindex="-1"></a>        width<span class="op">=</span><span class="fl">1.5</span>, <span class="co"># width of arrow</span></span>
-<span id="cb25-73"><a href="#cb25-73" aria-hidden="true" tabindex="-1"></a>        headwidth<span class="op">=</span><span class="dv">5</span>, <span class="co"># width of arrow head</span></span>
-<span id="cb25-74"><a href="#cb25-74" aria-hidden="true" tabindex="-1"></a>        headlength<span class="op">=</span><span class="dv">7</span>, <span class="co"># length of arrow head</span></span>
-<span id="cb25-75"><a href="#cb25-75" aria-hidden="true" tabindex="-1"></a>        connectionstyle<span class="op">=</span><span class="st">"angle3,angleA=0,angleB=-90"</span>, </span>
-<span id="cb25-76"><a href="#cb25-76" aria-hidden="true" tabindex="-1"></a>        <span class="co"># alpha=0.7,</span></span>
-<span id="cb25-77"><a href="#cb25-77" aria-hidden="true" tabindex="-1"></a>    ) </span>
-<span id="cb25-78"><a href="#cb25-78" aria-hidden="true" tabindex="-1"></a>                  </span>
-<span id="cb25-79"><a href="#cb25-79" aria-hidden="true" tabindex="-1"></a>             <span class="co"># arrowprops=dict(facecolor='red', arrowstyle="fancy", </span></span>
-<span id="cb25-80"><a href="#cb25-80" aria-hidden="true" tabindex="-1"></a>             <span class="co">#                 connectionstyle="angle3,angleA=0,angleB=-90", alpha=0.9)</span></span>
-<span id="cb25-81"><a href="#cb25-81" aria-hidden="true" tabindex="-1"></a>                  </span>
-<span id="cb25-82"><a href="#cb25-82" aria-hidden="true" tabindex="-1"></a>                 )</span>
-<span id="cb25-83"><a href="#cb25-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-84"><a href="#cb25-84" aria-hidden="true" tabindex="-1"></a>ci.ax.annotate(textwrap.fill(strs, <span class="dv">40</span>), xy<span class="op">=</span>(<span class="dv">60000000</span>, ci.map_y(<span class="fl">1.2</span>, ci.ax)), xytext<span class="op">=</span>(<span class="dv">30000000</span>, ci.map_y(<span class="fl">3.1</span>, ci.ax)), xycoords<span class="op">=</span><span class="st">"data"</span>, textcoords<span class="op">=</span><span class="st">"data"</span>, <span class="op">**</span>annot_kwargs)</span>
-<span id="cb25-85"><a href="#cb25-85" aria-hidden="true" tabindex="-1"></a>           </span>
-<span id="cb25-86"><a href="#cb25-86" aria-hidden="true" tabindex="-1"></a>ci.ax.annotate(textwrap.fill(strs, <span class="dv">40</span>), xy<span class="op">=</span>(<span class="dv">120000000</span>, ci.map_y(<span class="fl">1.2</span>, ci.ax)), xytext<span class="op">=</span>(<span class="dv">100000000</span>, ci.map_y(<span class="fl">3.1</span>, ci.ax)), xycoords<span class="op">=</span><span class="st">"data"</span>, textcoords<span class="op">=</span><span class="st">"data"</span>, <span class="op">**</span>annot_kwargs) <span class="op">;</span></span>
-<span id="cb25-87"><a href="#cb25-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-88"><a href="#cb25-88" aria-hidden="true" tabindex="-1"></a>new_ax.annotate(textwrap.fill(strs, <span class="dv">40</span>), xy<span class="op">=</span>(<span class="fl">0.8</span>, <span class="fl">0.7</span>), xytext<span class="op">=</span>(<span class="dv">800</span>, <span class="dv">200</span>), xycoords<span class="op">=</span><span class="st">"axes fraction"</span>,</span>
-<span id="cb25-89"><a href="#cb25-89" aria-hidden="true" tabindex="-1"></a>             textcoords<span class="op">=</span>OffsetFrom(new_ax.bbox, (<span class="dv">0</span>, <span class="dv">0</span>), <span class="st">"points"</span>), <span class="op">**</span>annot_kwargs) <span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can also use <code>add_labels</code> to add position markers along a chromosome like this to better see the location</p>
+<div id="cell-36" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram() </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>ticks <span class="op">=</span> [(c, s, <span class="ss">f'</span><span class="sc">{</span><span class="bu">round</span>(s<span class="op">/</span><span class="dv">1000000</span>, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">'</span>) <span class="cf">for</span> c, l <span class="kw">in</span> utils.chrom_lengths[<span class="st">'hg38'</span>].items() <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, l, <span class="dv">2_500_000</span>)]</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>gid.add_labels(ticks, base<span class="op">=</span>ci.ideogram_base, min_height<span class="op">=</span>ci.ideogram_height<span class="op">+</span><span class="dv">1</span>, color<span class="op">=</span><span class="st">'black'</span>, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1546,55 +743,15 @@ drwxr-xr-x@ 23 kmt  staff   736B 25 Dec 11:05 ..
 </div>
 </div>
 </div>
-<div id="cell-25" class="cell" data-execution_count="63">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># %autoreload 2</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> ChromIdeogram</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>, axes_width_inches<span class="op">=</span><span class="dv">14</span>, axes_height_inches<span class="op">=</span><span class="dv">4</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>), </span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                   rel_font_height<span class="op">=</span><span class="fl">0.01</span>, hspace<span class="op">=</span><span class="fl">0.2</span>, wspace<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                   zooms<span class="op">=</span>[(<span class="dv">45_000_000</span>, <span class="dv">55_000_000</span>), </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                          <span class="co"># (65_000_000, 90_000_000), </span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                           (<span class="dv">100_000_000</span>, <span class="dv">120_000_000</span>),</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                         ]) </span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="fl">3.5</span>, height<span class="op">=</span><span class="fl">0.5</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>ci.add_labels(annot, </span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>              colored <span class="op">=</span> xi_escape_genes,</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>              bold <span class="op">=</span> accel_reg_genes,</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="co">#              italic = spermatid_expr_genes,</span></span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>              filled <span class="op">=</span> cDEG_genes,</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="co">#              bold = nDEG_genes + nDEG_genes,</span></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>              <span class="co"># bold=['ZNF711', 'COX7B', 'PGK1'], </span></span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>              <span class="co"># italic = ['TBX22'], </span></span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>              <span class="co"># colored = ['NEXMIF', 'ATRX'],</span></span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>              <span class="co"># framed = ['MAOA', 'ATRX'],</span></span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>              <span class="co"># filled = ['PCDH19', 'ATRX'],</span></span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>             )</span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.map_fun(horizonplot, data=df, x='x', y='y', offset=0, height=1000000)</span></span>
-<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>ci.add_horizon(data<span class="op">=</span>df, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_segments([('chrX', 25e6, 55e6), </span></span>
-<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a><span class="co">#                  ('chrX', 98e6, 102e6)], label='segments', alpha=0.7)</span></span>
-<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_segments([('chrX', 115e6, 135e6)], facecolor='red', base=3.5, height=0.25, label='red segments', alpha=0.7)</span></span>
-<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_segments([('chrX', 125e6, 145e6)], facecolor='green', base=3.75, height=0.25, label='green segments', alpha=0.7)</span></span>
-<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_segments([('chrX', 35e6, 45e6), </span></span>
-<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a><span class="co">#                  ('chrX', 100e6, 102e6), </span></span>
-<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a><span class="co">#                  ('chrX', 120e6, 132e6)], facecolor='blue', base=3, height=0.25, label='blue segments', alpha=0.7)</span></span>
-<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>ci.add_vlines()</span>
-<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>ci.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
-<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
-<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.plot, data<span class="op">=</span>fit_lowess(df, <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.02</span>), x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
-<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_lowess(df.x, df.y, ax=new_ax2, frac=0.02, c='red', label='Lowess')</span></span>
-<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a>ci.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="todo-the-ticks-do-not-exactly-align-witht-the-x-axis" class="level1">
+<h1>TODO: the ticks do not exactly align witht the x axis!</h1>
+<p>Style label text and spine:</p>
+<div id="cell-39" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram(rel_font_height<span class="op">=</span><span class="fl">0.15</span>) </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord, color<span class="op">=</span><span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1603,8 +760,312 @@ drwxr-xr-x@ 23 kmt  staff   736B 25 Dec 11:05 ..
 </div>
 </div>
 </div>
+<p>Remove <code>color</code> keyword arguemnt and instead add random label text and spine colors to the <code>sample_gene_coord</code> tuples:</p>
+<div id="cell-41" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'hsv'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>[('chr16', 285189, 'PDIA2', '#ff00bf'),
+ ('chr10', 1105264, 'WDR37', '#ff0000'),
+ ('chr4', 2157019, 'POLN', '#08ff00')]</code></pre>
+</div>
+</div>
+<div id="cell-42" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram(rel_font_height<span class="op">=</span><span class="fl">0.15</span>) </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span>ci.ideogram_base, min_height<span class="op">=</span>ci.ideogram_height, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-24-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Or with a single color scale to visually evaluate significance:</p>
+<div id="cell-44" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>gid <span class="op">=</span> GenomeIdeogram(rel_font_height<span class="op">=</span><span class="fl">0.15</span>) </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>gid.draw_chromosomes()</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>gid.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span>ci.ideogram_base, min_height<span class="op">=</span>ci.ideogram_height, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-25-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-45" class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'viridis'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes()</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>ci.add_labels(sample_gene_coord_with_colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-26-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-46" class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">4</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_sizes <span class="op">=</span> [(<span class="op">*</span>t, <span class="st">'black'</span>, random.random()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>cid.add_labels(sample_gene_coord_with_sizes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-27-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="combinatorial-highlighting" class="level2">
+<h2 class="anchored" data-anchor-id="combinatorial-highlighting">Combinatorial highlighting</h2>
+<div id="cell-48" class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>cid.add_labels(sample_gene_coord,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-28-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-49" class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chr2'</span>, rel_font_height<span class="op">=</span><span class="fl">0.07</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>cid.add_labels(sample_gene_coord_with_sizes,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-29-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>You can do all the same things as with <code>GenomeIdeogram</code>:</p>
+<div id="cell-51" class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>cid <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>, rel_font_height<span class="op">=</span><span class="fl">0.05</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.draw_chromosomes(base=1, height=0.10, facecolor='lightgray')</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>cid.draw_chromosomes()</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>cid.add_labels(sample_gene_coord)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>cid.add_segments([(<span class="st">'chrX'</span>, <span class="fl">25e6</span>, <span class="fl">55e6</span>), </span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">98e6</span>, <span class="fl">102e6</span>)], label<span class="op">=</span><span class="st">'segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>cid.add_segments([(<span class="st">'chrX'</span>, <span class="fl">115e6</span>, <span class="fl">135e6</span>)], facecolor<span class="op">=</span><span class="st">'red'</span>, base<span class="op">=</span><span class="dv">4</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'red segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>cid.add_segments([(<span class="st">'chrX'</span>, <span class="fl">125e6</span>, <span class="fl">145e6</span>)], facecolor<span class="op">=</span><span class="st">'green'</span>, base<span class="op">=</span><span class="dv">5</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'green segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>cid.add_segments([(<span class="st">'chrX'</span>, <span class="fl">35e6</span>, <span class="fl">45e6</span>), </span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">100e6</span>, <span class="fl">102e6</span>), </span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">120e6</span>, <span class="fl">132e6</span>)], facecolor<span class="op">=</span><span class="st">'blue'</span>, base<span class="op">=</span><span class="dv">3</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'blue segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>cid.add_vlines()</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using function that takes data and column name keyword args for dimensions (like seaborn's sns.scatterplot)</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>cid.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using matplotlib Axes method that x and y positional arguments (like matplotlib's Axes.scatter)</span></span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>cid.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.5</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>cid.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-30-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="additional-axes" class="level3">
+<h3 class="anchored" data-anchor-id="additional-axes">Additional axes</h3>
+<div id="cell-53" class="cell" data-execution_count="39">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>) <span class="co"># plots chromosome</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>new_ax, new_ax2, new_ax3 <span class="op">=</span> ci.add_axes(<span class="dv">3</span>, height_ratio<span class="op">=</span><span class="fl">0.6</span>, hspace<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>_df <span class="op">=</span> stairs(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>])</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>new_ax.plot(_df.pos, _df.y, label<span class="op">=</span><span class="st">'Stairs'</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>new_ax.vlines(np.arange(<span class="op">*</span>new_ax.get_xlim(), <span class="dv">2_000_000</span>), <span class="op">*</span>new_ax.get_ylim(), color<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>new_ax.hlines(np.arange(<span class="op">*</span>new_ax.get_ylim(), <span class="dv">1</span>), <span class="op">*</span>new_ax.get_xlim(), color<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>new_ax.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>new_ax2.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>new_ax3.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.05</span>)</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>new_ax3.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>new_ax3.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.3</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-31-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="floating-annotations" class="level2">
+<h2 class="anchored" data-anchor-id="floating-annotations">Floating annotations</h2>
+<div id="cell-55" class="cell" data-execution_count="117">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>) </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>) </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>new_ax, new_ax2 <span class="op">=</span> ci.add_axes(<span class="dv">2</span>, height_ratio<span class="op">=</span><span class="fl">0.6</span>, hspace<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>_df <span class="op">=</span> stairs(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>])</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>new_ax.plot(_df.pos, _df.y, label<span class="op">=</span><span class="st">'Stairs'</span>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>new_ax.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>new_ax2.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.text <span class="im">import</span> OffsetFrom</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> textwrap</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>annot_kwargs<span class="op">=</span><span class="bu">dict</span>(fontsize<span class="op">=</span><span class="dv">7</span>, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"bottom"</span>,</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>                  bbox<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">"white"</span>, edgecolor<span class="op">=</span><span class="st">"red"</span>, linewidth<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>                  arrowprops<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">'red'</span>, <span class="co"># color of arrow</span></span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>                                  shrink<span class="op">=</span><span class="fl">0.01</span>, <span class="co"># distance from point</span></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>                                  width<span class="op">=</span><span class="fl">1.5</span>, <span class="co"># width of arrow</span></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>                                  headwidth<span class="op">=</span><span class="dv">5</span>, <span class="co"># width of arrow head</span></span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>                                  headlength<span class="op">=</span><span class="dv">7</span>, <span class="co"># length of arrow head</span></span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>                                  connectionstyle<span class="op">=</span><span class="st">"angle3,angleA=0,angleB=-90"</span>))</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.ax.annotate(textwrap.fill("This is the beginning of the chromosome.", 20), </span></span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a><span class="co">#                xy=(0, ci.map_y(4, ci.ax)), xycoords="data", </span></span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a><span class="co">#                # xytext=(10000000, ci.map_y(8, ci.ax)), textcoords="data", </span></span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a><span class="co">#                xytext=(50, 50), textcoords=OffsetFrom(ci.ax.bbox, (0, 0), "points"),</span></span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a><span class="co">#                **annot_kwargs)</span></span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.ax.annotate(textwrap.fill("This is the centromere.", 20),</span></span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a><span class="co">#                xy=(60000000, ci.map_y(4, ci.ax)), xycoords="data", </span></span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a><span class="co">#                # xytext=(40000000, ci.map_y(9, ci.ax)), textcoords="data", </span></span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a><span class="co">#                xytext=(261, 50), textcoords=OffsetFrom(ci.ax.bbox, (0, 0), "points"),</span></span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a><span class="co">#                **annot_kwargs) ;</span></span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a><span class="co"># new_ax2.annotate(textwrap.fill("This is something you might want to say about a plot in another axes", 30), </span></span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a><span class="co">#                 xy=(120000000, 1), xycoords="data",</span></span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a><span class="co">#                 xytext=(120000000/point_in_bases, ci.map_y(4, ci.ax)/point_in_bases), textcoords=OffsetFrom(ci.ax.bbox, (0, 0), "points"),</span></span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a><span class="co">#                 **annot_kwargs) ;</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> annotate(ax, point, testpos, text):</span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>    annot_kwargs<span class="op">=</span><span class="bu">dict</span>(fontsize<span class="op">=</span><span class="dv">7</span>, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"bottom"</span>,</span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>                  bbox<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">"white"</span>, edgecolor<span class="op">=</span><span class="st">"red"</span>, linewidth<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>                  arrowprops<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">'red'</span>, <span class="co"># color of arrow</span></span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>                                  shrink<span class="op">=</span><span class="fl">0.01</span>, <span class="co"># distance from point</span></span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>                                  width<span class="op">=</span><span class="fl">1.5</span>, <span class="co"># width of arrow</span></span>
+<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>                                  headwidth<span class="op">=</span><span class="dv">5</span>, <span class="co"># width of arrow head</span></span>
+<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>                                  headlength<span class="op">=</span><span class="dv">7</span>, <span class="co"># length of arrow head</span></span>
+<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a>                                  connectionstyle<span class="op">=</span><span class="st">"angle3,angleA=0,angleB=-90"</span>))</span>
+<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> ci.fig</span>
+<span id="cb37-56"><a href="#cb37-56" aria-hidden="true" tabindex="-1"></a>    bbox <span class="op">=</span> ci.ax.get_window_extent()</span>
+<span id="cb37-57"><a href="#cb37-57" aria-hidden="true" tabindex="-1"></a>    dpi <span class="op">=</span> fig.dpi</span>
+<span id="cb37-58"><a href="#cb37-58" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> bbox.height <span class="op">/</span> dpi  <span class="co"># in inches</span></span>
+<span id="cb37-59"><a href="#cb37-59" aria-hidden="true" tabindex="-1"></a>    width <span class="op">=</span> bbox.width <span class="op">/</span> dpi  <span class="co"># in inches</span></span>
+<span id="cb37-60"><a href="#cb37-60" aria-hidden="true" tabindex="-1"></a>    point_in_bases <span class="op">=</span> ci.ax.get_xlim()[<span class="dv">1</span>]<span class="op">/</span>(width<span class="op">*</span><span class="dv">72</span>)</span>
+<span id="cb37-61"><a href="#cb37-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ax <span class="op">==</span> ci.ax:</span>
+<span id="cb37-62"><a href="#cb37-62" aria-hidden="true" tabindex="-1"></a>       point <span class="op">=</span> (point[<span class="dv">0</span>], ci.map_y(point[<span class="dv">1</span>], ci.ax))</span>
+<span id="cb37-63"><a href="#cb37-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-64"><a href="#cb37-64" aria-hidden="true" tabindex="-1"></a>    ax.annotate(textwrap.fill(text, <span class="dv">30</span>), </span>
+<span id="cb37-65"><a href="#cb37-65" aria-hidden="true" tabindex="-1"></a>                xy<span class="op">=</span>point, </span>
+<span id="cb37-66"><a href="#cb37-66" aria-hidden="true" tabindex="-1"></a>                xycoords<span class="op">=</span><span class="st">"data"</span>,</span>
+<span id="cb37-67"><a href="#cb37-67" aria-hidden="true" tabindex="-1"></a>                xytext<span class="op">=</span>(testpos[<span class="dv">0</span>]<span class="op">/</span>point_in_bases, ci.map_y(testpos[<span class="dv">1</span>], ci.ax)<span class="op">/</span>point_in_bases), textcoords<span class="op">=</span>OffsetFrom(ci.ax.bbox, (<span class="dv">0</span>, <span class="dv">0</span>), <span class="st">"points"</span>),</span>
+<span id="cb37-68"><a href="#cb37-68" aria-hidden="true" tabindex="-1"></a>                <span class="op">**</span>annot_kwargs) <span class="op">;</span></span>
+<span id="cb37-69"><a href="#cb37-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-70"><a href="#cb37-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-71"><a href="#cb37-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-72"><a href="#cb37-72" aria-hidden="true" tabindex="-1"></a>annotate(ci.ax, (<span class="dv">0</span>, <span class="dv">4</span>), (<span class="dv">10000000</span>, <span class="dv">4</span>), <span class="st">"This is the beginning of the chromosome"</span>)</span>
+<span id="cb37-73"><a href="#cb37-73" aria-hidden="true" tabindex="-1"></a>annotate(ci.ax, (<span class="dv">61000000</span>, <span class="dv">4</span>), (<span class="dv">40000000</span>, <span class="dv">4</span>), <span class="st">"This is the centromere"</span>)</span>
+<span id="cb37-74"><a href="#cb37-74" aria-hidden="true" tabindex="-1"></a>annotate(new_ax2, (<span class="dv">90000000</span>, <span class="dv">1</span>), (<span class="dv">90000000</span>, <span class="dv">5</span>), <span class="st">"Something important in another axes"</span>)</span>
+<span id="cb37-75"><a href="#cb37-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-76"><a href="#cb37-76" aria-hidden="true" tabindex="-1"></a><span class="co"># fig = ci.fig</span></span>
+<span id="cb37-77"><a href="#cb37-77" aria-hidden="true" tabindex="-1"></a><span class="co"># bbox = ci.ax.get_window_extent()</span></span>
+<span id="cb37-78"><a href="#cb37-78" aria-hidden="true" tabindex="-1"></a><span class="co"># dpi = fig.dpi</span></span>
+<span id="cb37-79"><a href="#cb37-79" aria-hidden="true" tabindex="-1"></a><span class="co"># height = bbox.height / dpi  # in inches</span></span>
+<span id="cb37-80"><a href="#cb37-80" aria-hidden="true" tabindex="-1"></a><span class="co"># width = bbox.width / dpi  # in inches</span></span>
+<span id="cb37-81"><a href="#cb37-81" aria-hidden="true" tabindex="-1"></a><span class="co"># point_in_bases = ci.ax.get_xlim()[1]/(width*72)</span></span>
+<span id="cb37-82"><a href="#cb37-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-83"><a href="#cb37-83" aria-hidden="true" tabindex="-1"></a><span class="co"># 500* point_in_bases</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chrom_ideograms_files/figure-html/cell-32-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-56" class="cell" data-execution_count="61">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="dv">11</span> <span class="op">*</span> <span class="dv">72</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="61">
+<pre><code>720</code></pre>
+</div>
+</div>
+</section>
+<section id="zooms" class="level2">
+<h2 class="anchored" data-anchor-id="zooms">Zooms</h2>
+<div id="cell-58" class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> ChromIdeogram</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> ChromIdeogram(<span class="st">'chrX'</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>                   rel_font_height<span class="op">=</span><span class="fl">0.01</span>, </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>                   zooms<span class="op">=</span>[(<span class="dv">45_000_000</span>, <span class="dv">55_000_000</span>), </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>                          <span class="co"># (65_000_000, 90_000_000), </span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>                           (<span class="dv">100_000_000</span>, <span class="dv">120_000_000</span>),</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>                         ]) </span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>ci.draw_chromosomes(base<span class="op">=</span><span class="fl">3.5</span>, height<span class="op">=</span><span class="dv">1</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>ci.add_horizon(data<span class="op">=</span>df, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co">#ci.add_vlines()</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>ci.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>ci.map_method(Axes.plot, data<span class="op">=</span>fit_lowess(df, <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.02</span>), x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ci.add_lowess(df.x, df.y, ax=new_ax2, frac=0.02, c='red', label='Lowess')</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>ci.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

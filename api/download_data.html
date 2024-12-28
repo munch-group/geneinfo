@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../api/show_go_dag_for_gene.html" rel="next">
+<link href="../api/email.html" rel="next">
 <link href="../api/symbols_protein_coding.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -128,6 +128,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li class="nav-item">
     <a class="nav-link" href="../api/"> 
 <span class="menu-text">API reference</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery/"> 
+<span class="menu-text">Gallery</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
@@ -205,8 +209,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/chrom_ideogram.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">chrom_ideogram</span></a>
+  <a href="../api/GenomeIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GenomeIdeogram</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/ChromIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ChromIdeogram</span></a>
   </div>
 </li>
       </ul>
@@ -391,6 +401,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">email</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../api/show_go_dag_for_gene.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">show_go_dag_for_gene</span></a>
   </div>
@@ -449,14 +465,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">email</span></a>
+  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">tabulate_genes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">tabulate_genes</span></a>
+  <a href="../api/horizon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">horizon</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/stairs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">stairs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/clear_cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">clear_cache</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GeneList.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GeneList</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GoogleSheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GoogleSheet</span></a>
   </div>
 </li>
       </ul>
@@ -471,7 +511,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#geneinfo.download_data" id="toc-geneinfo.download_data" class="nav-link active" data-scroll-target="#geneinfo.download_data">download_data</a></li>
+  <li><a href="#geneinfo.ontology.download_data" id="toc-geneinfo.ontology.download_data" class="nav-link active" data-scroll-target="#geneinfo.ontology.download_data">download_data</a></li>
   </ul>
 </nav>
     </div>
@@ -481,9 +521,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="geneinfo.download_data" class="level1">
+<section id="geneinfo.ontology.download_data" class="level1">
 <h1>download_data</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.download_data(prt<span class="op">=</span>sys.stdout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.ontology.download_data(prt<span class="op">=</span>sys.stdout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
@@ -913,8 +953,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../api/show_go_dag_for_gene.html" class="pagination-link" aria-label="show_go_dag_for_gene">
-        <span class="nav-page-text">show_go_dag_for_gene</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../api/email.html" class="pagination-link" aria-label="email">
+        <span class="nav-page-text">email</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -64,7 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../api/email.html" rel="prev">
+<link href="../api/horizon.html" rel="next">
+<link href="../api/gene_annotation_table.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -128,6 +129,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../api/"> 
 <span class="menu-text">API reference</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery/"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -146,7 +151,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/email.html">Utilities</a></li><li class="breadcrumb-item"><a href="../api/tabulate_genes.html">tabulate_genes</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/tabulate_genes.html">Utilities</a></li><li class="breadcrumb-item"><a href="../api/tabulate_genes.html">tabulate_genes</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -204,8 +209,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/chrom_ideogram.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">chrom_ideogram</span></a>
+  <a href="../api/GenomeIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GenomeIdeogram</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/ChromIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ChromIdeogram</span></a>
   </div>
 </li>
       </ul>
@@ -390,6 +401,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">email</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../api/show_go_dag_for_gene.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">show_go_dag_for_gene</span></a>
   </div>
@@ -448,14 +465,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">email</span></a>
+  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">tabulate_genes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">tabulate_genes</span></a>
+  <a href="../api/horizon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">horizon</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/stairs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">stairs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/clear_cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">clear_cache</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GeneList.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GeneList</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GoogleSheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GoogleSheet</span></a>
   </div>
 </li>
       </ul>
@@ -470,19 +511,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#geneinfo.tabulate_genes" id="toc-geneinfo.tabulate_genes" class="nav-link active" data-scroll-target="#geneinfo.tabulate_genes">tabulate_genes</a></li>
+  <li><a href="#geneinfo.utils.tabulate_genes" id="toc-geneinfo.utils.tabulate_genes" class="nav-link active" data-scroll-target="#geneinfo.utils.tabulate_genes">tabulate_genes</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/email.html">Utilities</a></li><li class="breadcrumb-item"><a href="../api/tabulate_genes.html">tabulate_genes</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/tabulate_genes.html">Utilities</a></li><li class="breadcrumb-item"><a href="../api/tabulate_genes.html">tabulate_genes</a></li></ol></nav></header>
 
 
 
 
-<section id="geneinfo.tabulate_genes" class="level1">
+<section id="geneinfo.utils.tabulate_genes" class="level1">
 <h1>tabulate_genes</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.tabulate_genes(words, ncols<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.utils.tabulate_genes(words, ncols<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
@@ -907,11 +948,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../api/email.html" class="pagination-link" aria-label="email">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">email</span>
+      <a href="../api/gene_annotation_table.html" class="pagination-link" aria-label="gene_annotation_table">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">gene_annotation_table</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../api/horizon.html" class="pagination-link" aria-label="horizon">
+        <span class="nav-page-text">horizon</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

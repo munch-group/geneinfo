@@ -94,6 +94,10 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="../api/"> 
 <span class="menu-text">API reference</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery/"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -170,8 +174,14 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/chrom_ideogram.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">chrom_ideogram</span></a>
+  <a href="../api/GenomeIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GenomeIdeogram</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/ChromIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ChromIdeogram</span></a>
   </div>
 </li>
       </ul>
@@ -356,6 +366,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">email</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../api/show_go_dag_for_gene.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">show_go_dag_for_gene</span></a>
   </div>
@@ -414,14 +430,38 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">email</span></a>
+  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">tabulate_genes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/tabulate_genes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">tabulate_genes</span></a>
+  <a href="../api/horizon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">horizon</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/stairs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">stairs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/clear_cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">clear_cache</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GeneList.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GeneList</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GoogleSheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GoogleSheet</span></a>
   </div>
 </li>
       </ul>
@@ -482,12 +522,16 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/gene_plot.html#geneinfo.gene_plot">gene_plot</a></td>
+<td><a href="../api/gene_plot.html#geneinfo.plot.gene_plot">gene_plot</a></td>
 <td>Plots gene ideograms for a chromosomal region and returns axes for</td>
 </tr>
 <tr class="even">
-<td><a href="../api/chrom_ideogram.html#geneinfo.chrom_ideogram">chrom_ideogram</a></td>
-<td>Plots an ideogram of the human chromosomes with annotations.</td>
+<td><a href="../api/GenomeIdeogram.html#geneinfo.plot.GenomeIdeogram">GenomeIdeogram</a></td>
+<td>Class to plot ideograms of chromosomes in a genome assembly.</td>
+</tr>
+<tr class="odd">
+<td><a href="../api/ChromIdeogram.html#geneinfo.plot.ChromIdeogram">ChromIdeogram</a></td>
+<td>Child class of GenomeIdeogram for plotting single chromosome ideograms.</td>
 </tr>
 </tbody>
 </table>
@@ -498,15 +542,15 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/gene_coord.html#geneinfo.gene_coord">gene_coord</a></td>
-<td>Retrieves genome (<code>chrom</code>, <code>start</code>, <code>end</code>) coordinates one or more genes.</td>
+<td><a href="../api/gene_coord.html#geneinfo.information.gene_coord">gene_coord</a></td>
+<td>Retrieves genome coordinates one or more genes.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/get_genes_region.html#geneinfo.get_genes_region">get_genes_region</a></td>
+<td><a href="../api/get_genes_region.html#geneinfo.information.get_genes_region">get_genes_region</a></td>
 <td>Gets gene structure information for genes in a chromosomal region.</td>
 </tr>
 <tr class="odd">
-<td><a href="../api/get_genes_region_dataframe.html#geneinfo.get_genes_region_dataframe">get_genes_region_dataframe</a></td>
+<td><a href="../api/get_genes_region_dataframe.html#geneinfo.information.get_genes_region_dataframe">get_genes_region_dataframe</a></td>
 <td>Gets gene structure information for genes in a chromosomal region in the form</td>
 </tr>
 </tbody>
@@ -518,19 +562,19 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/ensembl_id.html#geneinfo.ensembl_id">ensembl_id</a></td>
+<td><a href="../api/ensembl_id.html#geneinfo.information.ensembl_id">ensembl_id</a></td>
 <td>Get ENSEMBL ID for some gene identifier</td>
 </tr>
 <tr class="even">
-<td><a href="../api/hgcn_symbol.html#geneinfo.hgcn_symbol">hgcn_symbol</a></td>
+<td><a href="../api/hgcn_symbol.html#geneinfo.information.hgcn_symbol">hgcn_symbol</a></td>
 <td>Get HGCN gene symbol for some gene identifier</td>
 </tr>
 <tr class="odd">
-<td><a href="../api/ensembl2symbol.html#geneinfo.ensembl2symbol">ensembl2symbol</a></td>
+<td><a href="../api/ensembl2symbol.html#geneinfo.information.ensembl2symbol">ensembl2symbol</a></td>
 <td>Converts ENSEMBL ID to gene HGCN gene symbol</td>
 </tr>
 <tr class="even">
-<td><a href="../api/ensembl2ncbi.html#geneinfo.ensembl2ncbi">ensembl2ncbi</a></td>
+<td><a href="../api/ensembl2ncbi.html#geneinfo.information.ensembl2ncbi">ensembl2ncbi</a></td>
 <td>Converts ENSEMBL ID to gene NCBI ID</td>
 </tr>
 </tbody>
@@ -542,11 +586,11 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/string_network_table.html#geneinfo.string_network_table">string_network_table</a></td>
+<td><a href="../api/string_network_table.html#geneinfo.string.string_network_table">string_network_table</a></td>
 <td>Retrieves STRING network for a list of genes and returns it as a pandas.DataFrame.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/show_string_network.html#geneinfo.show_string_network">show_string_network</a></td>
+<td><a href="../api/show_string_network.html#geneinfo.string.show_string_network">show_string_network</a></td>
 <td>Display STRING network for a list of genes.</td>
 </tr>
 </tbody>
@@ -558,27 +602,27 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/go_info.html#geneinfo.go_info">go_info</a></td>
+<td><a href="../api/go_info.html#geneinfo.ontology.go_info">go_info</a></td>
 <td>Displays HML formatted information about the given GO terms.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/go_term2name.html#geneinfo.go_term2name">go_term2name</a></td>
+<td><a href="../api/go_term2name.html#geneinfo.ontology.go_term2name">go_term2name</a></td>
 <td>Converts a GO term to its name.</td>
 </tr>
 <tr class="odd">
-<td><a href="../api/go_name2term.html#geneinfo.go_name2term">go_name2term</a></td>
+<td><a href="../api/go_name2term.html#geneinfo.ontology.go_name2term">go_name2term</a></td>
 <td>Converts a GO term name to its term.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/get_go_terms_for_genes.html#geneinfo.get_go_terms_for_genes">get_go_terms_for_genes</a></td>
+<td><a href="../api/get_go_terms_for_genes.html#geneinfo.ontology.get_go_terms_for_genes">get_go_terms_for_genes</a></td>
 <td>Get the union of GO terms for a list of genes.</td>
 </tr>
 <tr class="odd">
-<td><a href="../api/get_terms_for_go_regex.html#geneinfo.get_terms_for_go_regex">get_terms_for_go_regex</a></td>
+<td><a href="../api/get_terms_for_go_regex.html#geneinfo.ontology.get_terms_for_go_regex">get_terms_for_go_regex</a></td>
 <td>Get GO terms for terms matching a regular expression in their description string.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/go_annotation_table.html#geneinfo.go_annotation_table">go_annotation_table</a></td>
+<td><a href="../api/go_annotation_table.html#geneinfo.ontology.go_annotation_table">go_annotation_table</a></td>
 <td>GO annotations for a given taxonomy id as a pandas.DataFrame.</td>
 </tr>
 </tbody>
@@ -590,19 +634,19 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/go_enrichment.html#geneinfo.go_enrichment">go_enrichment</a></td>
+<td><a href="../api/go_enrichment.html#geneinfo.ontology.go_enrichment">go_enrichment</a></td>
 <td>Runs a GO enrichment analysis.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/show_go_evidence_codes.html#geneinfo.show_go_evidence_codes">show_go_evidence_codes</a></td>
+<td><a href="../api/show_go_evidence_codes.html#geneinfo.ontology.show_go_evidence_codes">show_go_evidence_codes</a></td>
 <td>Display list of GO evidence categories and their codes.</td>
 </tr>
 <tr class="odd">
-<td><a href="../api/symbols_protein_coding.html#geneinfo.symbols_protein_coding">symbols_protein_coding</a></td>
+<td><a href="../api/symbols_protein_coding.html#geneinfo.ontology.symbols_protein_coding">symbols_protein_coding</a></td>
 <td>List of protein coding gene symbols for a given taxonomy id.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/download_data.html#geneinfo.download_data">download_data</a></td>
+<td><a href="../api/download_data.html#geneinfo.ontology.download_data">download_data</a></td>
 <td></td>
 </tr>
 </tbody>
@@ -614,15 +658,19 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/show_go_dag_for_gene.html#geneinfo.show_go_dag_for_gene">show_go_dag_for_gene</a></td>
-<td>Displays GO graph for a given gene.</td>
+<td><a href="../api/email.html#geneinfo.ontology.email">email</a></td>
+<td>Registers your email address for Entrez queries. Thay way, NCBI will contect you</td>
 </tr>
 <tr class="even">
-<td><a href="../api/show_go_dag_for_terms.html#geneinfo.show_go_dag_for_terms">show_go_dag_for_terms</a></td>
-<td>Display GO graph for a list of GO terms.</td>
+<td><a href="../api/show_go_dag_for_gene.html#geneinfo.ontology.show_go_dag_for_gene">show_go_dag_for_gene</a></td>
+<td>Displays GO graph for a given gene.</td>
 </tr>
 <tr class="odd">
-<td><a href="../api/show_go_dag_enrichment_results.html#geneinfo.show_go_dag_enrichment_results">show_go_dag_enrichment_results</a></td>
+<td><a href="../api/show_go_dag_for_terms.html#geneinfo.ontology.show_go_dag_for_terms">show_go_dag_for_terms</a></td>
+<td>Display GO graph for a list of GO terms.</td>
+</tr>
+<tr class="even">
+<td><a href="../api/show_go_dag_enrichment_results.html#geneinfo.ontology.show_go_dag_enrichment_results">show_go_dag_enrichment_results</a></td>
 <td>Displays a GO enrichment analysis results.</td>
 </tr>
 </tbody>
@@ -634,15 +682,15 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/get_genes_for_go_regex.html#geneinfo.get_genes_for_go_regex">get_genes_for_go_regex</a></td>
+<td><a href="../api/get_genes_for_go_regex.html#geneinfo.ontology.get_genes_for_go_regex">get_genes_for_go_regex</a></td>
 <td>Get gene information for GO terms matching a regular expression in their description string.</td>
 </tr>
 <tr class="even">
-<td><a href="../api/get_genes_for_go_terms.html#geneinfo.get_genes_for_go_terms">get_genes_for_go_terms</a></td>
+<td><a href="../api/get_genes_for_go_terms.html#geneinfo.ontology.get_genes_for_go_terms">get_genes_for_go_terms</a></td>
 <td>Get gene information for genes with specified GO terms.</td>
 </tr>
 <tr class="odd">
-<td><a href="../api/gene_annotation_table.html#geneinfo.gene_annotation_table">gene_annotation_table</a></td>
+<td><a href="../api/gene_annotation_table.html#geneinfo.ontology.gene_annotation_table">gene_annotation_table</a></td>
 <td>Gene annotations for a given taxonomy id as a pandas.DataFrame.</td>
 </tr>
 </tbody>
@@ -654,11 +702,27 @@ ul.task-list li input[type="checkbox"] {
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
-<td><a href="../api/email.html#geneinfo.email">email</a></td>
-<td>Registers your email address for Entrez queries. Thay way, NCBI will contect you</td>
+<td><a href="../api/tabulate_genes.html#geneinfo.utils.tabulate_genes">tabulate_genes</a></td>
+<td></td>
 </tr>
 <tr class="even">
-<td><a href="../api/tabulate_genes.html#geneinfo.tabulate_genes">tabulate_genes</a></td>
+<td><a href="../api/horizon.html#geneinfo.utils.horizon">horizon</a></td>
+<td>Horizon bar plot made allowing multiple chromosomes and multiple samples.</td>
+</tr>
+<tr class="odd">
+<td><a href="../api/stairs.html#geneinfo.utils.stairs">stairs</a></td>
+<td>Turn a df with start, end into one with pos to plot as stairs</td>
+</tr>
+<tr class="even">
+<td><a href="../api/clear_cache.html#geneinfo.utils.clear_cache">clear_cache</a></td>
+<td>Clear the cache of a shelve file.</td>
+</tr>
+<tr class="odd">
+<td><a href="../api/GeneList.html#geneinfo.utils.GeneList">GeneList</a></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><a href="../api/GoogleSheet.html#geneinfo.utils.GoogleSheet">GoogleSheet</a></td>
 <td></td>
 </tr>
 </tbody>
