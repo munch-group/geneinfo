@@ -1,6 +1,7 @@
 jupyter
 ipython
 matplotlib>=3.0
+seaborn
 numpy>=1.1
 requests
 biopython
