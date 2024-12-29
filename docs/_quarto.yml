@@ -73,7 +73,7 @@ website:
           contents:
             - pages/cashing.ipynb                   
 
-
+lightbox: true
 
 format:
   html:
