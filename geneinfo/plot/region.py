@@ -9,36 +9,44 @@ import matplotlib.axes
 import matplotlib.pyplot as plt
 
 from ..intervals import *
+from ..information import get_genes_region
 
-def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, min_visible_width, font_size, ax, highlight=False, clip_on=True):
+def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, 
+               min_visible_width, font_size, ax, highlight=False, clip_on=True):
 
     color='black'
 
-    line = ax.plot([txstart, txend], [offset, offset], color=color, linewidth=line_width/5, alpha=0.5)
+    line = ax.plot([txstart, txend], [offset, offset], color=color, 
+                   linewidth=line_width/5, alpha=0.5)
     line[0].set_solid_capstyle('butt')
 
     for start, end in exons:
         end = max(start+min_visible_width, end)
-        line = ax.plot([start, end], [offset, offset], linewidth=line_width, color=color)
+        line = ax.plot([start, end], [offset, offset], linewidth=line_width, 
+                       color=color)
         line[0].set_solid_capstyle('butt')
         
     if highlight is True:
-        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', 
-            fontsize=font_size, clip_on=clip_on,
-            weight='bold', color='red')
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', 
+                verticalalignment='center', fontsize=font_size, clip_on=clip_on,
+                weight='bold', color='red')
     elif type(highlight) is dict:
-        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center',
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', 
+                verticalalignment='center',
             fontsize=font_size, clip_on=clip_on, 
             **highlight)
     else:
-        ax.text(txstart, offset-.5, name, horizontalalignment='right', verticalalignment='center', 
-            fontsize=font_size, color=color, clip_on=clip_on)
+        ax.text(txstart, offset-.5, name, horizontalalignment='right', 
+                verticalalignment='center', fontsize=font_size, color=color, 
+                clip_on=clip_on)
 
 
-def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=[], db:str='ncbiRefSeq', 
-                collapse_splice_var:bool=True, hard_limits:bool=False, exact_exons:bool=False, 
-                figsize:tuple=None, aspect:float=1, despine:bool=False, clip_on:bool=True, 
-                gene_density:float=60, font_size:int=None, return_axes:int=1) -> Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]]:
+def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=[], 
+              db:str='ncbiRefSeq', collapse_splice_var:bool=True, 
+              hard_limits:bool=False, exact_exons:bool=False, figsize:tuple=None, 
+              aspect:float=1, despine:bool=False, clip_on:bool=True, 
+              gene_density:float=60, font_size:int=None, return_axes:int=1
+              ) -> Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]]:
     """
     Plots gene ideograms for a chromosomal region and returns axes for 
     plotting along the same chromosome coordinates.
@@ -54,29 +62,37 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
     assembly : 
         Genome assembly identifier
     highlight : 
-        List or dictionary of genes to highlight on gene plot (see Examples), by default []
+        List or dictionary of genes to highlight on gene plot (see Examples), 
+        by default []
     db : 
         Database to search, by default 'ncbiRefSeq'
     collapse_splice_var : 
-        Whether to collapse splice variants into a single string of exons, by default True
+        Whether to collapse splice variants into a single string of exons, 
+        by default True
     hard_limits : 
-        Whether to truncate plot in the middle of a gene, by default False so that genes are fully plotted.
+        Whether to truncate plot in the middle of a gene, by default False so 
+        that genes are fully plotted.
     exact_exons : 
-        Whether to plot exon coordinates exatly, by default False so that exons are plotted as a minimum width.
+        Whether to plot exon coordinates exactly, by default False so that exons 
+        are plotted as a minimum width.
     figsize : 
-        Figure size specifified as a (width, height) tuple, by default None honering the default matplotlib settings.
+        Figure size specified as a (width, height) tuple, by default None 
+        honoring the default matplotlib settings.
     aspect : 
-        Size of gene plot height relative to the total height of the other axes, by default 1
+        Size of gene plot height relative to the total height of the other axes, 
+        by default 1
     despine : 
-        Wheher to remove top and right frame borders, by default False
+        Whether to remove top and right frame borders, by default False
     clip_on : 
         Argument passed to axes.Text, by default True
     gene_density : 
         Controls the density of gene ideograms in the plot, by default 60
     font_size : 
-        Gene label font size, by default None, in which case it is calculated based on the region size.
+        Gene label font size, by default None, in which case it is calculated 
+        based on the region size.
     return_axes : 
-        The number of vertically stacked axes to return for plotting over the gene plot, by default 1
+        The number of vertically stacked axes to return for plotting over the 
+        gene plot, by default 1
 
     Returns
     -------
@@ -99,11 +115,14 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
     ax.scatter(chrom_coordinates, values)
 
     # Highlight genes with custom styles
-    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})
+    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', 
+                    highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})
     ax.scatter(chrom_coordinates, values)
 
     # Muli-gene highlight with custom styles
-    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 'BRCA1': {'color': 'red'}})
+    ax = gene_plot('chr1', 1000000, 2000000, 'hg38', 
+                    highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 
+                               'BRCA1': {'color': 'red'}})
     ax.scatter(chrom_coordinates, values)
 
     # Multipel axes for plotting over gene plot
@@ -123,7 +142,9 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
     global CACHE
 
     fig, axes = plt.subplots(return_axes+1, 1, figsize=figsize, sharex='col', 
-                                    sharey='row', gridspec_kw={'height_ratios': [1/return_axes]*return_axes + [aspect]})
+                             sharey='row', 
+                             gridspec_kw={'height_ratios': 
+                                          [1/return_axes]*return_axes + [aspect]})
     plt.subplots_adjust(wspace=0, hspace=0.15)
 
     if (chrom, start, end, assembly) in CACHE:
@@ -166,7 +187,8 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
                 not intersect([gene_interval], plotted_intervals[offset+3]):
                 break
         if plotted_intervals[offset]:
-            plotted_intervals[offset] = union(plotted_intervals[offset], [gene_interval])
+            plotted_intervals[offset] = union(plotted_intervals[offset], 
+                                              [gene_interval])
         else:
             plotted_intervals[offset] = [gene_interval]
 

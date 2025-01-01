@@ -24,7 +24,8 @@ from goatools.go_enrichment import GOEnrichmentRecord
 from goatools.anno.genetogo_reader import Gene2GoReader
 from goatools.go_search import GoSearch
 from goatools.godag.go_tasks import CurNHigher
-from goatools.godag_plot import plot_gos, plot_goid2goobj, plot_results, plt_goea_results
+from goatools.godag_plot import (plot_gos, plot_goid2goobj, plot_results, 
+                                 plt_goea_results)
 
 from Bio import Entrez
 
@@ -35,8 +36,8 @@ from ..information import hgcn_symbol, ensembl_id, NotFound
 
 def email(email_address:str) -> None:
     """
-    Registers your email address for Entrez queries. Thay way, NCBI will contect you
-    before closeing your connection if you are making too many queries.
+    Registers your email address for Entrez queries. Thay way, NCBI will contect 
+    you before closeing your connection if you are making too many queries.
 
     Parameters
     ----------
@@ -60,7 +61,8 @@ def download_ncbi_associations(prt=sys.stdout):
     if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
 
     if not os.path.exists('geneinfo_cache/gene2go'):
-        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/gene2go.gz', 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
+        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/gene2go.gz',
+                                    'https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
@@ -85,7 +87,8 @@ def download_and_move_go_basic_obo(prt=sys.stdout):
     if not os.path.exists('geneinfo_cache/go-basic.obo'):
         # obo_fname = download_go_basic_obo(prt=prt)
         # shutil.move('go-basic.obo', 'geneinfo_cache/go-basic.obo')
-        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/go-basic.obo', 'https://purl.obolibrary.org/obo/go/go-basic.obo'],
+        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/go-basic.obo',
+                                    'https://purl.obolibrary.org/obo/go/go-basic.obo'],
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
@@ -105,10 +108,12 @@ def download_data(prt=sys.stdout):
 def _fetch_ids_to_file(id_list, output_file_name):
 
     with open(output_file_name, 'w') as f:
-        header = ['tax_id', 'Org_name', 'GeneID', 'CurrentID', 'Status', 'Symbol', 'Aliases', 
-                'description', 'other_designations', 'map_location', 'chromosome', 
-                'genomic_nucleotide_accession.version', 'start_position_on_the_genomic_accession', 
-                'end_position_on_the_genomic_accession', 'orientation', 'exon_count', 'OMIM']
+        header = ['tax_id', 'Org_name', 'GeneID', 'CurrentID', 'Status', 'Symbol', 
+                  'Aliases', 'description', 'other_designations', 'map_location', 
+                  'chromosome', 'genomic_nucleotide_accession.version', 
+                  'start_position_on_the_genomic_accession', 
+                  'end_position_on_the_genomic_accession', 'orientation', 
+                  'exon_count', 'OMIM']
         print(*header, sep='\t', file=f)
 
         nr_genes_no_coordinates = 0
@@ -116,44 +121,31 @@ def _fetch_ids_to_file(id_list, output_file_name):
         batch_size = 2000
         for i in range(0, len(id_list), batch_size):
             to_fetch = id_list[i:i+batch_size]
-            handle = Entrez.esummary(db="gene", id=",".join(to_fetch), retmax=batch_size)
+            handle = Entrez.esummary(db="gene", id=",".join(to_fetch), 
+                                     retmax=batch_size)
             entry = Entrez.read(handle)
             docsums = entry['DocumentSummarySet']['DocumentSummary']
             for doc in docsums:
 
-                # try:
-                #     print(doc['Organism']['TaxID'], doc['Organism']['ScientificName'], doc.attributes['uid'], 
-                #             doc['CurrentID'], 
-                #             # doc['Status'],
-                #             'live',
-                #             doc['Name'], doc['OtherAliases'], doc['Description'], doc['OtherDesignations'],
-                #             doc['MapLocation'], doc['Chromosome'], 
-                #             doc['GenomicInfo'][0]['ChrAccVer'], doc['GenomicInfo'][0]['ChrStart'], doc['GenomicInfo'][0]['ChrStop'],
-                #             'notspecified', doc['GenomicInfo'][0]['ExonCount'], '',
-                #             sep='\t', file=f)
-                # except Exception as e:
-                #     print(doc['Name'], e)
-                #     pass
-
-
                 if doc['GenomicInfo']:
-                    ver, start, stop, exon_count = doc['GenomicInfo'][0]['ChrAccVer'], doc['GenomicInfo'][0]['ChrStart'], \
-                        doc['GenomicInfo'][0]['ChrStop'], doc['GenomicInfo'][0]['ExonCount']
+                    ver, start, stop, exon_count = (
+                        doc['GenomicInfo'][0]['ChrAccVer'], 
+                        doc['GenomicInfo'][0]['ChrStart'],
+                        doc['GenomicInfo'][0]['ChrStop'],
+                        doc['GenomicInfo'][0]['ExonCount'])
                 else:
                     ver, start, stop, exon_count = 'unknown', pd.NA, pd.NA, pd.NA
                     nr_genes_no_coordinates += 1
 
-                print(doc['Organism']['TaxID'], doc['Organism']['ScientificName'], doc.attributes['uid'], 
-                        doc['CurrentID'], 
-                        'live',
-                        doc['Name'], doc['OtherAliases'], doc['Description'], doc['OtherDesignations'],
-                        doc['MapLocation'], doc['Chromosome'], 
-                        ver, start, stop,
-                        'notspecified', exon_count, '',
-                        sep='\t', file=f)
-
-    # print(f"NB: {nr_genes_no_coordinates} background genes are without genomic coordinates", file=sys.stderr)
-
+                print(doc['Organism']['TaxID'], doc['Organism']['ScientificName'], 
+                      doc.attributes['uid'], 
+                      doc['CurrentID'], 
+                      'live',
+                      doc['Name'], doc['OtherAliases'], doc['Description'], 
+                      doc['OtherDesignations'], doc['MapLocation'], 
+                      doc['Chromosome'], ver, start, stop,
+                      'notspecified', exon_count, '',
+                      sep='\t', file=f)
 
 
 def fetch_background_genes(taxid=9606):
@@ -162,8 +154,12 @@ def fetch_background_genes(taxid=9606):
 
     if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
 
-    output_file_name = f'geneinfo_cache/{taxid}_protein_genes.txt'        
-    handle = Entrez.esearch(db="gene", term=f'{taxid}[Taxonomy ID] AND alive[property] AND genetype protein coding[Properties]', retmax="1000000")
+    output_file_name = f'geneinfo_cache/{taxid}_protein_genes.txt'   
+    query = '[Taxonomy ID] AND alive[property] AND genetype protein coding[Properties]'     
+    handle = Entrez.esearch(
+        db="gene", 
+        term=f'{taxid}{query}', 
+        retmax="1000000")
     records = Entrez.read(handle)
     id_list = records["IdList"]
 
@@ -199,7 +195,8 @@ def _cached_symbol2ncbi(symbols, taxid=9606):
                     geneids.append(symbol2ncbi.loc[ncbi_id])
                     # geneids.append(ensembl2ncbi(ensembl_id(symbol)))                    
                 except NotFound:
-                    print(f'Could not map gene symbol "{symbol}" to ncbi id', file=sys.stderr)
+                    print(f'Could not map gene symbol "{symbol}" to ncbi id', 
+                          file=sys.stderr)
         return geneids
 
 
@@ -215,7 +212,8 @@ def _cached_ncbi2symbol(geneids, taxid=9606):
             try:
                 symbols.append(ncbi2symbol.loc[geneid])
             except KeyError:
-                print(f'Could not map ncbi id "{geneid}" to gene symbol', file=sys.stderr)
+                print(f'Could not map ncbi id "{geneid}" to gene symbol', 
+                      file=sys.stderr)
         return symbols
 
 
@@ -281,7 +279,8 @@ def get_terms_for_go_regex(regex:str, taxid:int=9606, add_children:bool=False) -
 
         objanno = Gene2GoReader("geneinfo_cache/gene2go", taxids=[taxid], prt=null)
         go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
-        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", go2items=go2geneids, log=null)
+        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", 
+                            go2items=go2geneids, log=null)
 
         results_all = re.compile(r'({})'.format(regex), flags=re.IGNORECASE)
         results_not = re.compile(r'({}).independent'.format(regex), flags=re.IGNORECASE)
@@ -297,7 +296,8 @@ def get_terms_for_go_regex(regex:str, taxid:int=9606, add_children:bool=False) -
 
 def get_genes_for_go_regex(regex:str, taxid:int=9606) -> pd.DataFrame:
     """
-    Get gene information for GO terms matching a regular expression in their description string.
+    Get gene information for GO terms matching a regular expression in 
+    their description string.
 
     Parameters
     ----------
@@ -317,11 +317,13 @@ def get_genes_for_go_regex(regex:str, taxid:int=9606) -> pd.DataFrame:
  
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
-        gos_all_with_children = get_terms_for_go_regex(regex, taxid=taxid, add_children=True)
+        gos_all_with_children = get_terms_for_go_regex(
+            regex, taxid=taxid, add_children=True)
 
         objanno = Gene2GoReader("geneinfo_cache/gene2go", taxids=[taxid], prt=null)
         go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
-        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", go2items=go2geneids, log=null)
+        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", go2items=go2geneids, 
+                            log=null)
         geneids = srchhelp.get_items(gos_all_with_children)
 
         ncbi_tsv = f'geneinfo_cache/{taxid}_protein_genes.txt'
@@ -331,7 +333,8 @@ def get_genes_for_go_regex(regex:str, taxid:int=9606) -> pd.DataFrame:
         output_py = f'geneinfo_cache/{taxid}_protein_genes.py'
         ncbi_tsv_to_py(ncbi_tsv, output_py, prt=null)
         
-        protein_genes = importlib.import_module(output_py.replace('.py', '').replace('/', '.'))
+        protein_genes = importlib.import_module(
+            output_py.replace('.py', '').replace('/', '.'))
         GENEID2NT = protein_genes.GENEID2NT
 
     fetch_ids = geneids
@@ -347,15 +350,18 @@ def get_genes_for_go_regex(regex:str, taxid:int=9606) -> pd.DataFrame:
         docsums = entry['DocumentSummarySet']['DocumentSummary']
         for doc in docsums:
             try:
-                chrom_pos = (doc['Chromosome'], doc['GenomicInfo'][0]['ChrStart'], doc['GenomicInfo'][0]['ChrStop'])
+                chrom_pos = (doc['Chromosome'], doc['GenomicInfo'][0]['ChrStart'],
+                              doc['GenomicInfo'][0]['ChrStop'])
             except:
-                print(f"WARNING: missing chromosome coordinates for {doc['Name']} are listed as pandas.NA", file=sys.stderr)
+                print(f"WARNING: no coordinates for {doc['Name']} (pandas.NA)", 
+                      file=sys.stderr)
                 chrom_pos = (pd.NA, pd.NA, pd.NA)
             records.append((doc['Name'], doc['Description'], *chrom_pos))
             found.append(str(doc.attributes['uid']))
     missing = set(fetch_ids).difference(set(found))
 
-    df = pd.DataFrame().from_records(records, columns=['symbol', 'name', 'chrom', 'start', 'end'])
+    df = pd.DataFrame().from_records(
+        records, columns=['symbol', 'name', 'chrom', 'start', 'end'])
 
     return df.sort_values(by='start').reset_index(drop=True)
 
@@ -386,7 +392,8 @@ def get_genes_for_go_terms(terms, taxid=9606) -> pd.DataFrame:
         gene2go = download_ncbi_associations(prt=null)
         objanno = Gene2GoReader("geneinfo_cache/gene2go", taxids=[taxid], prt=null)
         go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
-        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", go2items=go2geneids, log=null)
+        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", go2items=go2geneids, 
+                            log=null)
 
         geneids = srchhelp.get_items(terms)  
 
@@ -397,7 +404,8 @@ def get_genes_for_go_terms(terms, taxid=9606) -> pd.DataFrame:
         output_py = f'geneinfo_cache/{taxid}_protein_genes.py'
         ncbi_tsv_to_py(ncbi_tsv, output_py, prt=null)
 
-    protein_genes = importlib.import_module(output_py.replace('.py', '').replace('/', '.'))
+    protein_genes = importlib.import_module(
+        output_py.replace('.py', '').replace('/', '.'))
     GENEID2NT = protein_genes.GENEID2NT
 
     fetch_ids = geneids
@@ -413,15 +421,18 @@ def get_genes_for_go_terms(terms, taxid=9606) -> pd.DataFrame:
         docsums = entry['DocumentSummarySet']['DocumentSummary']
         for doc in docsums:
             try:
-                chrom_pos = (doc['Chromosome'], doc['GenomicInfo'][0]['ChrStart'], doc['GenomicInfo'][0]['ChrStop'])
+                chrom_pos = (doc['Chromosome'], doc['GenomicInfo'][0]['ChrStart'], 
+                             doc['GenomicInfo'][0]['ChrStop'])
             except:
-                print(f"WARNING: missing chromosome coordinates for {doc['Name']} are listed as pandas.NA", file=sys.stderr)
+                print(f"WARNING: no coordinates for {doc['Name']} (pandas.NA)", 
+                      file=sys.stderr)
                 chrom_pos = (pd.NA, pd.NA, pd.NA)
             records.append((doc['Name'], doc['Description'], *chrom_pos))
             found.append(str(doc.attributes['uid']))
     missing = set(fetch_ids).difference(set(found))
 
-    df = pd.DataFrame().from_records(records, columns=['symbol', 'name', 'chrom', 'start', 'end'])
+    df = pd.DataFrame().from_records(
+        records, columns=['symbol', 'name', 'chrom', 'start', 'end'])
 
     return df.sort_values(by='start').reset_index(drop=True)
 
@@ -482,7 +493,8 @@ def gene_annotation_table(taxid:int=9606) -> pd.DataFrame:
     return df.loc[df['taxid'] == taxid]
 
 
-def get_go_terms_for_genes(genes:Union[str,list], taxid:int=9606, evidence:list=None) -> list:
+def get_go_terms_for_genes(genes:Union[str,list], taxid:int=9606, 
+                           evidence:list=None) -> list:
     """
     Get the union of GO terms for a list of genes.
 
@@ -511,7 +523,8 @@ def get_go_terms_for_genes(genes:Union[str,list], taxid:int=9606, evidence:list=
     return list(sorted(df.GO_ID.unique().tolist()))
 
     
-def show_go_dag_for_terms(terms:Union[list, pd.Series], add_relationships:bool=True) -> None:
+def show_go_dag_for_terms(terms:Union[list, pd.Series], 
+                          add_relationships:bool=True) -> None:
     """
     Display GO graph for a list of GO terms.
 
@@ -538,7 +551,8 @@ def show_go_dag_for_terms(terms:Union[list, pd.Series], add_relationships:bool=T
             optional_attrs=['relationship', 'def']
         else:
             optional_attrs=['def']
-        obodag = GODag("geneinfo_cache/go-basic.obo", optional_attrs=optional_attrs, prt=null)
+        obodag = GODag("geneinfo_cache/go-basic.obo", optional_attrs=optional_attrs, 
+                       prt=null)
 
         gosubdag = GoSubDag(terms, obodag, relationships=add_relationships) 
         GoSubDagPlot(gosubdag).plt_dag('geneinfo_cache/plot.png')
@@ -557,10 +571,12 @@ def show_go_dag_for_terms(terms:Union[list, pd.Series], add_relationships:bool=T
 #     return Image('plot.png')  
 
 
-# https://github.com/tanghaibao/goatools/blob/main/notebooks/goea_nbt3102_group_results.ipynb
+# https://github.com/tanghaibao/goatools/
+# blob/main/notebooks/goea_nbt3102_group_results.ipynb
 
 
-def show_go_dag_for_gene(gene:str, taxid:int=9606, evidence:list=None, add_relationships:bool=True) -> None:
+def show_go_dag_for_gene(gene:str, taxid:int=9606, evidence:list=None, 
+                         add_relationships:bool=True) -> None:
     """
     Displays GO graph for a given gene.
 
@@ -571,7 +587,8 @@ def show_go_dag_for_gene(gene:str, taxid:int=9606, evidence:list=None, add_relat
     taxid : 
         NCBI taxonomy ID, by default 9606, which is human
     evidence : 
-        Limiting list of evidence categories to include, by default None. See `show_go_evidence_codes()`.
+        Limiting list of evidence categories to include, by default None. 
+        See `show_go_evidence_codes()`.
     add_relationships : 
         Add edges representing relationships between GO terms, by default True
     """
@@ -645,10 +662,13 @@ def _write_go_hdf():
             # Get ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz
             file_gene2go = download_ncbi_associations(prt=null)
 
-            # r = OBOReader(obo_file='geneinfo_cache/go-basic.obo', optional_attrs=['def'])
-            rows = [(e.id, e.name, e.defn) for e in OBOReader(obo_file='geneinfo_cache/go-basic.obo', optional_attrs=['def'])]
-            df = pd.DataFrame().from_records(rows, columns=['goterm', 'goname', 'description'])
-            df.to_hdf('geneinfo_cache/go-basic.h5', key='df', format='table', data_columns=['goterm', 'goname'])
+            rows = [(e.id, e.name, e.defn) 
+                    for e in OBOReader(obo_file='geneinfo_cache/go-basic.obo', 
+                                       optional_attrs=['def'])]
+            df = pd.DataFrame().from_records(
+                rows, columns=['goterm', 'goname', 'description'])
+            df.to_hdf('geneinfo_cache/go-basic.h5', key='df', format='table', 
+                      data_columns=['goterm', 'goname'])
 
 
 def go_term2name(term:str) -> str:
@@ -714,17 +734,25 @@ def go_info(terms:Union[str,List[str]]) -> None:
     for term in terms:
         entry = df.loc[df.goterm == term].iloc[0]
         desc = re.search(r'"([^"]+)"', entry.description).group(1)
-        s = f'**<span style="color:gray;">{term}:</span>** **{entry.goname}**  \n {desc}    \n\n ----'        
+        s = f'**<span style="color:gray;">{term}:</span>** ' + \
+            f'**{entry.goname}**  \n {desc}    \n\n ----'        
         display(Markdown(s))
 
 
 class WrSubObo(object):
-    """Read a large GO-DAG from an obo file. Write a subset GO-DAG into a small obo file."""
+    """
+    Read a large GO-DAG from an obo file. Write a subset GO-DAG into
+    a small obo file.
+    """
 
     def __init__(self, fin_obo=None, optional_attrs=None, load_obsolete=None):
         self.fin_obo = fin_obo
-        self.godag = GODag(fin_obo, optional_attrs, load_obsolete) if fin_obo is not None else None
-        self.relationships = optional_attrs is not None and 'relationship' in optional_attrs
+        if fin_obo is not None:
+            self.godag = GODag(fin_obo, optional_attrs, load_obsolete) 
+        else:
+            self.godag = None            
+        self.relationships = \
+            optional_attrs is not None and 'relationship' in optional_attrs
 
     def wrobo(self, fout_obo, goid_sources):
         """Write a subset obo file containing GO ID sources and their parents."""
@@ -756,7 +784,9 @@ class WrSubObo(object):
 
     @staticmethod
     def get_goids(fin_obo, name):
-        """Get GO IDs whose name matches given name."""
+        """
+        Get GO IDs whose name matches given name.
+        """
         goids = set()
         # pylint: disable=unsubscriptable-object
         goterm = None
@@ -775,7 +805,10 @@ class WrSubObo(object):
         return goids
 
     def _get_goids_all(self, go_sources):
-        """Given GO ID sources and optionally the relationship attribute, return all GO IDs."""
+        """
+        Given GO ID sources and optionally the relationship attribute, 
+        return all GO IDs.
+        """
         go2obj_user = {}
         objrel = CurNHigher(self.relationships, self.godag)
         objrel.get_id2obj_cur_n_high(go2obj_user, go_sources)
@@ -786,7 +819,9 @@ class WrSubObo(object):
         return goids
 
     def _prt_info(self, prt, goid_sources, goids_all):
-        """Print information describing how this obo setset was created."""
+        """
+        Print information describing how this obo setset was created.
+        """
         prt.write("! Contains {N} GO IDs. Created using {M} GO sources:\n".format(
             N=len(goids_all), M=len(goid_sources)))
         for goid in goid_sources:
@@ -800,8 +835,9 @@ class My_GOEnrichemntRecord(GOEnrichmentRecord):
         return f'<{self.GO}>'
 
 
-def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, background_genes:list=None, 
-    terms:list=None, list_study_genes:list=False, alpha:float=0.05) -> pd.DataFrame:
+def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, 
+                  background_genes:list=None, terms:list=None, 
+                  list_study_genes:list=False, alpha:float=0.05) -> pd.DataFrame:
     """
     Runs a GO enrichment analysis.
 
@@ -814,11 +850,14 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
     background_chrom : 
         Name of chromosome, by default None. Limits analysis to this named chromosome
     background_genes : 
-        List of genes for use as background in GO enrichment analysis, by default None
+        List of genes for use as background in GO enrichment analysis, 
+        by default None
     terms : 
-        List of GO terms for use as background in GO enrichment analysis, by default None
+        List of GO terms for use as background in GO enrichment analysis,
+        by default None
     list_study_genes : 
-        Whether to include lists of genes responsible for enrichment for each identified GO term, by default False
+        Whether to include lists of genes responsible for enrichment for each 
+        identified GO term, by default False
     alpha : 
         False discovery significance cut-off, by default 0.05
 
@@ -838,7 +877,8 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
     Examples
     --------
     ```python
-    gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+    gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 
+                 'ATM', 'CHEK2', 'PALB2']
     results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
     show_go_dag_enrichment_results(results.obj)
     ```
@@ -871,7 +911,8 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
 
         file_gene2go = download_ncbi_associations(prt=null)
 
-        obodag = GODag("geneinfo_cache/go-basic.obo", optional_attrs=['relationship', 'def'], prt=null)
+        obodag = GODag("geneinfo_cache/go-basic.obo", 
+                       optional_attrs=['relationship', 'def'], prt=null)
 
         # read NCBI's gene2go. Store annotations in a list of namedtuples
         objanno = Gene2GoReader(file_gene2go, taxids=[taxid])
@@ -881,10 +922,12 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
 
         # limit go dag to a sub graph including only specified terms and their children
         if terms is not None:
-            sub_obo_name = 'geneinfo_cache/' + str(hash(''.join(sorted(terms)).encode())) + '.obo'  
+            sub_obo_name = 'geneinfo_cache/' + \
+                str(hash(''.join(sorted(terms)).encode())) + '.obo'  
             wrsobo = WrSubObo(obo_fname, optional_attrs=['relationship', 'def'])
             wrsobo.wrobo(sub_obo_name, terms)    
-            obodag = GODag(sub_obo_name, optional_attrs=['relationship', 'def'], prt=null)
+            obodag = GODag(sub_obo_name, 
+                           optional_attrs=['relationship', 'def'], prt=null)
 
         # load background gene set of all genes
         background_genes_file = f'geneinfo_cache/{taxid}_protein_genes.txt'
@@ -897,17 +940,22 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
                 if all(x.isnumeric() for x in background_genes):
                     background_genes = list(map(str, background_genes))
                 else:
-                    background_genes = _cached_symbol2ncbi(background_genes, taxid=taxid)
+                    background_genes = _cached_symbol2ncbi(
+                        background_genes, taxid=taxid)
             df = pd.read_csv(background_genes_file, sep='\t')
             no_suffix = os.path.splitext(background_genes_file)[0]
-            background_genes_file = f'{no_suffix}_{hash("".join(map(str, sorted(background_genes))))}.txt'            
-            df.loc[df.GeneID.isin(background_genes)].to_csv(background_genes_file, sep='\t', index=False)
+            background_genes_file = \
+                f'{no_suffix}_{hash("".join(map(str, sorted(background_genes))))}.txt'            
+            df.loc[df.GeneID.isin(background_genes)].to_csv(background_genes_file, 
+                                                            sep='\t', index=False)
 
         # limit background gene set
         if background_chrom is not None:
             df = pd.read_csv(background_genes_file, sep='\t')
-            background_genes_file = f'{os.path.splitext(background_genes_file)[0]}_{background_chrom}.txt'            
-            df.loc[df.chromosome == background_chrom].to_csv(background_genes_file, sep='\t', index=False)
+            background_genes_file = \
+                f'{os.path.splitext(background_genes_file)[0]}_{background_chrom}.txt'            
+            df.loc[df.chromosome == background_chrom].to_csv(
+                background_genes_file, sep='\t', index=False)
 
         output_py = f'geneinfo_cache/{taxid}_background.py'
         ncbi_tsv_to_py(background_genes_file, output_py, prt=null)
@@ -938,8 +986,9 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
         if list_study_genes:
             columns.append('study_genes')
         for ntd in goea_results_all:
-
-            ntd.__class__ = My_GOEnrichemntRecord # Hack. Changes __class__ of all instances...
+            
+            # Hack. Changes __class__ of all instances...
+            ntd.__class__ = My_GOEnrichemntRecord
 
             row = [ntd.NS, ntd.GO, ntd.enrichment, ntd.p_uncorrected,
                         ntd.p_fdr_bh, 
@@ -950,15 +999,16 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None, bac
                 row.append(_cached_ncbi2symbol(sorted(ntd.study_items)))
             rows.append(row)
         df = (pd.DataFrame()
-        .from_records(rows, columns=columns)
-        .sort_values(by=['p_fdr_bh', 'ratio'])
-        .reset_index(drop=True)
+            .from_records(rows, columns=columns)
+            .sort_values(by=['p_fdr_bh', 'ratio'])
+            .reset_index(drop=True)
         )
         return df.loc[df.p_fdr_bh < alpha]
 
 
 
-def show_go_dag_enrichment_results(results:Union[List[GOEnrichmentRecord],pd.Series]) -> None:
+def show_go_dag_enrichment_results(
+        results:Union[List[GOEnrichmentRecord],pd.Series]) -> None:
     """
     Displays a GO enrichment analysis results.
 
@@ -971,7 +1021,8 @@ def show_go_dag_enrichment_results(results:Union[List[GOEnrichmentRecord],pd.Ser
     Examples
     --------
     ```python
-    gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+    gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 
+                 'CDH1', 'ATM', 'CHEK2', 'PALB2']
     results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
     show_go_dag_enrichment_results(results.obj)
     ```

@@ -165,7 +165,10 @@ def ensembl2ncbi(ensembl_id):
 
 
 @shelve_it()
-def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
+def mygene_get_gene_info(
+    query, species='human', scopes='hgnc', 
+    fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19'):
+
     api_url = f"https://mygene.info/v3/query?q={query}&scopes={scopes}&species={species}&fields={fields}"    
     response = requests.get(api_url)
     if not response.ok:
@@ -179,7 +182,8 @@ def mygene_get_gene_info(query, species='human', scopes='hgnc', fields='symbol,a
 
 
 @shelve_it()
-def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens', pos_list=False) -> dict:
+def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens', 
+               pos_list=False) -> dict:
     """
     Retrieves genome coordinates one or more genes.
 
@@ -197,17 +201,20 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
     Returns
     -------
     :
-        Dictionary with gene names as keys and (chrom, start, end, strand) tuples as values, or a list of 
-        (chrom, position, name) tuples.
+        Dictionary with gene names as keys and (chrom, start, end, strand) tuples 
+        as values, or a list of (chrom, position, name) tuples.
     """
 
     coords = {}
     batch_size = 100
     for i in range(0, len(query), batch_size):
-        data = ensembl_get_gene_info_by_symbol(query[i:i+batch_size], assembly=None, species='homo_sapiens')
+        data = ensembl_get_gene_info_by_symbol(
+            query[i:i+batch_size], assembly=None, species='homo_sapiens')
         for name, props in data.items():
-            chrom, start, end, strand = props['seq_region_name'], props['start'], props['end'], props['strand']
-            if not chrom.lower().startswith('contig') and not chrom.lower().startswith('scaffold'):
+            chrom, start, end, strand = props['seq_region_name'], props['start'], 
+            props['end'], props['strand']
+            if not chrom.lower().startswith('contig') \
+                    and not chrom.lower().startswith('scaffold'):
                 chrom = 'chr'+chrom
             if strand == -1:
                 strand = '-'
@@ -228,7 +235,8 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
 
 
 @shelve_it()
-def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgnc') -> None:
+def gene_info(query: Union[str, List[str]], species:str='human', 
+              scopes:str='hgnc') -> None:
     """
     Displays HTML formatted information about one or more genes.
 
@@ -252,8 +260,9 @@ def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgn
 
         for i in range(3):
             try:
-                top_hit = mygene_get_gene_info(gene, species=species, scopes=scopes,
-                                fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')
+                top_hit = mygene_get_gene_info(
+                    gene, species=species, scopes=scopes,
+                    fields='symbol,alias,name,type_of_gene,summary,genomic_pos,genomic_pos_hg19')
             except KeyError:
                 continue
             else:
@@ -281,16 +290,21 @@ def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgn
 
         if 'genomic_pos' in top_hit and 'genomic_pos_hg19' in top_hit:
             if type(top_hit['genomic_pos']) is list:
-                top_hit['hg38'] = ', '.join(['{chr}:{start}-{end}'.format(**d) for d in top_hit['genomic_pos']])
+                top_hit['hg38'] = ', '.join(['{chr}:{start}-{end}'.format(**d) 
+                                             for d in top_hit['genomic_pos']])
             else:
-                top_hit['hg38'] = '{chr}:{start}-{end}'.format(**top_hit['genomic_pos'])
+                top_hit['hg38'] = '{chr}:{start}-{end}'.format(
+                    **top_hit['genomic_pos'])
             if type(top_hit['genomic_pos_hg19']) is list:
-                top_hit['hg19'] = ', '.join(['{chr}:{start}-{end}'.format(**d) for d in top_hit['genomic_pos_hg19']])
+                top_hit['hg19'] = ', '.join(['{chr}:{start}-{end}'.format(**d) 
+                                             for d in top_hit['genomic_pos_hg19']])
             else:
-                top_hit['hg19'] = '{chr}:{start}-{end}'.format(**top_hit['genomic_pos_hg19'])            
+                top_hit['hg19'] = '{chr}:{start}-{end}'.format(
+                    **top_hit['genomic_pos_hg19'])            
             tmpl += "**Genomic position:** {hg38} (hg38), {hg19} (hg19)  \n"
 
-        tmpl += "[Gene card](https://www.genecards.org/cgi-bin/carddisp.pl?gene={symbol})  \n".format(**top_hit)
+        tmpl += "[Gene card](https://www.genecards.org/"
+        tmpl += "cgi-bin/carddisp.pl?gene={symbol})  \n".format(**top_hit)
 
         tmpl += "\n\n ----"
 
@@ -298,7 +312,9 @@ def gene_info(query: Union[str, List[str]], species:str='human', scopes:str='hgn
 
 
 @shelve_it()
-def _ensembl_get_features_region(chrom, window_start, window_end, features=['gene', 'exon'], assembly=None, species='homo_sapiens'):
+def _ensembl_get_features_region(chrom, window_start, window_end, 
+                                 features=['gene', 'exon'], assembly=None, 
+                                 species='homo_sapiens'):
     if chrom.startswith('chr'):
         chrom = chrom[3:]
     window_start, window_end = int(window_start), int(window_end)
@@ -307,9 +323,11 @@ def _ensembl_get_features_region(chrom, window_start, window_end, features=['gen
         end = min(start+500000, window_end)
         param_str = ';'.join([f"feature={f}" for f in features])
         if assembly:
-            api_url = f"https://{assembly.lower()}.rest.ensembl.org/overlap/region/{species}/{chrom}:{start}-{end}?{param_str}"
+            url = f"https://{assembly.lower()}.rest.ensembl.org"
+            api_url = f"{url}/overlap/region/{species}/{chrom}:{start}-{end}?{param_str}"
         else:
-            api_url = f"http://rest.ensembl.org/overlap/region/{species}/{chrom}:{start}-{end}?{param_str}"
+            url = "http://rest.ensembl.org"
+            api_url = f"{url}/overlap/region/{species}/{chrom}:{start}-{end}?{param_str}"
         response = requests.get(api_url, headers={'content-type': 'application/json'})
 
         if not response.ok:
@@ -342,16 +360,20 @@ def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapien
         server = "https://rest.ensembl.org"
     ext = f"/lookup/symbol/{species}"
     headers={ "Content-Type" : "application/json", "Accept" : "application/json"}
-    r = requests.post(server+ext, headers=headers, data=f'{{ "symbols": {json.dumps(symbols)} }}')
+    r = requests.post(server+ext, headers=headers, 
+                      data=f'{{ "symbols": {json.dumps(symbols)} }}')
     if not r.ok:
         r.raise_for_status()
     return r.json()
 
 
-def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, species='homo_sapiens'):
+def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, 
+                             species='homo_sapiens'):
     
-    gene_info = _ensembl_get_features_region(chrom, window_start, window_end, features=['gene'], assembly=assembly, species=species)
-    exon_info = _ensembl_get_features_region(chrom, window_start, window_end, features=['exon'], assembly=assembly, species=species)
+    gene_info = _ensembl_get_features_region(
+        chrom, window_start, window_end, features=['gene'], assembly=assembly, species=species)
+    exon_info = _ensembl_get_features_region(
+        chrom, window_start, window_end, features=['exon'], assembly=assembly, species=species)
 
     exons = defaultdict(list)
     for key, info in exon_info.items():
@@ -412,7 +434,8 @@ def get_genes_region(chrom:str, window_start:int, window_end:int,
         exon_starts = [int(x) for x in gene['exonStarts'].split(',') if x]
         exon_ends = [int(x) for x in gene['exonEnds'].split(',') if x]
         exons = list(zip(exon_starts, exon_ends))
-        genes.append((gene['name2'], gene['txStart'], gene['txEnd'], gene['strand'], exons))
+        genes.append((gene['name2'], gene['txStart'], 
+                      gene['txEnd'], gene['strand'], exons))
 
     return genes
 
@@ -451,7 +474,8 @@ def get_genes_region_dataframe(chrom:str, window_start:int, window_end:int,
         print("pandas must be installed to return data frame")
         return
     genes = get_genes_region(chrom, window_start, window_end, assembly, db)
-    return pd.DataFrame().from_records([x[:4] for x in genes], columns=['name', 'start', 'end', 'strand'])
+    return pd.DataFrame().from_records([x[:4] for x in genes], 
+                                       columns=['name', 'start', 'end', 'strand'])
 
 
 def gene_info_region(chrom:str, window_start:int, window_end:int, 
