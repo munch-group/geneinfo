@@ -85,10 +85,10 @@ format:
     # code-block-background: false
     # code-block-border-left: true    
     # highlight-style: arrow
+    mermaid:
+      theme: neutral 
 
 quartodoc:
-  # package: null
-  # source_dir: ../src
   package: geneinfo
   style: pkgdown
   dir: api
