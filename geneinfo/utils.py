@@ -91,6 +91,7 @@ def dummy_segments():
     return segments
     
 
+CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
 
 def shelve_it() -> Callable:
     """
@@ -101,10 +102,11 @@ def shelve_it() -> Callable:
     file_name : 
         Path to the shelve file
     """
-    cache_dir = os.path.join(os.path.dirname(__file__), 'data')
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
     def decorator(func):
         def new_func(*args, **kwargs):
-            with shelve.open(os.path.join(cache_dir, func.__name__)) as cache:
+            with shelve.open(os.path.join(CACHE_DIR, func.__name__)) as cache:
                 key = '*'.join(map(str, args)) + '///' + '**'.join(map(str, kwargs))
                 if key not in cache:
                     cache[key] = func(*args, **kwargs)
@@ -117,7 +119,9 @@ def clear_cache(func_name=None):
     """
     Clear the cache of a shelve file.
     """
-    cache_dir = Path(os.path.dirname(__file__)) / 'data'
+    if not os.path.exists(CACHE_DIR):
+        return
+    cache_dir = os.path.join(os.path.dirname(__file__), 'data')
     if func_name is None:
         for file in cache_dir.glob('*.db'):
             file.unlink()
