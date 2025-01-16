@@ -101,10 +101,10 @@ def shelve_it() -> Callable:
     file_name : 
         Path to the shelve file
     """
-    cache_dir = Path(os.path.dirname(__file__)) / 'data'
+    cache_dir = os.path.join(os.path.dirname(__file__), 'data')
     def decorator(func):
         def new_func(*args, **kwargs):
-            with shelve.open(cache_dir / func.__name__) as cache:
+            with shelve.open(os.path.join(cache_dir, func.__name__)) as cache:
                 key = '*'.join(map(str, args)) + '///' + '**'.join(map(str, kwargs))
                 if key not in cache:
                     cache[key] = func(*args, **kwargs)
