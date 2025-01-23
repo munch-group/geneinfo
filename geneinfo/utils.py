@@ -368,18 +368,19 @@ AMPL_ABBREV_MAP = {
 
 class GoogleSheet(object):
 
-    def __init__(self, SHEET_ID='1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk', SHEET_NAME='Sheet1', csv_file=None):
-        if csv_file is not None:
-            self.df = pd.read_csv(csv_file, header=1, low_memory=False)
-        else:
+    def __init__(self, url=None):
+        if url is None:
+            SHEET_ID='1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk'
+            SHEET_NAME='Sheet1'
             url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
-            self.desc = []
-            for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
-                if str(desc) == 'nan':
-                    self.desc.append('')
-                else:
-                    self.desc.append(desc.replace('\n', ' '))
-            self.df = pd.read_csv(url, header=1, low_memory=False)
+
+        self.desc = []
+        for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
+            if str(desc) == 'nan':
+                self.desc.append('')
+            else:
+                self.desc.append(desc.replace('\n', ' '))
+        self.df = pd.read_csv(url, header=1, low_memory=False)
         self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
         self.names = self.df.columns.tolist()
 
