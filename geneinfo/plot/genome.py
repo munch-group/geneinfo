@@ -175,7 +175,7 @@ class GenomeIdeogram:
         
             nr_rows, nr_cols = len(self.chr_names)-2+1, 2
             gs = matplotlib.gridspec.GridSpec(
-                nr_rows, 18, height_ratios=[1e-2]+[1]*(nr_rows-1))
+                nr_rows, 19, height_ratios=[1e-2]+[1]*(nr_rows-1))
             gs.update(wspace=0, hspace=hspace) 
 
             dummy_ax = plt.subplot(gs[0, :])
@@ -190,10 +190,10 @@ class GenomeIdeogram:
         
             ax_list = [plt.subplot(gs[i, :]) for i in range(1, nr_rows-2)]
 
-            ax_list.append(plt.subplot(gs[nr_rows-2, :9]))
-            ax_list.append(plt.subplot(gs[nr_rows-1, :9]))
-            ax_list.append(plt.subplot(gs[nr_rows-2, 9:]))
-            ax_list.append(plt.subplot(gs[nr_rows-1, 9:]))
+            ax_list.append(plt.subplot(gs[nr_rows-2, :12]))
+            ax_list.append(plt.subplot(gs[nr_rows-1, :12]))
+            ax_list.append(plt.subplot(gs[nr_rows-2, 7:]))
+            ax_list.append(plt.subplot(gs[nr_rows-1, 7:]))
 
             self.ax_list = ax_list
             self.chr_axes = dict(zip(self.chr_names, self.ax_list))
@@ -207,12 +207,19 @@ class GenomeIdeogram:
                     scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect
                     ax.set_xlim(xlim)
                     ax.set_ylim(scaled_y_lim)
-                else:
-                    xlim = (-self.end_padding, self.max_chrom_size+self.end_padding)
-                    scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect * 2
+                elif i < 22:
+                    xlim = (-self.end_padding, 12/19*self.max_chrom_size+self.end_padding)
+                    scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect * 19/12
                     ax.set_xlim(xlim)
                     ax.set_ylim(scaled_y_lim) 
-                
+                else:
+                    xlim = (-self.end_padding, self.chrom_lengths['hg38']['chrX']+self.end_padding)
+                    scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect * 19/12
+                    # \
+                    #     * (self.max_chrom_size+2*self.end_padding) \
+                    #     / (self.chrom_lengths['hg38']['chrX']+2*self.end_padding)
+                    ax.set_xlim(xlim)
+                    ax.set_ylim(scaled_y_lim) 
                 start, end = 0, self.chr_sizes[i]
                 ax.spines[['right', 'top', 'left', 'bottom']].set_visible(False)
 
@@ -481,7 +488,7 @@ class GenomeIdeogram:
     #         / (self.ylim[1] - self.ylim[0]) + min(top, zero) * (zero - miny)
 
         
-    def draw_text(self, x_pos:float, y_pos:float, text:str, 
+    def draw_text(self, coord:float, x_pos:float, y_pos:float, text:str, 
                   textcolor:str, textsize:float, linecolor:str, 
                   ax:matplotlib.axes.Axes=None, y_line_bottom:float=0, 
                   highlight:dict=None, **kwargs:dict) -> None:
@@ -490,10 +497,12 @@ class GenomeIdeogram:
 
         Parameters
         ----------
+        coord : 
+            Coordonate of annotation
         x_pos : 
-            X-axis position
+            X-axis position of text
         y_pos : 
-            Y-axis position
+            Y-axis position of text
         text : 
             Text to display
         textcolor : 
@@ -541,8 +550,8 @@ class GenomeIdeogram:
                     **text_props)
 
 
-        ax.plot((x_pos, x_pos, x_pos+y_unit/10),
-                (y_line_bottom, y_pos, y_pos+y_unit/10),
+        ax.plot((coord, coord, x_pos+y_unit/4),
+                (y_line_bottom, y_pos, y_pos+y_unit/4),
                 solid_capstyle='butt', 
                 solid_joinstyle='miter',
                 color=linecolor, 
@@ -606,7 +615,12 @@ class GenomeIdeogram:
         df['x'] = dfx
         df['y'] += y_pos
         df['x'] += x_pos
-            
+
+        _x = np.sort(df.x.to_numpy())
+        df['x'] += _x[1] - _x[0]
+        _y = np.sort(df.y.to_numpy())
+        df['y'] -= (_y[1] - _y[0])/2
+
         coords = np.array(list(zip(df.x, df.y)))
         
         x_pos, y_pos = df['x'][0] - (df['x'][0] - df['x'][1]), df['y'][0]
@@ -741,12 +755,13 @@ class GenomeIdeogram:
                     hl = None
                 
                 x, y, poly = self.get_polygon(name, pos, y1, ax, pad=pad)
+                
                 while any(self._is_polygons_intersecting(poly, p) 
                           for p in polybuff):
                     y += nudge
                     poly.nudge_y(nudge)
 
-                self.draw_text(x, y, name, textcolor=textcolor, 
+                self.draw_text(pos, x, y, name, textcolor=textcolor, 
                                textsize=textsize, linecolor=linecolor,
                                ax=ax, y_line_bottom=y0*y_unit,                                
                                highlight=hl, **kwargs)
@@ -779,7 +794,7 @@ class GenomeIdeogram:
                                   for p in zoom_polybuff):
                             y += nudge
                             poly.nudge_y(nudge)
-                        self.draw_text(x, y, name, textcolor=textcolor, 
+                        self.draw_text(pos, x, y, name, textcolor=textcolor, 
                                textsize=textsize, linecolor=linecolor,
                                ax=ax, y_line_bottom=y0*y_unit,                                
                                highlight=hl, **kwargs)

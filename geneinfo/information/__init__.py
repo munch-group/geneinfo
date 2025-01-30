@@ -211,8 +211,9 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
         data = ensembl_get_gene_info_by_symbol(
             query[i:i+batch_size], assembly=None, species='homo_sapiens')
         for name, props in data.items():
-            chrom, start, end, strand = props['seq_region_name'], props['start'], 
-            props['end'], props['strand']
+            chrom, start, end, strand = (
+                props['seq_region_name'], props['start'], props['end'], props['strand']
+            )
             if not chrom.lower().startswith('contig') \
                     and not chrom.lower().startswith('scaffold'):
                 chrom = 'chr'+chrom
