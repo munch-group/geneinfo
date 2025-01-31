@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from ..intervals import *
 from ..information import get_genes_region
 
+CACHE = dict()
+
 def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, 
                min_visible_width, font_size, ax, highlight=False, clip_on=True):
 
