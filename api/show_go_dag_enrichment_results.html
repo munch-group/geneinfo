@@ -495,8 +495,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/GoogleSheet.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">GoogleSheet</span></a>
+  <a href="../api/GeneListCollection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GeneListCollection</span></a>
   </div>
 </li>
       </ul>
@@ -540,9 +540,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gene_list <span class="op">=</span> [<span class="st">'TP53'</span>, <span class="st">'BRCA1'</span>, <span class="st">'BRCA2'</span>, <span class="st">'EGFR'</span>, <span class="st">'KRAS'</span>, <span class="st">'PTEN'</span>, <span class="st">'CDH1'</span>, <span class="st">'ATM'</span>, <span class="st">'CHEK2'</span>, <span class="st">'PALB2'</span>]</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> go_enrichment(gene_list, taxid<span class="op">=</span><span class="dv">9606</span>, alpha<span class="op">=</span><span class="fl">0.05</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>show_go_dag_enrichment_results(results.obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gene_list <span class="op">=</span> [<span class="st">'TP53'</span>, <span class="st">'BRCA1'</span>, <span class="st">'BRCA2'</span>, <span class="st">'EGFR'</span>, <span class="st">'KRAS'</span>, <span class="st">'PTEN'</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>             <span class="st">'CDH1'</span>, <span class="st">'ATM'</span>, <span class="st">'CHEK2'</span>, <span class="st">'PALB2'</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> go_enrichment(gene_list, taxid<span class="op">=</span><span class="dv">9606</span>, alpha<span class="op">=</span><span class="fl">0.05</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>show_go_dag_enrichment_results(results.obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>

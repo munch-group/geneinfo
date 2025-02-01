@@ -495,8 +495,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/GoogleSheet.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">GoogleSheet</span></a>
+  <a href="../api/GeneListCollection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GeneListCollection</span></a>
   </div>
 </li>
       </ul>
@@ -602,7 +602,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td><a href="#geneinfo.plot.GenomeIdeogram.map_method">map_method</a></td>
-<td>Map a matplotib axes method like plot and scatter to each ideogram panel (axis).</td>
+<td>Map a matplotib axes method like plot and scatter to each ideogram</td>
 </tr>
 <tr class="even">
 <td><a href="#geneinfo.plot.GenomeIdeogram.map_y">map_y</a></td>
@@ -692,7 +692,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <dl>
 <dt><code><span class="parameter-name"><strong>annot</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>MutableSequence</code></span></code></dt>
 <dd>
-<p>List of gene names or tuples of HGCN gene symbols and tuples with chromosome name, gene position, text label, and optionally text color, text size, and line color: <code>(&lt;chrom&gt;, &lt;position&gt;, &lt;text&gt;, [&lt;textcolor&gt;, [ [textsize] [&lt;linecolor&gt;] ] ])</code>. Text size values are scaled to make the largest one 1 and font size is then computed as self.font_size * textsize. That way font sizes can only be smaller than the default.</p>
+<p>List of gene names or tuples of HGCN gene symbols and tuples with chromosome name, gene position, text label, and optionally text color, text size, and line color: <code>(&lt;chrom&gt;, &lt;position&gt;, &lt;text&gt;, [&lt;textcolor&gt;,  [ [textsize] [&lt;linecolor&gt;] ] ])</code>. Text size values are scaled to make the largest one 1 and font size is then computed as self.font_size * textsize. That way font sizes can only be smaller than the default.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>base</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
@@ -700,7 +700,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 <dt><code><span class="parameter-name"><strong>min_height</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
-<p>Minimum length of vertical line in y coordinates, by default None, If None, half the ideogram height is used.</p>
+<p>Minimum length of vertical line in y coordinates, by default None. If None, half the ideogram height is used.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>bold</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>MutableSequence</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">[]</span></code></dt>
 <dd>
@@ -779,7 +779,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 <dt><code><span class="parameter-name">****kwargs**</span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>dict</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">{}</span></code></dt>
 <dd>
-<p>Additional keyword arguments for matplotlib.patches.Rectangle (defaults ot {facecolor=‘black’, edgecolor=‘none’})</p>
+<p>Additional keyword arguments for matplotlib.patches. Rectangle (defaults to {facecolor=‘black’, edgecolor=‘none’})</p>
 </dd>
 </dl>
 </section>
@@ -906,28 +906,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="geneinfo.plot.GenomeIdeogram.draw_text" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.plot.GenomeIdeogram.draw_text">draw_text</h3>
 <div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.GenomeIdeogram.draw_text(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    x_pos</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    y_pos</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    text</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    textcolor</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    textsize</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    linecolor</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    y_line_bottom<span class="op">=</span><span class="dv">0</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    highlight<span class="op">=</span><span class="va">None</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    coord</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x_pos</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    y_pos</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    text</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    textcolor</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    textsize</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    linecolor</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    y_line_bottom<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    highlight<span class="op">=</span><span class="va">None</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Draws text with a line pointing to a position on the y-axis.</p>
 <section id="parameters-7" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
 <dl>
+<dt><code><span class="parameter-name"><strong>coord</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span></code></dt>
+<dd>
+<p>Coordonate of annotation</p>
+</dd>
 <dt><code><span class="parameter-name"><strong>x_pos</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span></code></dt>
 <dd>
-<p>X-axis position</p>
+<p>X-axis position of text</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>y_pos</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span></code></dt>
 <dd>
-<p>Y-axis position</p>
+<p>Y-axis position of text</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>text</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
 <dd>
@@ -1058,7 +1063,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 <dt><code><span class="parameter-name"><strong>data</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pd</code>.<code>DataFrame</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
-<p>Data frame with with data for x and y coordinates by chromsome.</p>
+<p>Data frame with with data for x and y coordinates by chromsome</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>ch</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'chrom'</span></code></dt>
 <dd>

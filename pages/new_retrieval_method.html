@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Gene lists – geneinfo</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5027bf1c1f92ac6615724d89c8213d6a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../api/_styles-quartodoc.css">
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">geneinfo</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../api/"> 
+<span class="menu-text">API reference</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery/"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/munch-group/geneinfo/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Gene lists</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="cell-2" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.utils <span class="im">as</span> utils</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gl <span class="op">=</span> utils.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> gl.get(<span class="st">'sfari_all_conf'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-3" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> subprocess <span class="im">import</span> Popen, PIPE</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> OrderedDict</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>fields <span class="op">=</span> [</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'symbol'</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gene-id'</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'ensembl-geneids'</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'name-id'</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'swissprot-accessions'</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'synonyms'</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'replaced-gene-id'</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gene-type'</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'chromosomes'</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'genomic-region-gene-range-range-start'</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'genomic-region-gene-range-range-stop'</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'summary-description'</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'annotation-assembly-name'</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>assembly_names <span class="op">=</span> {<span class="st">'hg38'</span>: <span class="st">'GRCh38'</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'GRCh38'</span>: <span class="st">'GRCh38'</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'T2T'</span>: <span class="st">'T2T'</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'t2t'</span>: <span class="st">'T2T'</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                 }</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>assembly <span class="op">=</span> <span class="st">'hg38'</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>cmd <span class="op">=</span> <span class="ss">f"datasets summary gene symbol </span><span class="sc">{</span><span class="st">' '</span><span class="sc">.</span>join(names)<span class="sc">}</span><span class="ss"> --as-json-lines"</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> Popen(cmd.split(), stdout<span class="op">=</span>PIPE)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>cmd <span class="op">=</span> <span class="ss">f'dataformat tsv gene --elide-header --fields </span><span class="sc">{</span><span class="st">","</span><span class="sc">.</span>join(fields)<span class="sc">}</span><span class="ss">'</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> subprocess.check_output(cmd.split(), stdin<span class="op">=</span>p.stdout)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co"># print(output)</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>p.wait()</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> output.decode().strip().split(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>):</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(fields, line.strip().split(<span class="st">'</span><span class="ch">\t</span><span class="st">'</span>)))</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">'annotation-assembly-name'</span> <span class="kw">in</span> d <span class="kw">and</span> d[<span class="st">'annotation-assembly-name'</span>].startswith(assembly_names[assembly]):</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        info <span class="op">=</span> {}</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'name'</span>] <span class="op">=</span> d[<span class="st">'symbol'</span>]</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'ensembl'</span>] <span class="op">=</span> d[<span class="st">'ensembl-geneids'</span>]</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'ncbi'</span>] <span class="op">=</span> d[<span class="st">'name-id'</span>]</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'swissprot'</span>] <span class="op">=</span> d[<span class="st">'swissprot-accessions'</span>]</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'synonyms'</span>] <span class="op">=</span> d[<span class="st">'synonyms'</span>].split(<span class="st">','</span>)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'_ncbi'</span>] <span class="op">=</span> d[<span class="st">'replaced-gene-id'</span>]</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'type'</span>] <span class="op">=</span> d[<span class="st">'gene-type'</span>]</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'assembly'</span>]: d[<span class="st">'annotation-assembly-name'</span>]</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        info[<span class="st">'coord'</span>] <span class="op">=</span> (d[<span class="st">'chromosomes'</span>], d[<span class="st">'genomic-region-gene-range-range-start'</span>], d[<span class="st">'genomic-region-gene-range-range-stop'</span>])</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(info)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'name': 'AR', 'ensembl': 'ENSG00000169083', 'ncbi': 'HGNC:644', 'swissprot': 'P10275', 'synonyms': ['KD', 'AIS', 'AR8', 'TFM', 'DHTR', 'SBMA', 'HYSP1', 'NR3C4', 'SMAX1', 'HUMARA'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AR', 'ensembl': 'ENSG00000169083', 'ncbi': 'HGNC:644', 'swissprot': 'P10275', 'synonyms': ['KD', 'AIS', 'AR8', 'TFM', 'DHTR', 'SBMA', 'HYSP1', 'NR3C4', 'SMAX1', 'HUMARA'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FMR1', 'ensembl': 'ENSG00000102081', 'ncbi': 'HGNC:3775', 'swissprot': 'Q06787', 'synonyms': ['POF', 'FMRP', 'POF1', 'FRAXA'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FMR1', 'ensembl': 'ENSG00000102081', 'ncbi': 'HGNC:3775', 'swissprot': 'Q06787', 'synonyms': ['POF', 'FMRP', 'POF1', 'FRAXA'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'MECP2', 'ensembl': 'ENSG00000169057', 'ncbi': 'HGNC:6990', 'swissprot': 'P51608', 'synonyms': ['RS', 'RTS', 'RTT', 'PPMX', 'MRX16', 'MRX79', 'MRXSL', 'AUTSX3', 'MRXS13'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'MECP2', 'ensembl': 'ENSG00000169057', 'ncbi': 'HGNC:6990', 'swissprot': 'P51608', 'synonyms': ['RS', 'RTS', 'RTT', 'PPMX', 'MRX16', 'MRX79', 'MRXSL', 'AUTSX3', 'MRXS13'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'MAOA', 'ensembl': 'ENSG00000189221', 'ncbi': 'HGNC:6833', 'swissprot': 'P21397', 'synonyms': ['BRNRS', 'MAO-A'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'MAOA', 'ensembl': 'ENSG00000189221', 'ncbi': 'HGNC:6833', 'swissprot': 'P21397', 'synonyms': ['BRNRS', 'MAO-A'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FRAXA', 'ensembl': '', 'ncbi': 'HGNC:3945', 'swissprot': '', 'synonyms': ['FMR1'], '_ncbi': '', 'type': 'BIOLOGICAL_REGION', 'coord': ('X', '101', '233')}
+{'name': 'FRAXA', 'ensembl': '', 'ncbi': 'HGNC:3945', 'swissprot': '', 'synonyms': ['FMR1'], '_ncbi': '', 'type': 'BIOLOGICAL_REGION', 'coord': ('X', '101', '233')}
+{'name': 'DMD', 'ensembl': 'ENSG00000198947', 'ncbi': 'HGNC:2928', 'swissprot': 'P11532', 'synonyms': ['BMD', 'CMD3B', 'MRX85', 'DXS142', 'DXS164', 'DXS206', 'DXS230', 'DXS239', 'DXS268', 'DXS269', 'DXS270', 'DXS272'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'DMD', 'ensembl': 'ENSG00000198947', 'ncbi': 'HGNC:2928', 'swissprot': 'P11532', 'synonyms': ['BMD', 'CMD3B', 'MRX85', 'DXS142', 'DXS164', 'DXS206', 'DXS230', 'DXS239', 'DXS268', 'DXS269', 'DXS270', 'DXS272'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ATRX', 'ensembl': 'ENSG00000085224', 'ncbi': 'HGNC:886', 'swissprot': 'P46100', 'synonyms': ['JMS', 'XH2', 'XNP', 'MRX52', 'RAD54', 'RAD54L', 'ZNF-HX'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ATRX', 'ensembl': 'ENSG00000085224', 'ncbi': 'HGNC:886', 'swissprot': 'P46100', 'synonyms': ['JMS', 'XH2', 'XNP', 'MRX52', 'RAD54', 'RAD54L', 'ZNF-HX'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AGTR2', 'ensembl': 'ENSG00000180772', 'ncbi': 'HGNC:338', 'swissprot': 'P50052', 'synonyms': ['AT2', 'ATGR2', 'MRX88'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AGTR2', 'ensembl': 'ENSG00000180772', 'ncbi': 'HGNC:338', 'swissprot': 'P50052', 'synonyms': ['AT2', 'ATGR2', 'MRX88'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'DDX3X', 'ensembl': 'ENSG00000215301', 'ncbi': 'HGNC:2745', 'swissprot': 'O00571', 'synonyms': ['DBX', 'DDX3', 'HLP2', 'DDX14', 'CAP-Rf', 'MRX102', 'MRXSSB'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'DDX3X', 'ensembl': 'ENSG00000215301', 'ncbi': 'HGNC:2745', 'swissprot': 'O00571', 'synonyms': ['DBX', 'DDX3', 'HLP2', 'DDX14', 'CAP-Rf', 'MRX102', 'MRXSSB'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AKR1B1', 'ensembl': 'ENSG00000085662', 'ncbi': 'HGNC:381', 'swissprot': 'P15121', 'synonyms': ['AR', 'ADR', 'ALR2', 'ALDR1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('7', '', '')}
+{'name': 'AKR1B1', 'ensembl': 'ENSG00000085662', 'ncbi': 'HGNC:381', 'swissprot': 'P15121', 'synonyms': ['AR', 'ADR', 'ALR2', 'ALDR1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('7', '', '')}
+{'name': 'AREG', 'ensembl': 'ENSG00000109321', 'ncbi': 'HGNC:651', 'swissprot': 'P15514', 'synonyms': ['AR', 'SDGF', 'AREGB', 'CRDGF'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('4', '', '')}
+{'name': 'AREG', 'ensembl': 'ENSG00000109321', 'ncbi': 'HGNC:651', 'swissprot': 'P15514', 'synonyms': ['AR', 'SDGF', 'AREGB', 'CRDGF'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('4', '', '')}
+{'name': 'MPZ', 'ensembl': 'ENSG00000158887', 'ncbi': 'HGNC:7225', 'swissprot': 'P25189', 'synonyms': ['P0', 'CHM', 'DSS', 'MPP', 'CHN2', 'CMT1', 'CMT1B', 'CMT2I', 'CMT2J', 'CMT4E', 'CMTDI3', 'CMTDID', 'HMSNIB'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('1', '', '')}
+{'name': 'MPZ', 'ensembl': 'ENSG00000158887', 'ncbi': 'HGNC:7225', 'swissprot': 'P25189', 'synonyms': ['P0', 'CHM', 'DSS', 'MPP', 'CHN2', 'CMT1', 'CMT1B', 'CMT2I', 'CMT2J', 'CMT4E', 'CMTDI3', 'CMTDID', 'HMSNIB'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('1', '', '')}
+{'name': 'MAOB', 'ensembl': 'ENSG00000069535', 'ncbi': 'HGNC:6834', 'swissprot': 'P27338', 'synonyms': [''], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'MAOB', 'ensembl': 'ENSG00000069535', 'ncbi': 'HGNC:6834', 'swissprot': 'P27338', 'synonyms': [''], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TFE3', 'ensembl': 'ENSG00000068323', 'ncbi': 'HGNC:11752', 'swissprot': 'P19532', 'synonyms': ['TFEA', 'RCCP2', 'RCCX1', 'MRXSPF', 'bHLHe33'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TFE3', 'ensembl': 'ENSG00000068323', 'ncbi': 'HGNC:11752', 'swissprot': 'P19532', 'synonyms': ['TFEA', 'RCCP2', 'RCCX1', 'MRXSPF', 'bHLHe33'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TFE3', 'ensembl': 'ENSG00000068323', 'ncbi': 'HGNC:11752', 'swissprot': 'P19532', 'synonyms': ['TFEA', 'RCCP2', 'RCCX1', 'MRXSPF', 'bHLHe33'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RPS6KA3', 'ensembl': 'ENSG00000177189', 'ncbi': 'HGNC:10432', 'swissprot': 'P51812', 'synonyms': ['CLS', 'RSK', 'HU-3', 'RSK2', 'MRX19', 'ISPK-1', 'XLID19', 'p90-RSK2', 'pp90RSK2', 'MAPKAPK1B', 'S6K-alpha3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RPS6KA3', 'ensembl': 'ENSG00000177189', 'ncbi': 'HGNC:10432', 'swissprot': 'P51812', 'synonyms': ['CLS', 'RSK', 'HU-3', 'RSK2', 'MRX19', 'ISPK-1', 'XLID19', 'p90-RSK2', 'pp90RSK2', 'MAPKAPK1B', 'S6K-alpha3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TAF1', 'ensembl': 'ENSG00000147133', 'ncbi': 'HGNC:11535', 'swissprot': 'P21675', 'synonyms': ['OF', 'XDP', 'BA2R', 'CCG1', 'CCGS', 'DYT3', 'KAT4', 'P250', 'NSCL2', 'TAF2A', 'MRXS33', 'N-TAF1', 'TAFII250', 'DYT3/TAF1', 'TAFII-250', 'TAF(II)250'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TAF1', 'ensembl': 'ENSG00000147133', 'ncbi': 'HGNC:11535', 'swissprot': 'P21675', 'synonyms': ['OF', 'XDP', 'BA2R', 'CCG1', 'CCGS', 'DYT3', 'KAT4', 'P250', 'NSCL2', 'TAF2A', 'MRXS33', 'N-TAF1', 'TAFII250', 'DYT3/TAF1', 'TAFII-250', 'TAF(II)250'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HDAC8', 'ensembl': 'ENSG00000147099', 'ncbi': 'HGNC:13315', 'swissprot': 'Q9BY41', 'synonyms': ['HD8', 'WTS', 'RPD3', 'CDA07', 'CDLS5', 'KDAC8', 'MRXS6', 'HDACL1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HDAC8', 'ensembl': 'ENSG00000147099', 'ncbi': 'HGNC:13315', 'swissprot': 'Q9BY41', 'synonyms': ['HD8', 'WTS', 'RPD3', 'CDA07', 'CDLS5', 'KDAC8', 'MRXS6', 'HDACL1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SMC1A', 'ensembl': 'ENSG00000072501', 'ncbi': 'HGNC:11111', 'swissprot': 'Q14683', 'synonyms': ['SMC1', 'SMCB', 'CDLS2', 'DEE85', 'SB1.8', 'EIEE85', 'SMC1L1', 'DXS423E', 'SMC1alpha'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SMC1A', 'ensembl': 'ENSG00000072501', 'ncbi': 'HGNC:11111', 'swissprot': 'Q14683', 'synonyms': ['SMC1', 'SMCB', 'CDLS2', 'DEE85', 'SB1.8', 'EIEE85', 'SMC1L1', 'DXS423E', 'SMC1alpha'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HUWE1', 'ensembl': 'ENSG00000086758', 'ncbi': 'HGNC:30892', 'swissprot': 'Q7Z6Z7', 'synonyms': ['MULE', 'Ib772', 'LASU1', 'MRXST', 'UREB1', 'HECTH9', 'URE-B1', 'ARF-BP1', 'HSPC272'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HUWE1', 'ensembl': 'ENSG00000086758', 'ncbi': 'HGNC:30892', 'swissprot': 'Q7Z6Z7', 'synonyms': ['MULE', 'Ib772', 'LASU1', 'MRXST', 'UREB1', 'HECTH9', 'URE-B1', 'ARF-BP1', 'HSPC272'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CDKL5', 'ensembl': 'ENSG00000008086', 'ncbi': 'HGNC:11411', 'swissprot': 'O76039', 'synonyms': ['DEE2', 'ISSX', 'STK9', 'EIEE2', 'CFAP247'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CDKL5', 'ensembl': 'ENSG00000008086', 'ncbi': 'HGNC:11411', 'swissprot': 'O76039', 'synonyms': ['DEE2', 'ISSX', 'STK9', 'EIEE2', 'CFAP247'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'KDM6A', 'ensembl': 'ENSG00000147050', 'ncbi': 'HGNC:12637', 'swissprot': 'O15550', 'synonyms': ['UTX', 'KABUK2', 'bA386N14.2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'KDM6A', 'ensembl': 'ENSG00000147050', 'ncbi': 'HGNC:12637', 'swissprot': 'O15550', 'synonyms': ['UTX', 'KABUK2', 'bA386N14.2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'USP9X', 'ensembl': 'ENSG00000124486', 'ncbi': 'HGNC:12632', 'swissprot': 'Q93008', 'synonyms': ['FAF', 'FAM', 'hFAM', 'DFFRX', 'FAF-X', 'MRX99', 'XLID99', 'MRXS99F'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'USP9X', 'ensembl': 'ENSG00000124486', 'ncbi': 'HGNC:12632', 'swissprot': 'Q93008', 'synonyms': ['FAF', 'FAM', 'hFAM', 'DFFRX', 'FAF-X', 'MRX99', 'XLID99', 'MRXS99F'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CHM', 'ensembl': 'ENSG00000188419', 'ncbi': 'HGNC:1940', 'swissprot': 'P24386', 'synonyms': ['TCD', 'GGTA', 'REP-1', 'DXS540', 'HSD-32'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CHM', 'ensembl': 'ENSG00000188419', 'ncbi': 'HGNC:1940', 'swissprot': 'P24386', 'synonyms': ['TCD', 'GGTA', 'REP-1', 'DXS540', 'HSD-32'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ARX', 'ensembl': 'ENSG00000004848', 'ncbi': 'HGNC:18060', 'swissprot': 'Q96QS3', 'synonyms': ['ISSX', 'PRTS', 'CT121', 'EIEE1', 'MRX29', 'MRX32', 'MRX33', 'MRX36', 'MRX38', 'MRX43', 'MRX54', 'MRX76', 'MRX87', 'MRXS1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ARX', 'ensembl': 'ENSG00000004848', 'ncbi': 'HGNC:18060', 'swissprot': 'Q96QS3', 'synonyms': ['ISSX', 'PRTS', 'CT121', 'EIEE1', 'MRX29', 'MRX32', 'MRX33', 'MRX36', 'MRX38', 'MRX43', 'MRX54', 'MRX76', 'MRX87', 'MRXS1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HCFC1', 'ensembl': 'ENSG00000172534', 'ncbi': 'HGNC:4839', 'swissprot': 'P51610', 'synonyms': ['CFF', 'HCF', 'HCF1', 'HFC1', 'MRX3', 'VCAF', 'HCF-1', 'MAHCX', 'XLID3', 'PPP1R89'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HCFC1', 'ensembl': 'ENSG00000172534', 'ncbi': 'HGNC:4839', 'swissprot': 'P51610', 'synonyms': ['CFF', 'HCF', 'HCF1', 'HFC1', 'MRX3', 'VCAF', 'HCF-1', 'MAHCX', 'XLID3', 'PPP1R89'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'OCRL', 'ensembl': 'ENSG00000122126', 'ncbi': 'HGNC:8108', 'swissprot': 'Q01968', 'synonyms': ['LOCR', 'DENT2', 'NPHL2', 'OCRL1', 'Dent-2', 'INPP5F', 'OCRL-1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'OCRL', 'ensembl': 'ENSG00000122126', 'ncbi': 'HGNC:8108', 'swissprot': 'Q01968', 'synonyms': ['LOCR', 'DENT2', 'NPHL2', 'OCRL1', 'Dent-2', 'INPP5F', 'OCRL-1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PCDH19', 'ensembl': 'ENSG00000165194', 'ncbi': 'HGNC:14270', 'swissprot': 'Q8TAB3', 'synonyms': ['DEE9', 'EFMR', 'EIEE9'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PCDH19', 'ensembl': 'ENSG00000165194', 'ncbi': 'HGNC:14270', 'swissprot': 'Q8TAB3', 'synonyms': ['DEE9', 'EFMR', 'EIEE9'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SYP', 'ensembl': 'ENSG00000102003', 'ncbi': 'HGNC:11506', 'swissprot': 'P08247', 'synonyms': ['MRX96', 'MRXSYP', 'XLID96'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SYP', 'ensembl': 'ENSG00000102003', 'ncbi': 'HGNC:11506', 'swissprot': 'P08247', 'synonyms': ['MRX96', 'MRXSYP', 'XLID96'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CASK', 'ensembl': 'ENSG00000147044', 'ncbi': 'HGNC:1497', 'swissprot': 'O14936', 'synonyms': ['CMG', 'FGS4', 'LIN2', 'TNRC8', 'hCASK', 'CAGH39', 'CAMGUK', 'MICPCH', 'MRXSNA'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CASK', 'ensembl': 'ENSG00000147044', 'ncbi': 'HGNC:1497', 'swissprot': 'O14936', 'synonyms': ['CMG', 'FGS4', 'LIN2', 'TNRC8', 'hCASK', 'CAGH39', 'CAMGUK', 'MICPCH', 'MRXSNA'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC6A8', 'ensembl': 'ENSG00000130821', 'ncbi': 'HGNC:11055', 'swissprot': 'P48029', 'synonyms': ['CRT', 'CT1', 'CRT1', 'CRTR', 'CTR5', 'CCDS1', 'CRT-1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC6A8', 'ensembl': 'ENSG00000130821', 'ncbi': 'HGNC:11055', 'swissprot': 'P48029', 'synonyms': ['CRT', 'CT1', 'CRT1', 'CRTR', 'CTR5', 'CCDS1', 'CRT-1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CACNA1F', 'ensembl': 'ENSG00000102001', 'ncbi': 'HGNC:1393', 'swissprot': 'O60840', 'synonyms': ['JM8', 'OA2', 'AIED', 'COD3', 'COD4', 'JMC8', 'CORDX', 'CSNB2', 'CORDX3', 'CSNB2A', 'CSNBX2', 'Cav1.4', 'Cav1.4alpha1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CACNA1F', 'ensembl': 'ENSG00000102001', 'ncbi': 'HGNC:1393', 'swissprot': 'O60840', 'synonyms': ['JM8', 'OA2', 'AIED', 'COD3', 'COD4', 'JMC8', 'CORDX', 'CSNB2', 'CORDX3', 'CSNB2A', 'CSNBX2', 'Cav1.4', 'Cav1.4alpha1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PCDH10', 'ensembl': 'ENSG00000138650', 'ncbi': 'HGNC:13404', 'swissprot': 'Q9P2E7', 'synonyms': ['PCDH19', 'OL-PCDH'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('4', '', '')}
+{'name': 'PCDH10', 'ensembl': 'ENSG00000138650', 'ncbi': 'HGNC:13404', 'swissprot': 'Q9P2E7', 'synonyms': ['PCDH19', 'OL-PCDH'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('4', '', '')}
+{'name': 'RPL10', 'ensembl': 'ENSG00000147403', 'ncbi': 'HGNC:10298', 'swissprot': 'P27635', 'synonyms': ['QM', 'L10', 'NOV', 'uL16', 'AUTSX5', 'DXS648', 'MRXS35', 'DXS648E'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RPL10', 'ensembl': 'ENSG00000147403', 'ncbi': 'HGNC:10298', 'swissprot': 'P27635', 'synonyms': ['QM', 'L10', 'NOV', 'uL16', 'AUTSX5', 'DXS648', 'MRXS35', 'DXS648E'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'OFD1', 'ensembl': 'ENSG00000046651', 'ncbi': 'HGNC:2567', 'swissprot': 'O75665', 'synonyms': ['RP23', '71-7A', 'SGBS2', 'CXorf5', 'JBTS10'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'OFD1', 'ensembl': 'ENSG00000046651', 'ncbi': 'HGNC:2567', 'swissprot': 'O75665', 'synonyms': ['RP23', '71-7A', 'SGBS2', 'CXorf5', 'JBTS10'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GRIA3', 'ensembl': 'ENSG00000125675', 'ncbi': 'HGNC:4573', 'swissprot': 'P42263', 'synonyms': ['GLUR3', 'GLURC', 'GluA3', 'MRX94', 'MRXSW', 'GLUR-C', 'iGluR3', 'GLUR-K3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GRIA3', 'ensembl': 'ENSG00000125675', 'ncbi': 'HGNC:4573', 'swissprot': 'P42263', 'synonyms': ['GLUR3', 'GLURC', 'GluA3', 'MRX94', 'MRXSW', 'GLUR-C', 'iGluR3', 'GLUR-K3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SYN1', 'ensembl': 'ENSG00000008056', 'ncbi': 'HGNC:11494', 'swissprot': 'P17600', 'synonyms': ['SYNI', 'EPILX', 'MRX50', 'SYN1a', 'SYN1b', 'EPILX1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SYN1', 'ensembl': 'ENSG00000008056', 'ncbi': 'HGNC:11494', 'swissprot': 'P17600', 'synonyms': ['SYNI', 'EPILX', 'MRX50', 'SYN1a', 'SYN1b', 'EPILX1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'KDM5C', 'ensembl': 'ENSG00000126012', 'ncbi': 'HGNC:11114', 'swissprot': 'P41229', 'synonyms': ['MRXJ', 'SMCX', 'MRX13', 'MRXSJ', 'XE169', 'MRXSCJ', 'JARID1C', 'DXS1272E'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'KDM5C', 'ensembl': 'ENSG00000126012', 'ncbi': 'HGNC:11114', 'swissprot': 'P41229', 'synonyms': ['MRXJ', 'SMCX', 'MRX13', 'MRXSJ', 'XE169', 'MRXSCJ', 'JARID1C', 'DXS1272E'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'UBA2', 'ensembl': 'ENSG00000126261', 'ncbi': 'HGNC:30661', 'swissprot': 'Q9UBT2', 'synonyms': ['ARX', 'SAE2', 'ACCES', 'HRIHFB2115'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('19', '', '')}
+{'name': 'UBA2', 'ensembl': 'ENSG00000126261', 'ncbi': 'HGNC:30661', 'swissprot': 'Q9UBT2', 'synonyms': ['ARX', 'SAE2', 'ACCES', 'HRIHFB2115'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('19', '', '')}
+{'name': 'UBA2', 'ensembl': 'ENSG00000126261', 'ncbi': 'HGNC:30661', 'swissprot': 'Q9UBT2', 'synonyms': ['ARX', 'SAE2', 'ACCES', 'HRIHFB2115'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('19', '', '')}
+{'name': 'PHF8', 'ensembl': 'ENSG00000172943', 'ncbi': 'HGNC:20672', 'swissprot': 'Q9UPP1', 'synonyms': ['KDM7B', 'JHDM1F', 'MRXSSD', 'ZNF422'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PHF8', 'ensembl': 'ENSG00000172943', 'ncbi': 'HGNC:20672', 'swissprot': 'Q9UPP1', 'synonyms': ['KDM7B', 'JHDM1F', 'MRXSSD', 'ZNF422'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'NLGN4X', 'ensembl': 'ENSG00000146938', 'ncbi': 'HGNC:14287', 'swissprot': 'Q8N0W4', 'synonyms': ['HLNX', 'HNL4X', 'NLGN4', 'ASPGX2', 'AUTSX2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'NLGN4X', 'ensembl': 'ENSG00000146938', 'ncbi': 'HGNC:14287', 'swissprot': 'Q8N0W4', 'synonyms': ['HLNX', 'HNL4X', 'NLGN4', 'ASPGX2', 'AUTSX2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RPL15', 'ensembl': 'ENSG00000174748', 'ncbi': 'HGNC:10306', 'swissprot': 'P61313', 'synonyms': ['L15', 'EC45', 'eL15', 'DBA12', 'RPL10', 'RPLY10', 'RPYL10'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('3', '', '')}
+{'name': 'RPL15', 'ensembl': 'ENSG00000174748', 'ncbi': 'HGNC:10306', 'swissprot': 'P61313', 'synonyms': ['L15', 'EC45', 'eL15', 'DBA12', 'RPL10', 'RPLY10', 'RPYL10'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('3', '', '')}
+{'name': 'UPF3B', 'ensembl': 'ENSG00000125351', 'ncbi': 'HGNC:20439', 'swissprot': 'Q9BZI7', 'synonyms': ['MRX62', 'MRX82', 'UPF3X', 'HUPF3B', 'MRXS14', 'RENT3B', 'UPF3BP1', 'UPF3BP2', 'UPF3BP3', 'Upf3p-X'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'UPF3B', 'ensembl': 'ENSG00000125351', 'ncbi': 'HGNC:20439', 'swissprot': 'Q9BZI7', 'synonyms': ['MRX62', 'MRX82', 'UPF3X', 'HUPF3B', 'MRXS14', 'RENT3B', 'UPF3BP1', 'UPF3BP2', 'UPF3BP3', 'Upf3p-X'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC9A6', 'ensembl': 'ENSG00000198689', 'ncbi': 'HGNC:11079', 'swissprot': 'Q92581', 'synonyms': ['MRSA', 'NHE6', 'MRXSCH'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC9A6', 'ensembl': 'ENSG00000198689', 'ncbi': 'HGNC:11079', 'swissprot': 'Q92581', 'synonyms': ['MRSA', 'NHE6', 'MRXSCH'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'IL1RAPL1', 'ensembl': 'ENSG00000169306', 'ncbi': 'HGNC:5996', 'swissprot': 'Q9NZN1', 'synonyms': ['IL1R8', 'MRX10', 'MRX21', 'MRX34', 'OPHN4', 'IL1RAPL', 'TIGIRR-2', 'IL1RAPL-1', 'IL-1RAPL-1', 'IL-1-RAPL-1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'IL1RAPL1', 'ensembl': 'ENSG00000169306', 'ncbi': 'HGNC:5996', 'swissprot': 'Q9NZN1', 'synonyms': ['IL1R8', 'MRX10', 'MRX21', 'MRX34', 'OPHN4', 'IL1RAPL', 'TIGIRR-2', 'IL1RAPL-1', 'IL-1RAPL-1', 'IL-1-RAPL-1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'VSIG4', 'ensembl': 'ENSG00000155659', 'ncbi': 'HGNC:17032', 'swissprot': 'Q9Y279', 'synonyms': ['CRIg', 'Z39IG'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'VSIG4', 'ensembl': 'ENSG00000155659', 'ncbi': 'HGNC:17032', 'swissprot': 'Q9Y279', 'synonyms': ['CRIg', 'Z39IG'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RAB39B', 'ensembl': 'ENSG00000155961', 'ncbi': 'HGNC:16499', 'swissprot': 'Q96DA2', 'synonyms': ['WSN', 'BGMR', 'WSMN', 'MRX72', 'XLID72'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RAB39B', 'ensembl': 'ENSG00000155961', 'ncbi': 'HGNC:16499', 'swissprot': 'Q96DA2', 'synonyms': ['WSN', 'BGMR', 'WSMN', 'MRX72', 'XLID72'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FGF13', 'ensembl': 'ENSG00000129682', 'ncbi': 'HGNC:3670', 'swissprot': 'Q92913', 'synonyms': ['FGF2', 'FHF2', 'DEE90', 'FHF-2', 'FGF-13', 'XLID110', 'LINC00889'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FGF13', 'ensembl': 'ENSG00000129682', 'ncbi': 'HGNC:3670', 'swissprot': 'Q92913', 'synonyms': ['FGF2', 'FHF2', 'DEE90', 'FHF-2', 'FGF-13', 'XLID110', 'LINC00889'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'IQSEC2', 'ensembl': 'ENSG00000124313', 'ncbi': 'HGNC:29059', 'swissprot': 'Q5JU85', 'synonyms': ['MRX1', 'BRAG1', 'MRX18', 'MRX78', 'XLID1', 'IQ-ArfGEF'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'IQSEC2', 'ensembl': 'ENSG00000124313', 'ncbi': 'HGNC:29059', 'swissprot': 'Q5JU85', 'synonyms': ['MRX1', 'BRAG1', 'MRX18', 'MRX78', 'XLID1', 'IQ-ArfGEF'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AFF2', 'ensembl': 'ENSG00000155966', 'ncbi': 'HGNC:3776', 'swissprot': 'P51816', 'synonyms': ['FMR2', 'MRX2', 'OX19', 'FMR2P', 'FRAXE', 'XLID109'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AFF2', 'ensembl': 'ENSG00000155966', 'ncbi': 'HGNC:3776', 'swissprot': 'P51816', 'synonyms': ['FMR2', 'MRX2', 'OX19', 'FMR2P', 'FRAXE', 'XLID109'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GABRA3', 'ensembl': 'ENSG00000011677', 'ncbi': 'HGNC:4077', 'swissprot': 'P34903', 'synonyms': ['EPILX2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GABRA3', 'ensembl': 'ENSG00000011677', 'ncbi': 'HGNC:4077', 'swissprot': 'P34903', 'synonyms': ['EPILX2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HNRNPH2', 'ensembl': 'ENSG00000126945', 'ncbi': 'HGNC:5042', 'swissprot': 'P55795', 'synonyms': ['FTP3', 'MRXSB', 'NRPH2', "HNRPH'", 'HNRPH2', "hnRNPH'"], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'HNRNPH2', 'ensembl': 'ENSG00000126945', 'ncbi': 'HGNC:5042', 'swissprot': 'P55795', 'synonyms': ['FTP3', 'MRXSB', 'NRPH2', "HNRPH'", 'HNRPH2', "hnRNPH'"], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'OPHN1', 'ensembl': 'ENSG00000079482', 'ncbi': 'HGNC:8148', 'swissprot': 'O60890', 'synonyms': ['OPN1', 'MRX60', 'MRXSBL', 'ARHGAP41'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'OPHN1', 'ensembl': 'ENSG00000079482', 'ncbi': 'HGNC:8148', 'swissprot': 'O60890', 'synonyms': ['OPN1', 'MRX60', 'MRXSBL', 'ARHGAP41'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TBX22', 'ensembl': 'ENSG00000122145', 'ncbi': 'HGNC:11600', 'swissprot': 'Q9Y458', 'synonyms': ['CPX', 'CLPA', 'TBXX', 'ABERS', 'dJ795G23.1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TBX22', 'ensembl': 'ENSG00000122145', 'ncbi': 'HGNC:11600', 'swissprot': 'Q9Y458', 'synonyms': ['CPX', 'CLPA', 'TBXX', 'ABERS', 'dJ795G23.1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TBX22', 'ensembl': 'ENSG00000122145', 'ncbi': 'HGNC:11600', 'swissprot': 'Q9Y458', 'synonyms': ['CPX', 'CLPA', 'TBXX', 'ABERS', 'dJ795G23.1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'NLGN3', 'ensembl': 'ENSG00000196338', 'ncbi': 'HGNC:14289', 'swissprot': 'Q9NZ94', 'synonyms': ['HNL3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'NLGN3', 'ensembl': 'ENSG00000196338', 'ncbi': 'HGNC:14289', 'swissprot': 'Q9NZ94', 'synonyms': ['HNL3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TSPAN7', 'ensembl': 'ENSG00000156298', 'ncbi': 'HGNC:11854', 'swissprot': 'P41732', 'synonyms': ['A15', 'MXS1', 'CD231', 'MRX58', 'CCG-B7', 'TM4SF2', 'XLID58', 'TALLA-1', 'TM4SF2b', 'DXS1692E'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TSPAN7', 'ensembl': 'ENSG00000156298', 'ncbi': 'HGNC:11854', 'swissprot': 'P41732', 'synonyms': ['A15', 'MXS1', 'CD231', 'MRX58', 'CCG-B7', 'TM4SF2', 'XLID58', 'TALLA-1', 'TM4SF2b', 'DXS1692E'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CLCN4', 'ensembl': 'ENSG00000073464', 'ncbi': 'HGNC:2022', 'swissprot': 'P51793', 'synonyms': ['CLC4', 'ClC-4', 'MRX15', 'MRX49', 'ClC-4A', 'MRXSRC'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CLCN4', 'ensembl': 'ENSG00000073464', 'ncbi': 'HGNC:2022', 'swissprot': 'P51793', 'synonyms': ['CLC4', 'ClC-4', 'MRX15', 'MRX49', 'ClC-4A', 'MRXSRC'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GPC4', 'ensembl': 'ENSG00000076716', 'ncbi': 'HGNC:4452', 'swissprot': 'O75487', 'synonyms': ['KPTS', 'K-glypican'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GPC4', 'ensembl': 'ENSG00000076716', 'ncbi': 'HGNC:4452', 'swissprot': 'O75487', 'synonyms': ['KPTS', 'K-glypican'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CNKSR2', 'ensembl': 'ENSG00000149970', 'ncbi': 'HGNC:19701', 'swissprot': 'Q8WXI2', 'synonyms': ['CNK2', 'KSR2', 'MAGUIN', 'MRXSHG'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CNKSR2', 'ensembl': 'ENSG00000149970', 'ncbi': 'HGNC:19701', 'swissprot': 'Q8WXI2', 'synonyms': ['CNK2', 'KSR2', 'MAGUIN', 'MRXSHG'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ARHGEF9', 'ensembl': 'ENSG00000131089', 'ncbi': 'HGNC:14561', 'swissprot': 'O43307', 'synonyms': ['DEE8', 'PEM2', 'EIEE8', 'PEM-2', 'HPEM-2', 'COLLYBISTIN'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ARHGEF9', 'ensembl': 'ENSG00000131089', 'ncbi': 'HGNC:14561', 'swissprot': 'O43307', 'synonyms': ['DEE8', 'PEM2', 'EIEE8', 'PEM-2', 'HPEM-2', 'COLLYBISTIN'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PCDH11X', 'ensembl': 'ENSG00000102290', 'ncbi': 'HGNC:8656', 'swissprot': 'Q9BZA7', 'synonyms': ['PCDHX', 'PCDH-X', 'PCDH-Y', 'PCDH11', 'PCDH22', 'PCDH11Y', 'PPP1R119'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PCDH11X', 'ensembl': 'ENSG00000102290', 'ncbi': 'HGNC:8656', 'swissprot': 'Q9BZA7', 'synonyms': ['PCDHX', 'PCDH-X', 'PCDH-Y', 'PCDH11', 'PCDH22', 'PCDH11Y', 'PPP1R119'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RLIM', 'ensembl': 'ENSG00000131263', 'ncbi': 'HGNC:13429', 'swissprot': 'Q9NVW2', 'synonyms': ['MRX61', 'RNF12', 'TOKAS', 'NY-REN-43'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RLIM', 'ensembl': 'ENSG00000131263', 'ncbi': 'HGNC:13429', 'swissprot': 'Q9NVW2', 'synonyms': ['MRX61', 'RNF12', 'TOKAS', 'NY-REN-43'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'BCORL1', 'ensembl': 'ENSG00000085185', 'ncbi': 'HGNC:25657', 'swissprot': 'Q5H9F3', 'synonyms': ['SHUVER', 'BCoR-L1', 'CXorf10'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'BCORL1', 'ensembl': 'ENSG00000085185', 'ncbi': 'HGNC:25657', 'swissprot': 'Q5H9F3', 'synonyms': ['SHUVER', 'BCoR-L1', 'CXorf10'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'WNK3', 'ensembl': 'ENSG00000196632', 'ncbi': 'HGNC:14543', 'swissprot': 'Q9BYP7', 'synonyms': ['PRS', 'MRXS2', 'PRKWNK3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'WNK3', 'ensembl': 'ENSG00000196632', 'ncbi': 'HGNC:14543', 'swissprot': 'Q9BYP7', 'synonyms': ['PRS', 'MRXS2', 'PRKWNK3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TBL1X', 'ensembl': 'ENSG00000101849', 'ncbi': 'HGNC:11585', 'swissprot': 'O60907', 'synonyms': ['EBI', 'TBL1', 'CHNG8', 'SMAP55'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TBL1X', 'ensembl': 'ENSG00000101849', 'ncbi': 'HGNC:11585', 'swissprot': 'O60907', 'synonyms': ['EBI', 'TBL1', 'CHNG8', 'SMAP55'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AP1S2', 'ensembl': 'ENSG00000182287', 'ncbi': 'HGNC:560', 'swissprot': 'P56377', 'synonyms': ['PGS', 'DC22', 'MRX59', 'MRXS5', 'MRXSF', 'MRXS21', 'SIGMA1B'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'AP1S2', 'ensembl': 'ENSG00000182287', 'ncbi': 'HGNC:560', 'swissprot': 'P56377', 'synonyms': ['PGS', 'DC22', 'MRX59', 'MRXS5', 'MRXSF', 'MRXS21', 'SIGMA1B'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'DDX53', 'ensembl': 'ENSG00000184735', 'ncbi': 'HGNC:20083', 'swissprot': 'Q86TM3', 'synonyms': ['CAGE', 'CT26'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'DDX53', 'ensembl': 'ENSG00000184735', 'ncbi': 'HGNC:20083', 'swissprot': 'Q86TM3', 'synonyms': ['CAGE', 'CT26'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GLRA2', 'ensembl': 'ENSG00000101958', 'ncbi': 'HGNC:4327', 'swissprot': 'P23416', 'synonyms': ['GLR', 'MRXSP'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'GLRA2', 'ensembl': 'ENSG00000101958', 'ncbi': 'HGNC:4327', 'swissprot': 'P23416', 'synonyms': ['GLR', 'MRXSP'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'NEXMIF', 'ensembl': 'ENSG00000050030', 'ncbi': 'HGNC:29433', 'swissprot': 'Q5QGS0', 'synonyms': ['XPN', 'MRX98', 'KIDLIA', 'XLID98', 'KIAA2022'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'NEXMIF', 'ensembl': 'ENSG00000050030', 'ncbi': 'HGNC:29433', 'swissprot': 'Q5QGS0', 'synonyms': ['XPN', 'MRX98', 'KIDLIA', 'XLID98', 'KIAA2022'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TMLHE', 'ensembl': 'ENSG00000185973', 'ncbi': 'HGNC:18308', 'swissprot': 'Q9NVH6', 'synonyms': ['TMLD', 'TMLH', 'BBOX2', 'AUTSX6', 'TMLHED', 'XAP130'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'TMLHE', 'ensembl': 'ENSG00000185973', 'ncbi': 'HGNC:18308', 'swissprot': 'Q9NVH6', 'synonyms': ['TMLD', 'TMLH', 'BBOX2', 'AUTSX6', 'TMLHED', 'XAP130'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PJA1', 'ensembl': 'ENSG00000181191', 'ncbi': 'HGNC:16648', 'swissprot': 'Q8NG27', 'synonyms': ['RNF70', 'PRAJA1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PJA1', 'ensembl': 'ENSG00000181191', 'ncbi': 'HGNC:16648', 'swissprot': 'Q8NG27', 'synonyms': ['RNF70', 'PRAJA1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ZNF711', 'ensembl': 'ENSG00000147180', 'ncbi': 'HGNC:13128', 'swissprot': 'Q9Y462', 'synonyms': ['ZNF4', 'ZNF5', 'ZNF6', 'CMPX1', 'MRX65', 'MRX97', 'XLID97', 'Zfp711', 'dJ75N13.1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'ZNF711', 'ensembl': 'ENSG00000147180', 'ncbi': 'HGNC:13128', 'swissprot': 'Q9Y462', 'synonyms': ['ZNF4', 'ZNF5', 'ZNF6', 'CMPX1', 'MRX65', 'MRX97', 'XLID97', 'Zfp711', 'dJ75N13.1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'LAS1L', 'ensembl': 'ENSG00000001497', 'ncbi': 'HGNC:25726', 'swissprot': 'Q9Y4W2', 'synonyms': ['WTS', 'Las1', 'MRXSWTS', 'Las1-like', 'dJ475B7.2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'LAS1L', 'ensembl': 'ENSG00000001497', 'ncbi': 'HGNC:25726', 'swissprot': 'Q9Y4W2', 'synonyms': ['WTS', 'Las1', 'MRXSWTS', 'Las1-like', 'dJ475B7.2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'MSL3', 'ensembl': 'ENSG00000005302', 'ncbi': 'HGNC:7370', 'swissprot': 'Q8N5Y2', 'synonyms': ['MRSXBA', 'MRXS36', 'MRXSBA', 'MSL3L1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'MSL3', 'ensembl': 'ENSG00000005302', 'ncbi': 'HGNC:7370', 'swissprot': 'Q8N5Y2', 'synonyms': ['MRSXBA', 'MRXS36', 'MRXSBA', 'MSL3L1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PTCHD1', 'ensembl': 'ENSG00000165186', 'ncbi': 'HGNC:26392', 'swissprot': 'Q96NR3', 'synonyms': ['AUTSX4', 'DELXP22.11', 'CXDELp22.11'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PTCHD1', 'ensembl': 'ENSG00000165186', 'ncbi': 'HGNC:26392', 'swissprot': 'Q96NR3', 'synonyms': ['AUTSX4', 'DELXP22.11', 'CXDELp22.11'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RHOXF1', 'ensembl': 'ENSG00000101883', 'ncbi': 'HGNC:29993', 'swissprot': 'Q8NHV9', 'synonyms': ['OTEX', 'PEPP1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'RHOXF1', 'ensembl': 'ENSG00000101883', 'ncbi': 'HGNC:29993', 'swissprot': 'Q8NHV9', 'synonyms': ['OTEX', 'PEPP1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'BRWD3', 'ensembl': 'ENSG00000165288', 'ncbi': 'HGNC:17342', 'swissprot': 'Q6RI45', 'synonyms': ['BRODL', 'MRX93', 'DCAF20', 'XLID93'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'BRWD3', 'ensembl': 'ENSG00000165288', 'ncbi': 'HGNC:17342', 'swissprot': 'Q6RI45', 'synonyms': ['BRODL', 'MRX93', 'DCAF20', 'XLID93'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'IL1RAPL2', 'ensembl': 'ENSG00000189108', 'ncbi': 'HGNC:5997', 'swissprot': 'Q9NP60', 'synonyms': ['IL1R9', 'IL-1R9', 'TIGIRR-1', 'IL1RAPL-2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'IL1RAPL2', 'ensembl': 'ENSG00000189108', 'ncbi': 'HGNC:5997', 'swissprot': 'Q9NP60', 'synonyms': ['IL1R9', 'IL-1R9', 'TIGIRR-1', 'IL1RAPL-2'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PLXNA3', 'ensembl': 'ENSG00000130827', 'ncbi': 'HGNC:9101', 'swissprot': 'P51805', 'synonyms': ['6.3', 'PLXN3', 'PLXN4', 'XAP-6', 'HSSEXGENE'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PLXNA3', 'ensembl': 'ENSG00000130827', 'ncbi': 'HGNC:9101', 'swissprot': 'P51805', 'synonyms': ['6.3', 'PLXN3', 'PLXN4', 'XAP-6', 'HSSEXGENE'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CD99L2', 'ensembl': 'ENSG00000102181', 'ncbi': 'HGNC:18237', 'swissprot': 'Q8TCZ2', 'synonyms': ['CD99B', 'MIC2L1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'CD99L2', 'ensembl': 'ENSG00000102181', 'ncbi': 'HGNC:18237', 'swissprot': 'Q8TCZ2', 'synonyms': ['CD99B', 'MIC2L1'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC9A7', 'ensembl': 'ENSG00000065923', 'ncbi': 'HGNC:17123', 'swissprot': 'Q96T83', 'synonyms': ['NHE7', 'NHE-7', 'MRX108', 'SLC9A6'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC9A7', 'ensembl': 'ENSG00000065923', 'ncbi': 'HGNC:17123', 'swissprot': 'Q96T83', 'synonyms': ['NHE7', 'NHE-7', 'MRX108', 'SLC9A6'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC7A3', 'ensembl': 'ENSG00000165349', 'ncbi': 'HGNC:11061', 'swissprot': 'Q8WY07', 'synonyms': ['CAT3', 'ATRC3', 'CAT-3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SLC7A3', 'ensembl': 'ENSG00000165349', 'ncbi': 'HGNC:11061', 'swissprot': 'Q8WY07', 'synonyms': ['CAT3', 'ATRC3', 'CAT-3'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SYAP1', 'ensembl': 'ENSG00000169895', 'ncbi': 'HGNC:16273', 'swissprot': 'Q96A49', 'synonyms': ['BSTA', 'PRO3113'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'SYAP1', 'ensembl': 'ENSG00000169895', 'ncbi': 'HGNC:16273', 'swissprot': 'Q96A49', 'synonyms': ['BSTA', 'PRO3113'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FRMPD4', 'ensembl': 'ENSG00000169933', 'ncbi': 'HGNC:29007', 'swissprot': 'Q14CM0', 'synonyms': ['MRX104', 'PDZD10', 'PDZK10', 'XLID104'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FRMPD4', 'ensembl': 'ENSG00000169933', 'ncbi': 'HGNC:29007', 'swissprot': 'Q14CM0', 'synonyms': ['MRX104', 'PDZD10', 'PDZK10', 'XLID104'], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'PTCHD1-AS', 'ensembl': '', 'ncbi': 'HGNC:37703', 'swissprot': '', 'synonyms': ['PHEX-AS1', 'DDX53-AS1', 'PTCHD1AS1', 'PTCHD1AS2'], '_ncbi': '', 'type': 'ncRNA', 'coord': ('X', '', '')}
+{'name': 'PTCHD1-AS', 'ensembl': '', 'ncbi': 'HGNC:37703', 'swissprot': '', 'synonyms': ['PHEX-AS1', 'DDX53-AS1', 'PTCHD1AS1', 'PTCHD1AS2'], '_ncbi': '', 'type': 'ncRNA', 'coord': ('X', '', '')}
+{'name': 'PTCHD1-AS', 'ensembl': '', 'ncbi': 'HGNC:37703', 'swissprot': '', 'synonyms': ['PHEX-AS1', 'DDX53-AS1', 'PTCHD1AS1', 'PTCHD1AS2'], '_ncbi': '', 'type': 'ncRNA', 'coord': ('X', '', '')}
+{'name': 'FAM47A', 'ensembl': 'ENSG00000185448', 'ncbi': 'HGNC:29962', 'swissprot': 'Q5JRC9', 'synonyms': [''], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}
+{'name': 'FAM47A', 'ensembl': 'ENSG00000185448', 'ncbi': 'HGNC:29962', 'swissprot': 'Q5JRC9', 'synonyms': [''], '_ncbi': '', 'type': 'PROTEIN_CODING', 'coord': ('X', '', '')}</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/munch-group\.github\.io\/geneinfo\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
