@@ -1,4 +1,4 @@
-import os
+import os, glob
 import pandas as pd
 from pandas.api.types import is_object_dtype
 import numpy as np
@@ -123,7 +123,7 @@ def clear_cache(func_name=None):
         return
     cache_dir = os.path.join(os.path.dirname(__file__), 'data')
     if func_name is None:
-        for file in cache_dir.glob('*.db'):
+        for file in glob.glob(f'{cache_dir}/*.db'):
             file.unlink()
     else:
         (cache_dir / (func_name + '.db')).unlink()
@@ -280,6 +280,27 @@ def tabulate_genes(words, ncols=None):
         print(''.join(line))
 
 
+# from collections import UserList, UserString
+
+# class Gene(str):
+
+#     def __init__(self, name):
+#         self.name = name
+#         self.aliases = [x.strip() for x in name.split('/')]
+
+#     def add_aliases(self):
+#         ...
+    
+#     def __eq__(self, other):
+#         return bool(set(self.aliases).intersection(set(other.aliases)))
+
+
+# class GeneList(UserList):
+
+#     def __getitem__(self, i):
+        # return Gene(self.data[i])
+    
+
 class GeneList(list):
 
     def __init__(self, *args, **kwargs):
@@ -301,6 +322,11 @@ class GeneList(list):
             repr.append(''.join(line))
         return('\n'.join(repr))
 
+    def add_aliases(self):
+        ...
+
+    def __str__(self):
+        return repr(self)
 
 
 # def read_google_sheet():
@@ -366,13 +392,14 @@ AMPL_ABBREV_MAP = {
  'amplicon_chrX_XAGE5': ['XAGE5'],
 }
 
-class GoogleSheet(object):
+class GeneListCollection(object):
 
-    def __init__(self, url=None):
+    def __init__(self, url:str=None, google_sheet:str=None, tab='Sheet1'):
+
+        assert url or google_sheet, 'Either file/url or google_sheet id must be provided.'
+
         if url is None:
-            SHEET_ID='1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk'
-            SHEET_NAME='Sheet1'
-            url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
+            url = f'https://docs.google.com/spreadsheets/d/{google_sheet}/gviz/tq?tqx=out:csv&sheet={tab}'
 
         self.desc = []
         for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
@@ -384,8 +411,20 @@ class GoogleSheet(object):
         self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
         self.names = self.df.columns.tolist()
 
+    def all_genes(self):
+        names = []
+        for label in lists:
+            names.extend(lists.get(label))
+        return sorted(set(names))
+    
+    def cache_coord(self):
+        for label in lists:
+            names = lists.get(label)
+            if not names or len(names) > 3000:
+                names = names[:3000]
+            gi.gene_coord(names, assembly='hg38', pos_list=True)
+    
     def expand_amplicon_abbrev(self, old_list):
-
 
         new_list = []
         for gene_name in old_list:

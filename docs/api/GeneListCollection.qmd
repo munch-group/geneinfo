@@ -1,0 +1,11 @@
+# GeneListCollection { #geneinfo.utils.GeneListCollection }
+
+```python
+geneinfo.utils.GeneListCollection(
+    self
+    url=None
+    google_sheet=None
+    tab='Sheet1'
+)
+```
+

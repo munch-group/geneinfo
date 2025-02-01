@@ -57,7 +57,7 @@ website:
       - api/stairs.qmd
       - api/clear_cache.qmd
       - api/GeneList.qmd
-      - api/GoogleSheet.qmd
+      - api/GeneListCollection.qmd
       section: Utilities
     id: api
   - id: dummy-sidebar

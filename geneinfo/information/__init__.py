@@ -67,10 +67,9 @@ def ensembl_id(name:Union[str, list], species:str='homo_sapiens') -> str:
         name = list(name)
         
     if type(name) is str:
-        name_list = [name]
+        return _ensembl_id(name)
     else:
-        name_list = name
-    return [_ensembl_id(x) for x in name_list]
+        return [_ensembl_id(x) for x in name]
 
 
 @shelve_it()
@@ -105,14 +104,14 @@ def ensembl2symbol(ensembl_id:str) -> str:
     return symbols[0]
 
 
-def hgcn_symbol(name:str) -> str:
+def hgcn_symbol(name:str|list) -> str:
     """
     Get HGCN gene symbol for some gene identifier
 
     Parameters
     ----------
     name : 
-        Gene identifier
+        Gene identifier or sequence of identifiers.
 
     Returns
     -------
@@ -126,6 +125,7 @@ def hgcn_symbol(name:str) -> str:
     """ 
     if isinstance(name, GeneList):
         name = list(name)
+        
     if type(name) is list or type(name) is set:
         return [ensembl2symbol(ensembl_id(n)) for n in name]
     else:
@@ -235,7 +235,6 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
     return coords
 
 
-@shelve_it()
 def gene_info(query: Union[str, List[str]], species:str='human', 
               scopes:str='hgnc') -> None:
     """

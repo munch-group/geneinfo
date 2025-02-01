@@ -91,7 +91,7 @@ These functions display directed graphs representing sets of connected GO terms.
 
 | | |
 | --- | --- |
-| [email](email.qmd#geneinfo.ontology.email) | Registers your email address for Entrez queries. Thay way, NCBI will contect you |
+| [email](email.qmd#geneinfo.ontology.email) | Registers your email address for Entrez queries. Thay way, NCBI will contect  |
 | [show_go_dag_for_gene](show_go_dag_for_gene.qmd#geneinfo.ontology.show_go_dag_for_gene) | Displays GO graph for a given gene. |
 | [show_go_dag_for_terms](show_go_dag_for_terms.qmd#geneinfo.ontology.show_go_dag_for_terms) | Display GO graph for a list of GO terms. |
 | [show_go_dag_enrichment_results](show_go_dag_enrichment_results.qmd#geneinfo.ontology.show_go_dag_enrichment_results) | Displays a GO enrichment analysis results. |
@@ -103,7 +103,7 @@ These functions retrieves genes based on their GO annotation.
 
 | | |
 | --- | --- |
-| [get_genes_for_go_regex](get_genes_for_go_regex.qmd#geneinfo.ontology.get_genes_for_go_regex) | Get gene information for GO terms matching a regular expression in their description string. |
+| [get_genes_for_go_regex](get_genes_for_go_regex.qmd#geneinfo.ontology.get_genes_for_go_regex) | Get gene information for GO terms matching a regular expression in  |
 | [get_genes_for_go_terms](get_genes_for_go_terms.qmd#geneinfo.ontology.get_genes_for_go_terms) | Get gene information for genes with specified GO terms. |
 | [gene_annotation_table](gene_annotation_table.qmd#geneinfo.ontology.gene_annotation_table) | Gene annotations for a given taxonomy id as a pandas.DataFrame. |
 
@@ -119,4 +119,4 @@ These are utility functions to record your email in queries and to tabulate gene
 | [stairs](stairs.qmd#geneinfo.utils.stairs) | Turn a df with start, end into one with pos to plot as stairs |
 | [clear_cache](clear_cache.qmd#geneinfo.utils.clear_cache) | Clear the cache of a shelve file. |
 | [GeneList](GeneList.qmd#geneinfo.utils.GeneList) |  |
-| [GoogleSheet](GoogleSheet.qmd#geneinfo.utils.GoogleSheet) |  |
+| [GeneListCollection](GeneListCollection.qmd#geneinfo.utils.GeneListCollection) |  |

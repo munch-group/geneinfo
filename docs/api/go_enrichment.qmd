@@ -30,7 +30,7 @@ Runs a GO enrichment analysis.
 
 <code>[**background_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   List of genes for use as background in GO enrichment analysis, by default None
+:   List of genes for use as background in GO enrichment analysis,  by default None
 
 <code>[**terms**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
@@ -38,7 +38,7 @@ Runs a GO enrichment analysis.
 
 <code>[**list_study_genes**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
 
-:   Whether to include lists of genes responsible for enrichment for each identified GO term, by default False
+:   Whether to include lists of genes responsible for enrichment for each  identified GO term, by default False
 
 <code>[**alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.05]{.parameter-default}</code>
 
@@ -53,7 +53,8 @@ Runs a GO enrichment analysis.
 ## Examples {.doc-section .doc-section-examples}
 
 ```python
-gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 
+             'ATM', 'CHEK2', 'PALB2']
 results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
 show_go_dag_enrichment_results(results.obj)
 ```

@@ -15,7 +15,8 @@ Displays a GO enrichment analysis results.
 ## Examples {.doc-section .doc-section-examples}
 
 ```python
-gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 'CDH1', 'ATM', 'CHEK2', 'PALB2']
+gene_list = ['TP53', 'BRCA1', 'BRCA2', 'EGFR', 'KRAS', 'PTEN', 
+             'CDH1', 'ATM', 'CHEK2', 'PALB2']
 results = go_enrichment(gene_list, taxid=9606, alpha=0.05)
 show_go_dag_enrichment_results(results.obj)
 ```

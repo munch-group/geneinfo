@@ -887,7 +887,7 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None,
     if taxid not in [9606, 17580]:
         raise ValueError('Only human and mouse (tax id 9606 and 17580) are supported')
     
-    if issubclass(gene_list, list):
+    if issubclass(type(gene_list), list):
         gene_list = list(gene_list)
     
     if type(gene_list) is pd.core.series.Series:

@@ -55,22 +55,23 @@ website:
       align: left
       contents:
         - pages/getting_started.ipynb
-        - section: "Gene information"
+        - section: "Information"
           contents:
             - pages/gene_ids.ipynb                   
             - pages/gene_information.ipynb                  
-        - section: "Gene plots"
+        - section: "Visualization"
           contents:
             - pages/gene_plots.ipynb
             - pages/chrom_ideograms.ipynb              
             - pages/string_nets.ipynb
             - pages/go_graphs.ipynb                   
-        - section: "Gene ontology"
+        - section: "Enrichment"
           contents:
             - pages/go_info.ipynb                   
             - pages/go_enrichment.ipynb                   
-        - section: "Utils"
+        - section: "Utilities"
           contents:
+            - pages/gene_lists.ipynb
             - pages/cashing.ipynb                   
 
 lightbox: true
@@ -191,4 +192,4 @@ quartodoc:
         - stairs
         - clear_cache
         - GeneList
-        - GoogleSheet
+        - GeneListCollection

@@ -8,9 +8,9 @@ from typing import Any, TypeVar, List, Tuple, Dict, Union
 
 import requests
 
-from .intervals import *
+from ..intervals import *
 
-from .utils import GeneList
+from ..utils import GeneList
 
 
 def _get_string_ids(my_genes):
@@ -93,7 +93,7 @@ def string_network_table(my_genes:list, nodes:int=10) -> pd.DataFrame:
     :
         STRING network information for specified genes.
     """
-    if issubclass(my_genes, list):
+    if isinstance(my_genes, GeneList):
         my_genes = list(my_genes)
     
     if type(my_genes) is str:

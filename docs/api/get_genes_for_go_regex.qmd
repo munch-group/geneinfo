@@ -4,7 +4,8 @@
 geneinfo.ontology.get_genes_for_go_regex(regex, taxid=9606)
 ```
 
-Get gene information for GO terms matching a regular expression in their description string.
+Get gene information for GO terms matching a regular expression in 
+their description string.
 
 ## Parameters {.doc-section .doc-section-parameters}
 

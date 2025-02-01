@@ -23,7 +23,7 @@ Displays GO graph for a given gene.
 
 <code>[**evidence**]{.parameter-name} [:]{.parameter-annotation-sep} [[list](`list`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Limiting list of evidence categories to include, by default None. See `show_go_evidence_codes()`.
+:   Limiting list of evidence categories to include, by default None.  See `show_go_evidence_codes()`.
 
 <code>[**add_relationships**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
 

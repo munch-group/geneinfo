@@ -132,3 +132,12 @@ steps
 
 /.quarto/
 _book/
+
+.gitattributes
+**/cache/
+
+.virtual_documents/
+docs/_freeze/
+docs/_inv/
+docs/objects.txt
+docs/pages/geneinfo_cache/

@@ -28,7 +28,7 @@ Class to plot ideograms of chromosomes in a genome assembly.
 | [draw_text](#geneinfo.plot.GenomeIdeogram.draw_text) | Draws text with a line pointing to a position on the y-axis. |
 | [get_polygon](#geneinfo.plot.GenomeIdeogram.get_polygon) | Computes polygon for rotated text label. |
 | [map_fun](#geneinfo.plot.GenomeIdeogram.map_fun) | Map a plotting function like seaborn.scatterplot to each ideogram panel (axis). |
-| [map_method](#geneinfo.plot.GenomeIdeogram.map_method) | Map a matplotib axes method like plot and scatter to each ideogram panel (axis). |
+| [map_method](#geneinfo.plot.GenomeIdeogram.map_method) | Map a matplotib axes method like plot and scatter to each ideogram  |
 | [map_y](#geneinfo.plot.GenomeIdeogram.map_y) | Maps y-axis values from user-specified ylim to actual plotting coordinates. |
 
 ### add_horizon { #geneinfo.plot.GenomeIdeogram.add_horizon }
@@ -75,7 +75,7 @@ Adds a horizon plot to the chromosome ideograms.
 
 <code>[**quantile_span**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Lower and upper quantiles of y values for each chromosome to include in the horizon plot.  `quantile_span=(0, 1)` produces the same result as `cut=None`. Outlier values below and  above this range is assigned separate darker colors.
+:   Lower and upper quantiles of y values for each chromosome to include  in the horizon plot. `quantile_span=(0, 1)` produces the same result  as `cut=None`. Outlier values below and above this range is assigned separate darker colors.
 
 <code>[**beginzero**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
 
@@ -87,7 +87,7 @@ Adds a horizon plot to the chromosome ideograms.
 
 <code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Height of horizon plot in y coordinates, by default None. If None, the ideogram height is used.
+:   Height of horizon plot in y coordinates, by default None.  If None, the ideogram height is used.
 
 <code>[**colors**]{.parameter-name} [:]{.parameter-annotation-sep} [[List](`typing.List`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [\[\'#CCE2DF\', \'#59A9A8\', \'#374E9B\', \'midnightblue\', \'#F2DE9A\', \'#DA8630\', \'#972428\', \'darkred\', \'#D3D3D3\'\]]{.parameter-default}</code>
 
@@ -116,15 +116,15 @@ Add text labels to the chromosome ideograms.
 
 <code>[**annot**]{.parameter-name} [:]{.parameter-annotation-sep} [[MutableSequence](`collections.abc.MutableSequence`)]{.parameter-annotation}</code>
 
-:   List of gene names or tuples of HGCN gene symbols and tuples with chromosome name,  gene position, text label, and optionally text color, text size, and line color: `(<chrom>, <position>, <text>, [<textcolor>, [ [textsize] [<linecolor>] ] ])`.  Text size values are scaled to make the largest one 1 and font size is then computed as self.font_size * textsize.  That way font sizes can only be smaller than the default.
+:   List of gene names or tuples of HGCN gene symbols and tuples with chromosome name, gene position, text label, and optionally text color, text size, and line color: `(<chrom>, <position>, <text>, [<textcolor>,  [ [textsize] [<linecolor>] ] ])`. Text size values are scaled to make  the largest one 1 and font size is then computed as self.font_size *  textsize. That way font sizes can only be smaller than the default.
 
 <code>[**base**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Y coordinate for lower end of vertical line, by default None. If None, the upper edge of ideogram is used.
+:   Y coordinate for lower end of vertical line, by default None.  If None, the upper edge of ideogram is used.
 
 <code>[**min_height**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Minimum length of vertical line in y coordinates, by default None, If None, half the ideogram height is used.
+:   Minimum length of vertical line in y coordinates, by default None.  If None, half the ideogram height is used.
 
 <code>[**bold**]{.parameter-name} [:]{.parameter-annotation-sep} [[MutableSequence](`collections.abc.MutableSequence`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\[\]]{.parameter-default}</code>
 
@@ -187,11 +187,11 @@ Add segments (rectangles) to the chromosome ideograms.
 
 <code>[**base**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Y coordinate for lower edge of rectangles, by default None. If None, the lower edge of ideogram is used.
+:   Y coordinate for lower edge of rectangles, by default None.  If None, the lower edge of ideogram is used.
 
 <code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Height of rectangles in y coordinates, by default None. If None, the ideogram height is used.
+:   Height of rectangles in y coordinates, by default None.  If None, the ideogram height is used.
 
 <code>[**label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
@@ -203,7 +203,7 @@ Add segments (rectangles) to the chromosome ideograms.
 
 <code>[****kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
 
-:   Additional keyword arguments for matplotlib.patches.Rectangle (defaults ot {facecolor='black', edgecolor='none'})
+:   Additional keyword arguments for matplotlib.patches. Rectangle (defaults to {facecolor='black', edgecolor='none'})
 
 ### add_vlines { #geneinfo.plot.GenomeIdeogram.add_vlines }
 
@@ -257,11 +257,11 @@ Draws an annotation with an arrow to a point from a text box.
 
 <code>[**xy**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Coordinate to point to as a tuple of chromosome position and y plotting coordinate
+:   Coordinate to point to as a tuple of chromosome position and  y plotting coordinate
 
 <code>[**testxy**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Coordinate to text box as a tuple of chromosome position and y plotting coordinate
+:   Coordinate to text box as a tuple of chromosome position and  y plotting coordinate
 
 <code>[**text**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
@@ -269,11 +269,11 @@ Draws an annotation with an arrow to a point from a text box.
 
 <code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Chromosome to annotate, by default the first or only chromosome in the plot
+:   Chromosome to annotate, by default the first or only chromosome  in the plot
 
 <code>[**ax**]{.parameter-name} [:]{.parameter-annotation-sep} [[matplotlib](`matplotlib`).[axes](`matplotlib.axes`).[Axes](`matplotlib.axes.Axes`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Axis with the point the arrow points to, by default the axis for the chromosome ideogram.
+:   Axis with the point the arrow points to, by default the axis for  the chromosome ideogram.
 
 <code>[**wrap**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [30]{.parameter-default}</code>
 
@@ -328,6 +328,7 @@ Draws chromosome ideograms.
 
 ```python
 geneinfo.plot.GenomeIdeogram.draw_text(
+    coord
     x_pos
     y_pos
     text
@@ -345,13 +346,17 @@ Draws text with a line pointing to a position on the y-axis.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
+<code>[**coord**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation}</code>
+
+:   Coordonate of annotation
+
 <code>[**x_pos**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation}</code>
 
-:   X-axis position
+:   X-axis position of text
 
 <code>[**y_pos**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation}</code>
 
-:   Y-axis position
+:   Y-axis position of text
 
 <code>[**text**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
 
@@ -451,7 +456,7 @@ Map a plotting function like seaborn.scatterplot to each ideogram panel (axis).
 
 <code>[**yaxis**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [(0.5, 3.5)]{.parameter-default}</code>
 
-:   Y interval of ideogram panel axis ideogram to map data to, by default (0.5, 3.5)
+:   Y interval of ideogram panel axis ideogram to map data to,  by default (0.5, 3.5)
 
 <code>[****kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
 
@@ -469,21 +474,22 @@ geneinfo.plot.GenomeIdeogram.map_method(
 )
 ```
 
-Map a matplotib axes method like plot and scatter to each ideogram panel (axis).
+Map a matplotib axes method like plot and scatter to each ideogram 
+panel (axis).
 
 #### Parameters {.doc-section .doc-section-parameters}
 
 <code>[**method**]{.parameter-name} [:]{.parameter-annotation-sep} [[Callable](`collections.abc.Callable`)]{.parameter-annotation}</code>
 
-:   Method of matplotib.axes.Axes to apply to each ideogram panel (E.g. Axes.scatter).
+:   Method of matplotib.axes.Axes to apply to each ideogram panel  (E.g. Axes.scatter).
 
 <code>[**data**]{.parameter-name} [:]{.parameter-annotation-sep} [[pd](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Data frame with with data for x and y coordinates by chromsome.
+:   Data frame with with data for x and y coordinates by chromsome
 
 <code>[**ch**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'chrom\']{.parameter-default}</code>
 
-:   Name of data frame column holding chromosome names, by default 'chrom'
+:   Name of data frame column holding chromosome names, by default  'chrom'
 
 <code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
 
@@ -495,11 +501,11 @@ Map a matplotib axes method like plot and scatter to each ideogram panel (axis).
 
 <code>[**yaxis**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [(0.5, 3.5)]{.parameter-default}</code>
 
-:   Y interval of ideogram panel axis ideogram to map data to, by default (0.5, 3.5)
+:   Y interval of ideogram panel axis ideogram to map data to,  by default (0.5, 3.5)
 
 <code>[****kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
 
-:   Additional keyword arguments are passed to the plotting function as keyword arguments.
+:   Additional keyword arguments are passed to the plotting function  as keyword arguments.
 
 ### map_y { #geneinfo.plot.GenomeIdeogram.map_y }
 

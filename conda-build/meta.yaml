@@ -30,6 +30,7 @@ requirements:
     - goatools>=1.2
     - pytables
     - wget
+    - pydot
 
 channels:    # your library dependencies
   # - uibcdf

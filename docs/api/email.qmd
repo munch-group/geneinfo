@@ -4,8 +4,8 @@
 geneinfo.ontology.email(email_address)
 ```
 
-Registers your email address for Entrez queries. Thay way, NCBI will contect you
-before closeing your connection if you are making too many queries.
+Registers your email address for Entrez queries. Thay way, NCBI will contect 
+you before closeing your connection if you are making too many queries.
 
 ## Parameters {.doc-section .doc-section-parameters}
 

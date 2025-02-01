@@ -33,4 +33,4 @@ Retrieves genome coordinates one or more genes.
 
 <code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation}</code>
 
-:   Dictionary with gene names as keys and (chrom, start, end, strand) tuples as values, or a list of  (chrom, position, name) tuples.
+:   Dictionary with gene names as keys and (chrom, start, end, strand) tuples  as values, or a list of (chrom, position, name) tuples.

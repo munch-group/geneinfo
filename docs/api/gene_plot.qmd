@@ -44,7 +44,7 @@ plotting along the same chromosome coordinates.
 
 <code>[**highlight**]{.parameter-name} [:]{.parameter-annotation-sep} [[List](`typing.List`)\[[Dict](`typing.Dict`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [\[\]]{.parameter-default}</code>
 
-:   List or dictionary of genes to highlight on gene plot (see Examples), by default []
+:   List or dictionary of genes to highlight on gene plot (see Examples),  by default []
 
 <code>[**db**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'ncbiRefSeq\']{.parameter-default}</code>
 
@@ -52,27 +52,27 @@ plotting along the same chromosome coordinates.
 
 <code>[**collapse_splice_var**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
 
-:   Whether to collapse splice variants into a single string of exons, by default True
+:   Whether to collapse splice variants into a single string of exons,  by default True
 
 <code>[**hard_limits**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
 
-:   Whether to truncate plot in the middle of a gene, by default False so that genes are fully plotted.
+:   Whether to truncate plot in the middle of a gene, by default False so  that genes are fully plotted.
 
 <code>[**exact_exons**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
 
-:   Whether to plot exon coordinates exatly, by default False so that exons are plotted as a minimum width.
+:   Whether to plot exon coordinates exactly, by default False so that exons  are plotted as a minimum width.
 
 <code>[**figsize**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Figure size specifified as a (width, height) tuple, by default None honering the default matplotlib settings.
+:   Figure size specified as a (width, height) tuple, by default None  honoring the default matplotlib settings.
 
 <code>[**aspect**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1]{.parameter-default}</code>
 
-:   Size of gene plot height relative to the total height of the other axes, by default 1
+:   Size of gene plot height relative to the total height of the other axes,  by default 1
 
 <code>[**despine**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
 
-:   Wheher to remove top and right frame borders, by default False
+:   Whether to remove top and right frame borders, by default False
 
 <code>[**clip_on**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
 
@@ -84,11 +84,11 @@ plotting along the same chromosome coordinates.
 
 <code>[**font_size**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Gene label font size, by default None, in which case it is calculated based on the region size.
+:   Gene label font size, by default None, in which case it is calculated  based on the region size.
 
 <code>[**return_axes**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1]{.parameter-default}</code>
 
-:   The number of vertically stacked axes to return for plotting over the gene plot, by default 1
+:   The number of vertically stacked axes to return for plotting over the  gene plot, by default 1
 
 ## Returns {.doc-section .doc-section-returns}
 
@@ -112,11 +112,14 @@ ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight=['TP53', 'BRCA1'])
 ax.scatter(chrom_coordinates, values)
 
 # Highlight genes with custom styles
-ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})
+ax = gene_plot('chr1', 1000000, 2000000, 'hg38', 
+                highlight={'TP53': {'color': 'blue', 'weight': 'bold'}})
 ax.scatter(chrom_coordinates, values)
 
 # Muli-gene highlight with custom styles
-ax = gene_plot('chr1', 1000000, 2000000, 'hg38', highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 'BRCA1': {'color': 'red'}})
+ax = gene_plot('chr1', 1000000, 2000000, 'hg38', 
+                highlight={'TP53': {'color': 'blue', 'weight': 'bold'}, 
+                           'BRCA1': {'color': 'red'}})
 ax.scatter(chrom_coordinates, values)
 
 # Multipel axes for plotting over gene plot
