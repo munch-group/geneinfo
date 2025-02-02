@@ -200,8 +200,9 @@ class GenomeIdeogram:
         self.end_padding = 300000
 
         if self.assembly is not None:
+            self.chrom_lengths = self._chrom_lengths[assembly]
             self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
-            self.chr_sizes = [self._chrom_lengths[assembly][c] for c in self.chr_names]
+            self.chr_sizes = [self.chrom_lengths[c] for c in self.chr_names]
             self.centromeres = self._centromeres
         else:
             self.coord_system, self.chrom_lengths, self.centromeres = _get_chrom_info(self.species)

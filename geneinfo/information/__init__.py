@@ -28,7 +28,7 @@ class NotFound(Exception):
 
 
 @shelve_it()
-def _ensembl_id(name:str, species:str='homo_sapiens') -> str:
+def _ensembl_id(name:str, species:str) -> str:
     server = "https://rest.ensembl.org"
     ext = f"/xrefs/symbol/{species}/{name}?"
     r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
@@ -41,7 +41,7 @@ def _ensembl_id(name:str, species:str='homo_sapiens') -> str:
     return ensembl_ids[0]
 
 
-def ensembl_id(name:Union[str, list], species:str='homo_sapiens') -> str:
+def ensembl_id(name:Union[str, list], species:str) -> str:
     """
     Get ENSEMBL ID for some gene identifier
 
@@ -182,7 +182,7 @@ def mygene_get_gene_info(
 
 
 @shelve_it()
-def gene_coord(query: Union[str, List[str]], species='homo_sapiens', assembly:str=None, 
+def gene_coord(query: Union[str, List[str]], species, assembly:str=None, 
                pos_list=False) -> dict:
     """
     Retrieves genome coordinates one or more genes.
@@ -192,7 +192,7 @@ def gene_coord(query: Union[str, List[str]], species='homo_sapiens', assembly:st
     query : 
         Gene symbol or list of gene symbols
     species :  
-        Species, by default 'homo_sapiens'.
+        Species, E.g 'homo_sapiens'.
     assembly :  
         Genome assembly, by default most recent.
     pos_list :
@@ -235,7 +235,7 @@ def gene_coord(query: Union[str, List[str]], species='homo_sapiens', assembly:st
     return coords
 
 
-def gene_info(query: Union[str, List[str]], species:str='human', 
+def gene_info(query: Union[str, List[str]], species:str, 
               scopes:str='hgnc') -> None:
     """
     Displays HTML formatted information about one or more genes.
@@ -245,7 +245,7 @@ def gene_info(query: Union[str, List[str]], species:str='human',
     query : 
         Gene symbol or list of gene symbols
     species :  optional
-        Species, by default 'human'
+        Species, E.g. 'human'
     scopes :  optional
         Scopes for information search, by default 'hgnc'
     """
@@ -314,7 +314,8 @@ def gene_info(query: Union[str, List[str]], species:str='human',
 @shelve_it()
 def _ensembl_get_features_region(chrom, window_start, window_end, 
                                  features=['gene', 'exon'], assembly=None, 
-                                 species='homo_sapiens'):
+                                 species=None):
+                                #  species='homo_sapiens'):
     if chrom.startswith('chr'):
         chrom = chrom[3:]
     window_start, window_end = int(window_start), int(window_end)
@@ -341,7 +342,8 @@ def _ensembl_get_features_region(chrom, window_start, window_end,
 
 
 # @shelve_it()
-def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapiens'):
+# def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapiens'):
+def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species=None):
 
     if assembly == 'hg38':
         assembly='GRCh38'
@@ -368,7 +370,8 @@ def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapien
 
 
 def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None, 
-                             species='homo_sapiens'):
+                             species=None):
+                            #  species='homo_sapiens'):
     
     gene_info = _ensembl_get_features_region(
         chrom, window_start, window_end, features=['gene'], assembly=assembly, species=species)
@@ -441,7 +444,9 @@ def get_genes_region(chrom:str, window_start:int, window_end:int,
 
 
 def get_genes_region_dataframe(chrom:str, window_start:int, window_end:int, 
-                     assembly:str='GRCh38', db:str='ncbiRefSeq') -> pd.DataFrame:
+                     assembly:str=None, 
+                    #  assembly:str='GRCh38', 
+                     db:str='ncbiRefSeq') -> pd.DataFrame:
     """
     Gets gene structure information for genes in a chromosomal region in the form
     of a pandas.DataFrame.
@@ -479,7 +484,9 @@ def get_genes_region_dataframe(chrom:str, window_start:int, window_end:int,
 
 
 def gene_info_region(chrom:str, window_start:int, window_end:int, 
-                     assembly:str='GRCh38', db:str='ncbiRefSeq') -> None:
+                    #  assembly:str='GRCh38', 
+                     assembly:str=None, 
+                     db:str='ncbiRefSeq') -> None:
     """
     Displays HTML formatted information about genes in a chromosomal region.
 
