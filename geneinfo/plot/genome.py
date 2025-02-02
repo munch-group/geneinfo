@@ -16,6 +16,7 @@ from operator import sub
 import warnings
 from itertools import chain
 from statsmodels.nonparametric.smoothers_lowess import lowess
+import requests, re
 
 import matplotlib
 import matplotlib.axes
@@ -51,7 +52,48 @@ class Polygon:
     def nudge_y(self, nudge):
         for point in self.points:
             point.y += nudge
-            
+
+
+def _get_chrom_info(species):
+
+    name = species.lower().replace(' ', '_')
+
+    server = "https://rest.ensembl.org"
+    # ext = "/info/assembly/homo_sapiens?bands=1?"
+    # ext = "/info/assembly/papio_anubis?bands=1?"
+    ext = f"/info/assembly/{name}?bands=1?"
+    
+    r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+    
+    if not r.ok:
+        r.raise_for_status()
+    
+    data = r.json()
+    assembly_versions = data['coord_system_versions']
+    centromeres = {}
+    chrom_lengths = {}
+    
+    assembly_coord_system = data['default_coord_system_version']
+    karyotype = data['karyotype']
+    assembly_accession = data['assembly_accession']
+        
+    for d in data['top_level_region']:
+        if d['coord_system'] not in ['chromosome', 'primary_assembly']:
+            continue
+        if d['name'] not in karyotype:# .startswith('Un') or d['length'] < 1_000_000:
+            continue
+        if d['name'] == 'MT':# .startswith('Un') or d['length'] < 1_000_000:
+            continue
+        chrom_lengths['chr'+d['name']] = d['length']
+    
+        
+        if 'bands' in d:
+            for b in d['bands']:
+                if b['stain'] == 'acen':
+                    centromeres['chr'+b['seq_region_name']] = (b['start'],  b['end'])
+    return assembly_coord_system, chrom_lengths, centromeres
+
+
 class GenomeIdeogram:
     """
     Class to plot ideograms of chromosomes in a genome assembly.
@@ -67,8 +109,8 @@ class GenomeIdeogram:
          'axes.labelsize': 7.68, 'axes.titlesize': 7.68, 
          'xtick.labelsize': 7.04, 'ytick.labelsize': 7.04, 
          'legend.fontsize': 7.04, 'legend.title_fontsize': 7.68}
-    
-    chrom_lengths = {'hg19': {'chr1': 249250621, 'chr2': 243199373, 
+
+    _chrom_lengths = {'hg19': {'chr1': 249250621, 'chr2': 243199373, 
                               'chr3': 198022430, 'chr4': 191154276, 
                               'chr5': 180915260, 'chr6': 171115067, 
                               'chr7': 159138663, 'chr8': 146364022, 
@@ -94,7 +136,7 @@ class GenomeIdeogram:
                               'chrX': 156040895, 'chrY': 57227415}}    
 
     # TODO: make the centromeres fit each assembly!
-    centromeres = {
+    _centromeres = {
         'chr1':    (121700000, 125100000),
         'chr10':   (38000000, 41600000),
         'chr11':   (51000000, 55800000),
@@ -123,7 +165,7 @@ class GenomeIdeogram:
     
     def __init__(self, axes_height_inches:float=0.5, axes_width_inches:float=12, 
                  hspace:float=0, ylim:tuple=(0, 10), rel_font_height:float=0.07, 
-                 assembly:str='hg38'):
+                 species:str='Homo sapiens', assembly:str=None):
         """
         Initialize canvas for plotting ideograms of chromosomes in a genome
         assembly.
@@ -141,21 +183,40 @@ class GenomeIdeogram:
         rel_font_height : 
             Font size relative to panel height (axes_height_inches), 
             by default 0.07
-        assembly : 
-            Genome assembly, by default panel 'hg38'. Other option is 'hg19'.
+        species : 
+            Species latin name, by default panel 'Homo sapiens'.
+        human_assembly : 
+            Human genome assembly, by default most recent. Other options are 'hg38' and 'hg19'.
         """
-        self.assemembly = assembly
+        
+        self.species = species
+        self.assembly = assembly
         self.ideogram_base = None
         self.ideogram_height = None
         # self.min_stick_height = min_stick_height
         self.legend_handles = []
         self.zooms = []
         self.zoom_axes = []
-        
         self.end_padding = 300000
-        self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
-        self.chr_sizes = [self.chrom_lengths[assembly][chrom] 
-                          for chrom in self.chr_names]
+
+        if self.assembly is not None:
+            self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
+            self.chr_sizes = [self._chrom_lengths[assembly][c] for c in self.chr_names]
+            self.centromeres = self._centromeres
+        else:
+            self.coord_system, self.chrom_lengths, self.centromeres = _get_chrom_info(self.species)
+            def sort_key(name):
+                _, num, alp = re.match(r'(chr)?(\d*)(.*)', name).groups()
+                if not num:
+                    num = '999'
+                return int(num), alp
+                
+            self.chr_names = sorted(self.chrom_lengths.keys(), key=sort_key)
+            self.chr_sizes = [self.chrom_lengths[c] for c in self.chr_names]
+
+        # self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
+        # self.chr_sizes = [self.chrom_lengths[assembly][chrom] 
+        #                   for chrom in self.chr_names]
         self.max_chrom_size = max(self.chr_sizes)
         nr_rows = len(self.chr_names) - 1
         self.aspect = axes_height_inches / axes_width_inches
@@ -202,18 +263,18 @@ class GenomeIdeogram:
                 chrom = self.chr_names[i]
                 ax = ax_list[i]
 
-                if i < 20:
+                if i < len(self.ax_list) - 4:
                     xlim = (-self.end_padding, self.max_chrom_size+self.end_padding)
                     scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect
                     ax.set_xlim(xlim)
                     ax.set_ylim(scaled_y_lim)
-                elif i < 22:
+                elif i < len(self.ax_list) - 2:
                     xlim = (-self.end_padding, 12/19*self.max_chrom_size+self.end_padding)
                     scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect * 19/12
                     ax.set_xlim(xlim)
                     ax.set_ylim(scaled_y_lim) 
                 else:
-                    xlim = (-self.end_padding, self.chrom_lengths['hg38']['chrX']+self.end_padding)
+                    xlim = (-self.end_padding, self.chrom_lengths['chrX']+self.end_padding)
                     scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect * 19/12
                     # \
                     #     * (self.max_chrom_size+2*self.end_padding) \
@@ -282,17 +343,19 @@ class GenomeIdeogram:
 
                 ideogram_base = self.map_y(base, ax)
                 ideogram_height = self.map_y(height, ax)
-
                 # draw centromere
-                cent_start, cent_end = self.centromeres[chrom]
                 ymin, ymax = ax.get_ylim()
-                xy = [[cent_start, ideogram_base], 
-                      [cent_start, ideogram_base+ideogram_height], 
-                      [cent_end, ideogram_base], 
-                      [cent_end, ideogram_base+ideogram_height]]
-                g = ax.add_patch(patches.Polygon(xy, closed=True, zorder=2, 
-                                                 fill=True, color='#777777'))
-                
+                if chrom in self.centromeres:
+                    cent_start, cent_end = self.centromeres[chrom]
+                    xy = [[cent_start, ideogram_base], 
+                        [cent_start, ideogram_base+ideogram_height], 
+                        [cent_end, ideogram_base], 
+                        [cent_end, ideogram_base+ideogram_height]]
+                    g = ax.add_patch(patches.Polygon(xy, closed=True, zorder=2, 
+                                                    fill=True, color='#777777'))
+                else:
+                    cent_start, cent_end = 0, 0 
+
                 # draw chrom
                 g = ax.add_patch(patches.Rectangle((start, ideogram_base), 
                                                    cent_start-start, 

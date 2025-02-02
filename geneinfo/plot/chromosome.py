@@ -16,6 +16,7 @@ from operator import sub
 import warnings
 from itertools import chain
 from statsmodels.nonparametric.smoothers_lowess import lowess
+import re
 
 import matplotlib
 import matplotlib.axes
@@ -36,7 +37,7 @@ import textwrap
 
 from ..utils import chrom_lengths, centromeres
 
-from .genome import GenomeIdeogram
+from .genome import GenomeIdeogram, _get_chrom_info
 
 class ChromIdeogram(GenomeIdeogram):
     """
@@ -45,9 +46,31 @@ class ChromIdeogram(GenomeIdeogram):
 
     def __init__(self, chrom:str, axes_height_inches:int=2, axes_width_inches:int=12,
                  hspace:float=0.3, ylim:tuple=(0, 10), zooms:list=[], 
-                 wspace:float=0.1, rel_font_height:float=0.05, assembly:str='hg38'):
+                 wspace:float=0.1, rel_font_height:float=0.05, species:str='Homo sapiens', 
+                 assembly:str=None):
+        """
+        Initialize canvas for plotting an ideogram for a single chromosomes.
 
-        self.assemembly = assembly
+        Parameters
+        ----------
+        axes_height_inches : 
+            Height of panel for each chromosome ideogram, by default 0.5
+        axes_width_inches : 
+            Width of panel for longest chromosome ideogram, by default 12
+        hspace : 
+            Space between additional axes, by default 0
+        ylim : 
+            Value range on y-axis for placing elements, by default (0, 10)
+        rel_font_height : 
+            Font size relative to panel height (axes_height_inches), 
+            by default 0.07
+        species : 
+            Species latin name, by default panel 'Homo sapiens'.
+        human_assembly : 
+            Human genome assembly, by default most recent. Other options are 'hg38' and 'hg19'.
+        """
+        self.species = species
+        self.assembly = assembly
         self.ideogram_base = None
         self.ideogram_height = None
         self.legend_handles = []
@@ -56,8 +79,23 @@ class ChromIdeogram(GenomeIdeogram):
         self.zoom_axes = []
         self.end_padding = 300000
         self.chr_names = [chrom]
-        self.chr_sizes = [self.chrom_lengths[assembly][chrom] 
-                          for chrom in self.chr_names]
+
+        # self.chr_sizes = [self.chrom_lengths[assembly][chrom] 
+        #                   for chrom in self.chr_names]
+        self.chr_names = [chrom]
+        if self.assembly is not None:
+            #self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
+            self.chr_sizes = [self._chrom_lengths[assembly][c] for c in self.chr_names]
+            self.centromeres = self._centromeres
+            self.coord_system = {'hg38':'GRCh38', 
+                                 'hg19':'GRCh37',
+                                 'hg37':'GRCh37',
+                                 }[assembly]
+        else:
+            self.coord_system, self.chrom_lengths, self.centromeres = _get_chrom_info(self.species)
+            self.chr_sizes = [self.chrom_lengths[chrom]]
+        print(self.coord_system)
+
         self.max_chrom_size = max(self.chr_sizes)
         self.aspect = axes_height_inches / axes_width_inches
         fig_height_inches = axes_height_inches

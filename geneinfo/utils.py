@@ -115,18 +115,18 @@ def shelve_it() -> Callable:
 
     return decorator
 
+
 def clear_cache(func_name=None):
     """
     Clear the cache of a shelve file.
     """
     if not os.path.exists(CACHE_DIR):
         return
-    cache_dir = os.path.join(os.path.dirname(__file__), 'data')
     if func_name is None:
-        for file in glob.glob(f'{cache_dir}/*.db'):
-            file.unlink()
+        for file in glob.glob(f'{CACHE_DIR}/*.db'):
+            os.remove(file)
     else:
-        (cache_dir / (func_name + '.db')).unlink()
+        os.remove(f'{CACHE_DIR}/{func_name}.db')
 
 
 def _horizon(row, i, cut):

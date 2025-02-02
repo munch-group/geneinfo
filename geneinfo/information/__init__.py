@@ -182,7 +182,7 @@ def mygene_get_gene_info(
 
 
 @shelve_it()
-def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens', 
+def gene_coord(query: Union[str, List[str]], species='homo_sapiens', assembly:str=None, 
                pos_list=False) -> dict:
     """
     Retrieves genome coordinates one or more genes.
@@ -191,10 +191,10 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
     ----------
     query : 
         Gene symbol or list of gene symbols
-    assembly :  
-        Genome assembly.
     species :  
         Species, by default 'homo_sapiens'.
+    assembly :  
+        Genome assembly, by default most recent.
     pos_list :
         Wether to instead return a list of (chrom, position, name) tuples.
 
@@ -209,7 +209,7 @@ def gene_coord(query: Union[str, List[str]], assembly:str, species='homo_sapiens
     batch_size = 100
     for i in range(0, len(query), batch_size):
         data = ensembl_get_gene_info_by_symbol(
-            query[i:i+batch_size], assembly=None, species='homo_sapiens')
+            query[i:i+batch_size], assembly=assembly, species=species)
         for name, props in data.items():
             chrom, start, end, strand = (
                 props['seq_region_name'], props['start'], props['end'], props['strand']
@@ -340,7 +340,7 @@ def _ensembl_get_features_region(chrom, window_start, window_end,
     return genes
 
 
-@shelve_it()
+# @shelve_it()
 def ensembl_get_gene_info_by_symbol(symbols, assembly=None, species='homo_sapiens'):
 
     if assembly == 'hg38':
