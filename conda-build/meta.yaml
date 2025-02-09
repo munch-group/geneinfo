@@ -34,7 +34,7 @@ requirements:
     - statsmodels
 
 channels:    # your library dependencies
-  # - uibcdf
+  - uibcdf
   - conda-forge
   - default
 
