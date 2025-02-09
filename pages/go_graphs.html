@@ -306,13 +306,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p><strong>NB:</strong> The first time you use the GO utilities, it will spend a <em>very</em> long time downloading data. If you do not want to wait that out in the notebook, you can execute this command in the folder where you store your notebooks:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb1" data-filename="Terminal"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>conda run -n &lt;environment&gt; python -c 'import geneinfo.ontology ; geneinfo.ontology.download_data()'</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p><strong>Show the sub-graph for a list of GO terms:</strong></p>
 <div id="d1f0a0bc-546a-4907-89c8-c200c2b4c2cc" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.ontology <span class="im">as</span> go</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import importlib</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># importlib.reload(geneinfo)</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>go_terms <span class="op">=</span> go.get_go_terms_for_genes([<span class="st">'DYNLT3'</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.ontology <span class="im">as</span> go</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import importlib</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># importlib.reload(geneinfo)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>go_terms <span class="op">=</span> go.get_go_terms_for_genes([<span class="st">'DYNLT3'</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -322,7 +329,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="d8d447e9-e1cd-4241-8f03-3928217b4e7e" class="cell" data-tags="[]" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -333,7 +340,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><strong>Show the sub-graph for the GO terms of a single gene:</strong></p>
 <div id="3e03fce0-1dd9-4a8c-8b3b-c1d6536bc9e2" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_gene(<span class="st">'DYNLT3'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_gene(<span class="st">'DYNLT3'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>10741    6990
 Name: GeneID, dtype: int64</code></pre>
@@ -348,7 +355,7 @@ Name: GeneID, dtype: int64</code></pre>
 </div>
 <p><strong>Same but using GO annotation backed by certain kinds of evidence:</strong></p>
 <div id="b9ca368d-2553-44ff-be7b-855cc11d84da" class="cell" data-tags="[]" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_gene(<span class="st">'DYNLT3'</span>, evidence<span class="op">=</span>[<span class="st">'IDA'</span>, <span class="st">'EXP'</span>, <span class="st">'HTP'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_gene(<span class="st">'DYNLT3'</span>, evidence<span class="op">=</span>[<span class="st">'IDA'</span>, <span class="st">'EXP'</span>, <span class="st">'HTP'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>10741    6990
 Name: GeneID, dtype: int64</code></pre>

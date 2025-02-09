@@ -315,12 +315,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>geneinfo</strong> is a compilation of gene information APIs adapted for use in a Jupyter notebook and some additional utilities. Its <a href="./api/">API</a> lets you retrieve of information about genes and gene ontologies, plot data together with gene structures (genome browser style), show data on chromosome ideograms, perform gene ontology enrichment analyses and more.</p>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge <span class="at">-c</span> munch-group geneinfo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb1" data-filename="Terminal"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>conda install -c conda-forge -c munch-group geneinfo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="interpreting-data-in-a-gene-context" class="level2">
 <h2 class="anchored" data-anchor-id="interpreting-data-in-a-gene-context">Interpreting data in a gene context</h2>
 <p>Among many other things, <code>geneinfo</code> lets you plot data in chromosome coordinates and view overlapping gene annotation using <code>gene_plot</code>.</p>
-<div id="cell-3" class="cell" data-execution_count="2">
+<div id="cell-3" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:40:32.417021Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:40:32.416853Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:40:33.566184Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:40:33.565887Z&quot;}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -330,12 +335,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'svg'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Dummy data:</p>
-<div id="cell-5" class="cell" data-execution_count="3">
+<div id="cell-5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:40:33.567922Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:40:33.567800Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:40:33.579262Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:40:33.579031Z&quot;}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="dv">10000</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> rng.exponential(scale<span class="op">=</span><span class="dv">1</span>, size<span class="op">=</span>x.size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-6" class="cell" data-execution_count="4">
+<div id="cell-6" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:40:33.580754Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:40:33.580673Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:40:33.875044Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:40:33.874610Z&quot;}" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.plot <span class="im">as</span> gplt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gplt.gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>, c<span class="op">=</span><span class="st">'tab:blue'</span>) <span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -348,16 +353,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>You can get brief summaries using <code>gene_info</code>.</p>
-<div id="cell-8" class="cell" data-execution_count="5">
+<div id="cell-8" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:40:33.906468Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:40:33.906253Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:40:33.919774Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:40:33.919492Z&quot;}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-9" class="cell" data-execution_count="6">
+<div id="cell-9" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:40:33.921350Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:40:33.921267Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:40:33.935418Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:40:33.935165Z&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info([<span class="st">'ATRX'</span>, <span class="st">'MAGT1'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>ATRX</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX<br>
 <em>ATRX chromatin remodeler</em><br>
 <strong>Summary:</strong> The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].<br>
-<strong>Genomic position:</strong> X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)<br>
+<strong>Human genomic position:</strong> X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)<br>
 <a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=ATRX">Gene card</a></p>
 <hr>
 </div>
@@ -365,101 +370,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Symbol:</strong> <strong><em>MAGT1</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> CDG1CC, IAP, MRX95, OST3B, PRO0756, SLC58A1, XMEN, bA217H1.1<br>
 <em>magnesium transporter 1</em><br>
 <strong>Summary:</strong> This gene encodes a ubiquitously expressed magnesium cation transporter protein that localizes to the cell membrane. This protein also associates with N-oligosaccharyl transferase and therefore may have a role in N-glycosylation. Mutations in this gene cause a form of X-linked intellectual disability (XLID). This gene may have multiple in-frame translation initiation sites, one of which would encode a shorter protein with an N-terminus containing a signal peptide at amino acids 1-29. [provided by RefSeq, Jul 2017].<br>
-<strong>Genomic position:</strong> X:77825747-77899271 (hg38), HG1426_PATCH:77087318-77156547, X:77081861-77151090 (hg19)<br>
+<strong>Human genomic position:</strong> X:77825747-77899271 (hg38), HG1426_PATCH:77087318-77156547, X:77081861-77151090 (hg19)<br>
 <a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=MAGT1">Gene card</a></p>
 <hr>
 </div>
 </div>
 <p>Get gene ontology terms associated with genes.</p>
-<div id="cell-11" class="cell" data-execution_count="7">
+<div id="cell-11" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:40:33.936909Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:40:33.936793Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:40:34.053189Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:40:34.052911Z&quot;}" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.ontology <span class="im">as</span> go</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>go.email(<span class="st">"youremail@address.com"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-12" class="cell" data-execution_count="8">
+<div id="cell-12" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:40:34.054904Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:40:34.054790Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:41:38.636778Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:41:38.636275Z&quot;}" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>go_terms <span class="op">=</span> go.get_go_terms_for_genes([<span class="st">'ATRX'</span>, <span class="st">'MAGT1'</span>], evidence<span class="op">=</span>[<span class="st">'IDA'</span>, <span class="st">'EXP'</span>, <span class="st">'HTP'</span>])</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>go_terms[:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>['GO:0003682',
- 'GO:0005654',
- 'GO:0005783',
- 'GO:0006334',
- 'GO:0006338',
- 'GO:0008250',
- 'GO:0015616',
- 'GO:0016604',
- 'GO:0035064',
- 'GO:0042393']</code></pre>
+<pre><code>[]</code></pre>
 </div>
 </div>
 <p>Show graph for those terms.</p>
-<div id="cell-14" class="cell" data-execution_count="9">
+<div id="cell-14" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:41:38.642586Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:41:38.642433Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:41:38.728956Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:41:38.728662Z&quot;}" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><a href="getting_started_files/figure-html/cell-10-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="getting_started_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></a></p>
-</figure>
-</div>
-</div>
 </div>
 <p>Show definitions of those terms.</p>
-<div id="cell-16" class="cell" data-execution_count="10">
+<div id="cell-16" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T12:41:38.730792Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T12:41:38.730689Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T12:41:39.756308Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T12:41:39.755955Z&quot;}" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>go.go_info(go_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0003682:</span></strong> <strong>chromatin binding</strong><br>
-Binding to chromatin, the network of fibers of DNA, protein, and sometimes RNA, that make up the chromosomes of the eukaryotic nucleus during interphase.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0005654:</span></strong> <strong>nucleoplasm</strong><br>
-That part of the nuclear content other than the chromosomes or the nucleolus.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0005783:</span></strong> <strong>endoplasmic reticulum</strong><br>
-The irregular network of unit membranes, visible only by electron microscopy, that occurs in the cytoplasm of many eukaryotic cells. The membranes form a complex meshwork of tubular channels, which are often expanded into slitlike cavities called cisternae. The ER takes two forms, rough (or granular), with ribosomes adhering to the outer surface, and smooth (with no ribosomes attached).</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0006334:</span></strong> <strong>nucleosome assembly</strong><br>
-The aggregation, arrangement and bonding together of a nucleosome, the beadlike structural units of eukaryotic chromatin composed of histones and DNA.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0006338:</span></strong> <strong>chromatin remodeling</strong><br>
-A dynamic process of chromatin reorganization resulting in changes to chromatin structure. These changes allow DNA metabolic processes such as transcriptional regulation, DNA recombination, DNA repair, and DNA replication.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0008250:</span></strong> <strong>oligosaccharyltransferase complex</strong><br>
-A protein complex that is found in the endoplasmic reticulum membrane of eukaryotes and transfers lipid-linked oligosaccharide precursor to asparagine residues on nascent proteins. The complex includes at least eight non-identical subunits. Different forms of the complex containing distinct subunits have been detected in mammals.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0015616:</span></strong> <strong>DNA translocase activity</strong><br>
-Generation of movement along a single- or double-stranded DNA molecule, driven by ATP hydrolysis.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0016604:</span></strong> <strong>nuclear body</strong><br>
-Extra-nucleolar nuclear domains usually visualized by confocal microscopy and fluorescent antibodies to specific proteins.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0035064:</span></strong> <strong>methylated histone binding</strong><br>
-Binding to a histone in which a residue has been modified by methylation.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0042393:</span></strong> <strong>histone binding</strong><br>
-Binding to a histone, any of a group of water-soluble proteins found in association with the DNA of eukaryotic or archaeal chromosomes. They are involved in the condensation and coiling of chromosomes during cell division and have also been implicated in gene regulation and DNA replication. They may be chemically modified (methylated, acetlyated and others) to regulate gene transcription.</p>
-<hr>
-</div>
-<div class="cell-output cell-output-display cell-output-markdown">
-<p><strong><span style="color:gray;">GO:0099115:</span></strong> <strong>chromosome, subtelomeric region</strong><br>
-A region of the chromosome, adjacent to the telomere (on the centromeric side) that contains repetitive DNA and sometimes genes. This region is usually heterochromatin.</p>
-<hr>
-</div>
 </div>
 
 

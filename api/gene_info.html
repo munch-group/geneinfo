@@ -232,20 +232,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_coord.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_coord</span></a>
+  <a href="../api/gene_coords.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region_dataframe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region_dataframe</span></a>
+  <a href="../api/gene_coords_region.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords_region</span></a>
   </div>
 </li>
       </ul>
@@ -511,7 +505,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#geneinfo.gene_info" id="toc-geneinfo.gene_info" class="nav-link active" data-scroll-target="#geneinfo.gene_info">gene_info</a>
+  <li><a href="#geneinfo.information.gene_info" id="toc-geneinfo.information.gene_info" class="nav-link active" data-scroll-target="#geneinfo.information.gene_info">gene_info</a>
   <ul class="collapse">
   <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
   </ul></li>
@@ -524,20 +518,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="geneinfo.gene_info" class="level1">
+<section id="geneinfo.information.gene_info" class="level1">
 <h1>gene_info</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.gene_info(query, species<span class="op">=</span><span class="st">'human'</span>, scopes<span class="op">=</span><span class="st">'hgnc'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Displays HTML formatted information about one or more genes.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.information.gene_info(query, scopes<span class="op">=</span><span class="st">'hgnc'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Displays HTML formatted information about one or more human genes.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <dl>
 <dt><code><span class="parameter-name"><strong>query</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Union</code>[<code>str</code>, <code>List</code>[<code>str</code>]]</span></code></dt>
 <dd>
 <p>Gene symbol or list of gene symbols</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>species</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">optional</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'human'</span></code></dt>
-<dd>
-<p>Species, by default ‘human’</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>scopes</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">optional</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'hgnc'</span></code></dt>
 <dd>

@@ -277,8 +277,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#clearing-the-cache" id="toc-clearing-the-cache" class="nav-link active" data-scroll-target="#clearing-the-cache">Clearing the cache</a></li>
+  <li><a href="#disabling-use-of-the-cache" id="toc-disabling-use-of-the-cache" class="nav-link" data-scroll-target="#disabling-use-of-the-cache">Disabling use of the cache</a></li>
+  <li><a href="#exposing-retrieval-of-information" id="toc-exposing-retrieval-of-information" class="nav-link" data-scroll-target="#exposing-retrieval-of-information">Exposing retrieval of information</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -302,14 +310,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><strong>geneinfo</strong> will cash information queries to make the notebooks run rast on subsequent executions. To clear that cache use:</p>
-<div id="cfb801c0-85e6-4e98-bbf0-b1684ed14196" class="cell" data-execution_count="2">
+<p><strong>geneinfo</strong> will cash information queries to make the notebooks run rast on subsequent executions.</p>
+<section id="clearing-the-cache" class="level2">
+<h2 class="anchored" data-anchor-id="clearing-the-cache">Clearing the cache</h2>
+<p>To clear that cache use:</p>
+<div id="ce57cdd5-2070-4a40-9bf0-69916099f1de" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:12.504760Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:12.504589Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:13.496818Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:13.496553Z&quot;}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.utils <span class="im">as</span> utils</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>utils.clear_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="disabling-use-of-the-cache" class="level2">
+<h2 class="anchored" data-anchor-id="disabling-use-of-the-cache">Disabling use of the cache</h2>
+<p>To just disable its use for the current kernel, so all info is retrieved anew, use:</p>
+<div id="4a9fdd64-10d1-4e17-ac04-52b661246235" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:13.498657Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:13.498509Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:13.509891Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:13.509629Z&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>utils.use_cache <span class="op">=</span> <span class="va">False</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To switch it back on:</p>
+<div id="6c35590f-931b-4e68-bb59-b5ba23e593da" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:13.511483Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:13.511406Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:13.522042Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:13.521818Z&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>utils.use_cache <span class="op">=</span> <span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To temporarily disable for a block of code you can use:</p>
+<div id="8c3f0e09-7db5-4321-bc4c-1b6518228b73" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:13.523467Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:13.523384Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:13.534030Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:13.533795Z&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> utils.cache_disabled():</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exposing-retrieval-of-information" class="level2">
+<h2 class="anchored" data-anchor-id="exposing-retrieval-of-information">Exposing retrieval of information</h2>
+<p>If you want to keep track of when cached information is used and when it is retrieved, you can set:</p>
+<div id="23429cbd-4292-4568-b812-28d10849df65" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:13.535555Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:13.535479Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:13.546088Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:13.545798Z&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>utils.verbose_retrieval <span class="op">=</span> <span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This will print a message to stderr each time data is retrieved.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -102,6 +102,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../api/_styles-quartodoc.css">
@@ -278,8 +281,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#genelist" id="toc-genelist" class="nav-link active" data-scroll-target="#genelist">GeneList</a></li>
+  <li><a href="#genelistcollection" id="toc-genelistcollection" class="nav-link" data-scroll-target="#genelistcollection">GeneListCollection</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -303,244 +313,960 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-tags="[]" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.utils <span class="im">as</span> utils</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-2" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:59.240353Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:59.240191Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.035003Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.034736Z&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneListCollection</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneList <span class="im">as</span> glist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Load Google spreadsheet with gene lists</p>
-<div id="cell-4" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> utils.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="genelist" class="level2">
+<h2 class="anchored" data-anchor-id="genelist">GeneList</h2>
+<p>Long lists of gene names do not work well visually:</p>
+<div id="cell-5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.036881Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.036756Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.051396Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.051168Z&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dummy_genes <span class="op">=</span> [<span class="st">'ABCB7'</span>, <span class="st">'ACTRT1'</span>, <span class="st">'AKAP4'</span>, <span class="st">'ALG13'</span>, <span class="st">'ARHGAP36'</span>, <span class="st">'ATP7A'</span>, <span class="st">'ATRX'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'BRCC3'</span>, <span class="st">'CAPN6'</span>, <span class="st">'CCNB3'</span>, <span class="st">'CFAP47'</span>, <span class="st">'CLCN5'</span>, <span class="st">'CMC4'</span>, <span class="st">'CNKSR2'</span>, <span class="st">'COX7B'</span>, <span class="st">'CYBB'</span>, <span class="st">'DCX'</span>, <span class="st">'DKC1'</span>, <span class="st">'DYNLT3'</span>, <span class="st">'ENOX2'</span>, <span class="st">'ENOX2-AS1'</span>, <span class="st">'EZHIP'</span>, <span class="st">'F8'</span>, <span class="st">'F8A1'</span>, <span class="st">'FAM120C'</span>, <span class="st">'FGF16'</span>]</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dummy_genes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>['ABCB7',
+ 'ACTRT1',
+ 'AKAP4',
+ 'ALG13',
+ 'ARHGAP36',
+ 'ATP7A',
+ 'ATRX',
+ 'BCLAF3',
+ 'BRCC3',
+ 'CAPN6',
+ 'CCNB3',
+ 'CFAP47',
+ 'CLCN5',
+ 'CMC4',
+ 'CNKSR2',
+ 'COX7B',
+ 'CYBB',
+ 'DCX',
+ 'DKC1',
+ 'DYNLT3',
+ 'ENOX2',
+ 'ENOX2-AS1',
+ 'EZHIP',
+ 'F8',
+ 'F8A1',
+ 'FAM120C',
+ 'FGF16']</code></pre>
 </div>
-<p>Individual gene lists behaves like normal lists, but when displayed they render in columns to make them easier to read:</p>
-<div id="cell-6" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ech90_regions <span class="op">=</span> gene_lists.get(<span class="st">'ech90_regions'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ech90_regions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>GeneList objects work just like normal lists but have some additional features that usefull for exploring sets of genes.</p>
+<p>When displayed they render as Markdown in columns to make them easier to read:</p>
+<div id="cell-7" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.072502Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.072350Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.087168Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.086908Z&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">=</span> glist(dummy_genes)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>list_A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important">F8A1</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important">FGF16</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The bitwise operator <code>&lt;&lt;</code> is overloaded and highlights genes also present in another gene list:</p>
+<div id="cell-9" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.088732Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.088624Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.100260Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.100024Z&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_B <span class="op">=</span> glist(dummy_genes[::<span class="dv">2</span>])</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ABCB7</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATRX</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CLCN5</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>DKC1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>F8A1</strong></td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ARHGAP36</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CCNB3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CYBB</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>EZHIP</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>AKAP4</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BRCC3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CNKSR2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ENOX2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>FGF16</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="cell-10" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.101706Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.101619Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.113341Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.113134Z&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>list_C <span class="op">=</span> glist(dummy_genes[:<span class="dv">12</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ABCB7</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ALG13</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATRX</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CAPN6</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important">F8A1</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ACTRT1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ARHGAP36</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BCLAF3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CCNB3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>AKAP4</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATP7A</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BRCC3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CFAP47</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important">FGF16</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The bitwise operators, <code>&amp;</code>, <code>|</code>, and <code>^</code>, to allow logical operations on gene lists.</p>
+<p>Highlight in A the intersection between B and C:</p>
+<div id="cell-13" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.114841Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.114758Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.126524Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.126297Z&quot;}" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ABCB7</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATRX</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important">F8A1</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ARHGAP36</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CCNB3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>AKAP4</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BRCC3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important">FGF16</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Highlight in A the union between B and C:</p>
+<div id="cell-15" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.128077Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.127985Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.139573Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.139337Z&quot;}" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ABCB7</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ALG13</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATRX</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CAPN6</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CLCN5</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>DKC1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>F8A1</strong></td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ACTRT1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ARHGAP36</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BCLAF3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CCNB3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CYBB</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>EZHIP</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>AKAP4</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATP7A</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BRCC3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CFAP47</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CNKSR2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ENOX2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>FGF16</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Highlight in A the genes not shared by B and C:</p>
+<div id="cell-17" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.141040Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.140969Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.152439Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.152220Z&quot;}" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ALG13</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CAPN6</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CLCN5</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>DKC1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>F8A1</strong></td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ACTRT1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BCLAF3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CYBB</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>EZHIP</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATP7A</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CFAP47</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CNKSR2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ENOX2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>FGF16</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Highlight in A the genes in B but not in C (set difference):</p>
+<div id="cell-19" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.153860Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.153768Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.165294Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.165074Z&quot;}" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>ABCB7        CNKSR2       FRMD8P1      LOC101928627 MIR500A      PGAM4        TRPC5        
-ACTRT1       COX7B        FTX          LOC729609    MIR500B      PHF8         TSIX         
-AKAP4        CYBB         FUNDC2       LRCH2        MIR501       PRRG1        UPRT         
-ALG13        DCX          GAB3         MAGT1        MIR502       RAB39B       USP27X       
-ARHGAP36     DKC1         GPC3         MAP7D2       MIR660       RAP2C        USP27X-DT    
-ATP7A        DYNLT3       H2AB1        MBNL3        MIR664B      RAP2C-AS1    VBP1         
-ATRX         ENOX2        HTR2C        MIR1184-1    MPP1         RLIM         WNK3         
-BCLAF3       ENOX2-AS1    IL13RA2      MIR188       MSN          SERTM2       XIST         
-BRCC3        EZHIP        JPX          MIR23C       MTCP1        SH3KBP1      XK           
-CAPN6        F8           LANCL3       MIR362       NEXMIF       SMIM9        ZC3H12B      
-CCNB3        F8A1         LAS1L        MIR374B      NUDT10       SNORA35B                  
-CFAP47       FAM120C      LINC01201    MIR374C      NUDT11       SNORA36A                  
-CLCN5        FGF16        LINC01284    MIR421       PAGE4        SNORA56                   
-CMC4         FRMD7        LINC01496    MIR448       PAK3         STK26                     </code></pre>
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CLCN5</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>DKC1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>F8A1</strong></td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CYBB</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>EZHIP</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CNKSR2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ENOX2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>FGF16</strong></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="cell-7" class="cell" data-execution_count="44">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os, glob</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas.api.types <span class="im">import</span> is_object_dtype</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> isclose, floor, log10</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Markdown, display</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas.api.types <span class="im">import</span> is_object_dtype</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> sqrt</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections.abc <span class="im">import</span> Callable</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Any, TypeVar, List, Tuple, Dict, Union</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> itertools <span class="im">import</span> zip_longest</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Rectangle</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections.abc <span class="im">import</span> Callable</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Any, TypeVar, List, Tuple, Dict, Union</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> itertools <span class="im">import</span> chain</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shelve</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>AMPL_ABBREV_MAP <span class="op">=</span> {    </span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CPXCR1'</span>: [<span class="st">'CPXCR1'</span>],</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CSAG1/2/3'</span>: [<span class="st">'CSAG1'</span>, <span class="st">'CSAG2'</span>, <span class="st">'CSAG3'</span>],</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CT45A1/2/3//6/7/8/9/10'</span>: [<span class="st">'CT45A1'</span>, <span class="st">'CT45A2'</span>, <span class="st">'CT45A3'</span>, <span class="st">'CT45A6'</span>, <span class="st">'CT45A7'</span>, <span class="st">'CT45A8'</span>, <span class="st">'CT45A9'</span>, <span class="st">'CT45A10'</span>],</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CT47A1/2/3/4/5/6/7/8/9/10/11/12/B1'</span>: [<span class="st">'CT47A1'</span>, <span class="st">'CT47A2'</span>, <span class="st">'CT47A3'</span>, <span class="st">'CT47A4'</span>, <span class="st">'CT47A5'</span>, <span class="st">'CT47A6'</span>, <span class="st">'CT47A7'</span>, <span class="st">'CT47A8'</span>, <span class="st">'CT47A9'</span>, <span class="st">'CT47A10'</span>, <span class="st">'CT47A11'</span>, <span class="st">'CT47A12'</span>, <span class="st">'CT47B1'</span>],</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CT55'</span>: [<span class="st">'CT55'</span>],</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CT83'</span>: [<span class="st">'CT83'</span>],</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CTAG1A/1B/2'</span>: [<span class="st">'CTAG1A'</span>, <span class="st">'CTAG1B'</span>, <span class="st">'CTAG2'</span>],</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CXorf49/B'</span>: [<span class="st">'CXorf49'</span>, <span class="st">'CXorf49B'</span>],</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_CXorf51A/B'</span>: [<span class="st">'CXorf51A'</span>, <span class="st">'CXorf51B'</span>],</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_DDX53'</span>: [<span class="st">'DDX53'</span>],</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_DMRTC1/B/FAM236A/B/C/D'</span>: [<span class="st">'DMRTC1'</span>, <span class="st">'DMRTC1B'</span>, <span class="st">'FAM236A'</span>, <span class="st">'FAM236B'</span>, <span class="st">'FAM236C'</span>, <span class="st">'FAM236D'</span>],</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_EOLA1/2/HSFX3/4'</span>: [<span class="st">'EOLA1'</span>, <span class="st">'EOLA2'</span>, <span class="st">'HSFX3'</span>, <span class="st">'HSFX4'</span>],</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_ETD1/B/ZNF75D'</span>: [<span class="st">'ETD1'</span>, <span class="st">'ETD1B'</span>, <span class="st">'ZNF75D'</span>],</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_F8/F8A1/2/3/H2AB1/2/3'</span>: [<span class="st">'F8'</span>, <span class="st">'F8A1'</span>, <span class="st">'F8A2'</span>, <span class="st">'F8A3'</span>, <span class="st">'H2AB1'</span>, <span class="st">'H2AB2'</span>, <span class="st">'H2AB3'</span>],</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_FAM156A/B'</span>: [<span class="st">'FAM156A'</span>, <span class="st">'FAM156B'</span>],</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_FAM47A/B/C'</span>: [<span class="st">'FAM47A'</span>, <span class="st">'FAM47B'</span>, <span class="st">'FAM47C'</span>],</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_G6PD/IKBKG'</span>: [<span class="st">'G6PD'</span>, <span class="st">'IKBKG'</span>],</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_GAGE10/1/2A/13/12B/12C/12D/12E/12F/12G/12H/12J'</span>: [<span class="st">'GAGE10'</span>, <span class="st">'GAGE1'</span>, <span class="st">'GAGE2A'</span>, <span class="st">'GAGE13'</span>, <span class="st">'GAGE12B'</span>, <span class="st">'GAGE12C'</span>, <span class="st">'GAGE12D'</span>, <span class="st">'GAGE12E'</span>, <span class="st">'GAGE12F'</span>, <span class="st">'GAGE12G'</span>, <span class="st">'GAGE12H'</span>, <span class="st">'GAGE12J'</span>],</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_HSFX1/2'</span>: [<span class="st">'HSFX1'</span>, <span class="st">'HSFX2'</span>],</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_IL3RA/P2RY8/SLC25A6'</span>: [<span class="st">'IL3RA'</span>, <span class="st">'P2RY8'</span>, <span class="st">'SLC25A6'</span>],</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_MAGEA4'</span>: [<span class="st">'MAGEA4'</span>],</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_MAGEA12/A2/A2B/A3/A6'</span>: [<span class="st">'MAGEA12'</span>, <span class="st">'MAGEA2'</span>, <span class="st">'MAGEA2B'</span>, <span class="st">'MAGEA3'</span>, <span class="st">'MAGEA6'</span>],</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_MAGEA9/9B'</span>: [<span class="st">'MAGEA9'</span>, <span class="st">'MAGEA9B'</span>],</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_MAGEB6'</span>: [<span class="st">'MAGEB6'</span>],</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_MAGEC1'</span>: [<span class="st">'MAGEC1'</span>],</span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_MBTPS2/YY2'</span>: [<span class="st">'MBTPS2'</span>, <span class="st">'YY2'</span>],</span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_NSDHL'</span>: [<span class="st">'NSDHL'</span>],</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_NUDT10/11'</span>: [<span class="st">'NUDT10'</span>, <span class="st">'NUDT11'</span>],</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_NXF2/2B/5'</span>: [<span class="st">'NXF2'</span>, <span class="st">'NXF2B'</span>, <span class="st">'NXF5'</span>],</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_PABPC1L2A/B'</span>: [<span class="st">'PABPC1L2A'</span>, <span class="st">'PABPC1L2B'</span>],</span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_PAGE2/2B/5'</span>: [<span class="st">'PAGE2'</span>, <span class="st">'PAGE2B'</span>, <span class="st">'PAGE5'</span>],</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_RHOXF2/B'</span>: [<span class="st">'RHOXF2'</span>, <span class="st">'RHOXF2B'</span>],</span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_SPACA5/B'</span>: [<span class="st">'SPACA5'</span>, <span class="st">'SPACA5B'</span>],</span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_SPANXA1/A2/N1/N2/N3/N4/N5/B1/C/D'</span>: [<span class="st">'SPANXA1'</span>, <span class="st">'SPANXA2'</span>, <span class="st">'SPANXN1'</span>, <span class="st">'SPANXN2'</span>, <span class="st">'SPANXN3'</span>, <span class="st">'SPANXN4'</span>, <span class="st">'SPANXN5'</span>, <span class="st">'SPANXB1'</span>, <span class="st">'SPANXC'</span>, <span class="st">'SPANXD'</span>],</span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_SSX1/2/2B/344B/5/7'</span>: [<span class="st">'SSX1'</span>, <span class="st">'SSX2'</span>, <span class="st">'SSX2B'</span>, <span class="st">'SS344B'</span>, <span class="st">'SSX5'</span>, <span class="st">'SSX7'</span>],</span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_SUPT20HL1/2'</span>: [<span class="st">'SUPT20HL1'</span>, <span class="st">'SUPT20HL2'</span>],</span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_TCEAL2/3/4/5/6'</span>: [<span class="st">'TCEAL2'</span>, <span class="st">'TCEAL3'</span>, <span class="st">'TCEAL4'</span>, <span class="st">'TCEAL5'</span>, <span class="st">'TCEAL6'</span>],</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_TCP11X1/2'</span>: [<span class="st">'TCP11X1'</span>, <span class="st">'TCP11X2'</span>],</span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_TEX28'</span>: [<span class="st">'TEX28'</span>],</span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_TMEM185A'</span>: [<span class="st">'TMEM185A'</span>],</span>
-<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_VCX/2/3A/3B'</span>: [<span class="st">'VCX'</span>, <span class="st">'VCX2'</span>, <span class="st">'VCX3A'</span>, <span class="st">'VCX3B'</span>],</span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_XAGE1A/B'</span>: [<span class="st">'XAGE1A'</span>, <span class="st">'XAGE1B'</span>],</span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_XAGE3'</span>: [<span class="st">'XAGE3'</span>],</span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a> <span class="st">'amplicon_chrX_XAGE5'</span>: [<span class="st">'XAGE5'</span>],</span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GeneListCollection(<span class="bu">object</span>):</span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, url:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, google_sheet:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, tab<span class="op">=</span><span class="st">'Sheet1'</span>):</span>
-<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> url <span class="kw">or</span> google_sheet, <span class="st">'Either file/url or google_sheet id must be provided.'</span></span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> url <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>            url <span class="op">=</span> <span class="ss">f'https://docs.google.com/spreadsheets/d/</span><span class="sc">{</span>google_sheet<span class="sc">}</span><span class="ss">/gviz/tq?tqx=out:csv&amp;sheet=</span><span class="sc">{</span>tab<span class="sc">}</span><span class="ss">'</span></span>
-<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.desc <span class="op">=</span> []</span>
-<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> desc <span class="kw">in</span> pd.read_csv(url, header<span class="op">=</span><span class="va">None</span>, low_memory<span class="op">=</span><span class="va">False</span>).iloc[<span class="dv">0</span>]:</span>
-<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">str</span>(desc) <span class="op">==</span> <span class="st">'nan'</span>:</span>
-<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.desc.append(<span class="st">''</span>)</span>
-<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.desc.append(desc.replace(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>, <span class="st">' '</span>))</span>
-<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.df <span class="op">=</span> pd.read_csv(url, header<span class="op">=</span><span class="dv">1</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.df <span class="op">=</span> <span class="va">self</span>.df.loc[:, [<span class="kw">not</span> x.startswith(<span class="st">'Unnamed'</span>) <span class="cf">for</span> x <span class="kw">in</span> <span class="va">self</span>.df.columns]]</span>
-<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.names <span class="op">=</span> <span class="va">self</span>.df.columns.tolist()</span>
-<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> all_genes(<span class="va">self</span>):</span>
-<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>        names <span class="op">=</span> []</span>
-<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> label <span class="kw">in</span> lists:</span>
-<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>            names.extend(lists.get(label))</span>
-<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">sorted</span>(<span class="bu">set</span>(names))</span>
-<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> cache_coord(<span class="va">self</span>):</span>
-<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> label <span class="kw">in</span> lists:</span>
-<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a>            names <span class="op">=</span> lists.get(label)</span>
-<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> names <span class="kw">or</span> <span class="bu">len</span>(names) <span class="op">&gt;</span> <span class="dv">3000</span>:</span>
-<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a>                names <span class="op">=</span> names[:<span class="dv">3000</span>]</span>
-<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>            gi.gene_coord(names, assembly<span class="op">=</span><span class="st">'hg38'</span>, pos_list<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> expand_amplicon_abbrev(<span class="va">self</span>, old_list):</span>
-<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a>        new_list <span class="op">=</span> []</span>
-<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> gene_name <span class="kw">in</span> old_list:</span>
-<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>            abbrev <span class="op">=</span> gene_name.rsplit(<span class="st">'_'</span>, <span class="dv">1</span>)[<span class="dv">0</span>]</span>
-<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> abbrev <span class="kw">in</span> AMPL_ABBREV_MAP:</span>
-<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a>                new_list.extend(AMPL_ABBREV_MAP[abbrev])</span>
-<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>                new_list.append(gene_name)</span>
-<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a>        <span class="co"># new_list = []</span></span>
-<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>        <span class="co"># for gene_name in old_list:</span></span>
-<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a>        <span class="co">#     if gene_name.startswith('amplicon') and '/' in gene_name:</span></span>
-<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         prefix, *variants = gene_name.split('/')</span></span>
-<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         first_amplicon = re.split(r'[_-]+', prefix, 2)[-1]</span></span>
-<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         new_list.append(first_amplicon)</span></span>
-<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         for var in variants:</span></span>
-<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a>        <span class="co">#             ampl_name = first_amplicon[:-1] + var</span></span>
-<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a>        <span class="co">#             new_list.append(ampl_name)</span></span>
-<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a>        <span class="co">#     else:</span></span>
-<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         new_list.append(gene_name)</span></span>
-<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a>        new_list <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">set</span>(new_list))</span>
-<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> new_list</span>
-<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get(<span class="va">self</span>, name):</span>
-<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a>        sr <span class="op">=</span> <span class="va">self</span>.df[name]</span>
-<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a>        sr <span class="op">=</span> <span class="va">self</span>.df.loc[<span class="op">~</span>sr.isnull(), name]</span>
-<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a>        ampl_expanded <span class="op">=</span> <span class="bu">sorted</span>(<span class="va">self</span>.expand_amplicon_abbrev(sr.tolist()))</span>
-<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> GeneList(ampl_expanded)</span>
-<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _repr_html_(<span class="va">self</span>):</span>
-<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a>        out <span class="op">=</span> [<span class="st">'| label | description |'</span>, <span class="st">'|:---|:---|'</span>]</span>
-<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> name, desc <span class="kw">in</span> <span class="bu">zip</span>(<span class="va">self</span>.names, <span class="va">self</span>.desc):</span>
-<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> pd.isnull(desc):</span>
-<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a>                desc <span class="op">=</span> <span class="st">''</span></span>
-<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a>            <span class="co"># out.append(f"- **{(name+':**').ljust(130)} {desc}")</span></span>
-<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a>            out.append(<span class="ss">f"| **</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">** | </span><span class="sc">{</span>desc<span class="sc">}</span><span class="ss"> |"</span>)</span>
-<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a>        display(Markdown(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join(out)))</span>
-<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
-<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">""</span></span>
-<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__iter__</span>(<span class="va">self</span>):</span>
-<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a>         <span class="cf">yield</span> <span class="cf">from</span> <span class="va">self</span>.names</span>
-<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> UserList, UserString</span>
-<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Gene(<span class="bu">str</span>):</span>
-<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, name):</span>
-<span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.name <span class="op">=</span> name</span>
-<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.aliases <span class="op">=</span> [x.strip() <span class="cf">for</span> x <span class="kw">in</span> name.split(<span class="st">'/'</span>)]</span>
-<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> add_aliases(<span class="va">self</span>):</span>
-<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a>        ...</span>
-<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__eq__</span>(<span class="va">self</span>, other):</span>
-<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">bool</span>(<span class="bu">set</span>(<span class="va">self</span>.aliases).intersection(<span class="bu">set</span>(other.aliases)))</span>
-<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GeneList(UserList):</span>
-<span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__getitem__</span>(<span class="va">self</span>, i):</span>
-<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Gene(<span class="va">self</span>.data[i])</span>
-<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
-<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a>        n <span class="op">=</span> <span class="bu">len</span>(<span class="va">self</span>)</span>
-<span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a>        col_width <span class="op">=</span> <span class="bu">max</span>(<span class="bu">map</span>(<span class="bu">len</span>, <span class="va">self</span>)) <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a>        ncols <span class="op">=</span> <span class="bu">min</span>(<span class="bu">max</span>(<span class="dv">100</span><span class="op">//</span>col_width, <span class="dv">1</span><span class="op">+</span>sqrt(n<span class="op">/</span>col_width)), <span class="dv">150</span><span class="op">//</span>col_width)</span>
-<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a>        nrows <span class="op">=</span> <span class="bu">int</span>(n<span class="op">/</span>ncols) <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a>        rows <span class="op">=</span> []</span>
-<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, n, nrows):</span>
-<span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a>            rows.append(<span class="va">self</span>[r:r<span class="op">+</span>nrows])</span>
-<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a>        <span class="bu">repr</span> <span class="op">=</span> []</span>
-<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> row <span class="kw">in</span> <span class="bu">list</span>(zip_longest(<span class="op">*</span>rows, fillvalue<span class="op">=</span><span class="st">''</span>)):</span>
-<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>            line <span class="op">=</span> []</span>
-<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> gene <span class="kw">in</span> row:</span>
-<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a>                line.append(gene.ljust(col_width))</span>
-<span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a>            <span class="bu">repr</span>.append(<span class="st">''</span>.join(line))</span>
-<span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join(<span class="bu">repr</span>))</span>
-<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-186"><a href="#cb5-186" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__str__</span>(<span class="va">self</span>):</span>
-<span id="cb5-187"><a href="#cb5-187" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">repr</span>(<span class="va">self</span>)</span>
-<span id="cb5-188"><a href="#cb5-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a>gl <span class="op">=</span> GeneList([<span class="st">'AFF2 / FOO'</span>, <span class="st">'DYNLT3 / FOO'</span>])</span>
-<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a>gl[<span class="dv">0</span>] <span class="op">==</span> gl[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="44">
-<pre><code>True</code></pre>
+<p>Highlight in A the genes in C but not in B (set difference):</p>
+<div id="cell-21" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.166715Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.166645Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.178777Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.178551Z&quot;}" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ALG13</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CAPN6</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important">F8A1</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ACTRT1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BCLAF3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATP7A</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CFAP47</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important">FGF16</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="cell-8" class="cell" data-scrolled="true" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gl[<span class="dv">1</span>].aliases</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<div class="ansi-escaped-output">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[24], line 1</span>
-<span class="ansi-green-fg">----&gt; 1</span> gl[<span style="color:rgb(98,98,98)">1</span>]<span style="color:rgb(98,98,98)">.</span>aliases
+</section>
+<section id="genelistcollection" class="level2">
+<h2 class="anchored" data-anchor-id="genelistcollection">GeneListCollection</h2>
+<p>Load table of gene lists from a csv file:</p>
+<div id="cell-24" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.180146Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.180074Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.263041Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.262649Z&quot;}" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Or from a Google Sheet using its ID and the sheet name:</p>
+<div id="cell-26" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.264895Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.264793Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.278466Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.278191Z&quot;}" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>See which neuron genes are also SFARI genes:</p>
+<div id="cell-28" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.279964Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.279887Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.293185Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.292796Z&quot;}" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>neuron_genes <span class="op">=</span> glist(gene_lists.get(<span class="st">'neuron_npx_proteome'</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sfari <span class="op">=</span> glist(gene_lists.get(<span class="st">'sfari_all_conf'</span>))</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>neuron_genes <span class="op">&lt;&lt;</span> sfari</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important">BGN</td>
+<td style="background: transparent!important; line-height: 10px!important">EBP</td>
+<td style="background: transparent!important; line-height: 10px!important">GPR173</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>LAS1L</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>NLGN4X</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">PNMA3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>RPS6KA3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">TAF9B</td>
+<td style="background: transparent!important; line-height: 10px!important">USP51</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ABCD1</td>
+<td style="background: transparent!important; line-height: 10px!important">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important">EFHC2</td>
+<td style="background: transparent!important; line-height: 10px!important">GPR82</td>
+<td style="background: transparent!important; line-height: 10px!important">LDOC1</td>
+<td style="background: transparent!important; line-height: 10px!important">NONO</td>
+<td style="background: transparent!important; line-height: 10px!important">PNMA6A</td>
+<td style="background: transparent!important; line-height: 10px!important">RPS6KA6</td>
+<td style="background: transparent!important; line-height: 10px!important">TBC1D25</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>USP9X</strong></td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ACOT9</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>BRWD3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">EFNB1</td>
+<td style="background: transparent!important; line-height: 10px!important">GPRASP1</td>
+<td style="background: transparent!important; line-height: 10px!important">LONRF3</td>
+<td style="background: transparent!important; line-height: 10px!important">NSDHL</td>
+<td style="background: transparent!important; line-height: 10px!important">PNPLA4</td>
+<td style="background: transparent!important; line-height: 10px!important">RRAGB</td>
+<td style="background: transparent!important; line-height: 10px!important">TBC1D8B</td>
+<td style="background: transparent!important; line-height: 10px!important">UTP14A</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ACSL4</td>
+<td style="background: transparent!important; line-height: 10px!important">C1GALT1C1</td>
+<td style="background: transparent!important; line-height: 10px!important">EGFL6</td>
+<td style="background: transparent!important; line-height: 10px!important">GPRASP2</td>
+<td style="background: transparent!important; line-height: 10px!important">LRCH2</td>
+<td style="background: transparent!important; line-height: 10px!important">NUDT11</td>
+<td style="background: transparent!important; line-height: 10px!important">POLA1</td>
+<td style="background: transparent!important; line-height: 10px!important">RS1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>TBL1X</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">UXT</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ADGRG2</td>
+<td style="background: transparent!important; line-height: 10px!important">CA5B</td>
+<td style="background: transparent!important; line-height: 10px!important">EIF1AX</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>GRIA3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">MAGED1</td>
+<td style="background: transparent!important; line-height: 10px!important">NUP62CL</td>
+<td style="background: transparent!important; line-height: 10px!important">PORCN</td>
+<td style="background: transparent!important; line-height: 10px!important">SAT1</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL1</td>
+<td style="background: transparent!important; line-height: 10px!important">VAMP7</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ADGRG4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CACNA1F</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">EIF2S3</td>
+<td style="background: transparent!important; line-height: 10px!important">GRIPAP1</td>
+<td style="background: transparent!important; line-height: 10px!important">MAGED2</td>
+<td style="background: transparent!important; line-height: 10px!important">NXT2</td>
+<td style="background: transparent!important; line-height: 10px!important">PPEF1</td>
+<td style="background: transparent!important; line-height: 10px!important">SCML1</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL2</td>
+<td style="background: transparent!important; line-height: 10px!important">VBP1</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>AFF2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CASK</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ELK1</td>
+<td style="background: transparent!important; line-height: 10px!important">GSPT2</td>
+<td style="background: transparent!important; line-height: 10px!important">MAGEE1</td>
+<td style="background: transparent!important; line-height: 10px!important">NYX</td>
+<td style="background: transparent!important; line-height: 10px!important">PPP1R3F</td>
+<td style="background: transparent!important; line-height: 10px!important">SCML2</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL3</td>
+<td style="background: transparent!important; line-height: 10px!important">VCX3B</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AIFM1</td>
+<td style="background: transparent!important; line-height: 10px!important">CCDC120</td>
+<td style="background: transparent!important; line-height: 10px!important">EMD</td>
+<td style="background: transparent!important; line-height: 10px!important">GUCY2F</td>
+<td style="background: transparent!important; line-height: 10px!important">MAGEE2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>OCRL</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">PQBP1</td>
+<td style="background: transparent!important; line-height: 10px!important">SH3BGRL</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL4</td>
+<td style="background: transparent!important; line-height: 10px!important">VMA21</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important">CCDC22</td>
+<td style="background: transparent!important; line-height: 10px!important">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important">GYG2</td>
+<td style="background: transparent!important; line-height: 10px!important">MAGEH1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>OFD1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">PRAF2</td>
+<td style="background: transparent!important; line-height: 10px!important">SH3KBP1</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL5</td>
+<td style="background: transparent!important; line-height: 10px!important">WDR13</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AMER1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CD99L2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">F8</td>
+<td style="background: transparent!important; line-height: 10px!important">HAUS7</td>
+<td style="background: transparent!important; line-height: 10px!important">MAGIX</td>
+<td style="background: transparent!important; line-height: 10px!important">OGT</td>
+<td style="background: transparent!important; line-height: 10px!important">PRDX4</td>
+<td style="background: transparent!important; line-height: 10px!important">SHROOM2</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL6</td>
+<td style="background: transparent!important; line-height: 10px!important">WDR44</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AMMECR1</td>
+<td style="background: transparent!important; line-height: 10px!important">CDK16</td>
+<td style="background: transparent!important; line-height: 10px!important">FAAH2</td>
+<td style="background: transparent!important; line-height: 10px!important">HCCS</td>
+<td style="background: transparent!important; line-height: 10px!important">MAGT1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>OPHN1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">PRICKLE3</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC10A3</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL7</td>
+<td style="background: transparent!important; line-height: 10px!important">WDR45</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AMOT</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CDKL5</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">FAM104B</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>HCFC1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">MAMLD1</td>
+<td style="background: transparent!important; line-height: 10px!important">OPN1LW</td>
+<td style="background: transparent!important; line-height: 10px!important">PRKX</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC16A2</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEAL8</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>WNK3</strong></td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ANOS1</td>
+<td style="background: transparent!important; line-height: 10px!important">CDR1</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM120C</td>
+<td style="background: transparent!important; line-height: 10px!important">HDAC6</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>MAOA</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">OPN1MW</td>
+<td style="background: transparent!important; line-height: 10px!important">PRPS1</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC25A14</td>
+<td style="background: transparent!important; line-height: 10px!important">TCEANC</td>
+<td style="background: transparent!important; line-height: 10px!important">WWC3</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>AP1S2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">CETN2</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM133A</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>HDAC8</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>MAOB</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">OPN1MW3</td>
+<td style="background: transparent!important; line-height: 10px!important">PRRG1</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC25A5</td>
+<td style="background: transparent!important; line-height: 10px!important">TENM1</td>
+<td style="background: transparent!important; line-height: 10px!important">XIAP</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">APEX2</td>
+<td style="background: transparent!important; line-height: 10px!important">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM199X</td>
+<td style="background: transparent!important; line-height: 10px!important">HDX</td>
+<td style="background: transparent!important; line-height: 10px!important">MAP3K15</td>
+<td style="background: transparent!important; line-height: 10px!important">OTUD5</td>
+<td style="background: transparent!important; line-height: 10px!important">PSMD10</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC25A53</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>TFE3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">XK</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">APOO</td>
+<td style="background: transparent!important; line-height: 10px!important">CFP</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM3A</td>
+<td style="background: transparent!important; line-height: 10px!important">HMGB3</td>
+<td style="background: transparent!important; line-height: 10px!important">MAP7D2</td>
+<td style="background: transparent!important; line-height: 10px!important">OTUD6A</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>PTCHD1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">SLC35A2</td>
+<td style="background: transparent!important; line-height: 10px!important">THOC2</td>
+<td style="background: transparent!important; line-height: 10px!important">YIPF6</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">APOOL</td>
+<td style="background: transparent!important; line-height: 10px!important">CHIC1</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM50A</td>
+<td style="background: transparent!important; line-height: 10px!important">HMGN5</td>
+<td style="background: transparent!important; line-height: 10px!important">MAP7D3</td>
+<td style="background: transparent!important; line-height: 10px!important">PABPC1L2A</td>
+<td style="background: transparent!important; line-height: 10px!important">PUDP</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC38A5</td>
+<td style="background: transparent!important; line-height: 10px!important">TIMM17B</td>
+<td style="background: transparent!important; line-height: 10px!important">YY2</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARAF</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CHM</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">FAM9B</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>HNRNPH2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">MBNL3</td>
+<td style="background: transparent!important; line-height: 10px!important">PABPC5</td>
+<td style="background: transparent!important; line-height: 10px!important">RAB33A</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>SLC6A8</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">TIMM8A</td>
+<td style="background: transparent!important; line-height: 10px!important">ZBTB33</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARHGAP4</td>
+<td style="background: transparent!important; line-height: 10px!important">CHRDL1</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM9C</td>
+<td style="background: transparent!important; line-height: 10px!important">HPRT1</td>
+<td style="background: transparent!important; line-height: 10px!important">MBTPS2</td>
+<td style="background: transparent!important; line-height: 10px!important">PAK3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>RAB39B</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>SLC9A6</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">TIMP1</td>
+<td style="background: transparent!important; line-height: 10px!important">ZC3H12B</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARHGAP6</td>
+<td style="background: transparent!important; line-height: 10px!important">CHST7</td>
+<td style="background: transparent!important; line-height: 10px!important">FANCB</td>
+<td style="background: transparent!important; line-height: 10px!important">HSD17B10</td>
+<td style="background: transparent!important; line-height: 10px!important">MCF2</td>
+<td style="background: transparent!important; line-height: 10px!important">PBDC1</td>
+<td style="background: transparent!important; line-height: 10px!important">RAB40AL</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC9A7</td>
+<td style="background: transparent!important; line-height: 10px!important">TKTL1</td>
+<td style="background: transparent!important; line-height: 10px!important">ZC4H2</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARHGEF6</td>
+<td style="background: transparent!important; line-height: 10px!important">CITED1</td>
+<td style="background: transparent!important; line-height: 10px!important">FGD1</td>
+<td style="background: transparent!important; line-height: 10px!important">HTATSF1</td>
+<td style="background: transparent!important; line-height: 10px!important">MCTS1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>PCDH11X</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">RAB41</td>
+<td style="background: transparent!important; line-height: 10px!important">SLITRK2</td>
+<td style="background: transparent!important; line-height: 10px!important">TLR7</td>
+<td style="background: transparent!important; line-height: 10px!important">ZCCHC18</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ARHGEF9</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CLCN4</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>FGF13</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>HUWE1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>MECP2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>PCDH19</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">RAB9A</td>
+<td style="background: transparent!important; line-height: 10px!important">SLITRK4</td>
+<td style="background: transparent!important; line-height: 10px!important">TMEM164</td>
+<td style="background: transparent!important; line-height: 10px!important">ZDHHC15</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARMCX1</td>
+<td style="background: transparent!important; line-height: 10px!important">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important">FHL1</td>
+<td style="background: transparent!important; line-height: 10px!important">IDH3G</td>
+<td style="background: transparent!important; line-height: 10px!important">MED12</td>
+<td style="background: transparent!important; line-height: 10px!important">PCSK1N</td>
+<td style="background: transparent!important; line-height: 10px!important">RAB9B</td>
+<td style="background: transparent!important; line-height: 10px!important">SMARCA1</td>
+<td style="background: transparent!important; line-height: 10px!important">TMEM185A</td>
+<td style="background: transparent!important; line-height: 10px!important">ZDHHC9</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARMCX2</td>
+<td style="background: transparent!important; line-height: 10px!important">CLDN34</td>
+<td style="background: transparent!important; line-height: 10px!important">FLNA</td>
+<td style="background: transparent!important; line-height: 10px!important">IDS</td>
+<td style="background: transparent!important; line-height: 10px!important">MED14</td>
+<td style="background: transparent!important; line-height: 10px!important">PCYT1B</td>
+<td style="background: transparent!important; line-height: 10px!important">RAI2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>SMC1A</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">TMEM187</td>
+<td style="background: transparent!important; line-height: 10px!important">ZFX</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARMCX3</td>
+<td style="background: transparent!important; line-height: 10px!important">CLIC2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>FMR1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">IGBP1</td>
+<td style="background: transparent!important; line-height: 10px!important">MID1</td>
+<td style="background: transparent!important; line-height: 10px!important">PDHA1</td>
+<td style="background: transparent!important; line-height: 10px!important">RAP2C</td>
+<td style="background: transparent!important; line-height: 10px!important">SMIM10</td>
+<td style="background: transparent!important; line-height: 10px!important">TMEM47</td>
+<td style="background: transparent!important; line-height: 10px!important">ZIC3</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARMCX4</td>
+<td style="background: transparent!important; line-height: 10px!important">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important">FOXO4</td>
+<td style="background: transparent!important; line-height: 10px!important">IGSF1</td>
+<td style="background: transparent!important; line-height: 10px!important">MID1IP1</td>
+<td style="background: transparent!important; line-height: 10px!important">PDK3</td>
+<td style="background: transparent!important; line-height: 10px!important">RBBP7</td>
+<td style="background: transparent!important; line-height: 10px!important">SMIM10L2A</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>TMLHE</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ZMAT1</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARMCX5</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>CNKSR2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">FOXP3</td>
+<td style="background: transparent!important; line-height: 10px!important">IKBKG</td>
+<td style="background: transparent!important; line-height: 10px!important">MID2</td>
+<td style="background: transparent!important; line-height: 10px!important">PDZD11</td>
+<td style="background: transparent!important; line-height: 10px!important">RBM10</td>
+<td style="background: transparent!important; line-height: 10px!important">SMIM10L2B</td>
+<td style="background: transparent!important; line-height: 10px!important">TMSB15B</td>
+<td style="background: transparent!important; line-height: 10px!important">ZMYM3</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARMCX6</td>
+<td style="background: transparent!important; line-height: 10px!important">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important">FRMPD3</td>
+<td style="background: transparent!important; line-height: 10px!important">IL13RA1</td>
+<td style="background: transparent!important; line-height: 10px!important">MMGT1</td>
+<td style="background: transparent!important; line-height: 10px!important">PDZD4</td>
+<td style="background: transparent!important; line-height: 10px!important">RBM3</td>
+<td style="background: transparent!important; line-height: 10px!important">SMS</td>
+<td style="background: transparent!important; line-height: 10px!important">TMSB4X</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF182</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARR3</td>
+<td style="background: transparent!important; line-height: 10px!important">CSTF2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>FRMPD4</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">IRAK1</td>
+<td style="background: transparent!important; line-height: 10px!important">MORC4</td>
+<td style="background: transparent!important; line-height: 10px!important">PGK1</td>
+<td style="background: transparent!important; line-height: 10px!important">RBM41</td>
+<td style="background: transparent!important; line-height: 10px!important">SNX12</td>
+<td style="background: transparent!important; line-height: 10px!important">TRAPPC2</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF185</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARSD</td>
+<td style="background: transparent!important; line-height: 10px!important">CTPS2</td>
+<td style="background: transparent!important; line-height: 10px!important">FTSJ1</td>
+<td style="background: transparent!important; line-height: 10px!important">ITGB1BP2</td>
+<td style="background: transparent!important; line-height: 10px!important">MORF4L2</td>
+<td style="background: transparent!important; line-height: 10px!important">PGRMC1</td>
+<td style="background: transparent!important; line-height: 10px!important">RBMX</td>
+<td style="background: transparent!important; line-height: 10px!important">SOWAHD</td>
+<td style="background: transparent!important; line-height: 10px!important">TRMT2B</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF275</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ASB11</td>
+<td style="background: transparent!important; line-height: 10px!important">CUL4B</td>
+<td style="background: transparent!important; line-height: 10px!important">FUNDC1</td>
+<td style="background: transparent!important; line-height: 10px!important">ITM2A</td>
+<td style="background: transparent!important; line-height: 10px!important">MOSPD1</td>
+<td style="background: transparent!important; line-height: 10px!important">PHEX</td>
+<td style="background: transparent!important; line-height: 10px!important">RBMX2</td>
+<td style="background: transparent!important; line-height: 10px!important">SPIN2A</td>
+<td style="background: transparent!important; line-height: 10px!important">TRO</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF280C</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ATG4A</td>
+<td style="background: transparent!important; line-height: 10px!important">CXorf38</td>
+<td style="background: transparent!important; line-height: 10px!important">FUNDC2</td>
+<td style="background: transparent!important; line-height: 10px!important">JADE3</td>
+<td style="background: transparent!important; line-height: 10px!important">MOSPD2</td>
+<td style="background: transparent!important; line-height: 10px!important">PHF6</td>
+<td style="background: transparent!important; line-height: 10px!important">RENBP</td>
+<td style="background: transparent!important; line-height: 10px!important">SPIN2B</td>
+<td style="background: transparent!important; line-height: 10px!important">TSC22D3</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF41</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ATP11C</td>
+<td style="background: transparent!important; line-height: 10px!important">CXorf58</td>
+<td style="background: transparent!important; line-height: 10px!important">G6PD</td>
+<td style="background: transparent!important; line-height: 10px!important">KCND1</td>
+<td style="background: transparent!important; line-height: 10px!important">MPP1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>PHF8</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">REPS2</td>
+<td style="background: transparent!important; line-height: 10px!important">SPIN3</td>
+<td style="background: transparent!important; line-height: 10px!important">TSPAN6</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF449</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ATP2B3</td>
+<td style="background: transparent!important; line-height: 10px!important">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>GABRA3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>KDM5C</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>MSL3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">PHKA1</td>
+<td style="background: transparent!important; line-height: 10px!important">RGN</td>
+<td style="background: transparent!important; line-height: 10px!important">SPIN4</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>TSPAN7</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF630</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ATP6AP1</td>
+<td style="background: transparent!important; line-height: 10px!important">CYSLTR1</td>
+<td style="background: transparent!important; line-height: 10px!important">GDI1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>KDM6A</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">MSN</td>
+<td style="background: transparent!important; line-height: 10px!important">PHKA2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>RHOXF1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">SPRY3</td>
+<td style="background: transparent!important; line-height: 10px!important">TSPYL2</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF674</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ATP6AP2</td>
+<td style="background: transparent!important; line-height: 10px!important">DACH2</td>
+<td style="background: transparent!important; line-height: 10px!important">GEMIN8</td>
+<td style="background: transparent!important; line-height: 10px!important">KLF8</td>
+<td style="background: transparent!important; line-height: 10px!important">NAA10</td>
+<td style="background: transparent!important; line-height: 10px!important">PIGA</td>
+<td style="background: transparent!important; line-height: 10px!important">RIBC1</td>
+<td style="background: transparent!important; line-height: 10px!important">SRPK3</td>
+<td style="background: transparent!important; line-height: 10px!important">TSR2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>ZNF711</strong></td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important">GK</td>
+<td style="background: transparent!important; line-height: 10px!important">KLHL13</td>
+<td style="background: transparent!important; line-height: 10px!important">NAP1L2</td>
+<td style="background: transparent!important; line-height: 10px!important">PIM2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>RLIM</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">SSR4</td>
+<td style="background: transparent!important; line-height: 10px!important">TXLNG</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF75D</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>ATRX</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>DDX3X</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">GLA</td>
+<td style="background: transparent!important; line-height: 10px!important">KLHL15</td>
+<td style="background: transparent!important; line-height: 10px!important">NAP1L3</td>
+<td style="background: transparent!important; line-height: 10px!important">PIN4</td>
+<td style="background: transparent!important; line-height: 10px!important">RNF113A</td>
+<td style="background: transparent!important; line-height: 10px!important">STAG2</td>
+<td style="background: transparent!important; line-height: 10px!important">UBA1</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF81</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">BCAP31</td>
+<td style="background: transparent!important; line-height: 10px!important">DIAPH2</td>
+<td style="background: transparent!important; line-height: 10px!important">GLOD5</td>
+<td style="background: transparent!important; line-height: 10px!important">KLHL34</td>
+<td style="background: transparent!important; line-height: 10px!important">NDP</td>
+<td style="background: transparent!important; line-height: 10px!important">PIR</td>
+<td style="background: transparent!important; line-height: 10px!important">RP2</td>
+<td style="background: transparent!important; line-height: 10px!important">STS</td>
+<td style="background: transparent!important; line-height: 10px!important">UBE2A</td>
+<td style="background: transparent!important; line-height: 10px!important">ZRSR2</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">BCOR</td>
+<td style="background: transparent!important; line-height: 10px!important">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>GLRA2</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">KLHL4</td>
+<td style="background: transparent!important; line-height: 10px!important">NDUFA1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>PJA1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">RPA4</td>
+<td style="background: transparent!important; line-height: 10px!important">SUV39H1</td>
+<td style="background: transparent!important; line-height: 10px!important">UBL4A</td>
+<td style="background: transparent!important; line-height: 10px!important">ZXDA</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important"><strong>BCORL1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">DLG3</td>
+<td style="background: transparent!important; line-height: 10px!important">GLUD2</td>
+<td style="background: transparent!important; line-height: 10px!important">KRBOX4</td>
+<td style="background: transparent!important; line-height: 10px!important">NDUFB11</td>
+<td style="background: transparent!important; line-height: 10px!important">PLP1</td>
+<td style="background: transparent!important; line-height: 10px!important">RPGR</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>SYAP1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">UBQLN2</td>
+<td style="background: transparent!important; line-height: 10px!important">ZXDB</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">BEX1</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>DMD</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">GNL3L</td>
+<td style="background: transparent!important; line-height: 10px!important">L1CAM</td>
+<td style="background: transparent!important; line-height: 10px!important">NHS</td>
+<td style="background: transparent!important; line-height: 10px!important">PLP2</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>RPL10</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>SYN1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>UPF3B</strong></td>
+<td style="background: transparent!important; line-height: 10px!important"></td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">BEX2</td>
+<td style="background: transparent!important; line-height: 10px!important">DNASE1L1</td>
+<td style="background: transparent!important; line-height: 10px!important">GPC3</td>
+<td style="background: transparent!important; line-height: 10px!important">LAGE3</td>
+<td style="background: transparent!important; line-height: 10px!important">NKAP</td>
+<td style="background: transparent!important; line-height: 10px!important">PLS3</td>
+<td style="background: transparent!important; line-height: 10px!important">RPL36A</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>SYP</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">UPRT</td>
+<td style="background: transparent!important; line-height: 10px!important"></td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">BEX4</td>
+<td style="background: transparent!important; line-height: 10px!important">DRP2</td>
+<td style="background: transparent!important; line-height: 10px!important">GPKOW</td>
+<td style="background: transparent!important; line-height: 10px!important">LAMP2</td>
+<td style="background: transparent!important; line-height: 10px!important">NKRF</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>PLXNA3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">RPL39</td>
+<td style="background: transparent!important; line-height: 10px!important">TAB3</td>
+<td style="background: transparent!important; line-height: 10px!important">USP11</td>
+<td style="background: transparent!important; line-height: 10px!important"></td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">BEX5</td>
+<td style="background: transparent!important; line-height: 10px!important">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important">GPM6B</td>
+<td style="background: transparent!important; line-height: 10px!important">LANCL3</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>NLGN3</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">PNCK</td>
+<td style="background: transparent!important; line-height: 10px!important">RPS4X</td>
+<td style="background: transparent!important; line-height: 10px!important"><strong>TAF1</strong></td>
+<td style="background: transparent!important; line-height: 10px!important">USP27X</td>
+<td style="background: transparent!important; line-height: 10px!important"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
-<span class="ansi-red-fg">AttributeError</span>: 'str' object has no attribute 'aliases'</pre>
-</div>
-</div>
-</div>
 
-
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

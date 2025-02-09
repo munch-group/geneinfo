@@ -322,61 +322,138 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'retina'</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.ontology <span class="im">as</span> go</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>go.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneListCollection</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneList <span class="im">as</span> glist</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.ontology <span class="im">as</span> go</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>go.email(<span class="st">'your@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-3" class="cell" data-execution_count="3">
+<div id="cell-3" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> left:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__rlshift__</span>(<span class="va">self</span>, df):</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Left align columns of data frame: df &lt;&lt; left()"</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        left_aligned_df <span class="op">=</span> df.style.set_properties(<span class="op">**</span>{<span class="st">'text-align'</span>: <span class="st">'left'</span>})</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        left_aligned_df <span class="op">=</span> left_aligned_df.set_table_styles(</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        [<span class="bu">dict</span>(selector <span class="op">=</span> <span class="st">'th'</span>, props<span class="op">=</span>[(<span class="st">'text-align'</span>, <span class="st">'left'</span>)])])</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        display(left_aligned_df)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(name<span class="op">=</span>[<span class="st">'A'</span>, <span class="st">'B'</span>], desc<span class="op">=</span>[<span class="st">'bla bla bla bla'</span>, <span class="st">'bla'</span>]))</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">name</th>
-<th data-quarto-table-cell-role="th">desc</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>A</td>
-<td>bla bla bla bla</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>B</td>
-<td>bla</td>
-</tr>
-</tbody>
-</table>
-
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        display(left_aligned_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p><strong>NB:</strong> The first time you use the GO utilities, it will spend a <em>very</em> long time downloading data. If you do not want to wait that out in the notebook, you can execute this command in the folder where you store your notebooks:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
 </div>
+<div class="sourceCode" id="cb3" data-filename="Terminal"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>conda run -n &lt;environment&gt; python -c 'import geneinfo.ontology ; geneinfo.ontology.download_data()'</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="global-go-enrichment" class="level2">
 <h2 class="anchored" data-anchor-id="global-go-enrichment">Global GO enrichment</h2>
 <p><strong>Enrichment against all GO terms with all protein coding genes as background:</strong></p>
-<div id="cell-6" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.utils <span class="im">as</span> utils</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>gl <span class="op">=</span> utils.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">repr</span>(<span class="bu">list</span>(gl.get(<span class="st">'sfari_all_conf'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>"['AFF2', 'AGTR2', 'AP1S2', 'AR', 'ARHGEF9', 'ARX', 'ATRX', 'BCORL1', 'BRWD3', 'CACNA1F', 'CASK', 'CD99L2', 'CDKL5', 'CHM', 'CLCN4', 'CNKSR2', 'DDX3X', 'DDX53', 'DMD', 'FAM47A', 'FGF13', 'FMR1', 'FRMPD4', 'GABRA3', 'GLRA2', 'GPC4', 'GRIA3', 'HCFC1', 'HDAC8', 'HNRNPH2', 'HUWE1', 'IL1RAPL1', 'IL1RAPL2', 'IQSEC2', 'KDM5C', 'KDM6A', 'LAS1L', 'MAOA', 'MAOB', 'MECP2', 'MSL3', 'NEXMIF', 'NLGN3', 'NLGN4X', 'OCRL', 'OFD1', 'OPHN1', 'PCDH11X', 'PCDH19', 'PHF8', 'PJA1', 'PLXNA3', 'PTCHD1', 'PTCHD1-AS', 'RAB39B', 'RHOXF1', 'RLIM', 'RPL10', 'RPS6KA3', 'SLC6A8', 'SLC7A3', 'SLC9A6', 'SMC1A', 'SYAP1', 'SYN1', 'SYP', 'TAF1', 'TBL1X', 'TBX22', 'TFE3', 'TMLHE', 'TSPAN7', 'UPF3B', 'USP9X', 'VSIG4', 'WNK3', 'ZNF711']"</code></pre>
+<div id="cell-7" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.utils <span class="im">as</span> utils</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>gl <span class="op">=</span> utils.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>glist(gl.get(<span class="st">'sfari_all_conf'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AFF2</td>
+<td style="background: transparent!important; line-height: 10px!important">BRWD3</td>
+<td style="background: transparent!important; line-height: 10px!important">DDX3X</td>
+<td style="background: transparent!important; line-height: 10px!important">GLRA2</td>
+<td style="background: transparent!important; line-height: 10px!important">IL1RAPL2</td>
+<td style="background: transparent!important; line-height: 10px!important">MSL3</td>
+<td style="background: transparent!important; line-height: 10px!important">PCDH19</td>
+<td style="background: transparent!important; line-height: 10px!important">RLIM</td>
+<td style="background: transparent!important; line-height: 10px!important">SYN1</td>
+<td style="background: transparent!important; line-height: 10px!important">UPF3B</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AGTR2</td>
+<td style="background: transparent!important; line-height: 10px!important">CACNA1F</td>
+<td style="background: transparent!important; line-height: 10px!important">DDX53</td>
+<td style="background: transparent!important; line-height: 10px!important">GPC4</td>
+<td style="background: transparent!important; line-height: 10px!important">IQSEC2</td>
+<td style="background: transparent!important; line-height: 10px!important">NEXMIF</td>
+<td style="background: transparent!important; line-height: 10px!important">PHF8</td>
+<td style="background: transparent!important; line-height: 10px!important">RPL10</td>
+<td style="background: transparent!important; line-height: 10px!important">SYP</td>
+<td style="background: transparent!important; line-height: 10px!important">USP9X</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AP1S2</td>
+<td style="background: transparent!important; line-height: 10px!important">CASK</td>
+<td style="background: transparent!important; line-height: 10px!important">DMD</td>
+<td style="background: transparent!important; line-height: 10px!important">GRIA3</td>
+<td style="background: transparent!important; line-height: 10px!important">KDM5C</td>
+<td style="background: transparent!important; line-height: 10px!important">NLGN3</td>
+<td style="background: transparent!important; line-height: 10px!important">PJA1</td>
+<td style="background: transparent!important; line-height: 10px!important">RPS6KA3</td>
+<td style="background: transparent!important; line-height: 10px!important">TAF1</td>
+<td style="background: transparent!important; line-height: 10px!important">VSIG4</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">AR</td>
+<td style="background: transparent!important; line-height: 10px!important">CD99L2</td>
+<td style="background: transparent!important; line-height: 10px!important">FAM47A</td>
+<td style="background: transparent!important; line-height: 10px!important">HCFC1</td>
+<td style="background: transparent!important; line-height: 10px!important">KDM6A</td>
+<td style="background: transparent!important; line-height: 10px!important">NLGN4X</td>
+<td style="background: transparent!important; line-height: 10px!important">PLXNA3</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC6A8</td>
+<td style="background: transparent!important; line-height: 10px!important">TBL1X</td>
+<td style="background: transparent!important; line-height: 10px!important">WNK3</td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARHGEF9</td>
+<td style="background: transparent!important; line-height: 10px!important">CDKL5</td>
+<td style="background: transparent!important; line-height: 10px!important">FGF13</td>
+<td style="background: transparent!important; line-height: 10px!important">HDAC8</td>
+<td style="background: transparent!important; line-height: 10px!important">LAS1L</td>
+<td style="background: transparent!important; line-height: 10px!important">OCRL</td>
+<td style="background: transparent!important; line-height: 10px!important">PTCHD1</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC7A3</td>
+<td style="background: transparent!important; line-height: 10px!important">TBX22</td>
+<td style="background: transparent!important; line-height: 10px!important">ZNF711</td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ARX</td>
+<td style="background: transparent!important; line-height: 10px!important">CHM</td>
+<td style="background: transparent!important; line-height: 10px!important">FMR1</td>
+<td style="background: transparent!important; line-height: 10px!important">HNRNPH2</td>
+<td style="background: transparent!important; line-height: 10px!important">MAOA</td>
+<td style="background: transparent!important; line-height: 10px!important">OFD1</td>
+<td style="background: transparent!important; line-height: 10px!important">PTCHD1-AS</td>
+<td style="background: transparent!important; line-height: 10px!important">SLC9A6</td>
+<td style="background: transparent!important; line-height: 10px!important">TFE3</td>
+<td style="background: transparent!important; line-height: 10px!important"></td>
+</tr>
+<tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important">CLCN4</td>
+<td style="background: transparent!important; line-height: 10px!important">FRMPD4</td>
+<td style="background: transparent!important; line-height: 10px!important">HUWE1</td>
+<td style="background: transparent!important; line-height: 10px!important">MAOB</td>
+<td style="background: transparent!important; line-height: 10px!important">OPHN1</td>
+<td style="background: transparent!important; line-height: 10px!important">RAB39B</td>
+<td style="background: transparent!important; line-height: 10px!important">SMC1A</td>
+<td style="background: transparent!important; line-height: 10px!important">TMLHE</td>
+<td style="background: transparent!important; line-height: 10px!important"></td>
+</tr>
+<tr class="even" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
+<td style="background: transparent!important; line-height: 10px!important">BCORL1</td>
+<td style="background: transparent!important; line-height: 10px!important">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important">GABRA3</td>
+<td style="background: transparent!important; line-height: 10px!important">IL1RAPL1</td>
+<td style="background: transparent!important; line-height: 10px!important">MECP2</td>
+<td style="background: transparent!important; line-height: 10px!important">PCDH11X</td>
+<td style="background: transparent!important; line-height: 10px!important">RHOXF1</td>
+<td style="background: transparent!important; line-height: 10px!important">SYAP1</td>
+<td style="background: transparent!important; line-height: 10px!important">TSPAN7</td>
+<td style="background: transparent!important; line-height: 10px!important"></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="cell-7" class="cell" data-execution_count="13">
+<div id="cell-8" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>genes <span class="op">=</span> [<span class="st">'AFF2'</span>, <span class="st">'AGTR2'</span>, <span class="st">'AP1S2'</span>, <span class="st">'AR'</span>, <span class="st">'ARHGEF9'</span>, <span class="st">'ARX'</span>, <span class="st">'ATRX'</span>, <span class="st">'BCORL1'</span>, <span class="st">'BRWD3'</span>, </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>         <span class="st">'CACNA1F'</span>, <span class="st">'CASK'</span>, <span class="st">'CD99L2'</span>, <span class="st">'CDKL5'</span>, <span class="st">'CHM'</span>, <span class="st">'CLCN4'</span>, <span class="st">'CNKSR2'</span>, <span class="st">'DDX3X'</span>, </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">'DDX53'</span>, <span class="st">'DMD'</span>, <span class="st">'FAM47A'</span>, <span class="st">'FGF13'</span>, <span class="st">'FMR1'</span>, <span class="st">'FRMPD4'</span>, <span class="st">'GABRA3'</span>, <span class="st">'GLRA2'</span>, <span class="st">'GPC4'</span>,</span>
@@ -387,13 +464,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>         <span class="st">'SLC7A3'</span>, <span class="st">'SLC9A6'</span>, <span class="st">'SMC1A'</span>, <span class="st">'SYAP1'</span>, <span class="st">'SYN1'</span>, <span class="st">'SYP'</span>, <span class="st">'TAF1'</span>, <span class="st">'TBL1X'</span>, <span class="st">'TBX22'</span>, </span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>         <span class="st">'TFE3'</span>, <span class="st">'TMLHE'</span>, <span class="st">'TSPAN7'</span>, <span class="st">'UPF3B'</span>, <span class="st">'USP9X'</span>, <span class="st">'VSIG4'</span>, <span class="st">'WNK3'</span>, <span class="st">'ZNF711'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-8" class="cell" data-execution_count="17">
+<div id="cell-9" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>go_results <span class="op">=</span> go.go_enrichment(genes)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>go_results.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -417,10 +494,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>BP</td>
 <td>GO:0050804</td>
 <td>e</td>
-<td>7.683641e-07</td>
-<td>0.009330</td>
+<td>7.681490e-07</td>
+<td>0.009328</td>
 <td>0.078947</td>
-<td>0.004176</td>
+<td>0.004175</td>
 <td>&lt;GO:0050804&gt;</td>
 </tr>
 <tr class="even">
@@ -428,8 +505,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>CC</td>
 <td>GO:0045211</td>
 <td>e</td>
-<td>5.857825e-06</td>
-<td>0.010673</td>
+<td>5.855984e-06</td>
+<td>0.010670</td>
 <td>0.092105</td>
 <td>0.009079</td>
 <td>&lt;GO:0045211&gt;</td>
@@ -439,8 +516,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>BP</td>
 <td>GO:0097105</td>
 <td>e</td>
-<td>3.991773e-06</td>
-<td>0.024236</td>
+<td>3.991194e-06</td>
+<td>0.024233</td>
 <td>0.039474</td>
 <td>0.000437</td>
 <td>&lt;GO:0097105&gt;</td>
@@ -450,8 +527,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>MF</td>
 <td>GO:0097621</td>
 <td>e</td>
-<td>4.021701e-05</td>
-<td>0.047489</td>
+<td>4.021311e-05</td>
+<td>0.047471</td>
 <td>0.026316</td>
 <td>0.000146</td>
 <td>&lt;GO:0097621&gt;</td>
@@ -461,8 +538,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>MF</td>
 <td>GO:0042043</td>
 <td>e</td>
-<td>1.706921e-05</td>
-<td>0.047489</td>
+<td>1.706675e-05</td>
+<td>0.047471</td>
 <td>0.039474</td>
 <td>0.000680</td>
 <td>&lt;GO:0042043&gt;</td>
@@ -472,8 +549,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>MF</td>
 <td>GO:0140693</td>
 <td>e</td>
-<td>2.707133e-05</td>
-<td>0.047489</td>
+<td>2.706623e-05</td>
+<td>0.047471</td>
 <td>0.052632</td>
 <td>0.002282</td>
 <td>&lt;GO:0140693&gt;</td>
@@ -483,10 +560,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>MF</td>
 <td>GO:0003682</td>
 <td>e</td>
-<td>4.084158e-05</td>
-<td>0.047489</td>
+<td>4.082631e-05</td>
+<td>0.047471</td>
 <td>0.118421</td>
-<td>0.021849</td>
+<td>0.021848</td>
 <td>&lt;GO:0003682&gt;</td>
 </tr>
 <tr class="even">
@@ -494,8 +571,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>CC</td>
 <td>GO:0098983</td>
 <td>e</td>
-<td>8.024140e-05</td>
-<td>0.048860</td>
+<td>8.023362e-05</td>
+<td>0.048834</td>
 <td>0.026316</td>
 <td>0.000194</td>
 <td>&lt;GO:0098983&gt;</td>
@@ -505,10 +582,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>CC</td>
 <td>GO:0005634</td>
 <td>e</td>
-<td>8.045020e-05</td>
-<td>0.048860</td>
+<td>8.040731e-05</td>
+<td>0.048834</td>
 <td>0.486842</td>
-<td>0.273257</td>
+<td>0.273244</td>
 <td>&lt;GO:0005634&gt;</td>
 </tr>
 <tr class="even">
@@ -516,8 +593,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>MF</td>
 <td>GO:0032452</td>
 <td>e</td>
-<td>5.261298e-05</td>
-<td>0.048941</td>
+<td>5.260543e-05</td>
+<td>0.048934</td>
 <td>0.039474</td>
 <td>0.000971</td>
 <td>&lt;GO:0032452&gt;</td>
@@ -529,7 +606,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><strong>Show GO DAG for enrichment results:</strong></p>
-<div id="cell-10" class="cell" data-execution_count="18">
+<div id="cell-11" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_enrichment_results(go_results.obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -540,7 +617,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><strong>Same but only for top 10 GO terms:</strong></p>
-<div id="cell-12" class="cell" data-execution_count="19">
+<div id="cell-13" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_enrichment_results(go_results.obj[:<span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -551,7 +628,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><strong>Descriptions of the same 10 GO terms:</strong></p>
-<div id="cell-14" class="cell" data-execution_count="20">
+<div id="cell-15" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>go.go_info(go_results.term_id[:<span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong><span style="color:gray;">GO:0050804:</span></strong> <strong>modulation of chemical synaptic transmission</strong><br>
@@ -605,7 +682,7 @@ Catalysis of the removal of a methyl group from a histone.</p>
 </div>
 </div>
 <p><strong>Show the GO DAG for a set of GO terms and their parent terms:</strong></p>
-<div id="cell-16" class="cell" data-execution_count="21">
+<div id="cell-17" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(go_results.term_id[:<span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -617,19 +694,19 @@ Catalysis of the removal of a methyl group from a histone.</p>
 </div>
 <p><strong>Specifying a custom set of background genes:</strong></p>
 <p>The query genes should be a subset of the background genes:</p>
-<div id="cell-18" class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>all_protein_coding <span class="op">=</span> <span class="bu">set</span>(pd.read_csv(<span class="st">'geneinfo_cache/9606_protein_genes.txt'</span>, sep<span class="op">=</span><span class="st">'</span><span class="ch">\t</span><span class="st">'</span>).Symbol)</span>
+<div id="cell-19" class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>all_protein_coding <span class="op">=</span> go.all_protein_coding()</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># only the first 50 genes:</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>subset_background <span class="op">=</span> <span class="bu">list</span>(all_protein_coding)[:<span class="dv">50</span>] <span class="op">+</span> genes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>subset_background <span class="op">=</span> all_protein_coding[:<span class="dv">50</span>] <span class="op">+</span> genes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-19" class="cell" data-execution_count="28">
+<div id="cell-20" class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>go_results <span class="op">=</span> go.go_enrichment(genes, background_genes<span class="op">=</span>subset_background)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>go_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Could not map gene symbol "PTCHD1-AS" to ncbi id
 Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="28">
+<div class="cell-output cell-output-display" data-execution_count="31">
 <div>
 
 
@@ -648,6 +725,105 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </tr>
 </thead>
 <tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>BP</td>
+<td>GO:0055085</td>
+<td>p</td>
+<td>6.454390e-09</td>
+<td>0.000006</td>
+<td>0.000000</td>
+<td>0.142857</td>
+<td>&lt;GO:0055085&gt;</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>MF</td>
+<td>GO:0042626</td>
+<td>p</td>
+<td>2.131904e-08</td>
+<td>0.000008</td>
+<td>0.000000</td>
+<td>0.134921</td>
+<td>&lt;GO:0042626&gt;</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>MF</td>
+<td>GO:0140359</td>
+<td>p</td>
+<td>6.805374e-07</td>
+<td>0.000129</td>
+<td>0.000000</td>
+<td>0.111111</td>
+<td>&lt;GO:0140359&gt;</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>MF</td>
+<td>GO:0016887</td>
+<td>p</td>
+<td>2.593565e-06</td>
+<td>0.000321</td>
+<td>0.052632</td>
+<td>0.190476</td>
+<td>&lt;GO:0016887&gt;</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>MF</td>
+<td>GO:0005524</td>
+<td>p</td>
+<td>3.389880e-06</td>
+<td>0.000321</td>
+<td>0.144737</td>
+<td>0.301587</td>
+<td>&lt;GO:0005524&gt;</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>CC</td>
+<td>GO:0005634</td>
+<td>e</td>
+<td>1.783878e-05</td>
+<td>0.004121</td>
+<td>0.486842</td>
+<td>0.341270</td>
+<td>&lt;GO:0005634&gt;</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>MF</td>
+<td>GO:0005319</td>
+<td>p</td>
+<td>1.521539e-04</td>
+<td>0.009611</td>
+<td>0.000000</td>
+<td>0.071429</td>
+<td>&lt;GO:0005319&gt;</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>MF</td>
+<td>GO:0005515</td>
+<td>e</td>
+<td>1.331869e-04</td>
+<td>0.009611</td>
+<td>0.828947</td>
+<td>0.698413</td>
+<td>&lt;GO:0005515&gt;</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>BP</td>
+<td>GO:0006869</td>
+<td>p</td>
+<td>5.331890e-05</td>
+<td>0.023807</td>
+<td>0.000000</td>
+<td>0.079365</td>
+<td>&lt;GO:0006869&gt;</td>
+</tr>
 </tbody>
 </table>
 
@@ -655,13 +831,13 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
 </div>
 <p><strong>Use only the X chromosome as background:</strong></p>
-<div id="cell-21" class="cell" data-execution_count="29">
+<div id="cell-22" class="cell" data-execution_count="32">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>go_results <span class="op">=</span> go.go_enrichment(genes, background_chrom<span class="op">=</span><span class="st">'X'</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>go_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="29">
+<div class="cell-output cell-output-display" data-execution_count="32">
 <div>
 
 
@@ -800,14 +976,14 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 <section id="enrichment-among-a-subset-of-go-terms" class="level2">
 <h2 class="anchored" data-anchor-id="enrichment-among-a-subset-of-go-terms">Enrichment among a subset of GO terms</h2>
 <p>Extract terms matching regular expression:</p>
-<div id="cell-23" class="cell" data-execution_count="30">
+<div id="cell-24" class="cell" data-execution_count="33">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#target_terms = go.get_terms_for_go_regex('brain')</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#target_terms = go.get_terms_for_go_regex('microtubul')</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># target_terms = go.get_terms_for_go_regex('spindle')</span></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>target_terms <span class="op">=</span> go.get_terms_for_go_regex(<span class="vs">r'neuron\S* migration'</span>)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(target_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(target_terms) <span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>geneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)</code></pre>
+<pre><code>/Users/kmt/geneinfo/geneinfo/cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -817,16 +993,16 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-24" class="cell" data-execution_count="31">
+<div id="cell-25" class="cell" data-execution_count="35">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>go_results <span class="op">=</span> go.go_enrichment(genes, terms<span class="op">=</span>target_terms, list_study_genes<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>go_results.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>geneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(def relationship)</code></pre>
+<pre><code>/Users/kmt/geneinfo/geneinfo/cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(def relationship)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="31">
+<div class="cell-output cell-output-display" data-execution_count="35">
 <div>
 
 
@@ -851,10 +1027,10 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 <td>CC</td>
 <td>GO:0032991</td>
 <td>e</td>
-<td>0.009216</td>
-<td>0.036864</td>
+<td>0.009214</td>
+<td>0.036855</td>
 <td>0.092105</td>
-<td>0.031025</td>
+<td>0.031024</td>
 <td>&lt;GO:0032991&gt;</td>
 <td>[AR, DMD, HCFC1, MECP2, RPL10, FRMPD4, VSIG4]</td>
 </tr>
@@ -864,7 +1040,7 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-25" class="cell" data-execution_count="32">
+<div id="cell-26" class="cell" data-execution_count="36">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_enrichment_results(go_results.obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -875,7 +1051,7 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </div>
 </div>
 <p>Extract terms matching two regular expressions in any order:</p>
-<div id="cell-27" class="cell" data-execution_count="33">
+<div id="cell-28" class="cell" data-execution_count="37">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>pattern_one <span class="op">=</span> <span class="vs">r'microtub\S*'</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>pattern_two <span class="op">=</span> <span class="vs">r'spindle'</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>regex <span class="op">=</span> <span class="vs">fr"(?=.*(</span><span class="sc">{</span>pattern_one<span class="sc">}</span><span class="vs">))(?=.*(</span><span class="sc">{</span>pattern_two<span class="sc">}</span><span class="vs">))(?=.*)"</span></span>
@@ -883,7 +1059,7 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>target_terms <span class="op">=</span> go.get_terms_for_go_regex(regex)</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_for_terms(target_terms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>geneinfo_cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)</code></pre>
+<pre><code>/Users/kmt/geneinfo/geneinfo/cache/go-basic.obo: fmt(1.2) rel(2024-10-27) 44,017 Terms; optional_attrs(comment def relationship synonym xref)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -892,24 +1068,6 @@ Could not map gene symbol "PTCHD1-AS" to ncbi id</code></pre>
 </figure>
 </div>
 </div>
-</div>
-<div id="cell-28" class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>go_results <span class="op">=</span> go.go_enrichment(motor_genes_df.symbol, terms<span class="op">=</span>target_terms, list_study_genes<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>go_results.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<div class="ansi-escaped-output">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[34], line 1</span>
-<span class="ansi-green-fg">----&gt; 1</span> go_results <span style="color:rgb(98,98,98)">=</span> go<span style="color:rgb(98,98,98)">.</span>go_enrichment(motor_genes_df<span style="color:rgb(98,98,98)">.</span>symbol, terms<span style="color:rgb(98,98,98)">=</span>target_terms, list_study_genes<span style="color:rgb(98,98,98)">=</span><span style="font-weight:bold;color:rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg ansi-bold">      2</span> go_results<span style="color:rgb(98,98,98)">.</span>head()
-
-<span class="ansi-red-fg">NameError</span>: name 'motor_genes_df' is not defined</pre>
-</div>
-</div>
-</div>
-<div id="cell-29" class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>go.show_go_dag_enrichment_results(go_results.obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

@@ -232,20 +232,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_coord.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_coord</span></a>
+  <a href="../api/gene_coords.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region_dataframe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region_dataframe</span></a>
+  <a href="../api/gene_coords_region.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords_region</span></a>
   </div>
 </li>
       </ul>
@@ -511,7 +505,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#geneinfo.gene_info_region" id="toc-geneinfo.gene_info_region" class="nav-link active" data-scroll-target="#geneinfo.gene_info_region">gene_info_region</a>
+  <li><a href="#geneinfo.information.gene_info_region" id="toc-geneinfo.information.gene_info_region" class="nav-link active" data-scroll-target="#geneinfo.information.gene_info_region">gene_info_region</a>
   <ul class="collapse">
   <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
   </ul></li>
@@ -524,15 +518,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="geneinfo.gene_info_region" class="level1">
+<section id="geneinfo.information.gene_info_region" class="level1">
 <h1>gene_info_region</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.gene_info_region(</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.information.gene_info_region(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    chrom</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    window_start</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    window_end</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="st">'GRCh38'</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    db<span class="op">=</span><span class="st">'ncbiRefSeq'</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="va">None</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Displays HTML formatted information about genes in a chromosomal region.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
@@ -549,13 +542,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <dd>
 <p>End of region (end base not included)</p>
 </dd>
-<dt><code><span class="parameter-name"><strong>assembly</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'GRCh38'</span></code></dt>
+<dt><code><span class="parameter-name"><strong>assembly</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
-<p>Genome assembly, by default ‘GRCh38’</p>
-</dd>
-<dt><code><span class="parameter-name"><strong>db</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'ncbiRefSeq'</span></code></dt>
-<dd>
-<p>Database, by default ‘ncbiRefSeq’</p>
+<p>Genome assembly, e.g.&nbsp;‘hg38’ or ‘rheMac10’</p>
 </dd>
 </dl>
 

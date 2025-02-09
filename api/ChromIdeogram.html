@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../api/gene_coord.html" rel="next">
+<link href="../api/gene_coords.html" rel="next">
 <link href="../api/GenomeIdeogram.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -232,20 +232,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/gene_coord.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">gene_coord</span></a>
+  <a href="../api/gene_coords.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../api/get_genes_region_dataframe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">get_genes_region_dataframe</span></a>
+  <a href="../api/gene_coords_region.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords_region</span></a>
   </div>
 </li>
       </ul>
@@ -532,15 +526,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.ChromIdeogram(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    chrom</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    axes_height_inches<span class="op">=</span><span class="dv">2</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    axes_width_inches<span class="op">=</span><span class="dv">12</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    hspace<span class="op">=</span><span class="fl">0.3</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    zooms<span class="op">=</span>[]</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    wspace<span class="op">=</span><span class="fl">0.1</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    rel_font_height<span class="op">=</span><span class="fl">0.05</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="st">'hg38'</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    assembly</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    axes_height_inches<span class="op">=</span><span class="dv">2</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    axes_width_inches<span class="op">=</span><span class="dv">12</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    hspace<span class="op">=</span><span class="fl">0.3</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    zooms<span class="op">=</span>[]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    zoom_font_size<span class="op">=</span><span class="va">None</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    zoom_height_ratio<span class="op">=</span><span class="fl">1.0</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    zoom_effect_color<span class="op">=</span><span class="st">'lightgray'</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    zoom_effect_alpha<span class="op">=</span><span class="fl">0.3</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    wspace<span class="op">=</span><span class="fl">0.1</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    font_size<span class="op">=</span><span class="dv">4</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Child class of GenomeIdeogram for plotting single chromosome ideograms.</p>
 <section id="methods" class="level2">
 <h2 class="anchored" data-anchor-id="methods">Methods</h2>
@@ -994,8 +992,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../api/gene_coord.html" class="pagination-link" aria-label="gene_coord">
-        <span class="nav-page-text">gene_coord</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../api/gene_coords.html" class="pagination-link" aria-label="gene_coords">
+        <span class="nav-page-text">gene_coords</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

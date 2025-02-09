@@ -154,7 +154,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#get-coordinates-for-genes-in-a-region" id="toc-get-coordinates-for-genes-in-a-region" class="nav-link active" data-scroll-target="#get-coordinates-for-genes-in-a-region">Get coordinates for genes in a region</a></li>
+  <li><a href="#gene-coordinates" id="toc-gene-coordinates" class="nav-link active" data-scroll-target="#gene-coordinates">Gene coordinates</a></li>
+  <li><a href="#get-coordinates-for-genes-in-a-region" id="toc-get-coordinates-for-genes-in-a-region" class="nav-link" data-scroll-target="#get-coordinates-for-genes-in-a-region">Get coordinates for genes in a region</a></li>
   </ul>
 </nav>
     </div>
@@ -180,96 +181,113 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-tags="[]" data-execution_count="1">
+<div id="cell-2" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:26.791736Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:26.791591Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:27.789009Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:27.788749Z&quot;}" data-tags="[]" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<section id="gene-coordinates" class="level2">
+<h2 class="anchored" data-anchor-id="gene-coordinates">Gene coordinates</h2>
+<div id="cell-4" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:27.790808Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:27.790671Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:27.803998Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:27.803747Z&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> clear_cache</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>clear_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:27.805419Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:27.805336Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:02.719358Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:02.719055Z&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coords(<span class="st">'DYNLT3'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>[('chrX', 37838835, 37847571, 'DYNLT3')]</code></pre>
+</div>
+</div>
+<div id="cell-6" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:02.742532Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:02.742399Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:41.891258Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:41.890973Z&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coords([<span class="st">'DYNLT3'</span>, <span class="st">'CFAP47'</span>], assembly<span class="op">=</span><span class="st">'papAnu4'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>[('chrX', 35179240, 35188256, 'DYNLT3'),
+ ('chrX', 33488516, 33923885, 'CFAP47')]</code></pre>
+</div>
+</div>
+</section>
 <section id="get-coordinates-for-genes-in-a-region" class="level2">
 <h2 class="anchored" data-anchor-id="get-coordinates-for-genes-in-a-region">Get coordinates for genes in a region</h2>
-<div id="cell-4" class="cell" data-tags="[]" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gi.get_genes_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<div id="cell-8" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:41.892802Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:41.892685Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:42.572555Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:42.572078Z&quot;}" data-tags="[]" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coords_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>[('FGF16',
+  'chrX',
   76709642,
   76712769,
-  '+',
-  [(76709642, 76709751), (76711767, 76712769)]),
+  ([(76709642, 76709751), (76711767, 76712769)],)),
  ('ATRX',
+  'chrX',
   76760357,
   77041702,
-  '-',
-  [(76760357, 76764107),
-   (76776265, 76776394),
-   (76776880, 76776976),
-   (76777740, 76777866),
-   (76778729, 76778879),
-   (76812921, 76813116),
-   (76814139, 76814317),
-   (76829714, 76829823),
-   (76845303, 76845410),
-   (76849165, 76849319),
-   (76854879, 76855049),
-   (76855200, 76855289),
-   (76855902, 76856033),
-   (76872080, 76872198),
-   (76874273, 76874449),
-   (76875862, 76876000),
-   (76888694, 76888872),
-   (76889053, 76889200),
-   (76890084, 76890194),
-   (76891405, 76891547),
-   (76907603, 76907843),
-   (76909587, 76909690),
-   (76912049, 76912143),
-   (76918870, 76919047),
-   (76920133, 76920267),
-   (76931720, 76931793),
-   (76937011, 76940085),
-   (76940430, 76940498),
-   (76944310, 76944420),
-   (76949312, 76949426),
-   (76952064, 76952192),
-   (76953070, 76953123),
-   (76954061, 76954117),
-   (76972607, 76972720),
-   (77041467, 77041702)]),
- ('ATRX',
-  76760357,
-  77041702,
-  '-',
-  [(76760357, 76764107),
-   (76776265, 76776394),
-   (76776880, 76776976),
-   (76777740, 76777866),
-   (76778729, 76778879),
-   (76812921, 76813116),
-   (76814139, 76814317),
-   (76829714, 76829823),
-   (76845303, 76845410),
-   (76849165, 76849319),
-   (76854879, 76855049),
-   (76855200, 76855289),
-   (76855902, 76856033),
-   (76872080, 76872198),
-   (76874273, 76874449),
-   (76875862, 76876000),
-   (76888694, 76888872),
-   (76889053, 76889200),
-   (76890084, 76890194),
-   (76891405, 76891547),
-   (76907603, 76907843),
-   (76909587, 76909690),
-   (76912049, 76912143),
-   (76918870, 76919047),
-   (76920133, 76920267),
-   (76931720, 76931793),
-   (76937011, 76940085),
-   (76940430, 76940498),
-   (76944310, 76944420),
-   (76952064, 76952192),
-   (76953070, 76953123),
-   (76954061, 76954117),
-   (76972607, 76972720),
-   (77041467, 77041702)])]</code></pre>
+  ([(76760357, 76764107),
+    (76776265, 76776394),
+    (76776880, 76776976),
+    (76777740, 76777866),
+    (76778729, 76778879),
+    (76812921, 76813116),
+    (76814139, 76814317),
+    (76829714, 76829823),
+    (76845303, 76845410),
+    (76849165, 76849319),
+    (76854879, 76855049),
+    (76855200, 76855289),
+    (76855902, 76856033),
+    (76872080, 76872198),
+    (76874273, 76874449),
+    (76875862, 76876000),
+    (76888694, 76888872),
+    (76889053, 76889200),
+    (76890084, 76890194),
+    (76891405, 76891547),
+    (76907603, 76907843),
+    (76909587, 76909690),
+    (76912049, 76912143),
+    (76918870, 76919047),
+    (76920133, 76920267),
+    (76931720, 76931793),
+    (76937011, 76940085),
+    (76940430, 76940498),
+    (76944310, 76944420),
+    (76949312, 76949426),
+    (76952064, 76952192),
+    (76953070, 76953123),
+    (76954061, 76954117),
+    (76972607, 76972720),
+    (77041467, 77041702)],
+   [(76760357, 76764107),
+    (76776265, 76776394),
+    (76776880, 76776976),
+    (76777740, 76777866),
+    (76778729, 76778879),
+    (76812921, 76813116),
+    (76814139, 76814317),
+    (76829714, 76829823),
+    (76845303, 76845410),
+    (76849165, 76849319),
+    (76854879, 76855049),
+    (76855200, 76855289),
+    (76855902, 76856033),
+    (76872080, 76872198),
+    (76874273, 76874449),
+    (76875862, 76876000),
+    (76888694, 76888872),
+    (76889053, 76889200),
+    (76890084, 76890194),
+    (76891405, 76891547),
+    (76907603, 76907843),
+    (76909587, 76909690),
+    (76912049, 76912143),
+    (76918870, 76919047),
+    (76920133, 76920267),
+    (76931720, 76931793),
+    (76937011, 76940085),
+    (76940430, 76940498),
+    (76944310, 76944420),
+    (76952064, 76952192),
+    (76953070, 76953123),
+    (76954061, 76954117),
+    (76972607, 76972720),
+    (77041467, 77041702)]))]</code></pre>
 </div>
 </div>
 
