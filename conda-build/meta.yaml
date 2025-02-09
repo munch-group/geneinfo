@@ -40,7 +40,7 @@ channels:    # your library dependencies
 
 dependencies:   # Keep this block with only these two packages
   - anaconda-client
-  - conda-build
+  - conda-build=24
   - conda-verify
   
 test:
