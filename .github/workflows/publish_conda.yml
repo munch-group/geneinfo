@@ -37,7 +37,8 @@ jobs:
             label=dev
           else
             label=main
-          echo "label=$label" >> $GITHUB_OUTPUT          
+          echo "label=$label" >> $GITHUB_OUTPUT
+          fi
       - name: Build and upload the conda packages
         uses: uibcdf/action-build-and-upload-conda-packages@v1.4.0
         with:
@@ -47,6 +48,6 @@ jobs:
           platform_osx-arm64: true
           platform_linux-64: true
           platform_osx-64: true
-          user: munch-group
           label: ${{ steps.set-label.outputs.label }}
+          user: munch-group
           token: ${{ secrets.ANACONDA_TOKEN }} 
