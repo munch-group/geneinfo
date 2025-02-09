@@ -1,12 +1,11 @@
-# gene_info_region { #geneinfo.gene_info_region }
+# gene_info_region { #geneinfo.information.gene_info_region }
 
 ```python
-geneinfo.gene_info_region(
+geneinfo.information.gene_info_region(
     chrom
     window_start
     window_end
-    assembly='GRCh38'
-    db='ncbiRefSeq'
+    assembly=None
 )
 ```
 
@@ -26,10 +25,6 @@ Displays HTML formatted information about genes in a chromosomal region.
 
 :   End of region (end base not included)
 
-<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'GRCh38\']{.parameter-default}</code>
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Genome assembly, by default 'GRCh38'
-
-<code>[**db**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'ncbiRefSeq\']{.parameter-default}</code>
-
-:   Database, by default 'ncbiRefSeq'
+:   Genome assembly, e.g. 'hg38' or 'rheMac10'

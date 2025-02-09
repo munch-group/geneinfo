@@ -1,7 +1,7 @@
 # ensembl_id { #geneinfo.information.ensembl_id }
 
 ```python
-geneinfo.information.ensembl_id(name, species='homo_sapiens')
+geneinfo.information.ensembl_id(name, species)
 ```
 
 Get ENSEMBL ID for some gene identifier
@@ -12,9 +12,9 @@ Get ENSEMBL ID for some gene identifier
 
 :   Gene identifier
 
-<code>[**species**]{.parameter-name} [:]{.parameter-annotation-sep} [ optional]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'homo_sapiens\']{.parameter-default}</code>
+<code>[**species**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
 
-:   Species, by default 'homo_sapiens'
+:   Species latin name, e.g. "Homo sapiens"
 
 ## Returns {.doc-section .doc-section-returns}
 

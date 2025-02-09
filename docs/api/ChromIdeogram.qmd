@@ -4,14 +4,18 @@
 geneinfo.plot.ChromIdeogram(
     self
     chrom
+    assembly
     axes_height_inches=2
     axes_width_inches=12
     hspace=0.3
     ylim=(0, 10)
     zooms=[]
+    zoom_font_size=None
+    zoom_height_ratio=1.0
+    zoom_effect_color='lightgray'
+    zoom_effect_alpha=0.3
     wspace=0.1
-    rel_font_height=0.05
-    assembly='hg38'
+    font_size=4
 )
 ```
 

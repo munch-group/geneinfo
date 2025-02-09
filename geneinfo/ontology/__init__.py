@@ -50,18 +50,20 @@ def _assert_entrez_email():
     if not Entrez.email:
         print("""Please provide your email for Entrez queries:
 
-import geneinfo as gi
+import geneinfo.information as gi
 gi.email("youremail@address.com)
 """, file=sys.stderr)
         return
 
+cache_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cache')
 
 def download_ncbi_associations(prt=sys.stdout):
 
-    if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
+    # if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
+    if not os.path.exists(cache_dir): os.makedirs(cache_dir)
 
-    if not os.path.exists('geneinfo_cache/gene2go'):
-        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/gene2go.gz',
+    if not os.path.exists(os.path.join(cache_dir, 'gene2go')):
+        process = subprocess.Popen(['wget', '-nv', '-O', f'{cache_dir}/gene2go.gz',
                                     'https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz'],
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE)
@@ -70,24 +72,24 @@ def download_ncbi_associations(prt=sys.stdout):
         print(stderr.decode(), file=prt)
         assert not process.returncode
 
-        process = subprocess.Popen(['gzip', '-f', '-d', 'geneinfo_cache/gene2go.gz'],
+        process = subprocess.Popen(['gzip', '-f', '-d', f'{cache_dir}/gene2go.gz'],
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
         print(stdout.decode(), file=prt)
         print(stderr.decode(), file=prt)    
         assert not process.returncode, process.returncode
-    return 'geneinfo_cache/gene2go'
+    return f'{cache_dir}/gene2go'
 
 
 def download_and_move_go_basic_obo(prt=sys.stdout):  
 
-    if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
+    if not os.path.exists(cache_dir): os.makedirs(cache_dir)
 
-    if not os.path.exists('geneinfo_cache/go-basic.obo'):
+    if not os.path.exists(f'{cache_dir}/go-basic.obo'):
         # obo_fname = download_go_basic_obo(prt=prt)
         # shutil.move('go-basic.obo', 'geneinfo_cache/go-basic.obo')
-        process = subprocess.Popen(['wget', '-nv', '-O', 'geneinfo_cache/go-basic.obo',
+        process = subprocess.Popen(['wget', '-nv', '-O', f'{cache_dir}/go-basic.obo',
                                     'https://purl.obolibrary.org/obo/go/go-basic.obo'],
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE)
@@ -96,7 +98,11 @@ def download_and_move_go_basic_obo(prt=sys.stdout):
         print(stderr.decode(), file=prt)
         assert not process.returncode
 
-    return 'geneinfo_cache/go-basic.obo'
+    return f'{cache_dir}/go-basic.obo'
+
+
+def all_protein_coding(taxid=9606):
+    return sorted(set(pd.read_csv(f'{cache_dir}/{taxid}_protein_genes.txt', sep='\t').Symbol))
 
 
 def download_data(prt=sys.stdout):  
@@ -152,9 +158,9 @@ def fetch_background_genes(taxid=9606):
     
     _assert_entrez_email()
 
-    if not os.path.exists('geneinfo_cache'): os.makedirs('geneinfo_cache')
+    if not os.path.exists(cache_dir): os.makedirs(cache_dir)
 
-    output_file_name = f'geneinfo_cache/{taxid}_protein_genes.txt'   
+    output_file_name = f'{cache_dir}/{taxid}_protein_genes.txt'   
     query = '[Taxonomy ID] AND alive[property] AND genetype protein coding[Properties]'     
     handle = Entrez.esearch(
         db="gene", 
@@ -166,7 +172,7 @@ def fetch_background_genes(taxid=9606):
     _fetch_ids_to_file(id_list, output_file_name)
 
     # write mappings between symbol and ncbi id
-    symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'
+    symbol2ncbi_file = f'{cache_dir}/{taxid}_symbol2ncbi.h5'
     df = pd.read_table(output_file_name)
     df = df.loc[:, ['GeneID', 'Symbol']]
     df.set_index('Symbol').GeneID.to_hdf(symbol2ncbi_file, key='symbol2ncbi')
@@ -175,7 +181,7 @@ def fetch_background_genes(taxid=9606):
 
 def _cached_symbol2ncbi(symbols, taxid=9606):
 
-    symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'
+    symbol2ncbi_file = f'{cache_dir}/{taxid}_symbol2ncbi.h5'
     symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'symbol2ncbi')
     try:    
         return symbol2ncbi.loc[symbols].tolist() 
@@ -202,7 +208,7 @@ def _cached_symbol2ncbi(symbols, taxid=9606):
 
 def _cached_ncbi2symbol(geneids, taxid=9606):
 
-    symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'
+    symbol2ncbi_file = f'{cache_dir}/{taxid}_symbol2ncbi.h5'
     symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'ncbi2symbol')
     try:
         return symbol2ncbi.loc[geneids].tolist()
@@ -245,7 +251,7 @@ def symbols_protein_coding(taxid:int=9606) -> list:
         List of gene symbols.
     """
     fetch_background_genes(taxid=taxid)
-    symbol2ncbi_file = f'geneinfo_cache/{taxid}_symbol2ncbi.h5'
+    symbol2ncbi_file = f'{cache_dir}/{taxid}_symbol2ncbi.h5'
     symbol2ncbi = pd.read_hdf(symbol2ncbi_file, 'ncbi2symbol')
     return symbol2ncbi.tolist()
 
@@ -277,9 +283,9 @@ def get_terms_for_go_regex(regex:str, taxid:int=9606, add_children:bool=False) -
 
         gene2go = download_ncbi_associations(prt=null)
 
-        objanno = Gene2GoReader("geneinfo_cache/gene2go", taxids=[taxid], prt=null)
+        objanno = Gene2GoReader(f"{cache_dir}/gene2go", taxids=[taxid], prt=null)
         go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
-        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", 
+        srchhelp = GoSearch(f"{cache_dir}/go-basic.obo", 
                             go2items=go2geneids, log=null)
 
         results_all = re.compile(r'({})'.format(regex), flags=re.IGNORECASE)
@@ -320,17 +326,17 @@ def get_genes_for_go_regex(regex:str, taxid:int=9606) -> pd.DataFrame:
         gos_all_with_children = get_terms_for_go_regex(
             regex, taxid=taxid, add_children=True)
 
-        objanno = Gene2GoReader("geneinfo_cache/gene2go", taxids=[taxid], prt=null)
+        objanno = Gene2GoReader(f"{cache_dir}/gene2go", taxids=[taxid], prt=null)
         go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
-        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", go2items=go2geneids, 
+        srchhelp = GoSearch(f"{cache_dir}/go-basic.obo", go2items=go2geneids, 
                             log=null)
         geneids = srchhelp.get_items(gos_all_with_children)
 
-        ncbi_tsv = f'geneinfo_cache/{taxid}_protein_genes.txt'
+        ncbi_tsv = f'{cache_dir}/{taxid}_protein_genes.txt'
         if not os.path.exists(ncbi_tsv):
             fetch_background_genes(taxid)
 
-        output_py = f'geneinfo_cache/{taxid}_protein_genes.py'
+        output_py = f'{cache_dir}/{taxid}_protein_genes.py'
         ncbi_tsv_to_py(ncbi_tsv, output_py, prt=null)
         
         protein_genes = importlib.import_module(
@@ -390,18 +396,18 @@ def get_genes_for_go_terms(terms, taxid=9606) -> pd.DataFrame:
 
         obo_fname = download_and_move_go_basic_obo(prt=null)
         gene2go = download_ncbi_associations(prt=null)
-        objanno = Gene2GoReader("geneinfo_cache/gene2go", taxids=[taxid], prt=null)
+        objanno = Gene2GoReader(f"{cache_dir}/gene2go", taxids=[taxid], prt=null)
         go2geneids = objanno.get_id2gos(namespace='*', go2geneids=True, prt=null)
-        srchhelp = GoSearch("geneinfo_cache/go-basic.obo", go2items=go2geneids, 
+        srchhelp = GoSearch(f"{cache_dir}/go-basic.obo", go2items=go2geneids, 
                             log=null)
 
         geneids = srchhelp.get_items(terms)  
 
-        ncbi_tsv = f'geneinfo_cache/{taxid}_protein_genes.txt' 
+        ncbi_tsv = f'{cache_dir}/{taxid}_protein_genes.txt' 
         if not os.path.exists(ncbi_tsv):
             fetch_background_genes(taxid)
 
-        output_py = f'geneinfo_cache/{taxid}_protein_genes.py'
+        output_py = f'{cache_dir}/{taxid}_protein_genes.py'
         ncbi_tsv_to_py(ncbi_tsv, output_py, prt=null)
 
     protein_genes = importlib.import_module(
@@ -485,7 +491,7 @@ def gene_annotation_table(taxid:int=9606) -> pd.DataFrame:
         Gene annotations for the specified taxonomy id.
     """
 
-    ncbi_tsv = f'geneinfo_cache/{taxid}_protein_genes.txt'
+    ncbi_tsv = f'{cache_dir}/{taxid}_protein_genes.txt'
     if not os.path.exists(ncbi_tsv):
         fetch_background_genes(taxid)
     df = pd.read_table(ncbi_tsv)
@@ -551,13 +557,13 @@ def show_go_dag_for_terms(terms:Union[list, pd.Series],
             optional_attrs=['relationship', 'def']
         else:
             optional_attrs=['def']
-        obodag = GODag("geneinfo_cache/go-basic.obo", optional_attrs=optional_attrs, 
+        obodag = GODag(f"{cache_dir}/go-basic.obo", optional_attrs=optional_attrs, 
                        prt=null)
 
         gosubdag = GoSubDag(terms, obodag, relationships=add_relationships) 
-        GoSubDagPlot(gosubdag).plt_dag('geneinfo_cache/plot.png')
+        GoSubDagPlot(gosubdag).plt_dag(f'{cache_dir}/plot.png')
 
-    return display(Image('geneinfo_cache/plot.png'))
+    return display(Image(f'{cache_dir}/plot.png'))
 
 # def show_go_dag_for_terms(terms, add_relationships=True):
 
@@ -653,7 +659,7 @@ def _write_go_hdf():
 
     with open(os.devnull, 'w') as null, redirect_stdout(null):
 
-        if not os.path.exists('geneinfo_cache/go-basic.h5'):
+        if not os.path.exists(f'{cache_dir}/go-basic.h5'):
 
             # Get http://geneontology.org/ontology/go-basic.obo
             obo_fname = download_and_move_go_basic_obo(prt=null)
@@ -663,11 +669,11 @@ def _write_go_hdf():
             file_gene2go = download_ncbi_associations(prt=null)
 
             rows = [(e.id, e.name, e.defn) 
-                    for e in OBOReader(obo_file='geneinfo_cache/go-basic.obo', 
+                    for e in OBOReader(obo_file=f'{cache_dir}/go-basic.obo', 
                                        optional_attrs=['def'])]
             df = pd.DataFrame().from_records(
                 rows, columns=['goterm', 'goname', 'description'])
-            df.to_hdf('geneinfo_cache/go-basic.h5', key='df', format='table', 
+            df.to_hdf(f'{cache_dir}/go-basic.h5', key='df', format='table', 
                       data_columns=['goterm', 'goname'])
 
 
@@ -686,7 +692,7 @@ def go_term2name(term:str) -> str:
         GO term name.
     """
     _write_go_hdf()
-    with pd.HDFStore('geneinfo_cache/go-basic.h5', 'r') as store:
+    with pd.HDFStore(f'{cache_dir}/go-basic.h5', 'r') as store:
         entry = store.select("df", "goterm == %r" % term).iloc[0]
 
     return entry.goterm
@@ -707,7 +713,7 @@ def go_name2term(name:str) -> str:
         GO term.
     """
     _write_go_hdf()
-    with pd.HDFStore('geneinfo_cache/go-basic.h5', 'r') as store:
+    with pd.HDFStore(f'{cache_dir}/go-basic.h5', 'r') as store:
         entry = store.select("df", "goname == %r" % name.lower()).iloc[0]
     return entry.goterm
 
@@ -730,7 +736,7 @@ def go_info(terms:Union[str,List[str]]) -> None:
 
     _write_go_hdf()
 
-    df = pd.read_hdf('geneinfo_cache/go-basic.h5')
+    df = pd.read_hdf(f'{cache_dir}/go-basic.h5')
     for term in terms:
         entry = df.loc[df.goterm == term].iloc[0]
         desc = re.search(r'"([^"]+)"', entry.description).group(1)
@@ -901,7 +907,7 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None,
     
     taxid = _tidy_taxid(taxid)
 
-    ncbi_tsv = f'geneinfo_cache/{taxid}_protein_genes.txt'
+    ncbi_tsv = f'{cache_dir}/{taxid}_protein_genes.txt'
     if not os.path.exists(ncbi_tsv):
         fetch_background_genes(taxid)
 
@@ -911,7 +917,7 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None,
 
         file_gene2go = download_ncbi_associations(prt=null)
 
-        obodag = GODag("geneinfo_cache/go-basic.obo", 
+        obodag = GODag(f"{cache_dir}/go-basic.obo", 
                        optional_attrs=['relationship', 'def'], prt=null)
 
         # read NCBI's gene2go. Store annotations in a list of namedtuples
@@ -922,7 +928,7 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None,
 
         # limit go dag to a sub graph including only specified terms and their children
         if terms is not None:
-            sub_obo_name = 'geneinfo_cache/' + \
+            sub_obo_name = f'{cache_dir}/' + \
                 str(hash(''.join(sorted(terms)).encode())) + '.obo'  
             wrsobo = WrSubObo(obo_fname, optional_attrs=['relationship', 'def'])
             wrsobo.wrobo(sub_obo_name, terms)    
@@ -930,7 +936,7 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None,
                            optional_attrs=['relationship', 'def'], prt=null)
 
         # load background gene set of all genes
-        background_genes_file = f'geneinfo_cache/{taxid}_protein_genes.txt'
+        background_genes_file = f'{cache_dir}/{taxid}_protein_genes.txt'
         if not os.path.exists(background_genes_file):
             fetch_background_genes(taxid)
 
@@ -957,11 +963,12 @@ def go_enrichment(gene_list:list, taxid:int=9606, background_chrom:str=None,
             df.loc[df.chromosome == background_chrom].to_csv(
                 background_genes_file, sep='\t', index=False)
 
-        output_py = f'geneinfo_cache/{taxid}_background.py'
+        output_py = f'{cache_dir}/{taxid}_background.py'
         ncbi_tsv_to_py(background_genes_file, output_py, prt=null)
 
-        background_genes_name = output_py.replace('.py', '').replace('/', '.')
-        background_genes = importlib.import_module(background_genes_name)
+        background_genes = importlib.import_module(f'geneinfo.cache.{taxid}_background')
+        # background_genes_name = output_py.replace('.py', '').replace('/', '.')
+        # background_genes = importlib.import_module(background_genes_name, 'geneinfo.cache')
         importlib.reload(background_genes)
         GeneID2nt = background_genes.GENEID2NT
 
@@ -1030,5 +1037,5 @@ def show_go_dag_enrichment_results(
     if type(results) is pd.core.series.Series:
         results = results.tolist()
     with open(os.devnull, 'w') as null, redirect_stdout(null):
-        plot_results('geneinfo_cache/plot.png', results)
-    return display(Image('geneinfo_cache/plot.png'))
+        plot_results(f'{cache_dir}/plot.png', results)
+    return display(Image(f'{cache_dir}/plot.png'))

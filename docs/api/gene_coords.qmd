@@ -1,0 +1,23 @@
+# gene_coords { #geneinfo.information.gene_coords }
+
+```python
+geneinfo.information.gene_coords(names, assembly)
+```
+
+Get gene coordinates for a gene or list of genes.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**names**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[str](`str`), [Sequence](`collections.abc.Sequence`)\[[str](`str`)\]\]]{.parameter-annotation}</code>
+
+:   Gene name or list of gene names
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Assembly identifier, e.g. 'hg38' or 'rheMac10'
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[List](`typing.List`)\[[Tuple](`typing.Tuple`)\[[str](`str`), [int](`int`), [int](`int`), [str](`str`)\]\]]{.parameter-annotation}</code>
+
+:   List of tuples with chromosome, start, end, and gene name.

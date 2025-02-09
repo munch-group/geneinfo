@@ -3,12 +3,12 @@
 ```python
 geneinfo.plot.GenomeIdeogram(
     self
+    assembly
     axes_height_inches=0.5
     axes_width_inches=12
     hspace=0
     ylim=(0, 10)
-    rel_font_height=0.07
-    assembly='hg38'
+    font_size=10
 )
 ```
 
@@ -100,11 +100,14 @@ geneinfo.plot.GenomeIdeogram.add_labels(
     annot
     base=None
     min_height=None
+    zoom_base=None
+    zoom_min_height=None
     bold=[]
     italic=[]
     colored=[]
     framed=[]
     filled=[]
+    highlight_color='deeppink'
     pad=0
     **kwargs
 )
@@ -146,9 +149,21 @@ Add text labels to the chromosome ideograms.
 
 :   List of genes to highlight with filled label, by default []
 
+<code>[**highlight_color**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [\'deeppink\']{.parameter-default}</code>
+
+:   Color used for highlighted genes, by default 'deeppink'
+
 <code>[**pad**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0]{.parameter-default}</code>
 
 :   Text padding, by default 0
+
+<code>[**zoom_base**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Y coordinate for lower end of vertical line on zoom axes, by default None.  If None, the default value of font_size.
+
+<code>[**zoom_min_height**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Minimum length of vertical line in y coordinate on zoom axes, by default None.  If None, the default is the value of min_height..
 
 ### add_legend { #geneinfo.plot.GenomeIdeogram.add_legend }
 
@@ -333,7 +348,7 @@ geneinfo.plot.GenomeIdeogram.draw_text(
     y_pos
     text
     textcolor
-    textsize
+    fontsize
     linecolor
     ax=None
     y_line_bottom=0
@@ -446,11 +461,11 @@ Map a plotting function like seaborn.scatterplot to each ideogram panel (axis).
 
 :   Name of data frame column holding chromosome names, by default 'chrom'
 
-<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
 
 :   Name of data frame column holding x coordinates, by default 'x'
 
-<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
 
 :   Name of data frame column holding y coordinates, by default 'y'
 
@@ -491,11 +506,11 @@ panel (axis).
 
 :   Name of data frame column holding chromosome names, by default  'chrom'
 
-<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
 
 :   Name of data frame column holding x coordinates, by default 'x'
 
-<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
 
 :   Name of data frame column holding y coordinates, by default 'y'
 

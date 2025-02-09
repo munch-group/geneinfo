@@ -1,20 +1,16 @@
-# gene_info { #geneinfo.gene_info }
+# gene_info { #geneinfo.information.gene_info }
 
 ```python
-geneinfo.gene_info(query, species='human', scopes='hgnc')
+geneinfo.information.gene_info(query, scopes='hgnc')
 ```
 
-Displays HTML formatted information about one or more genes.
+Displays HTML formatted information about one or more human genes.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
 <code>[**query**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[str](`str`), [List](`typing.List`)\[[str](`str`)\]\]]{.parameter-annotation}</code>
 
 :   Gene symbol or list of gene symbols
-
-<code>[**species**]{.parameter-name} [:]{.parameter-annotation-sep} [ optional]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'human\']{.parameter-default}</code>
-
-:   Species, by default 'human'
 
 <code>[**scopes**]{.parameter-name} [:]{.parameter-annotation-sep} [ optional]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'hgnc\']{.parameter-default}</code>
 

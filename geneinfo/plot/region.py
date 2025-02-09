@@ -9,11 +9,10 @@ import matplotlib.axes
 import matplotlib.pyplot as plt
 
 from ..intervals import *
-from ..information import get_genes_region
+from ..information import gene_coords_region
 
-CACHE = dict()
 
-def _plot_gene(name, txstart, txend, strand, exons, offset, line_width, 
+def _plot_gene(name, txstart, txend, exons, offset, line_width, 
                min_visible_width, font_size, ax, highlight=False, clip_on=True):
 
     color='black'
@@ -21,7 +20,6 @@ def _plot_gene(name, txstart, txend, strand, exons, offset, line_width,
     line = ax.plot([txstart, txend], [offset, offset], color=color, 
                    linewidth=line_width/5, alpha=0.5)
     line[0].set_solid_capstyle('butt')
-
     for start, end in exons:
         end = max(start+min_visible_width, end)
         line = ax.plot([start, end], [offset, offset], linewidth=line_width, 
@@ -44,7 +42,6 @@ def _plot_gene(name, txstart, txend, strand, exons, offset, line_width,
 
 
 def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=[], 
-              db:str='ncbiRefSeq', collapse_splice_var:bool=True, 
               hard_limits:bool=False, exact_exons:bool=False, figsize:tuple=None, 
               aspect:float=1, despine:bool=False, clip_on:bool=True, 
               gene_density:float=60, font_size:int=None, return_axes:int=1
@@ -66,11 +63,6 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
     highlight : 
         List or dictionary of genes to highlight on gene plot (see Examples), 
         by default []
-    db : 
-        Database to search, by default 'ncbiRefSeq'
-    collapse_splice_var : 
-        Whether to collapse splice variants into a single string of exons, 
-        by default True
     hard_limits : 
         Whether to truncate plot in the middle of a gene, by default False so 
         that genes are fully plotted.
@@ -104,7 +96,7 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
     Examples
     --------
     ```python
-    import geneinfo as gi
+    import geneinfo.information as gi
     # Set email for Entrez queries
     gi.email('your@email.com')
 
@@ -127,7 +119,7 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
                                'BRCA1': {'color': 'red'}})
     ax.scatter(chrom_coordinates, values)
 
-    # Multipel axes for plotting over gene plot
+    # Multiple axes for plotting over gene plot
     axes = gene_plot('chr1', 1000000, 2000000, 'hg38', return_axes=2)
     ax1, ax2 = axes
     ax1.scatter(chrom_coordinates, values1)
@@ -141,7 +133,6 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
     ```
 
     """
-    global CACHE
 
     fig, axes = plt.subplots(return_axes+1, 1, figsize=figsize, sharex='col', 
                              sharey='row', 
@@ -149,21 +140,15 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
                                           [1/return_axes]*return_axes + [aspect]})
     plt.subplots_adjust(wspace=0, hspace=0.15)
 
-    if (chrom, start, end, assembly) in CACHE:
-        genes = CACHE[(chrom, start, end, assembly)]
-    else:
-        genes = list(get_genes_region(chrom, start, end, assembly, db))
-        CACHE[(chrom, start, end, assembly)] = genes
+    genes = gene_coords_region(chrom, start, end, assembly)
 
-    if collapse_splice_var:
-        d = {}
-        for name, txstart, txend, strand, exons in genes:
-            if name not in d:
-                d[name] = [name, txstart, txend, strand, set(exons)]
-            else:
-                d[name][-1].update(exons)
-        genes = d.values()
-
+    for i, (name, chrom, txstart, txend, transcripts) in enumerate(genes):
+        if len(transcripts) > 1:
+            exons = [exon for transcript in transcripts for exon in transcript]
+            exons = collapse(sorted(exons))
+        else:
+            exons = transcripts[0]
+        genes[i] = (name, chrom, txstart, txend, exons)
 
     line_width = max(6, int(50 / log10(end - start)))-2
     if font_size is None:
@@ -173,10 +158,10 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
         min_visible_exon_width = 0
     else:
         min_visible_exon_width = (end - start) / 1000
-        
-    plotted_intervals = defaultdict(list)
-    for name, txstart, txend, strand, exons in genes:
 
+    plotted_intervals = defaultdict(list)
+    for name, chrom, txstart, txend, exons in genes:
+        # exons = [e for t in exons for e in t]
         gene_interval = [txstart-label_width, txend]
         max_gene_rows = 1000
         for offset in range(1, max_gene_rows, 1):
@@ -201,7 +186,7 @@ def gene_plot(chrom:str, start:str, end:str, assembly:str, highlight:List[Dict]=
         else:
             hl = None
 
-        _plot_gene(name, txstart, txend, strand, exons, 
+        _plot_gene(name, txstart, txend, exons, 
                   offset, line_width, min_visible_exon_width, font_size, 
                   highlight=hl,
                   ax=axes[-1], clip_on=clip_on)

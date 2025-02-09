@@ -1,3 +1,4 @@
+python
 jupyter
 ipython
 matplotlib>=3.0
@@ -6,5 +7,7 @@ numpy>=1.1
 requests
 biopython
 goatools>=1.2
-pydot
+pytables
 wget
+pydot
+statsmodels

@@ -1,0 +1,41 @@
+# gene_coords_region { #geneinfo.information.gene_coords_region }
+
+```python
+geneinfo.information.gene_coords_region(
+    chrom=None
+    start=None
+    end=None
+    assembly=None
+    as_dataframe=False
+)
+```
+
+Gets gene structure information for genes in a chromosomal region.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Chromosome identifier
+
+<code>[**start**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Start of region
+
+<code>[**end**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   End of region (end base not included)
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Genome assembly as USCS genome identifier. E.g. hg38 or rheMac10
+
+<code>[**as_dataframe**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Return dataframe instead of list of tuples, by default False
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+
+:   List of gene information. Each gene is a tuple with the following elements: - gene name - gene start - gene end - list of list of exons (start, end) for a transcript

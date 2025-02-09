@@ -7,8 +7,6 @@ geneinfo.plot.gene_plot(
     end
     assembly
     highlight=[]
-    db='ncbiRefSeq'
-    collapse_splice_var=True
     hard_limits=False
     exact_exons=False
     figsize=None
@@ -45,14 +43,6 @@ plotting along the same chromosome coordinates.
 <code>[**highlight**]{.parameter-name} [:]{.parameter-annotation-sep} [[List](`typing.List`)\[[Dict](`typing.Dict`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [\[\]]{.parameter-default}</code>
 
 :   List or dictionary of genes to highlight on gene plot (see Examples),  by default []
-
-<code>[**db**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'ncbiRefSeq\']{.parameter-default}</code>
-
-:   Database to search, by default 'ncbiRefSeq'
-
-<code>[**collapse_splice_var**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
-
-:   Whether to collapse splice variants into a single string of exons,  by default True
 
 <code>[**hard_limits**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
 
@@ -99,7 +89,7 @@ plotting along the same chromosome coordinates.
 ## Examples {.doc-section .doc-section-examples}
 
 ```python
-import geneinfo as gi
+import geneinfo.information as gi
 # Set email for Entrez queries
 gi.email('your@email.com')
 
@@ -122,7 +112,7 @@ ax = gene_plot('chr1', 1000000, 2000000, 'hg38',
                            'BRCA1': {'color': 'red'}})
 ax.scatter(chrom_coordinates, values)
 
-# Multipel axes for plotting over gene plot
+# Multiple axes for plotting over gene plot
 axes = gene_plot('chr1', 1000000, 2000000, 'hg38', return_axes=2)
 ax1, ax2 = axes
 ax1.scatter(chrom_coordinates, values1)

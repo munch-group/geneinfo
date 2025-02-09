@@ -1,4 +1,4 @@
-import os, glob
+import os, glob, sys
 import pandas as pd
 from pandas.api.types import is_object_dtype
 import numpy as np
@@ -19,6 +19,8 @@ import warnings
 from itertools import chain
 import shelve
 from pathlib import Path
+from collections import UserList
+from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from .intervals import *
 
@@ -90,8 +92,20 @@ def dummy_segments():
         segments.extend([(chrom, *t) for t in zip(p[0::2], p[1::2])])
     return segments
     
+use_cache = True
+verbose_retrieval = False
 
 CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
+
+class cache_disabled():
+    def __enter__(self):
+        global use_cache
+        use_cache = False
+
+    def __exit__(self, type, value, traceback):
+        global disable_cache
+        use_cache = True
+
 
 def shelve_it() -> Callable:
     """
@@ -105,10 +119,14 @@ def shelve_it() -> Callable:
     if not os.path.exists(CACHE_DIR):
         os.makedirs(CACHE_DIR)
     def decorator(func):
+        if not use_cache:
+            return func
         def new_func(*args, **kwargs):
             with shelve.open(os.path.join(CACHE_DIR, func.__name__)) as cache:
-                key = '*'.join(map(str, args)) + '///' + '**'.join(map(str, kwargs))
+                key = '*'.join(map(str, args)) + '///' + '**'.join([f'{k}={v}' for k, v in kwargs.items()])
                 if key not in cache:
+                    if verbose_retrieval:
+                        print(f' {func.__name__} retrieving ...', file=sys.stderr)
                     cache[key] = func(*args, **kwargs)
                 return cache[key]
         return new_func
@@ -167,9 +185,8 @@ def horizon(df, y=None, ax=None,
                 beginzero=True, 
                 offset=0,
                 height=None,
-                colors = ['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue',
-                            '#F2DE9A', '#DA8630', '#972428', 'darkred',
-                            '#D3D3D3'],
+                palette='iker',
+                colors = None,
                 **kwargs):
                 # colours = ['#314E9F', '#36AAA8', '#D7E2D4'] + ['midnightblue'] + \
                 #           ['#F5DE90', '#F5DE90', '#A51023'] + ['darkred'] + ['whitesmoke']):
@@ -180,6 +197,20 @@ def horizon(df, y=None, ax=None,
     Horizon bar plot made allowing multiple chromosomes and multiple samples.
     """
     
+    palettes = dict(iker = ['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue',
+                            '#F2DE9A', '#DA8630', '#972428', 'darkred',
+                             '#D3D3D3'],
+                    bluered = sns.color_palette("Blues", 3) + ['midnightblue'] + \
+                              sns.color_palette("Reds", 3) + ['darkred'] + \
+                              ['lightgrey'],
+                          )                          
+
+    if colors is None:
+        colors = palettes[palette.replace('_r', '')]
+
+    if palette.endswith('_r'):
+        colors = colors[3:6][::-1] + colors[0:3][::-1] + colors[6:]
+
     # set cut if not set
     if cut is None:
         cut = np.max([np.max(df[y]), np.max(-df[y])]) / 3
@@ -215,7 +246,6 @@ def horizon(df, y=None, ax=None,
                 scale = height/(ymax-ymin)
 
             for col_name, color in zip(col_names, colors):
-                # plt.setp(fig.texts, text="") # hack to make y facet labels align...
                 ax.fill_between(
                     df2[x], 
                     df2[col_name]*scale+offset, 
@@ -235,8 +265,7 @@ def map_interval(chrom, start, end, strand, map_from, map_to, species='homo_sapi
     response = requests.get(api_url, params=params)
     if not response.ok:
         response.raise_for_status()
-    #null = '' # json may include 'null' variables 
-    return response.json()#eval(response.content.decode())
+    return response.json()
 
 
 class nice:
@@ -280,33 +309,22 @@ def tabulate_genes(words, ncols=None):
         print(''.join(line))
 
 
-# from collections import UserList, UserString
-
-# class Gene(str):
-
-#     def __init__(self, name):
-#         self.name = name
-#         self.aliases = [x.strip() for x in name.split('/')]
-
-#     def add_aliases(self):
-#         ...
-    
-#     def __eq__(self, other):
-#         return bool(set(self.aliases).intersection(set(other.aliases)))
-
-
-# class GeneList(UserList):
-
-#     def __getitem__(self, i):
-        # return Gene(self.data[i])
-    
-
-class GeneList(list):
+class GeneList(UserList):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __repr__(self):
+    # TODO: add alias mapping to GeneList
+    def download_gene_aliases():
+        """
+        Download mapping from any alias to the cannonical hgcn name for use in set operations.
+        """
+        ...
+
+    def _tabulate(self):
+        """
+        Turn list into square'ish matrix
+        """
         n = len(self)
         col_width = max(map(len, self)) + 1
         ncols = min(max(100//col_width, 1+sqrt(n/col_width)), 150//col_width)
@@ -314,6 +332,10 @@ class GeneList(list):
         rows = []
         for r in range(0, n, nrows):
             rows.append(self[r:r+nrows])
+        return rows, col_width
+        
+    def __repr__(self):
+        rows, col_width = self._tabulate()
         repr = []
         for row in list(zip_longest(*rows, fillvalue='')):
             line = []
@@ -322,28 +344,65 @@ class GeneList(list):
             repr.append(''.join(line))
         return('\n'.join(repr))
 
-    def add_aliases(self):
-        ...
+    def _repr_html_(self):
+        rows, col_width = self._tabulate()
+        style = 'style="background: transparent!important; line-height: 10px!important;text-align: left!important"'
+        table = [f'<table {style}>']
+        for row in list(zip_longest(*rows, fillvalue='')):
+            table.append(f'<tr {style}>')
+            for gene in row:
+                if hasattr(self, '_highlight') and gene in self._highlight:
+                    table.append(f'<td {style}><b>{gene}</b></td>')
+                else:
+                    table.append(f'<td {style}>{gene}</td>')
+            table.append('</tr>')
+        table.append('</table>')
+        if hasattr(self, '_highlight'):
+            delattr(self, '_highlight')        
+        return '\n'.join(table)
 
+    def expand_amplicon_abbrev(self):
+
+        new_list = []
+        for gene_name in self:
+            abbrev = gene_name.rsplit('_', 1)[0]
+            abbrev = abbrev.replace('-', '_')
+            if abbrev in AMPL_ABBREV_MAP.keys():
+                new_list.extend(AMPL_ABBREV_MAP[abbrev])
+            else:
+                new_list.append(gene_name)
+
+        # new_list = []
+        # for gene_name in old_list:
+        #     if gene_name.startswith('amplicon') and '/' in gene_name:
+        #         prefix, *variants = gene_name.split('/')
+        #         first_amplicon = re.split(r'[_-]+', prefix, 2)[-1]
+        #         new_list.append(first_amplicon)
+        #         for var in variants:
+        #             ampl_name = first_amplicon[:-1] + var
+        #             new_list.append(ampl_name)
+        #     else:
+        #         new_list.append(gene_name)
+
+        self.data = sorted(set(new_list))
+    
     def __str__(self):
         return repr(self)
 
+    def __lshift__(self, other):
+        setattr(self, '_highlight', list(other))
+        return self
+        
+    def __or__(self, other):
+        return GeneList(sorted(set(self.data + other.data)))
 
-# def read_google_sheet():
-#     SHEET_ID = '1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk'
-#     SHEET_NAME = 'Sheet1'
-#     url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
-#     df = pd.read_csv(url, header=1, low_memory=False)
-#     return df.loc[:, [not x.startswith('Unnamed') for x in df.columns]]
-    
-# def gene_list_names():
-#     df = read_google_sheet()
-#     return sorted(df.columns.tolist())
+    def __and__(self, other):
+        return GeneList(sorted(set(self.data).intersection(set(other.data))))
 
-# def gene_list(name):
-#     df = read_google_sheet()
-#     sr = df[name]
-#     return sr[~sr.isnull()]
+    def __xor__(self, other):
+        inter = set(self.data).intersection(set(other.data))
+        union = set(self.data + other.data)
+        return GeneList(sorted(union.difference(inter)))
 
 AMPL_ABBREV_MAP = {    
  'amplicon_chrX_CPXCR1': ['CPXCR1'],
@@ -413,47 +472,16 @@ class GeneListCollection(object):
 
     def all_genes(self):
         names = []
-        for label in lists:
-            names.extend(lists.get(label))
+        for label in self.names:
+            names.extend(self.get(label))
         return sorted(set(names))
-    
-    def cache_coord(self):
-        for label in lists:
-            names = lists.get(label)
-            if not names or len(names) > 3000:
-                names = names[:3000]
-            gi.gene_coord(names, assembly='hg38', pos_list=True)
-    
-    def expand_amplicon_abbrev(self, old_list):
-
-        new_list = []
-        for gene_name in old_list:
-            abbrev = gene_name.rsplit('_', 1)[0]
-            if abbrev in AMPL_ABBREV_MAP:
-                new_list.extend(AMPL_ABBREV_MAP[abbrev])
-            else:
-                new_list.append(gene_name)
-
-        # new_list = []
-        # for gene_name in old_list:
-        #     if gene_name.startswith('amplicon') and '/' in gene_name:
-        #         prefix, *variants = gene_name.split('/')
-        #         first_amplicon = re.split(r'[_-]+', prefix, 2)[-1]
-        #         new_list.append(first_amplicon)
-        #         for var in variants:
-        #             ampl_name = first_amplicon[:-1] + var
-        #             new_list.append(ampl_name)
-        #     else:
-        #         new_list.append(gene_name)
-
-        new_list = sorted(set(new_list))
-        return new_list
     
     def get(self, name):
         sr = self.df[name]
         sr = self.df.loc[~sr.isnull(), name]
-        ampl_expanded = sorted(self.expand_amplicon_abbrev(sr.tolist()))
-        return GeneList(ampl_expanded)
+        # lst = sorted(self.expand_amplicon_abbrev(sr.tolist()))
+        lst = sr.tolist()
+        return GeneList(lst)
 
     def _repr_html_(self):
         out = ['| label | description |', '|:---|:---|']
@@ -470,15 +498,6 @@ class GeneListCollection(object):
   
     def __iter__(self):
          yield from self.names
-
-# def add_lowess(x, y, ax=None, color=None, is_sorted=True, frac=0.005, it=0, lowess_kwargs={}, **kwargs):
-#     "Add a lowess curve to the plot"
-#     if ax is None:
-#         ax = plt.gca() 
-#     filtered = lowess(y, x, is_sorted=is_sorted, frac=frac, it=it, **lowess_kwargs)
-#     ax.plot(filtered[:,0], filtered[:,1], **kwargs)
-
-from statsmodels.nonparametric.smoothers_lowess import lowess
 
 def fit_lowess(df, x='x', y='y', frac=0.005, it=0, **kwargs):
     return df.groupby('chrom').apply(lambda _df: _fit_lowess(_df, x=x, y=y, frac=frac, it=it, **kwargs)).reset_index()

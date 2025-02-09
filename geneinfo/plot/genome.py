@@ -8,7 +8,7 @@ from typing import Any, TypeVar, List, Tuple, Dict, Union, Iterable
 
 from ..intervals import *
 from ..utils import horizon
-from ..information import gene_coord
+from ..information import gene_coords, chromosome_lengths, centromere_coords
 
 import math
 from math import isclose, floor, log10
@@ -22,6 +22,7 @@ import matplotlib
 import matplotlib.axes
 import matplotlib.pyplot as plt
 import matplotlib.patches
+import matplotlib.colors
 from matplotlib import patches
 from matplotlib.artist import Artist
 import matplotlib.gridspec as gridspec
@@ -35,7 +36,7 @@ import seaborn as sns
 from matplotlib.text import OffsetFrom
 import textwrap
 
-from ..utils import chrom_lengths, centromeres
+# from ..utils import chrom_lengths, centromeres
 
 class Point:
     def __init__(self, x, y):
@@ -53,45 +54,54 @@ class Polygon:
         for point in self.points:
             point.y += nudge
 
+def _get_chrom_info(assembly):
+    lengths = {c: l for c, l in chromosome_lengths(assembly)}
+    centromeres = {c: (s, e) for c, s, e in centromere_coords(assembly)}
+    return lengths, centromeres
 
-def _get_chrom_info(species):
 
-    name = species.lower().replace(' ', '_')
+# def _get_chrom_info(species):
 
-    server = "https://rest.ensembl.org"
-    # ext = "/info/assembly/homo_sapiens?bands=1?"
-    # ext = "/info/assembly/papio_anubis?bands=1?"
-    ext = f"/info/assembly/{name}?bands=1?"
+#     name = species.lower().replace(' ', '_')
+
+#     server = "https://rest.ensembl.org"
+#     # ext = "/info/assembly/homo_sapiens?bands=1?"
+#     # ext = "/info/assembly/papio_anubis?bands=1?"
+#     ext = f"/info/assembly/{name}?bands=1?"
     
-    r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+#     r = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
     
-    if not r.ok:
-        r.raise_for_status()
+#     if not r.ok:
+#         r.raise_for_status()
     
-    data = r.json()
-    assembly_versions = data['coord_system_versions']
-    centromeres = {}
-    chrom_lengths = {}
+#     data = r.json()
+#     assembly_versions = data['coord_system_versions']
+#     centromeres = {}
+#     chrom_lengths = {}
     
-    assembly_coord_system = data['default_coord_system_version']
-    karyotype = data['karyotype']
-    assembly_accession = data['assembly_accession']
+#     assembly_coord_system = data['default_coord_system_version']
+#     karyotype = data['karyotype']
+#     assembly_accession = data['assembly_accession']
         
-    for d in data['top_level_region']:
-        if d['coord_system'] not in ['chromosome', 'primary_assembly']:
-            continue
-        if d['name'] not in karyotype:# .startswith('Un') or d['length'] < 1_000_000:
-            continue
-        if d['name'] == 'MT':# .startswith('Un') or d['length'] < 1_000_000:
-            continue
-        chrom_lengths['chr'+d['name']] = d['length']
+#     for d in data['top_level_region']:
+#         if d['coord_system'] not in ['chromosome', 'primary_assembly']:
+#             continue
+#         if d['name'] not in karyotype:# .startswith('Un') or d['length'] < 1_000_000:
+#             continue
+#         if d['name'] == 'MT':# .startswith('Un') or d['length'] < 1_000_000:
+#             continue
+#         chrom_lengths['chr'+d['name']] = d['length']
     
         
-        if 'bands' in d:
-            for b in d['bands']:
-                if b['stain'] == 'acen':
-                    centromeres['chr'+b['seq_region_name']] = (b['start'],  b['end'])
-    return assembly_coord_system, chrom_lengths, centromeres
+#         if 'bands' in d:
+#             for b in d['bands']:
+#                 if b['stain'] == 'acen':
+#                     centromeres['chr'+b['seq_region_name']] = (b['start'],  b['end'])
+
+
+#     return assembly_coord_system, chrom_lengths, centromeres
+
+
 
 
 class GenomeIdeogram:
@@ -163,15 +173,18 @@ class GenomeIdeogram:
         'chrY':    (10300000, 10400000)}                     
 
     
-    def __init__(self, axes_height_inches:float=0.5, axes_width_inches:float=12, 
-                 hspace:float=0, ylim:tuple=(0, 10), rel_font_height:float=0.07, 
-                 species:str='Homo sapiens', assembly:str=None):
+    def __init__(self, assembly:str, axes_height_inches:float=0.5, axes_width_inches:float=12, 
+                 hspace:float=0, ylim:tuple=(0, 10), font_size:float=10, 
+                #  species:str='Homo sapiens', 
+                 ):
         """
         Initialize canvas for plotting ideograms of chromosomes in a genome
         assembly.
 
         Parameters
         ----------
+        assembly : 
+            Genome assembly as ucsc identifier (E.g. hg39, rheMac10).
         axes_height_inches : 
             Height of panel for each chromosome ideogram, by default 0.5
         axes_width_inches : 
@@ -180,16 +193,14 @@ class GenomeIdeogram:
             Space between additional axes, by default 0
         ylim : 
             Value range on y-axis for placing elements, by default (0, 10)
-        rel_font_height : 
-            Font size relative to panel height (axes_height_inches), 
-            by default 0.07
-        species : 
-            Species latin name, by default panel 'Homo sapiens'.
-        human_assembly : 
-            Human genome assembly, by default most recent. Other options are 'hg38' and 'hg19'.
+        font_size : 
+            Font size as percentage of panel height (axes_height_inches), 
+            by default 4
+        # species : 
+        #     Species latin name, by default panel 'Homo sapiens'.
         """
         
-        self.species = species
+        # self.species = species
         self.assembly = assembly
         self.ideogram_base = None
         self.ideogram_height = None
@@ -197,23 +208,36 @@ class GenomeIdeogram:
         self.legend_handles = []
         self.zooms = []
         self.zoom_axes = []
+        self.zoom_height_ratio = 1.0
+        self.zoom_effect_color = 'lightgray'
+        self.zoom_effect_alpha = 0.3
         self.end_padding = 300000
 
-        if self.assembly is not None:
-            self.chrom_lengths = self._chrom_lengths[assembly]
-            self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
-            self.chr_sizes = [self.chrom_lengths[c] for c in self.chr_names]
-            self.centromeres = self._centromeres
-        else:
-            self.coord_system, self.chrom_lengths, self.centromeres = _get_chrom_info(self.species)
-            def sort_key(name):
-                _, num, alp = re.match(r'(chr)?(\d*)(.*)', name).groups()
-                if not num:
-                    num = '999'
-                return int(num), alp
+        # if self.assembly is not None and assembly in self._chrom_lengths:
+        #     self.chrom_lengths = self._chrom_lengths[assembly]
+        #     self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
+        #     self.chr_sizes = [self.chrom_lengths[c] for c in self.chr_names]
+        #     self.centromeres = self._centromeres
+        # else:
+        #     self.coord_system, self.chrom_lengths, self.centromeres = _get_chrom_info(self.species)
+        #     def sort_key(name):
+        #         _, num, alp = re.match(r'(chr)?(\d*)(.*)', name).groups()
+        #         if not num:
+        #             num = '999'
+        #         return int(num), alp
                 
-            self.chr_names = sorted(self.chrom_lengths.keys(), key=sort_key)
-            self.chr_sizes = [self.chrom_lengths[c] for c in self.chr_names]
+        #     self.chr_names = sorted(self.chrom_lengths.keys(), key=sort_key)
+        #     self.chr_sizes = [self.chrom_lengths[c] for c in self.chr_names]
+
+        self.chrom_lengths, self.centromeres = _get_chrom_info(self.assembly)
+        def sort_key(name):
+            _, num, alp = re.match(r'(chr)?(\d*)(.*)', name).groups()
+            if not num:
+                num = '999'
+            return int(num), alp
+            
+        self.chr_names = sorted(self.chrom_lengths.keys(), key=sort_key)
+        self.chr_sizes = [self.chrom_lengths[c] for c in self.chr_names]
 
         # self.chr_names = [f'chr{x}' for x in list(range(1, 23))+['X', 'Y']]
         # self.chr_sizes = [self.chrom_lengths[assembly][chrom] 
@@ -228,7 +252,9 @@ class GenomeIdeogram:
         figsize = (fig_width_inches, fig_height_inches)
         point_size = 1/72
         self.ylim = ylim
-        self.font_size = rel_font_height * axes_height_inches / point_size
+        self.font_size = font_size/100 * axes_height_inches / point_size
+
+        self.zoom_font_size = self.font_size
 
         self.fig = plt.figure(figsize=figsize)
         plt.subplots_adjust(hspace=0)
@@ -237,17 +263,24 @@ class GenomeIdeogram:
         
             nr_rows, nr_cols = len(self.chr_names)-2+1, 2
             gs = matplotlib.gridspec.GridSpec(
-                nr_rows, 19, height_ratios=[1e-2]+[1]*(nr_rows-1))
+                nr_rows, 19, height_ratios=[0.4]+[1]*(nr_rows-1))
             gs.update(wspace=0, hspace=hspace) 
 
             dummy_ax = plt.subplot(gs[0, :])
             xlim = (-self.end_padding, self.max_chrom_size+self.end_padding)
             dummy_ax.set_xlim(xlim)
+            scaled_y_lim = xlim[0] * self.aspect, xlim[1] * self.aspect
+            # dummy_ax.set_ylim(scaled_y_lim)
+            # dummy_ax.plot(1, 1)
 
+            dummy_ax.spines['bottom'].set_visible(False)
+            dummy_ax.spines['left'].set_visible(False)
+            dummy_ax.spines['right'].set_visible(False)
             dummy_ax.spines['top'].set_visible(True)
             dummy_ax.xaxis.tick_top()
             dummy_ax.xaxis.set_label_position('top') 
             dummy_ax.yaxis.set_ticks_position('none')
+
             dummy_ax.set_yticklabels([])
         
             ax_list = [plt.subplot(gs[i, :]) for i in range(1, nr_rows-2)]
@@ -286,7 +319,7 @@ class GenomeIdeogram:
                 ax.spines[['right', 'top', 'left', 'bottom']].set_visible(False)
 
                 if i in [20, 21]:   
-                    x = -3500000 * 10 / figsize[1]
+                    x = -2000000 * 10 / figsize[1]
                 else:
                     x = -2000000 * 10 / figsize[1]
 
@@ -402,12 +435,17 @@ class GenomeIdeogram:
                     ideogram_height = self.map_y(height, ax)
                 
                     # draw centromere
-                    cent_start, cent_end = self.centromeres[chrom]
                     ymin, ymax = ax.get_ylim()
+                    if chrom in self.centromeres:
+                        cent_start, cent_end = self.centromeres[chrom]
+                    else:
+                        cent_start, cent_end = 0, 0 
+
                     xy = [[cent_start, ideogram_base], 
-                          [cent_start, ideogram_base+ideogram_height], 
-                          [cent_end, ideogram_base], 
-                          [cent_end, ideogram_base+ideogram_height]]
+                        [cent_start, ideogram_base+ideogram_height], 
+                        [cent_end, ideogram_base], 
+                        [cent_end, ideogram_base+ideogram_height]]
+
                     g = ax.add_patch(patches.Polygon(xy, closed=True, zorder=-1, 
                                                      fill=True, color='#777777'))
                     
@@ -417,7 +455,7 @@ class GenomeIdeogram:
                                                        ideogram_height, 
                                                facecolor=facecolor,
                                                edgecolor='none',
-                                               zorder=0,
+                                               zorder=-1,
                                                linewidth=linewidth,
                                                **kwargs
                                               ))
@@ -499,7 +537,7 @@ class GenomeIdeogram:
         return True
 
     
-    def _scaled_y_lim(self, ax:matplotlib.axes.Axes) -> tuple:
+    def _scaled_y_lim(self, ax:matplotlib.axes.Axes, zoom=False) -> tuple:
         """
         Returns y-axis limits in plotting coordinates.
 
@@ -513,12 +551,23 @@ class GenomeIdeogram:
         :
             Y-axis limits in plotting coordinates as tuple
         """
-        xlim = ax.get_xlim()
+        # xlim = ax.get_xlim() - self.end_padding
+
+        # bbox = ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
+        # aspect = bbox.height / bbox.width
+        
+        # return 0, -sub(*xlim) * aspect 
+
+        if zoom:
+            x_span = -sub(*ax.get_xlim()) #* (-sub(*ax.get_xlim()) - 2*self.end_padding) / -sub(*ax.get_xlim())  #+ int(zoom) * 2 * self.end_padding
+        else:
+            x_span = -sub(*ax.get_xlim())
 
         bbox = ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
         aspect = bbox.height / bbox.width
         
-        return 0, -sub(*xlim) * aspect 
+        return 0, x_span * aspect 
+
         # return xlim[0] * self.aspect, xlim[1] * self.aspect
     
 
@@ -553,7 +602,7 @@ class GenomeIdeogram:
 
         
     def draw_text(self, coord:float, x_pos:float, y_pos:float, text:str, 
-                  textcolor:str, textsize:float, linecolor:str, 
+                  textcolor:str, fontsize:float, linecolor:str, 
                   ax:matplotlib.axes.Axes=None, y_line_bottom:float=0, 
                   highlight:dict=None, **kwargs:dict) -> None:
         """
@@ -588,7 +637,7 @@ class GenomeIdeogram:
             linecolor = kwargs['color']
             del kwargs['color']
 
-        kwargs.setdefault('zorder', -5)
+        kwargs.setdefault('zorder', 10)
         kwargs.setdefault('linewidth', 0.5)
 
         if highlight:
@@ -607,15 +656,15 @@ class GenomeIdeogram:
                               alpha=1,
                               ec='none'),)
 
-        t = ax.text(x_pos, y_pos, text, fontsize=self.font_size * textsize,                     
+        t = ax.text(x_pos, y_pos, text, fontsize=fontsize,                     
                     rotation=45, zorder=10, 
                     horizontalalignment='left',
                     verticalalignment='bottom',
                     **text_props)
 
 
-        ax.plot((coord, coord, x_pos+y_unit/4),
-                (y_line_bottom, y_pos, y_pos+y_unit/4),
+        ax.plot((coord, coord, x_pos+y_unit/5),
+                (y_line_bottom, y_pos, y_pos+y_unit/5),
                 solid_capstyle='butt', 
                 solid_joinstyle='miter',
                 color=linecolor, 
@@ -648,10 +697,11 @@ class GenomeIdeogram:
 
         y_unit = -sub(*self._scaled_y_lim(ax)) / -sub(*self.ylim)
         # y_unit = -sub(*self.scaled_y_lim(ax)) / -sub(*ax.get_ylim())
+        # y_pos = y_pos * y_unit
 
-        y_pos = y_pos * y_unit
+        y_pos = self.map_y(y_pos, ax)
         
-        t = ax.text(x_pos, y_pos, text, fontsize=self.font_size,
+        t = ax.text(x_pos, y_pos, text, fontsize=self.zoom_font_size,
                     horizontalalignment='left',
                     verticalalignment='bottom', 
                     rotation=0, zorder=3, 
@@ -696,10 +746,13 @@ class GenomeIdeogram:
         
 
     # def add_labels(self, data, labels='name', chrom='chrom', x='pos'):
-    def add_labels(self, annot:MutableSequence, base:float=None, 
-                   min_height:float=None, bold:MutableSequence=[], 
+    def add_labels(self, annot:MutableSequence, 
+                   base:float=None, min_height:float=None, 
+                   zoom_base:float=None, zoom_min_height:float=None, 
+                   bold:MutableSequence=[], 
                    italic:MutableSequence=[], colored:MutableSequence=[], 
                    framed:MutableSequence=[], filled:MutableSequence=[], 
+                   highlight_color='deeppink',
                    pad:float=0,  **kwargs:dict) -> None:
         """
         Add text labels to the chromosome ideograms. 
@@ -729,8 +782,16 @@ class GenomeIdeogram:
             List of genes to highlight with framed label, by default []
         filled : 
             List of genes to highlight with filled label, by default []
+        highlight_color : 
+            Color used for highlighted genes, by default 'deeppink'
         pad : 
             Text padding, by default 0
+        zoom_base : 
+            Y coordinate for lower end of vertical line on zoom axes, by default None. 
+            If None, the default value of font_size.
+        zoom_min_height : 
+            Minimum length of vertical line in y coordinate on zoom axes, by default None. 
+            If None, the default is the value of min_height..
         """
         
         if base is None:
@@ -738,6 +799,12 @@ class GenomeIdeogram:
 
         if min_height is None:
             min_height = self.ideogram_height * 0.5
+
+        if zoom_base is None:
+            zoom_base = base
+
+        if zoom_min_height is None:
+            zoom_min_height = min_height
 
         if type(annot[0]) is str:
             _annot = []
@@ -768,13 +835,21 @@ class GenomeIdeogram:
         y0 = base
         y1 = base + min_height
 
+        zoom_y0 = zoom_base
+        zoom_y1 = zoom_base + zoom_min_height
+
+
+        hsv = matplotlib.colors.rgb_to_hsv(matplotlib.colors.to_rgb(highlight_color))
+        hsv[1] *= 0.15
+        highlight_fill = matplotlib.colors.hsv_to_rgb(hsv)
+
         highlight = defaultdict(dict)
         for gene in bold:
             highlight[gene].update(dict(weight='bold'))
         for gene in italic:
             highlight[gene].update(dict(style='italic'))
         for gene in colored:
-            highlight[gene].update(dict(color='red'))
+            highlight[gene].update(dict(color=highlight_color))
         for gene in framed:
             if 'bbox' not in highlight[gene]:
                 highlight[gene]['bbox'] = {}            
@@ -784,7 +859,7 @@ class GenomeIdeogram:
         for gene in filled:
             if 'bbox' not in highlight[gene]:
                 highlight[gene]['bbox'] = {}
-            highlight[gene]['bbox'].update(dict(facecolor='pink', alpha=1, 
+            highlight[gene]['bbox'].update(dict(facecolor=highlight_fill,
                                                 pad=max(1.5, pad)))
 
         for gene in highlight:
@@ -826,8 +901,9 @@ class GenomeIdeogram:
                     poly.nudge_y(nudge)
 
                 self.draw_text(pos, x, y, name, textcolor=textcolor, 
-                               textsize=textsize, linecolor=linecolor,
-                               ax=ax, y_line_bottom=y0*y_unit,                                
+                               fontsize=textsize*self.font_size, linecolor=linecolor,
+                            #    ax=ax, y_line_bottom=y0*y_unit,                                
+                               ax=ax, y_line_bottom=self.map_y(y0, ax),                                
                                highlight=hl, **kwargs)
 
                 polybuff.append(poly)
@@ -839,9 +915,10 @@ class GenomeIdeogram:
 
             for zoom, ax in zip(self.zooms, self.zoom_axes):
 
-                y_unit = -sub(*self._scaled_y_lim(ax)) / -sub(*self.ylim)
-                nudge = 0.01 * y_unit
-                
+                # y_unit = -sub(*self._scaled_y_lim(ax, zoom=True)) / -sub(*self.ylim)
+                # nudge = 0.01 * y_unit
+                self.map_y(0.01, ax)
+        
                 zoom_polybuff = []
                 for pos, name, *args in annot:
 
@@ -853,14 +930,16 @@ class GenomeIdeogram:
                         hl = None
                         
                     if pos >= zoom[0] and pos < zoom[1]:
-                        x, y, poly = self.get_polygon(name, pos, y1, ax)
+                        x, y, poly = self.get_polygon(name, pos, zoom_y1, ax)
                         while any(self._is_polygons_intersecting(poly, p) 
                                   for p in zoom_polybuff):
                             y += nudge
                             poly.nudge_y(nudge)
+
                         self.draw_text(pos, x, y, name, textcolor=textcolor, 
-                               textsize=textsize, linecolor=linecolor,
-                               ax=ax, y_line_bottom=y0*y_unit,                                
+                               fontsize=textsize*self.zoom_font_size, linecolor=linecolor,
+                            #    ax=ax, y_line_bottom=y0*y_unit,                                
+                               ax=ax, y_line_bottom=self.map_y(zoom_y0, ax),                                 
                                highlight=hl, **kwargs)
         
                         zoom_polybuff.append(poly)
@@ -927,27 +1006,31 @@ class GenomeIdeogram:
                     _kwargs['alpha'] = extra[0]
                 else:
                     _kwargs['alpha'] = 1
-                scaled_base = base * y_unit
-                scaled_height = height * y_unit                
+                # scaled_base = base * y_unit
+                # scaled_height = height * y_unit                
+                scaled_base = self.map_y(base, ax)
+                scaled_height = self.map_y(height, ax)
                 width = end - start
                 if width < min_visible_width:
                     start -= min_visible_width/2
                     width += min_visible_width
 
                 rect = patches.Rectangle((start, scaled_base), width, 
-                                         scaled_height, linewidth=1, zorder=3,
+                                         scaled_height, linewidth=1, zorder=0,
                                          **_kwargs)
                 ax.add_patch(rect)    
-
+                
                 for zoom_ax in self.zoom_axes:
-                    zoom_y_unit = (-sub(*self._scaled_y_lim(zoom_ax))
-                                   -sub(*self.ylim))
-                    zoom_scaled_base = base * zoom_y_unit
-                    zoom_scaled_height = height * zoom_y_unit                      
-
+                    zoom_y_unit = -sub(*self._scaled_y_lim(zoom_ax, zoom=True)) / -sub(*self.ylim)
+                    # zoom_scaled_base = base * zoom_y_unit
+                    # zoom_scaled_height = height * zoom_y_unit                      
+                    zoom_scaled_base = self.map_y(base, zoom_ax)
+                    zoom_scaled_height = self.map_y(height, zoom_ax)               
+                    # print(start, zoom_scaled_base, width,
+                    #                          zoom_scaled_height)
                     rect = patches.Rectangle((start, zoom_scaled_base), width,
                                              zoom_scaled_height, linewidth=1,
-                                             zorder=3, **_kwargs)
+                                             zorder=0, **_kwargs)
                     zoom_ax.add_patch(rect)    
 
 
@@ -1005,9 +1088,9 @@ class GenomeIdeogram:
         ch : 
             Name of data frame column holding chromosome names, by default 
             'chrom'
-        x : 
+        x : str
             Name of data frame column holding x coordinates, by default 'x'
-        y : 
+        y : str
             Name of data frame column holding y coordinates, by default 'y'
         yaxis : 
             Y interval of ideogram panel axis ideogram to map data to, 
@@ -1039,7 +1122,18 @@ class GenomeIdeogram:
             x = df.x
             y = df.y
             if 'x' in kwargs: del kwargs['x']
-            if 'y' in kwargs: del kwargs['y']                
+            if 'y' in kwargs: del kwargs['y'] 
+
+            if 'y2' in kwargs:
+                if 'y2' not in df.columns:
+                    df['y2'] = kwargs['y2']
+                df['y2'] -= df.y2.min()
+                df['y2'] /= df.y2.max()
+                df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim)) 
+                        / -sub(*self.ylim) + bottom 
+                        /  -sub(*self.ylim) * -sub(*scaled_y_lim))
+                y2 = df.y2
+
             method_name = method.__name__
             method = getattr(ax, method_name, method_not_found) 
             g = method(x, y, **kwargs)
@@ -1068,6 +1162,8 @@ class GenomeIdeogram:
                     ax.get_legend().remove()
                 except:
                     pass
+                ax.set_xlabel('')
+                ax.set_ylabel('')  
             plt.xlabel('')
             plt.ylabel('')
 
@@ -1084,9 +1180,9 @@ class GenomeIdeogram:
             Data frame with with data for x and y coordinates by chromsome.
         ch : 
             Name of data frame column holding chromosome names, by default 'chrom'
-        x : 
+        x : str
             Name of data frame column holding x coordinates, by default 'x'
-        y : 
+        y : str
             Name of data frame column holding y coordinates, by default 'y'
         yaxis : 
             Y interval of ideogram panel axis ideogram to map data to, 
@@ -1137,7 +1233,9 @@ class GenomeIdeogram:
                 try:
                     ax.get_legend().remove()
                 except:
-                    pass                               
+                    pass
+                ax.set_xlabel('')
+                ax.set_ylabel('')                               
             plt.xlabel('')
             plt.ylabel('')
 

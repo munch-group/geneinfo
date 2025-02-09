@@ -4,3 +4,18 @@
 geneinfo.utils.GeneList(self, *args, **kwargs)
 ```
 
+
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [download_gene_aliases](#geneinfo.utils.GeneList.download_gene_aliases) | Download mapping from any alias to the cannonical hgcn name for use in set operations. |
+
+### download_gene_aliases { #geneinfo.utils.GeneList.download_gene_aliases }
+
+```python
+geneinfo.utils.GeneList.download_gene_aliases()
+```
+
+Download mapping from any alias to the cannonical hgcn name for use in set operations.

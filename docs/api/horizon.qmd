@@ -11,7 +11,8 @@ geneinfo.utils.horizon(
     beginzero=True
     offset=0
     height=None
-    colors=['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue', '#F2DE9A', '#DA8630', '#972428', 'darkred', '#D3D3D3']
+    palette='iker'
+    colors=None
     **kwargs
 )
 ```

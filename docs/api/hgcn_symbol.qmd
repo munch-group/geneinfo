@@ -8,9 +8,9 @@ Get HGCN gene symbol for some gene identifier
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| [list](`list`)]{.parameter-annotation}</code>
 
-:   Gene identifier
+:   Gene identifier or sequence of identifiers.
 
 ## Returns {.doc-section .doc-section-returns}
 
