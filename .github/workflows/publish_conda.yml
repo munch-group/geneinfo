@@ -14,11 +14,12 @@ jobs:
       matrix:
         # os: [macOS-latest, ubuntu-latest, windows-latest]
         os: [ubuntu-latest]
-        # python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"] 
-        python-version: ["3.10"] 
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"] 
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Conda environment creation and activation
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -28,6 +29,15 @@ jobs:
           auto-update-conda: false
           auto-activate-base: false
           show-channel-urls: true
+      - name: Set label
+        id: set-label
+        shell: bash
+        run: |
+          if [[ "${{ github.event.action }}" == "prereleased" ]]; then
+            label=dev
+          else
+            label=main
+          echo "label=$label" >> $GITHUB_OUTPUT          
       - name: Build and upload the conda packages
         uses: uibcdf/action-build-and-upload-conda-packages@v1.4.0
         with:
@@ -38,5 +48,5 @@ jobs:
           platform_linux-64: true
           platform_osx-64: true
           user: munch-group
-          label: auto
+          label: ${{ steps.set-label.outputs.label }}
           token: ${{ secrets.ANACONDA_TOKEN }} 
