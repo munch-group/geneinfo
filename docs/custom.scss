@@ -1,4 +1,34 @@
 /*-- scss:defaults --*/
 $font-size-base:          0.9rem !default;
 
+// $table-color: transparent;
+// $table-border-color: transparent;
+
 /*-- scss:rules --*/
+
+// .gene-list .table-striped {
+
+//     background-color: transparent;
+//     border-color: transparent;
+//     color: red;
+
+// }
+
+
+    // @extend .table.table-striped;
+    // @extend .table-striped;
+
+    // @extend .table-striped-color;
+    // @extend td:nth-child(odd);
+    // @extend tr:nth-child(odd);
+    // @extend .table-striped !optional;
+    // @extend .table-striped-bg-factor !optional;
+    // @extend .table-striped-color !optional;
+
+// }
+
+
+// .table-striped>tbody>tr:nth-child(odd)>td, 
+// .table-striped>tbody>tr:nth-child(odd)>th {
+//    background-color: red; // Choose your own color here
+//  }

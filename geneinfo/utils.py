@@ -328,6 +328,7 @@ class GeneList(UserList):
         n = len(self)
         col_width = max(map(len, self)) + 1
         ncols = min(max(100//col_width, 1+sqrt(n/col_width)), 150//col_width)
+        # ncols = min(max(80//col_width, 1+sqrt(n/col_width)), 80//col_width)
         nrows = int(n/ncols) + 1
         rows = []
         for r in range(0, n, nrows):
@@ -347,7 +348,7 @@ class GeneList(UserList):
     def _repr_html_(self):
         rows, col_width = self._tabulate()
         style = 'style="background: transparent!important; line-height: 10px!important;text-align: left!important"'
-        table = [f'<table {style}>']
+        table = [f'<table data-quarto-disable-processing="true" {style}>']
         for row in list(zip_longest(*rows, fillvalue='')):
             table.append(f'<tr {style}>')
             for gene in row:

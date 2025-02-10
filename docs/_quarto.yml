@@ -82,6 +82,7 @@ format:
     css:
       - api/_styles-quartodoc.css
       - styles.css
+      # - custom.scss
     toc: true
     # code-block-background: false
     # code-block-border-left: true    
