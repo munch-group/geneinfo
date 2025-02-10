@@ -355,11 +355,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>GeneList objects work just like normal lists but have some additional features that usefull for exploring sets of genes.</p>
 <p>When displayed they render as Markdown in columns to make them easier to read:</p>
-<div id="cell-7" class="cell plain" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.072502Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.072350Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.087168Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.086908Z&quot;}" data-execution_count="4">
+<div id="cell-7" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.072502Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.072350Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.087168Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.086908Z&quot;}" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">=</span> glist(dummy_genes)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>list_A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<table class="caption-top table" data-quarto-postprocess="true">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
 <td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
@@ -399,11 +399,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The bitwise operator <code>&lt;&lt;</code> is overloaded and highlights genes also present in another gene list:</p>
-<div id="cell-9" class="cell plain borderless" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.088732Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.088624Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.100260Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.100024Z&quot;}" data-execution_count="5">
+<div id="cell-9" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.088732Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.088624Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.100260Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.100024Z&quot;}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_B <span class="op">=</span> glist(dummy_genes[::<span class="dv">2</span>])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<table class="caption-top table" data-quarto-postprocess="true">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
 <td style="background: transparent!important; line-height: 10px!important"><strong>ABCB7</strong></td>
@@ -442,11 +442,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<div id="cell-10" class="cell plain borderless sm" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.101706Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.101619Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.113341Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.113134Z&quot;}" data-execution_count="6">
+<div id="cell-10" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.101706Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.101619Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.113341Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.113134Z&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>list_C <span class="op">=</span> glist(dummy_genes[:<span class="dv">12</span>])</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
-<table class="caption-top table" data-quarto-postprocess="true">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
 <td style="background: transparent!important; line-height: 10px!important"><strong>ABCB7</strong></td>
@@ -488,10 +488,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The bitwise operators, <code>&amp;</code>, <code>|</code>, and <code>^</code>, to allow logical operations on gene lists.</p>
 <p>Highlight in A the intersection between B and C:</p>
 <div id="cell-13" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.114841Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.114758Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.126524Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.126297Z&quot;}" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| classes: .borderless</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
@@ -533,10 +530,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Highlight in A the union between B and C:</p>
-<p>::: {#cell-15 .cell .plain borderless execution=‘{“iopub.execute_input”:“2025-02-09T10:28:00.128077Z”,“iopub.status.busy”:“2025-02-09T10:28:00.127985Z”,“iopub.status.idle”:“2025-02-09T10:28:00.139573Z”,“shell.execute_reply”:“2025-02-09T10:28:00.139337Z”}’ execution_count=8}</p>
+<div id="cell-15" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.128077Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.127985Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.139573Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.139337Z&quot;}" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
-<table class="caption-top table" data-quarto-postprocess="true">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
 <td style="background: transparent!important; line-height: 10px!important"><strong>ABCB7</strong></td>
@@ -574,12 +571,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </div>
-<p>:::</p>
+</div>
 <p>Highlight in A the genes not shared by B and C:</p>
-<p>::: {#cell-17 .cell .plain borderless sm execution=‘{“iopub.execute_input”:“2025-02-09T10:28:00.141040Z”,“iopub.status.busy”:“2025-02-09T10:28:00.140969Z”,“iopub.status.idle”:“2025-02-09T10:28:00.152439Z”,“shell.execute_reply”:“2025-02-09T10:28:00.152220Z”}’ execution_count=9}</p>
+<div id="cell-17" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.141040Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.140969Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.152439Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.152220Z&quot;}" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
-<table class="caption-top table" data-quarto-postprocess="true">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
 <td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
@@ -617,12 +614,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </div>
-<p>:::</p>
+</div>
 <p>Highlight in A the genes in B but not in C (set difference):</p>
-<p>::: {#cell-19 .cell .plain, borderless, sm execution=‘{“iopub.execute_input”:“2025-02-09T10:28:00.153860Z”,“iopub.status.busy”:“2025-02-09T10:28:00.153768Z”,“iopub.status.idle”:“2025-02-09T10:28:00.165294Z”,“shell.execute_reply”:“2025-02-09T10:28:00.165074Z”}’ execution_count=10}</p>
+<div id="cell-19" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.153860Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.153768Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.165294Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.165074Z&quot;}" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
-<table class="caption-top table" data-quarto-postprocess="true">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
 <td style="background: transparent!important; line-height: 10px!important">ABCB7</td>
@@ -660,7 +657,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </div>
-<p>:::</p>
+</div>
 <p>Highlight in A the genes in C but not in B (set difference):</p>
 <div id="cell-21" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.166715Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.166645Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.178777Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.178551Z&quot;}" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
