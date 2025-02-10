@@ -113,23 +113,6 @@ td:first-child a {
   margin-right: 60px;
 
 }
-/* .gene-list .table-striped>tbody>tr:nth-child(odd)>td, 
-  .table-striped>tbody>tr:nth-child(odd)>th {
-   background-color: red; 
- } */
-
-/* .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th { */
-/* .table>tbody>tr>td,
-.table>tbody>tr>th { */
-  /* .gene-list .table-striped { */
-
-
-
-/* .gene-list .table-striped {
-  background-color: yellow;
-  border-color: blue;
-  color: red;
-} */
 
 .gene-list td {
   padding-top: 0px;
@@ -137,22 +120,4 @@ td:first-child a {
   padding-bottom: 10px;
   padding-left: 15px;
   font-size: 12px;
-  /* background-color: yellow;
-  border-color: blue;
-  color: red; */
 }
-
-
-
-/* .table>tbody>tr>td,
-.table>tbody>tr>th {
-  border-top: none;
-} */
-
-/* table.table.table-striped tr.found td {
-  background-color:#CECBCB;
-} */
-
-/* .table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
-  background-color: red;
-} */
