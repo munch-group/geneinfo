@@ -74,7 +74,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5c67a7444eebc356e54fdce0a63e8750.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5027bf1c1f92ac6615724d89c8213d6a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -491,7 +491,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><span style="text-decoration: underline;">Underline</span></li>
 <li><span style="font-style: italic;">Italic</span></li>
 </ol>
-<p>Genes with all styles applied looks like <span style="font-weight: bold; color:#1876D2; text-decoration: underline; font-style: italic;">this</span>. The highlight color can be chagnes by assigning a valid HTML color to <code>GeneList.highlight_color</code>.</p>
+<p>Genes with all styles applied looks like <span style="font-weight: bold; color:#1876D2; text-decoration: underline; font-style: italic;">this</span>.</p>
 <div id="cell-13" class="cell gene-list" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_D <span class="op">=</span> glist(dummy_genes[::<span class="dv">4</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>list_E <span class="op">=</span> glist(dummy_genes[<span class="dv">2</span>::<span class="dv">10</span>])</span>
@@ -535,11 +535,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody></table>
 </div>
 </div>
-<p>Set and reset highlght color:</p>
-<div id="cell-15" class="cell gene-list" data-execution_count="14">
+<p>The highlight color can be changed by passing a HEX color to <code>set_highlight_color</code>:</p>
+<div id="cell-15" class="cell gene-list" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>glist.set_highlight_color(<span class="st">'#009D2B'</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
 <td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#009D2B; text-decoration: underline; font-style: italic;">ABCB7</td>
@@ -577,51 +577,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody></table>
 </div>
 </div>
-<div id="cell-16" class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>glist.set_highlight_color(<span class="st">'red'</span>)</span>
+<p>Reset highlght color:</p>
+<div id="cell-17" class="cell gene-list" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>glist.reset_highlight_color()</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
-<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; text-decoration: underline; font-style: italic;">ABCB7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ALG13</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">ATRX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CAPN6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:red; font-style: italic;">CLCN5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">DKC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; font-style: italic;">F8A1</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ACTRT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; text-decoration: underline; font-style: italic;">ARHGAP36</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">BCLAF3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">CCNB3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; font-style: italic;">CYBB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; font-style: italic;">EZHIP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline; font-style: italic;">AKAP4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ATP7A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; text-decoration: underline; font-style: italic;">BRCC3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CFAP47</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">CNKSR2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; font-style: italic;">ENOX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">FGF16</td>
-</tr>
-</tbody></table>
-</div>
-</div>
-<div id="cell-17" class="cell gene-list" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>glist.reset_highlight_color()</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
 <td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; text-decoration: underline; font-style: italic;">ABCB7</td>
@@ -665,7 +625,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The bitwise operators, <code>&amp;</code>, <code>|</code>, and <code>^</code>, to allow set operations on gene lists.</p>
 <p>Highlight in A the intersection between B and C:</p>
 <div id="cell-21" class="cell gene-list" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="19">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -706,7 +666,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the union between B and C:</p>
 <div id="cell-23" class="cell gene-list" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="20">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -747,7 +707,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the genes not shared by B and C:</p>
 <div id="cell-25" class="cell gene-list" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -788,7 +748,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the genes in B but not in C (set difference):</p>
 <div id="cell-27" class="cell gene-list" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -829,7 +789,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the genes in C but not in B (set difference):</p>
 <div id="cell-29" class="cell gene-list" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="23">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -873,23 +833,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="genelistcollection">GeneListCollection</h2>
 <p>Load table of gene lists from a csv file:</p>
 <div id="cell-32" class="cell" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Or from a Google Sheet using its ID and the sheet name:</p>
 <div id="cell-34" class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>See which neuron genes are also SFARI genes:</p>
 <div id="cell-36" class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="cell-39" class="cell" data-execution_count="37">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(glist(gene_lists.get(<span class="st">'cDEG'</span>)) </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'Hama'</span>))</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ech90_regions'</span>))</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'hum_nean_admix'</span>))</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ari_nonPUR'</span>))</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(glist(gene_lists.get(<span class="st">'cDEG'</span>)) </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'Hama'</span>))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ech90_regions'</span>))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'hum_nean_admix'</span>))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ari_nonPUR'</span>))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="37">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
