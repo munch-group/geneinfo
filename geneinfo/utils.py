@@ -373,7 +373,8 @@ class GeneList(UserList):
                         td_styles.append('text-decoration: underline;')
                     if hasattr(self, '_italic') and gene in self._italic:
                         td_styles.append('font-style: italic;')
-                    table.append(f'<td style="{style + ' '.join(td_styles)}">{gene}</td>')
+                    td_style = style + ' '.join(td_styles)
+                    table.append(f'<td style="{td_style}">{gene}</td>')
                 table.append('</tr>')
             table.append('</table>')
             self._strip_styles()
