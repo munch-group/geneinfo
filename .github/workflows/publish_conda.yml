@@ -46,7 +46,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           # platform_all: true
           platform_osx-arm64: true
-          platform_linux-64: true
+          # platform_linux-64: true
           platform_osx-64: true
           label: ${{ steps.set-label.outputs.label }}
           user: munch-group
