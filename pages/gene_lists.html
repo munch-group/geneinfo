@@ -287,6 +287,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#genelist" id="toc-genelist" class="nav-link active" data-scroll-target="#genelist">GeneList</a></li>
+  <li><a href="#highlight-genes" id="toc-highlight-genes" class="nav-link" data-scroll-target="#highlight-genes">Highlight genes</a></li>
+  <li><a href="#set-operations" id="toc-set-operations" class="nav-link" data-scroll-target="#set-operations">Set operations</a></li>
   <li><a href="#genelistcollection" id="toc-genelistcollection" class="nav-link" data-scroll-target="#genelistcollection">GeneListCollection</a></li>
   </ul>
 </nav>
@@ -313,14 +315,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:59.240353Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:59.240191Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.035003Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.034736Z&quot;}" data-execution_count="2">
+<div id="cell-2" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneListCollection</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneList <span class="im">as</span> glist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="genelist" class="level2">
 <h2 class="anchored" data-anchor-id="genelist">GeneList</h2>
 <p>Long lists of gene names do not work well visually:</p>
-<div id="cell-5" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.036881Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.036756Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.051396Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.051168Z&quot;}" data-execution_count="3">
+<div id="cell-5" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dummy_genes <span class="op">=</span> [<span class="st">'ABCB7'</span>, <span class="st">'ACTRT1'</span>, <span class="st">'AKAP4'</span>, <span class="st">'ALG13'</span>, <span class="st">'ARHGAP36'</span>, <span class="st">'ATP7A'</span>, <span class="st">'ATRX'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'BRCC3'</span>, <span class="st">'CAPN6'</span>, <span class="st">'CCNB3'</span>, <span class="st">'CFAP47'</span>, <span class="st">'CLCN5'</span>, <span class="st">'CMC4'</span>, <span class="st">'CNKSR2'</span>, <span class="st">'COX7B'</span>, <span class="st">'CYBB'</span>, <span class="st">'DCX'</span>, <span class="st">'DKC1'</span>, <span class="st">'DYNLT3'</span>, <span class="st">'ENOX2'</span>, <span class="st">'ENOX2-AS1'</span>, <span class="st">'EZHIP'</span>, <span class="st">'F8'</span>, <span class="st">'F8A1'</span>, <span class="st">'FAM120C'</span>, <span class="st">'FGF16'</span>]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dummy_genes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
@@ -355,332 +357,513 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>GeneList objects work just like normal lists but have some additional features that usefull for exploring sets of genes.</p>
 <p>When displayed they render as Markdown in columns to make them easier to read:</p>
-<div id="cell-7" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.072502Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.072350Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.087168Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.086908Z&quot;}" data-execution_count="4">
+<div id="cell-7" class="cell gene-list" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">=</span> glist(dummy_genes)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>list_A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ABCB7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ALG13</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATRX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CAPN6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CLCN5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DKC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8A1</td>
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ACTRT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARHGAP36</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BCLAF3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CCNB3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CYBB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EZHIP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AKAP4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP7A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BRCC3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CFAP47</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CNKSR2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FGF16</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
 </div>
+</section>
+<section id="highlight-genes" class="level2">
+<h2 class="anchored" data-anchor-id="highlight-genes">Highlight genes</h2>
 <p>The bitwise operator <code>&lt;&lt;</code> is overloaded and highlights genes also present in another gene list:</p>
-<div id="cell-9" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.088732Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.088624Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.100260Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.100024Z&quot;}" data-execution_count="5">
+<div id="cell-10" class="cell gene-list" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_B <span class="op">=</span> glist(dummy_genes[::<span class="dv">2</span>])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ABCB7</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ALG13</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATRX</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CAPN6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CLCN5</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>DKC1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>F8A1</b></td>
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ACTRT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ARHGAP36</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BCLAF3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CCNB3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CYBB</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>EZHIP</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>AKAP4</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP7A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BRCC3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CFAP47</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CNKSR2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ENOX2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>FGF16</b></td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
 </div>
-<div id="cell-10" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.101706Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.101619Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.113341Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.113134Z&quot;}" data-execution_count="6">
+<div id="cell-11" class="cell gene-list" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>list_C <span class="op">=</span> glist(dummy_genes[:<span class="dv">12</span>])</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ABCB7</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ALG13</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATRX</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CAPN6</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CLCN5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DKC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8A1</td>
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ACTRT1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ARHGAP36</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BCLAF3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CCNB3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CYBB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EZHIP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>AKAP4</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATP7A</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BRCC3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CFAP47</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CNKSR2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FGF16</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
 </div>
-<p>The bitwise operators, <code>&amp;</code>, <code>|</code>, and <code>^</code>, to allow logical operations on gene lists.</p>
-<p>Highlight in A the intersection between B and C:</p>
-<div id="cell-13" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.114841Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.114758Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.126524Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.126297Z&quot;}" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You apply the <code>&lt;&lt;</code> operator repeatedly to highlight genes from up to four other gene lists. Each time adding a new style of highlighting is applied in the following sequence:</p>
+<ol type="1">
+<li><span style="font-weight: bold;">Bold</span></li>
+<li><span style="color:#1876D2;">Color</span></li>
+<li><span style="text-decoration: underline;">Underline</span></li>
+<li><span style="font-style: italic;">Italic</span></li>
+</ol>
+<p>Genes with all styles applied looks like <span style="font-weight: bold; color:#1876D2; text-decoration: underline; font-style: italic;">this</span>. The highlight color can be chagnes by assigning a valid HTML color to <code>GeneList.highlight_color</code>.</p>
+<div id="cell-13" class="cell gene-list" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_D <span class="op">=</span> glist(dummy_genes[::<span class="dv">4</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>list_E <span class="op">=</span> glist(dummy_genes[<span class="dv">2</span>::<span class="dv">10</span>])</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B <span class="op">&lt;&lt;</span> list_C <span class="op">&lt;&lt;</span>  list_D <span class="op">&lt;&lt;</span> list_E</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ABCB7</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ALG13</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATRX</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CAPN6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CLCN5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DKC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8A1</td>
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#1876D2; text-decoration: underline;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#1876D2;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline; font-style: italic;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ACTRT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ARHGAP36</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BCLAF3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CCNB3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CYBB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EZHIP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#1876D2; text-decoration: underline;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#1876D2;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; font-style: italic;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>AKAP4</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP7A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BRCC3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CFAP47</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CNKSR2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FGF16</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#1876D2; font-style: italic;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#1876D2; text-decoration: underline;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">FGF16</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<p>Set and reset highlght color:</p>
+<div id="cell-15" class="cell gene-list" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>glist.set_highlight_color(<span class="st">'#009D2B'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#009D2B; text-decoration: underline; font-style: italic;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#009D2B; font-style: italic;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#009D2B; font-style: italic;">F8A1</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#009D2B; text-decoration: underline; font-style: italic;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#009D2B; font-style: italic;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; font-style: italic;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline; font-style: italic;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#009D2B; text-decoration: underline; font-style: italic;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#009D2B; font-style: italic;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">FGF16</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<div id="cell-16" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>glist.set_highlight_color(<span class="st">'red'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; text-decoration: underline; font-style: italic;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:red; font-style: italic;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; font-style: italic;">F8A1</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; text-decoration: underline; font-style: italic;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; font-style: italic;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; font-style: italic;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline; font-style: italic;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; text-decoration: underline; font-style: italic;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:red; font-style: italic;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">FGF16</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<div id="cell-17" class="cell gene-list" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>glist.reset_highlight_color()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; text-decoration: underline; font-style: italic;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; color:#1876D2; font-style: italic;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; font-style: italic;">F8A1</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; text-decoration: underline; font-style: italic;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline; font-style: italic;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; font-style: italic;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; font-style: italic;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline; font-style: italic;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; text-decoration: underline; font-style: italic;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; font-style: italic;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">FGF16</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+</section>
+<section id="set-operations" class="level2">
+<h2 class="anchored" data-anchor-id="set-operations">Set operations</h2>
+<p>The bitwise operators, <code>&amp;</code>, <code>|</code>, and <code>^</code>, to allow set operations on gene lists.</p>
+<p>Highlight in A the intersection between B and C:</p>
+<div id="cell-21" class="cell gene-list" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8A1</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
+</tr>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
 </div>
 <p>Highlight in A the union between B and C:</p>
-<div id="cell-16" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.128077Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.127985Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.139573Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.139337Z&quot;}" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ABCB7</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ALG13</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATRX</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CAPN6</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CLCN5</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>DKC1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>F8A1</b></td>
+<div id="cell-23" class="cell gene-list" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ACTRT1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ARHGAP36</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BCLAF3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CCNB3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CYBB</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>EZHIP</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>AKAP4</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATP7A</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BRCC3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CFAP47</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CNKSR2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ENOX2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>FGF16</b></td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
 </div>
 <p>Highlight in A the genes not shared by B and C:</p>
-<div id="cell-18" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.141040Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.140969Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.152439Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.152220Z&quot;}" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ABCB7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ALG13</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATRX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CAPN6</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CLCN5</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>DKC1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>F8A1</b></td>
+<div id="cell-25" class="cell gene-list" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ACTRT1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARHGAP36</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BCLAF3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CCNB3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CYBB</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>EZHIP</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AKAP4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATP7A</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BRCC3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CFAP47</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CNKSR2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ENOX2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>FGF16</b></td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
 </div>
 <p>Highlight in A the genes in B but not in C (set difference):</p>
-<div id="cell-20" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.153860Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.153768Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.165294Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.165074Z&quot;}" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ABCB7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ALG13</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATRX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CAPN6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CLCN5</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>DKC1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>F8A1</b></td>
+<div id="cell-27" class="cell gene-list" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ACTRT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARHGAP36</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BCLAF3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CCNB3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CYBB</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>EZHIP</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AKAP4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP7A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BRCC3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CFAP47</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CNKSR2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ENOX2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>FGF16</b></td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
 </div>
 <p>Highlight in A the genes in C but not in B (set difference):</p>
-<div id="cell-22" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.166715Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.166645Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.178777Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.178551Z&quot;}" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ABCB7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ALG13</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATRX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CAPN6</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CLCN5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DKC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2-AS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8A1</td>
+<div id="cell-29" class="cell gene-list" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ABCB7</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ALG13</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ATRX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CAPN6</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CLCN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">COX7B</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DKC1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2-AS1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8A1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ACTRT1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARHGAP36</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BCLAF3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CCNB3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CYBB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EZHIP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ACTRT1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ARHGAP36</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">BCLAF3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CCNB3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CMC4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CYBB</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">EZHIP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FAM120C</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AKAP4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATP7A</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BRCC3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CFAP47</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CNKSR2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FGF16</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">AKAP4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">ATP7A</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">BRCC3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">CNKSR2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">DCX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">ENOX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">F8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">FGF16</td>
 </tr>
 </tbody></table>
 </div>
@@ -689,559 +872,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="genelistcollection" class="level2">
 <h2 class="anchored" data-anchor-id="genelistcollection">GeneListCollection</h2>
 <p>Load table of gene lists from a csv file:</p>
-<div id="cell-25" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.180146Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.180074Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.263041Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.262649Z&quot;}" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-32" class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Or from a Google Sheet using its ID and the sheet name:</p>
-<div id="cell-27" class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.264895Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.264793Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.278466Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.278191Z&quot;}" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-34" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>See which neuron genes are also SFARI genes:</p>
-<div id="cell-29" class="cell gene-list" data-execution="{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:28:00.279964Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:28:00.279887Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:28:00.293185Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:28:00.292796Z&quot;}" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>neuron_genes <span class="op">=</span> glist(gene_lists.get(<span class="st">'neuron_npx_proteome'</span>))</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sfari <span class="op">=</span> glist(gene_lists.get(<span class="st">'sfari_all_conf'</span>))</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>neuron_genes <span class="op">&lt;&lt;</span> sfari</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
-<table data-quarto-disable-processing="true" style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ABCB7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BGN</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EBP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GPR173</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>LAS1L</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>NLGN4X</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PNMA3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>RPS6KA3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TAF9B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">USP51</td>
+<div id="cell-36" class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-39" class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(glist(gene_lists.get(<span class="st">'cDEG'</span>)) </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'Hama'</span>))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ech90_regions'</span>))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'hum_nean_admix'</span>))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ari_nonPUR'</span>))</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="37">
+<table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
+<tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; text-decoration: underline;">CFAP47</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">EDA</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; font-style: italic;">HUWE1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">PHF8</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">SCML1</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">UPF3B</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ABCD1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BRCC3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EFHC2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GPR82</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">LDOC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NONO</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PNMA6A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RPS6KA6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TBC1D25</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>USP9X</b></td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">DDX3X</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">EIF1AX</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">IQSEC2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline;">PRICKLE3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold;">SRPX2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">VSIG1</td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ACOT9</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BRWD3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EFNB1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GPRASP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">LONRF3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NSDHL</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PNPLA4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RRAGB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TBC1D8B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">UTP14A</td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline;">DIAPH2</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">EMD</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">mc_ampl_SPANXN5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">RBM41</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-weight: bold; text-decoration: underline;">SYP</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;"></td>
 </tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ACSL4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">C1GALT1C1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EGFL6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GPRASP2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">LRCH2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NUDT11</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">POLA1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>TBL1X</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">UXT</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ADGRG2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CA5B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EIF1AX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>GRIA3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAGED1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NUP62CL</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PORCN</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SAT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">VAMP7</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ADGRG4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CACNA1F</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EIF2S3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GRIPAP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAGED2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NXT2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PPEF1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SCML1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">VBP1</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>AFF2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CASK</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ELK1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GSPT2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAGEE1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NYX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PPP1R3F</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SCML2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">VCX3B</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AIFM1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CCDC120</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">EMD</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GUCY2F</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAGEE2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>OCRL</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PQBP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SH3BGRL</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">VMA21</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ALG13</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CCDC22</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ENOX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GYG2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAGEH1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>OFD1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PRAF2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SH3KBP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">WDR13</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AMER1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CD99L2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">F8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HAUS7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAGIX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">OGT</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PRDX4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SHROOM2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">WDR44</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AMMECR1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CDK16</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAAH2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HCCS</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAGT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>OPHN1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PRICKLE3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC10A3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">WDR45</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">AMOT</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CDKL5</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM104B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>HCFC1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAMLD1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">OPN1LW</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PRKX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC16A2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEAL8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>WNK3</b></td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ANOS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CDR1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM120C</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HDAC6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>MAOA</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">OPN1MW</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PRPS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC25A14</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TCEANC</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">WWC3</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>AP1S2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CETN2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM133A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>HDAC8</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>MAOB</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">OPN1MW3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PRRG1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC25A5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TENM1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">XIAP</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">APEX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CFAP47</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM199X</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HDX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAP3K15</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">OTUD5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PSMD10</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC25A53</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>TFE3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">XK</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">APOO</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CFP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM3A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HMGB3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAP7D2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">OTUD6A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>PTCHD1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC35A2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">THOC2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">YIPF6</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">APOOL</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CHIC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM50A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HMGN5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MAP7D3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PABPC1L2A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PUDP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC38A5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TIMM17B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">YY2</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARAF</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CHM</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM9B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>HNRNPH2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MBNL3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PABPC5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RAB33A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>SLC6A8</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TIMM8A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZBTB33</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARHGAP4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CHRDL1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FAM9C</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HPRT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MBTPS2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PAK3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>RAB39B</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>SLC9A6</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TIMP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZC3H12B</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARHGAP6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CHST7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FANCB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HSD17B10</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MCF2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PBDC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RAB40AL</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLC9A7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TKTL1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZC4H2</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARHGEF6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CITED1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FGD1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">HTATSF1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MCTS1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>PCDH11X</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RAB41</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLITRK2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TLR7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZCCHC18</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ARHGEF9</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CLCN4</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>FGF13</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>HUWE1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>MECP2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>PCDH19</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RAB9A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SLITRK4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TMEM164</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZDHHC15</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARMCX1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CLCN5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FHL1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">IDH3G</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MED12</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PCSK1N</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RAB9B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SMARCA1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TMEM185A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZDHHC9</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARMCX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CLDN34</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FLNA</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">IDS</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MED14</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PCYT1B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RAI2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>SMC1A</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TMEM187</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZFX</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARMCX3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CLIC2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>FMR1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">IGBP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MID1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PDHA1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RAP2C</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SMIM10</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TMEM47</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZIC3</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARMCX4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CMC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FOXO4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">IGSF1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MID1IP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PDK3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RBBP7</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SMIM10L2A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>TMLHE</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZMAT1</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARMCX5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>CNKSR2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FOXP3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">IKBKG</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MID2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PDZD11</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RBM10</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SMIM10L2B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TMSB15B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZMYM3</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARMCX6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">COX7B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FRMPD3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">IL13RA1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MMGT1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PDZD4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RBM3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SMS</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TMSB4X</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF182</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARR3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CSTF2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>FRMPD4</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">IRAK1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MORC4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PGK1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RBM41</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SNX12</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TRAPPC2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF185</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ARSD</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CTPS2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FTSJ1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ITGB1BP2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MORF4L2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PGRMC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RBMX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SOWAHD</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TRMT2B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF275</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ASB11</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CUL4B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FUNDC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ITM2A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MOSPD1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PHEX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RBMX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SPIN2A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TRO</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF280C</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATG4A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CXorf38</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">FUNDC2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">JADE3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MOSPD2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PHF6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RENBP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SPIN2B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TSC22D3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF41</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP11C</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CXorf58</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">G6PD</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">KCND1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MPP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>PHF8</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">REPS2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SPIN3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TSPAN6</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF449</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP2B3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CYBB</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>GABRA3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>KDM5C</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>MSL3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PHKA1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RGN</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SPIN4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>TSPAN7</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF630</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP6AP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">CYSLTR1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GDI1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>KDM6A</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">MSN</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PHKA2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>RHOXF1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SPRY3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TSPYL2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF674</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP6AP2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DACH2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GEMIN8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">KLF8</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NAA10</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PIGA</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RIBC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SRPK3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TSR2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ZNF711</b></td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ATP7A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DCX</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GK</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">KLHL13</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NAP1L2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PIM2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>RLIM</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SSR4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TXLNG</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF75D</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>ATRX</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>DDX3X</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GLA</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">KLHL15</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NAP1L3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PIN4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RNF113A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">STAG2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">UBA1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZNF81</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BCAP31</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DIAPH2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GLOD5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">KLHL34</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NDP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PIR</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RP2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">STS</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">UBE2A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZRSR2</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BCOR</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DKC1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>GLRA2</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">KLHL4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NDUFA1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>PJA1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RPA4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">SUV39H1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">UBL4A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZXDA</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>BCORL1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DLG3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GLUD2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">KRBOX4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NDUFB11</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PLP1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RPGR</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>SYAP1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">UBQLN2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">ZXDB</td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BEX1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>DMD</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GNL3L</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">L1CAM</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NHS</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PLP2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>RPL10</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>SYN1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>UPF3B</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"></td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BEX2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DNASE1L1</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GPC3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">LAGE3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NKAP</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PLS3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RPL36A</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>SYP</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">UPRT</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"></td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BEX4</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DRP2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GPKOW</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">LAMP2</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">NKRF</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>PLXNA3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RPL39</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">TAB3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">USP11</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"></td>
-</tr>
-<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important">
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">BEX5</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">DYNLT3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">GPM6B</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">LANCL3</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>NLGN3</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">PNCK</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">RPS4X</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"><b>TAF1</b></td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important">USP27X</td>
-<td style="background: transparent!important; line-height: 10px!important;text-align: left!important"></td>
+<tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2; text-decoration: underline;">DYNLT3</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;color:#1876D2;">HTR2C</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;text-decoration: underline;">OCRL</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;font-style: italic;">RTL4</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">SYTL5</td>
+<td style="background: transparent!important; line-height: 10px!important;text-align: left!important;"></td>
 </tr>
 </tbody></table>
 </div>
