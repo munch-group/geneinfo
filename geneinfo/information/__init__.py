@@ -90,7 +90,7 @@ def chromosome_lengths(assembly:str) -> List[Tuple[str, int]]:
         response.raise_for_status()
     records = []
     for chrom, length in response.json()['chromosomes'].items():
-        if '_' in chrom or chrom == 'chrM':
+        if '_' in chrom or chrom == 'chrMT' or chrom == 'chrM':
             continue
         records.append((chrom, length))
     return sorted(records, key=chrom_sort_key)  
@@ -118,7 +118,7 @@ def centromere_coords(assembly:str) -> List[Tuple[str, int, int]]:
     data = defaultdict(list)
     for chrom, val in response.json()['centromeres'].items():
         for d in val:
-            if '_' in d['chrom'] or d['chrom'] == 'chrM':
+            if '_' in d['chrom'] or d['chrom'] == 'chrMT' or chrom == 'chrM':
                 continue
             data[d['chrom']].append((d['chromStart'], d['chromEnd']))
     records = []
