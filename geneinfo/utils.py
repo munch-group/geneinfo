@@ -311,8 +311,19 @@ def tabulate_genes(words, ncols=None):
 
 class GeneList(UserList):
 
+    _highlight_color = '#1876D2'
+    highlight_color = _highlight_color
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    @classmethod
+    def set_highlight_color(cls, color):
+        cls.highlight_color = color
+
+    @classmethod
+    def reset_highlight_color(cls):
+        cls.highlight_color = cls._highlight_color
 
     # TODO: add alias mapping to GeneList
     def download_gene_aliases():
@@ -346,21 +357,30 @@ class GeneList(UserList):
         return('\n'.join(repr))
 
     def _repr_html_(self):
-        rows, col_width = self._tabulate()
-        style = 'style="background: transparent!important; line-height: 10px!important;text-align: left!important"'
-        table = [f'<table data-quarto-disable-processing="true" {style}>']
-        for row in list(zip_longest(*rows, fillvalue='')):
-            table.append(f'<tr {style}>')
-            for gene in row:
-                if hasattr(self, '_highlight') and gene in self._highlight:
-                    table.append(f'<td {style}><b>{gene}</b></td>')
-                else:
-                    table.append(f'<td {style}>{gene}</td>')
-            table.append('</tr>')
-        table.append('</table>')
-        if hasattr(self, '_highlight'):
-            delattr(self, '_highlight')        
-        return '\n'.join(table)
+        try:
+            rows, col_width = self._tabulate()
+            style = 'background: transparent!important; line-height: 10px!important;text-align: left!important;'
+            table = [f'<table data-quarto-disable-processing="true" {style}>']
+            for row in list(zip_longest(*rows, fillvalue='')):
+                table.append(f'<tr style="{style}">')
+                for gene in row:
+                    td_styles = []                
+                    if hasattr(self, '_bold') and gene in self._bold:
+                        td_styles.append('font-weight: bold;')
+                    if hasattr(self, '_color') and gene in self._color:
+                        td_styles.append(f'color:{self.highlight_color};')
+                    if hasattr(self, '_underline') and gene in self._underline:
+                        td_styles.append('text-decoration: underline;')
+                    if hasattr(self, '_italic') and gene in self._italic:
+                        td_styles.append('font-style: italic;')
+                    table.append(f'<td style="{style + ' '.join(td_styles)}">{gene}</td>')
+                table.append('</tr>')
+            table.append('</table>')
+            self._strip_styles()
+            return '\n'.join(table)
+        except Exception as e:
+            self._strip_styles()
+            raise e
 
     def expand_amplicon_abbrev(self):
 
@@ -390,17 +410,39 @@ class GeneList(UserList):
     def __str__(self):
         return repr(self)
 
+    def _strip_styles(self):
+        for attr in ['_bold', '_color', '_italic', '_underline']:
+            if hasattr(self, attr):
+                delattr(self, attr)
+        return self
+
     def __lshift__(self, other):
-        setattr(self, '_highlight', list(other))
+        if not hasattr(self, '_bold'):
+            setattr(self, '_bold', list(other))
+        elif not hasattr(self, '_color'):
+            setattr(self, '_color', list(other))
+        elif not hasattr(self, '_underline'):
+            setattr(self, '_underline', list(other))
+        elif not hasattr(self, '_italic'):
+            setattr(self, '_italic', list(other))
+        else:
+            self._strip_styles()
+            raise ValueError('Do not provide more than two three highlight lists')        
         return self
         
     def __or__(self, other):
+        self._strip_styles()
+        other._strip_styles()
         return GeneList(sorted(set(self.data + other.data)))
 
     def __and__(self, other):
+        self._strip_styles()
+        other._strip_styles()        
         return GeneList(sorted(set(self.data).intersection(set(other.data))))
 
     def __xor__(self, other):
+        self._strip_styles()
+        other._strip_styles()        
         inter = set(self.data).intersection(set(other.data))
         union = set(self.data + other.data)
         return GeneList(sorted(union.difference(inter)))
