@@ -19,7 +19,7 @@ requirements:
     - python
     - pip
   run:       # your library dependencies
-    # - python
+    - python
     - jupyter
     - ipython
     - matplotlib>=3.0
