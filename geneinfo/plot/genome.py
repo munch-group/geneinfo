@@ -1239,19 +1239,22 @@ class GenomeIdeogram:
             plt.xlabel('')
             plt.ylabel('')
 
-    def add_legend(self, **kwargs:dict) -> None:
+    def add_legend(self, outside=False, **kwargs:dict) -> None:
         """
         Adds a legend to the chromosome ideograms.
 
         Parameters
         ----------
+        outside : 
+            Place the legend outside the plot, by default False
         **kwargs :
             Keyword arguments are passed to matplotlib's `legend`. 
             Defaults to {'loc': 'center left', 'bbox_to_anchor': (1.02, 0.5),
-            'frameon': False}.
+            'frameon': False} if `outside` is True, otherwise defaults to {'frameon': False}.
         """
-        kwargs.setdefault('loc', 'center left')
-        kwargs.setdefault('bbox_to_anchor', (1.02, 0.5))
+        if outside:
+            kwargs.setdefault('loc', 'center left')
+            kwargs.setdefault('bbox_to_anchor', (1.02, 0.5))
         kwargs.setdefault('frameon', False)
 
         for i, ax in enumerate(self.ax_list):
