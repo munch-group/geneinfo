@@ -263,8 +263,8 @@ def gene_labels_region(chrom:str, start:int, end:int, assembly:str) -> List[Tupl
     :
         List of tuples with chromosome, position, and gene name.
     """
-    df = gene_coords(chrom, start, end, assembly)
-    return list(zip(df.chrom, ((df.start+df.end)/2).astype(int), df.symbol))
+    df = gene_coords_region(chrom, start, end, assembly, as_dataframe=True)
+    return list(zip(df.chrom, ((df.start+df.end)/2).astype(int), df.name))
 
 
 @shelve_it()
