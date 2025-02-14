@@ -326,14 +326,16 @@ class GeneList(UserList):
     def reset_highlight_color(cls):
         cls.highlight_color = cls._highlight_color
 
-    def fisher(self, other, background):
+    def fisher(self, other, background, return_counts=False):
         M = len(background) 
         N = len(background & self) 
         n = len(background & other)
         x = len(background & self & other)
         table = [[  x,           n - x          ],
                 [ N - x,        M - (n + N) + x]]
-        return table, fisher_exact(table, alternative='greater').pvalue, self & other        
+        if return_counts:
+            return fisher_exact(table, alternative='greater').pvalue, table
+        return fisher_exact(table, alternative='greater').pvalue      
 
     # TODO: add alias mapping to GeneList
     def download_gene_aliases():
