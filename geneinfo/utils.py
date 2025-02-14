@@ -21,6 +21,7 @@ import shelve
 from pathlib import Path
 from collections import UserList
 from statsmodels.nonparametric.smoothers_lowess import lowess
+from scipy.stats import fisher_exact
 
 from .intervals import *
 
@@ -324,6 +325,15 @@ class GeneList(UserList):
     @classmethod
     def reset_highlight_color(cls):
         cls.highlight_color = cls._highlight_color
+
+    def fisher(self, other, background):
+        M = len(background) 
+        N = len(background & self) 
+        n = len(background & other)
+        x = len(background & self & other)
+        table = [[  x,           n - x          ],
+                [ N - x,        M - (n + N) + x]]
+        return table, fisher_exact(table, alternative='greater').pvalue, self & other        
 
     # TODO: add alias mapping to GeneList
     def download_gene_aliases():
