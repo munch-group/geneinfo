@@ -855,7 +855,7 @@ class GenomeIdeogram:
                 highlight[gene]['bbox'] = {}            
             highlight[gene]['bbox'].update(dict(edgecolor='black', 
                                                 pad=max(1.5, pad), 
-                                                linewidth=1))
+                                                linewidth=0.5))
         for gene in filled:
             if 'bbox' not in highlight[gene]:
                 highlight[gene]['bbox'] = {}
