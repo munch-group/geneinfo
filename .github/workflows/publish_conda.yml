@@ -40,7 +40,7 @@ jobs:
           echo "label=$label" >> $GITHUB_OUTPUT
           fi
       - name: Build and upload the conda packages
-        uses: uibcdf/action-build-and-upload-conda-packages@v1.4.0
+        uses: munch-group/action-conda-build-upload@v1.4.0
         with:
           meta_yaml_dir: conda-build
           python-version: ${{ matrix.python-version }}

@@ -360,7 +360,7 @@ class GeneList(UserList):
         
     def __repr__(self):
         if not len(self):
-            return '< Empty >'
+            return '< Empty GeneList>'
         rows, col_width = self._tabulate()
         repr = []
         for row in list(zip_longest(*rows, fillvalue='')):
@@ -371,6 +371,8 @@ class GeneList(UserList):
         return('\n'.join(repr))
 
     def _repr_html_(self):
+        if not len(self):
+            return '< Empty GeneList >'
         try:
             rows, col_width = self._tabulate()
             style = 'background: transparent!important; line-height: 10px!important;text-align: left!important;'
