@@ -334,8 +334,8 @@ class GeneList(UserList):
         table = [[  x,           n - x          ],
                 [ N - x,        M - (n + N) + x]]
         if return_counts:
-            return fisher_exact(table, alternative='greater').pvalue, table
-        return fisher_exact(table, alternative='greater').pvalue      
+            return float(fisher_exact(table, alternative='greater').pvalue), table
+        return float(fisher_exact(table, alternative='greater').pvalue)      
 
     # TODO: add alias mapping to GeneList
     def download_gene_aliases():
