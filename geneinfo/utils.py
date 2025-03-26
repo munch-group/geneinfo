@@ -359,6 +359,8 @@ class GeneList(UserList):
         return rows, col_width
         
     def __repr__(self):
+        if not len(self):
+            return '< Empty >'
         rows, col_width = self._tabulate()
         repr = []
         for row in list(zip_longest(*rows, fillvalue='')):
