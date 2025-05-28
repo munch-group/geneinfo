@@ -1576,7 +1576,7 @@
     "href": "pages/chrom_ideograms.html#genomic-segment-annotation",
     "title": "Ideograms",
     "section": "Genomic segment annotation",
-    "text": "Genomic segment annotation\n\ng = gplt.GenomeIdeogram(assembly='hg38') \ng.draw_chromosomes()\ng.add_segments(segments, facecolor='tab:blue', alpha=0.2)\n\n\n\n\n\n\n\n\nTo make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):\n\nsegments_with_alpha = [(*t, np.random.random()) for t in segments]\nsegments_with_alpha[:3]\n\n[('chr1', 10065165, 12961789, 0.31528419735740065),\n ('chr1', 15568967, 18751672, 0.43133485551441586),\n ('chr1', 19444467, 23071285, 0.33362901111256615)]\n\n\n\ng = gplt.GenomeIdeogram(assembly='hg38') \ng.draw_chromosomes()\ng.add_segments(segments_with_alpha, facecolor='tab:blue')",
+    "text": "Genomic segment annotation\n\ng = gplt.GenomeIdeogram(assembly='hg38') \ng.draw_chromosomes()\ng.add_segments(segments, facecolor='tab:blue', alpha=0.2)\n\n\n\n\n\n\n\n\nTo make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):\n\nsegments_with_alpha = [(*t, np.random.random()) for t in segments]\nsegments_with_alpha[:3]\n\n[('chr1', 10065165, 12961789, 0.8568694315116595),\n ('chr1', 15568967, 18751672, 0.028884605362395233),\n ('chr1', 19444467, 23071285, 0.8632622664866442)]\n\n\n\ng = gplt.GenomeIdeogram(assembly='hg38') \ng.draw_chromosomes()\ng.add_segments(segments_with_alpha, facecolor='tab:blue')",
     "crumbs": [
       "Visualization",
       "Ideograms"
@@ -1587,7 +1587,7 @@
     "href": "pages/chrom_ideograms.html#connections",
     "title": "Ideograms",
     "section": "Connections",
-    "text": "Connections\n\ng = gplt.GenomeIdeogram(assembly='hg38') \ng.draw_chromosomes()\n# g.add_connections(segments, color='orange', height=5)\ng.add_connections(segments, color='orange')\n\n\n\n\n\n\n\n\n\ng = gplt.ChromIdeogram('chrX', assembly='hg38',\n    zooms=[\n        (15_000_000, 25_000_000),\n        (90_000_000, 105_000_000),\n    ]\n)\n# g.draw_chromosomes(base=2, height=2)\ng.draw_chromosomes(base=2)\ng.add_connections(segments, color='orange')",
+    "text": "Connections\nIf what you want to show is the connection between pairs of positions, you can use add_connections instead. Colors make it easier to distinguish many overlapping arcs.\n\ng = gplt.GenomeIdeogram(assembly='hg38') \ng.draw_chromosomes()\ng.add_connections(segments)\n\n\n\n\n\n\n\n\nSingle color:\n\ng = gplt.GenomeIdeogram(assembly='hg38') \ng.draw_chromosomes()\ng.add_connections(segments, color='orange')\n\n\n\n\n\n\n\n\nSingle chromosome ideogram with non-default max height of arcs (and other styling):\n\ng = gplt.ChromIdeogram('chrX', assembly='hg38')\ng.draw_chromosomes(base=2, height=1)\n#g.draw_chromosomes(base=2)\n#g.add_connections(segments, color='orange')\ng.add_connections(segments, color='orange', height=6, adjust_heights=False, linewidth=5, alpha=0.5, zorder=-1)",
     "crumbs": [
       "Visualization",
       "Ideograms"
