@@ -141,3 +141,7 @@ docs/_freeze/
 docs/_inv/
 docs/objects.txt
 docs/pages/geneinfo_cache/
+
+# pixi environments
+.pixi
+*.egg-info

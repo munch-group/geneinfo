@@ -5,6 +5,7 @@ import pandas as pd
 from pandas.api.types import is_object_dtype
 from collections.abc import Callable, MutableSequence
 from typing import Any, TypeVar, List, Tuple, Dict, Union, Iterable
+from itertools import cycle
 
 from ..intervals import *
 from ..utils import horizon
@@ -1034,6 +1035,69 @@ class GenomeIdeogram:
                     zoom_ax.add_patch(rect)    
 
 
+          
+    def bezier_lines(self, pairs, ax, base=None, height=None, color=None,
+                     linewidth=None):
+    
+        def _get_color(n, lightness=0.4):
+            color_cycle = cycle([matplotlib.colors.to_hex(c) for c in sns.husl_palette(n, l=lightness)])
+            for color in color_cycle:
+                yield color
+        
+        husl_colors = _get_color(len(pairs), lightness=0.7)
+        
+        bezier_path = np.linspace(0, 1, 100)
+
+        for x1, x2 in pairs:
+
+            y1, y2 = base, base
+            if height is not None:
+                h = self.map_y(height, ax)
+            else:
+                h = self.map_y(0.3, ax)*np.log(abs(x1-x2))
+
+            # Control point: midpoint lifted vertically
+            xm, ym = (x1 + x2) / 2, (y1 + y2) / 2 + h
+        
+            # Compute Bézier curve points
+            x = (1 - bezier_path) ** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xm + bezier_path ** 2 * x2
+            y = (1 - bezier_path) ** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * ym + bezier_path ** 2 * y2
+        
+            y += self.map_y(base, ax) 
+
+            if color is None:
+                _color = next(husl_colors)
+            else:
+                _color = color
+            ax.plot(x, y, '-', linewidth=linewidth, color=_color)
+
+
+    def add_connections(self, annot:MutableSequence, base:float=None, 
+                    height:float=None, color:str=None, linewidth:float=1,
+                    zorder:float=100, **kwargs:dict) -> None:
+
+        if base is None:
+            base = self.ideogram_base + self.ideogram_height
+        # if height is None:
+        #     height = self.ideogram_height * 2
+
+        chrom_annot = defaultdict(list)
+        for a in annot:
+            chrom_annot[a[0]].append(a[1:])
+
+        for chrom, annot in chrom_annot.items():
+            if chrom not in self.chr_axes:
+                continue
+            ax = self.chr_axes[chrom]
+            annot = sorted(annot, reverse=True)
+        
+            self.bezier_lines(annot, ax, base=base, height=height, color=color,
+                              linewidth=linewidth, **kwargs)
+            
+            for ax in self.zoom_axes:
+                self.bezier_lines(annot, ax, base=base, height=height, color=color,
+                                linewidth=linewidth, **kwargs)
+    
 
     def add_vlines(self, step:int=1000000, color:str='black', linewidth:float=0.1,
                    zorder:float=100, **kwargs:dict) -> None:
