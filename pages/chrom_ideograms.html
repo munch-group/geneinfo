@@ -349,143 +349,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.plot <span class="im">as</span> gplt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-3" class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># # Calculate the xy coords for each point on the circle</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import itertools</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># fig, ax = plt.subplots(1, 1)</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># npoints = 8</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># s = 2 * np.pi / npoints</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># verts = np.zeros((npoints, 2))</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># for i in np.arange(npoints):</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#     angle = s * i</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     x = npoints * np.cos(angle)</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#     y = npoints * np.sin(angle)</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#     verts[i] = [x, y]</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># # Plot the Bezier curves</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># numbers = [i for i in range(npoints)]</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># bezier_path = np.arange(0, 1.01, 0.01)</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># for a, b in itertools.product(numbers, repeat=2):</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#     if a == b:</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#         continue</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#     x1y1 = x1, y1 = verts[a]</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#     x2y2 = x2, y2 = verts[b]</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#     xbyb = xb, yb = [0, 0]</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#     # Compute and store the Bezier curve points</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#     x = (1 - bezier_path)** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xb + bezier_path** 2 * x2</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#     y = (1 - bezier_path)** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * yb + bezier_path** 2 * y2</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#     ax.plot(x, y, 'k-')</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co"># x, y = verts.T</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.scatter(x, y, marker='o', s=50, c='r')</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_xlim(-npoints - 5, npoints + 6)</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_ylim(-npoints - 5, npoints + 6)</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set(aspect=1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="cell-4" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import numpy as np</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import matplotlib.pyplot as plt</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># import matplotlib.colors</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># from itertools import cycle</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># def connections(pairs, ax, y=0, height=None):</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#     def _get_color(n, lightness=0.4):</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#         color_cycle = cycle([matplotlib.colors.to_hex(c) for c in sns.husl_palette(n, l=lightness)])</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#         for color in color_cycle:</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#             yield color</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#     husl_colors = _get_color(len(pairs), lightness=0.7)</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#     # Prepare Bézier path parameter</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#     bezier_path = np.linspace(0, 1, 100)</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#     # Plot quadratic Bézier curves between all distinct pairs</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#     for x1, x2 in pairs:</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#         y1, y2 = 0, 0</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#         if height is not None:</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#             h = height</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#         else:</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#             h = (abs(x1-x2) / 2)**0.5</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#         # Control point: midpoint lifted vertically</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#         xm, ym = (x1 + x2) / 2, (y1 + y2) / 2 + h</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#         # Compute Bézier curve points</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#         x = (1 - bezier_path) ** 2 * x1 + 2 * (1 - bezier_path) * bezier_path * xm + bezier_path ** 2 * x2</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#         y = (1 - bezier_path) ** 2 * y1 + 2 * (1 - bezier_path) * bezier_path * ym + bezier_path ** 2 * y2</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#         ax.plot(x, y, '-', linewidth=1, color=next(husl_colors))</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># fig, ax = plt.subplots(1, 1, figsize=(12, 3))</span></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co"># pairs = list(zip(np.random.randint(100, size=25), np.random.randint(100, size=25)))</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># # pairs = sorted(sorted(p) for p in pairs)</span></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co"># connections(pairs, ax, y=0)</span></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.scatter([x for p in pairs for x in p], [0]*2*len(pairs), marker='o', s=5, c='k')</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="cell-5" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> itertools</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">1</span>))</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>npoints <span class="op">=</span> <span class="dv">8</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>spacing <span class="op">=</span> <span class="dv">4</span>  <span class="co"># Distance between points on the line</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>height <span class="op">=</span> <span class="dv">20</span>  <span class="co"># Vertical distance of control point above midpoint</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute coordinates for points on a horizontal line</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>verts <span class="op">=</span> np.zeros((npoints, <span class="dv">2</span>))</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(npoints):</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> i <span class="op">*</span> spacing</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    verts[i] <span class="op">=</span> [x, y]</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare Bézier path parameter</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>bezier_path <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">100</span>)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot quadratic Bézier curves between all distinct pairs</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> a, b <span class="kw">in</span> itertools.product(<span class="bu">range</span>(npoints), repeat<span class="op">=</span><span class="dv">2</span>):</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> a <span class="op">==</span> b:</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">continue</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    x1, y1 <span class="op">=</span> verts[a]</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    x2, y2 <span class="op">=</span> verts[b]</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Control point: midpoint lifted vertically</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    xm, ym <span class="op">=</span> (x1 <span class="op">+</span> x2) <span class="op">/</span> <span class="dv">2</span>, (y1 <span class="op">+</span> y2) <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> height</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute Bézier curve points</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> bezier_path) <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> x1 <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> bezier_path) <span class="op">*</span> bezier_path <span class="op">*</span> xm <span class="op">+</span> bezier_path <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> x2</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> bezier_path) <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> y1 <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> bezier_path) <span class="op">*</span> bezier_path <span class="op">*</span> ym <span class="op">+</span> bezier_path <span class="op">**</span> <span class="dv">2</span> <span class="op">*</span> y2</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, y, <span class="st">'k-'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>)</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot anchor points</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>x, y <span class="op">=</span> verts.T</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, marker<span class="op">=</span><span class="st">'o'</span>, s<span class="op">=</span><span class="dv">50</span>, c<span class="op">=</span><span class="st">'r'</span>)</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure axes</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_xlim(-spacing, npoints * spacing)</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_ylim(-5, height * 2)</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co"># ax.set_aspect(1)</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-5" class="cell">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -495,8 +359,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-6" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> utils.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>gene_lists</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> utils.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gene_lists</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -677,8 +541,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="dummy-sample-data" class="level2">
 <h2 class="anchored" data-anchor-id="dummy-sample-data">Dummy sample data</h2>
 <div id="cell-8" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> utils.dummy_data()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> utils.dummy_data()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -748,8 +612,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-9" class="cell" data-execution_count="57">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>segments <span class="op">=</span> utils.dummy_segments()</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>segments[:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>segments <span class="op">=</span> utils.dummy_segments()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>segments[:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="57">
 <pre><code>[('chr1', 10065165, 12961789),
  ('chr1', 15568967, 18751672),
@@ -767,12 +631,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="all-chromosome-ideogram" class="level2">
 <h2 class="anchored" data-anchor-id="all-chromosome-ideogram">All chromosome ideogram</h2>
 <div id="cell-11" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.plot <span class="im">as</span> gplt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.plot <span class="im">as</span> gplt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Segments:</p>
 <div id="cell-13" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -782,7 +646,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-14" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gi.list_assemblies()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gi.list_assemblies()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <style type="text/css">
 #T_4ec7d th {
@@ -1462,8 +1326,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-15" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'panTro4'</span>) </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'panTro4'</span>) </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1476,8 +1340,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="single-chromosome-ideogram" class="level2">
 <h2 class="anchored" data-anchor-id="single-chromosome-ideogram">Single chromosome ideogram</h2>
 <div id="cell-17" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1491,8 +1355,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="the-coordinate-system">The coordinate system</h2>
 <p>The x-axis follow the chromosome coordinates along the ideogram. Behind the scenes, the y-axis for each ideogram has the same scale as its x-axis. But this is mapped to a more sensible range that is <code>(0, 10)</code> by default can be controlled by the <code>ylim</code> keyword argument:</p>
 <div id="cell-20" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">30</span>))</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">30</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1505,8 +1369,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="ideogram-size-and-plament" class="level2">
 <h2 class="anchored" data-anchor-id="ideogram-size-and-plament">Ideogram size and plament</h2>
 <div id="cell-22" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">1</span>, height<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">1</span>, height<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1519,9 +1383,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="genomic-segment-annotation" class="level2">
 <h2 class="anchored" data-anchor-id="genomic-segment-annotation">Genomic segment annotation</h2>
 <div id="cell-24" class="cell" data-execution_count="55">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>g.add_segments(segments, facecolor<span class="op">=</span><span class="st">'tab:blue'</span>, alpha<span class="op">=</span><span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>g.add_segments(segments, facecolor<span class="op">=</span><span class="st">'tab:blue'</span>, alpha<span class="op">=</span><span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1532,8 +1396,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>To make sure segments are visible on the plot, the default minimal size of plotteed segments are 200000. This can be changed like this (notice how the chr1 segment is no longer visible):</p>
 <div id="cell-26" class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>segments_with_alpha <span class="op">=</span> [(<span class="op">*</span>t, np.random.random()) <span class="cf">for</span> t <span class="kw">in</span> segments]</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>segments_with_alpha[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>segments_with_alpha <span class="op">=</span> [(<span class="op">*</span>t, np.random.random()) <span class="cf">for</span> t <span class="kw">in</span> segments]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>segments_with_alpha[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>[('chr1', 10065165, 12961789, 0.31528419735740065),
  ('chr1', 15568967, 18751672, 0.43133485551441586),
@@ -1541,9 +1405,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-27" class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>g.add_segments(segments_with_alpha, facecolor<span class="op">=</span><span class="st">'tab:blue'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>g.add_segments(segments_with_alpha, facecolor<span class="op">=</span><span class="st">'tab:blue'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1556,10 +1420,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="connections" class="level2">
 <h2 class="anchored" data-anchor-id="connections">Connections</h2>
 <div id="cell-29" class="cell" data-execution_count="92">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># g.add_connections(segments, color='orange', height=5)</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>g.add_connections(segments, color<span class="op">=</span><span class="st">'orange'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># g.add_connections(segments, color='orange', height=5)</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>g.add_connections(segments, color<span class="op">=</span><span class="st">'orange'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1568,16 +1432,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-30" class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    zooms<span class="op">=</span>[</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">15_000_000</span>, <span class="dv">25_000_000</span>),</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">90_000_000</span>, <span class="dv">105_000_000</span>),</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># g.draw_chromosomes(base=2, height=2)</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>g.add_connections(segments, color<span class="op">=</span><span class="st">'orange'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-30" class="cell" data-execution_count="93">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    zooms<span class="op">=</span>[</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">15_000_000</span>, <span class="dv">25_000_000</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">90_000_000</span>, <span class="dv">105_000_000</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># g.draw_chromosomes(base=2, height=2)</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>g.add_connections(segments, color<span class="op">=</span><span class="st">'orange'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1591,14 +1455,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="conditional-ideogram-color">Conditional ideogram color</h2>
 <p>You can also make consequtive segments with individual alpha values to evalutate a statistic across the chromosomes. Below I make 100kb windows with sin values:</p>
 <div id="cell-33" class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>length <span class="op">=</span> utils.chrom_lengths[<span class="st">'hg38'</span>][<span class="st">'chrX'</span>]</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>win <span class="op">=</span> <span class="dv">100_000</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="bu">range</span>(<span class="dv">0</span>, length, win)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> np.linspace(<span class="dv">5</span>, <span class="dv">10</span>, <span class="bu">len</span>(x))</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sin(<span class="dv">2</span><span class="op">*</span> np.pi <span class="op">*</span> f <span class="op">*</span> x <span class="op">/</span> length) <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span><span class="op">/</span><span class="dv">2</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>chrom <span class="op">=</span> [<span class="st">'chrX'</span>]<span class="op">*</span><span class="bu">len</span>(x)</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>shaded_segments <span class="op">=</span> [(<span class="st">'chrX'</span>, s, s<span class="op">+</span>win, a) <span class="cf">for</span> s, a <span class="kw">in</span> <span class="bu">zip</span>(x, y)]</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>shaded_segments[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>length <span class="op">=</span> utils.chrom_lengths[<span class="st">'hg38'</span>][<span class="st">'chrX'</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>win <span class="op">=</span> <span class="dv">100_000</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="bu">range</span>(<span class="dv">0</span>, length, win)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> np.linspace(<span class="dv">5</span>, <span class="dv">10</span>, <span class="bu">len</span>(x))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sin(<span class="dv">2</span><span class="op">*</span> np.pi <span class="op">*</span> f <span class="op">*</span> x <span class="op">/</span> length) <span class="op">/</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span><span class="op">/</span><span class="dv">2</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>chrom <span class="op">=</span> [<span class="st">'chrX'</span>]<span class="op">*</span><span class="bu">len</span>(x)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>shaded_segments <span class="op">=</span> [(<span class="st">'chrX'</span>, s, s<span class="op">+</span>win, a) <span class="cf">for</span> s, a <span class="kw">in</span> <span class="bu">zip</span>(x, y)]</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>shaded_segments[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <pre><code>[('chrX', 0, 100000, np.float64(0.5)),
  ('chrX', 100000, 200000, np.float64(0.5100723398623864)),
@@ -1606,9 +1470,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-34" class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>g.add_segments(shaded_segments, facecolor<span class="op">=</span><span class="st">'tab:red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>g.add_segments(shaded_segments, facecolor<span class="op">=</span><span class="st">'tab:red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1619,9 +1483,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Even better, you can use the <code>add_horizon</code> method to plot a horizon plot on the ideograms:</p>
 <div id="cell-36" class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">3</span>, height<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>g.add_horizon(df, zorder<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">3</span>, height<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>g.add_horizon(df, zorder<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1635,10 +1499,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="context-plots">Context plots</h2>
 <p>To visualize data in chromosome context, you can plot anything you like above, on top, or below the ideogram:</p>
 <div id="cell-39" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:29.803157Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:29.803014Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:31.604466Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:31.604021Z&quot;}}" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'sin curve scatter'</span>)</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'sin curve scatter'</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1648,10 +1512,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-40" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:31.620174Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:31.620033Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:33.988471Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:33.988170Z&quot;}}" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.lineplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">7</span>), linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'sin curve line'</span>)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.lineplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">7</span>), linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'sin curve line'</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1665,8 +1529,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="labelled-positions">Labelled positions</h2>
 <p>You can label chromosome positions, to show gene locations or anything else:</p>
 <div id="cell-43" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:33.990310Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:33.990197Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:34.005304Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:34.005072Z&quot;}}" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sample_genes <span class="op">=</span> gene_lists.get(<span class="st">'neuron_genome_proteome'</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>sample_genes[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sample_genes <span class="op">=</span> gene_lists.get(<span class="st">'neuron_genome_proteome'</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>sample_genes[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
@@ -1680,11 +1544,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-44" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:34.006881Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:34.006768Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:25:34.018843Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:25:34.018413Z&quot;}}" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="cell-45" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:25:34.020838Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:25:34.020720Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:10.790269Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:10.789965Z&quot;}}" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>sample_gene_coord <span class="op">=</span> gi.gene_labels(random.sample(sample_genes, <span class="dv">100</span>), assembly<span class="op">=</span><span class="st">'hg38'</span>)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sample_gene_coord <span class="op">=</span> gi.gene_labels(random.sample(sample_genes, <span class="dv">100</span>), assembly<span class="op">=</span><span class="st">'hg38'</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>C5orf51 not found</code></pre>
 </div>
@@ -1696,9 +1560,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Add gene labels to positions:</p>
 <div id="cell-47" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:10.793714Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:10.793585Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:12.519605Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:12.519315Z&quot;}}" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1709,11 +1573,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>You can also use <code>add_labels</code> to add position markers along a chromosome like this to better see the location</p>
 <div id="cell-49" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:12.522031Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:12.521901Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:16.700464Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:16.700099Z&quot;}}" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">7</span>) </span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>ticks <span class="op">=</span> [(c, s, <span class="ss">f'</span><span class="sc">{</span><span class="bu">round</span>(s<span class="op">/</span><span class="dv">1000000</span>, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">'</span>) <span class="cf">for</span> c, l <span class="kw">in</span> utils.chrom_lengths[<span class="st">'hg38'</span>].items() <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, l, <span class="dv">2_500_000</span>)]</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>g.add_labels(ticks, base<span class="op">=</span>g.ideogram_base, min_height<span class="op">=</span>g.ideogram_height<span class="op">+</span><span class="dv">1</span>, color<span class="op">=</span><span class="st">'black'</span>, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">7</span>) </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>ticks <span class="op">=</span> [(c, s, <span class="ss">f'</span><span class="sc">{</span><span class="bu">round</span>(s<span class="op">/</span><span class="dv">1000000</span>, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">'</span>) <span class="cf">for</span> c, l <span class="kw">in</span> utils.chrom_lengths[<span class="st">'hg38'</span>].items() <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, l, <span class="dv">2_500_000</span>)]</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>g.add_labels(ticks, base<span class="op">=</span>g.ideogram_base, min_height<span class="op">=</span>g.ideogram_height<span class="op">+</span><span class="dv">1</span>, color<span class="op">=</span><span class="st">'black'</span>, zorder<span class="op">=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1724,9 +1588,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Style label text and spine:</p>
 <div id="cell-51" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:16.710713Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:16.710468Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:18.491123Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:18.490854Z&quot;}}" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord, color<span class="op">=</span><span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord, color<span class="op">=</span><span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1737,9 +1601,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Remove <code>color</code> keyword arguemnt and instead add random label text and spine colors to the <code>sample_gene_coord</code> tuples:</p>
 <div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:18.493987Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:18.493863Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:18.518818Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:18.518556Z&quot;}}" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'hsv'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'hsv'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors[:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="27">
 <pre><code>[('chr5', 181199559.5, 'TRIM7', '#ff00bf'),
  ('chr10', 1094378.0, 'WDR37', '#ff0000'),
@@ -1747,10 +1611,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-54" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:18.520423Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:18.520329Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:20.351448Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:20.351126Z&quot;}}" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_colors,</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>             base<span class="op">=</span>g.ideogram_base, min_height<span class="op">=</span>g.ideogram_height<span class="op">*</span><span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_colors,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>             base<span class="op">=</span>g.ideogram_base, min_height<span class="op">=</span>g.ideogram_height<span class="op">*</span><span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1761,13 +1625,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Or with a single color scale to visually evaluate significance:</p>
 <div id="cell-56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:20.354252Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:20.354126Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:22.189081Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:22.188774Z&quot;}}" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, </span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>             base<span class="op">=</span>g.ideogram_base, min_height<span class="op">=</span>g.ideogram_height<span class="op">*</span><span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.GenomeIdeogram(assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_colors, linewidth<span class="op">=</span><span class="dv">1</span>, </span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>             base<span class="op">=</span>g.ideogram_base, min_height<span class="op">=</span>g.ideogram_height<span class="op">*</span><span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1777,12 +1641,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-57" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:22.191728Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:22.191600Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:22.357740Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:22.357378Z&quot;}}" data-execution_count="30">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'viridis'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">6</span>)</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'viridis'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_colors <span class="op">=</span> [(<span class="op">*</span>t, rand_col()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1792,13 +1656,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-58" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:22.359410Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:22.359309Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:22.531479Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:22.531142Z&quot;}}" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">4</span>)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_sizes <span class="op">=</span> [(<span class="op">*</span>t, <span class="st">'black'</span>, random.random()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">7</span>)</span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_sizes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">4</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>rand_col <span class="op">=</span> <span class="kw">lambda</span> : matplotlib.colors.to_hex(plt.get_cmap(<span class="st">'Blues'</span>, <span class="dv">10</span>)(randint(<span class="dv">0</span>, <span class="dv">9</span>)))</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>sample_gene_coord_with_sizes <span class="op">=</span> [(<span class="op">*</span>t, <span class="st">'black'</span>, random.random()) <span class="cf">for</span> t <span class="kw">in</span> sample_gene_coord]</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_sizes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1811,15 +1675,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="combinatorial-highlighting" class="level2">
 <h2 class="anchored" data-anchor-id="combinatorial-highlighting">Combinatorial highlighting</h2>
 <div id="cell-60" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:22.533247Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:22.533124Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:22.692809Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:22.692558Z&quot;}}" data-execution_count="32">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">6</span>)</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord,</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1829,16 +1693,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-61" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:22.694853Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:22.694717Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:22.931220Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:22.930939Z&quot;}}" data-execution_count="33">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">6</span>)</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord,</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>             highlight_color<span class="op">=</span><span class="st">'darkorange'</span></span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>             highlight_color<span class="op">=</span><span class="st">'darkorange'</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1849,15 +1713,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>In combination with label sizes:</p>
 <div id="cell-63" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:22.933029Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:22.932898Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:23.093573Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:23.093223Z&quot;}}" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">7</span>)</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_sizes,</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chr2'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, font_size<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord_with_sizes,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>             colored<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'CHST10'</span>, <span class="st">'CPS1'</span>],</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>             filled<span class="op">=</span>[<span class="st">'STAMBP'</span>, <span class="st">'SP140L'</span>],</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>             framed<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'C2orf88'</span>, <span class="st">'STAMBP'</span>],</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>             bold<span class="op">=</span>[<span class="st">'NCOA1'</span>, <span class="st">'SP140L'</span>, <span class="st">'EPC2'</span>],</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>             italic<span class="op">=</span>[<span class="st">'EPC2'</span>],</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1868,30 +1732,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>You can do all the same things as with <code>GenomeIdeogram</code>:</p>
 <div id="cell-65" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:23.095568Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:23.095435Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:23.267196Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:23.266918Z&quot;}}" data-execution_count="35">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="co"># g.draw_chromosomes(base=1, height=0.10, facecolor='lightgray')</span></span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord)</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">25e6</span>, <span class="fl">55e6</span>), </span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">98e6</span>, <span class="fl">102e6</span>)], label<span class="op">=</span><span class="st">'segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">115e6</span>, <span class="fl">135e6</span>)], facecolor<span class="op">=</span><span class="st">'red'</span>, base<span class="op">=</span><span class="dv">4</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'red segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">125e6</span>, <span class="fl">145e6</span>)], facecolor<span class="op">=</span><span class="st">'green'</span>, base<span class="op">=</span><span class="dv">5</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'green segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">35e6</span>, <span class="fl">45e6</span>), </span>
-<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">100e6</span>, <span class="fl">102e6</span>), </span>
-<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">120e6</span>, <span class="fl">132e6</span>)], facecolor<span class="op">=</span><span class="st">'blue'</span>, base<span class="op">=</span><span class="dv">3</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'blue segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>g.add_vlines()</span>
-<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using function that takes data and column name keyword args for dimensions (like seaborn's sns.scatterplot)</span></span>
-<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
-<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using matplotlib Axes method that x and y positional arguments (like matplotlib's Axes.scatter)</span></span>
-<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>g.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.5</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
-<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="co"># g.draw_chromosomes(base=1, height=0.10, facecolor='lightgray')</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes()</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>g.add_labels(sample_gene_coord)</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">25e6</span>, <span class="fl">55e6</span>), </span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">98e6</span>, <span class="fl">102e6</span>)], label<span class="op">=</span><span class="st">'segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">115e6</span>, <span class="fl">135e6</span>)], facecolor<span class="op">=</span><span class="st">'red'</span>, base<span class="op">=</span><span class="dv">4</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'red segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">125e6</span>, <span class="fl">145e6</span>)], facecolor<span class="op">=</span><span class="st">'green'</span>, base<span class="op">=</span><span class="dv">5</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'green segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>g.add_segments([(<span class="st">'chrX'</span>, <span class="fl">35e6</span>, <span class="fl">45e6</span>), </span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">100e6</span>, <span class="fl">102e6</span>), </span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'chrX'</span>, <span class="fl">120e6</span>, <span class="fl">132e6</span>)], facecolor<span class="op">=</span><span class="st">'blue'</span>, base<span class="op">=</span><span class="dv">3</span>, height<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'blue segments'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>g.add_vlines()</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using function that takes data and column name keyword args for dimensions (like seaborn's sns.scatterplot)</span></span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using matplotlib Axes method that x and y positional arguments (like matplotlib's Axes.scatter)</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>g.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.5</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1904,26 +1768,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="additional-axes" class="level2">
 <h2 class="anchored" data-anchor-id="additional-axes">Additional axes</h2>
 <div id="cell-67" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:23.270425Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:23.270309Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:23.597066Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:23.596782Z&quot;}}" data-execution_count="36">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) <span class="co"># plots chromosome</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>new_ax, new_ax2, new_ax3 <span class="op">=</span> g.add_axes(<span class="dv">3</span>, height_ratio<span class="op">=</span><span class="fl">0.6</span>, hspace<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>_df <span class="op">=</span> utils.stairs(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>])</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>new_ax.plot(_df.pos, _df.y, label<span class="op">=</span><span class="st">'Stairs'</span>)</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>new_ax.vlines(np.arange(<span class="op">*</span>new_ax.get_xlim(), <span class="dv">2_000_000</span>), <span class="op">*</span>new_ax.get_ylim(), color<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.1</span>)</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>new_ax.hlines(np.arange(<span class="op">*</span>new_ax.get_ylim(), <span class="dv">1</span>), <span class="op">*</span>new_ax.get_xlim(), color<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.1</span>)</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>new_ax.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>new_ax2.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> utils.fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>)</span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>new_ax3.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
-<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> utils.fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.05</span>)</span>
-<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>new_ax3.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
-<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>new_ax3.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.3</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) <span class="co"># plots chromosome</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>new_ax, new_ax2, new_ax3 <span class="op">=</span> g.add_axes(<span class="dv">3</span>, height_ratio<span class="op">=</span><span class="fl">0.6</span>, hspace<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>_df <span class="op">=</span> utils.stairs(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>])</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>new_ax.plot(_df.pos, _df.y, label<span class="op">=</span><span class="st">'Stairs'</span>)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>new_ax.vlines(np.arange(<span class="op">*</span>new_ax.get_xlim(), <span class="dv">2_000_000</span>), <span class="op">*</span>new_ax.get_ylim(), color<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>new_ax.hlines(np.arange(<span class="op">*</span>new_ax.get_ylim(), <span class="dv">1</span>), <span class="op">*</span>new_ax.get_xlim(), color<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>new_ax.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>new_ax2.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> utils.fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>new_ax3.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> utils.fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.05</span>)</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>new_ax3.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>new_ax3.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.3</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1936,28 +1800,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="floating-annotations" class="level2">
 <h2 class="anchored" data-anchor-id="floating-annotations">Floating annotations</h2>
 <div id="cell-69" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:23.600698Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:23.600580Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:23.857528Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:23.857199Z&quot;}}" data-execution_count="37">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>) </span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>new_ax, new_ax2 <span class="op">=</span> g.add_axes(<span class="dv">2</span>, height_ratio<span class="op">=</span><span class="fl">0.6</span>, hspace<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>_df <span class="op">=</span> utils.stairs(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>])</span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>new_ax.plot(_df.pos, _df.y, label<span class="op">=</span><span class="st">'Stairs'</span>)</span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>new_ax.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), </span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>              fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>new_ax2.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> utils.fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>)</span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
-<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
-<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>g.annotate((<span class="dv">0</span>, <span class="dv">4</span>), (<span class="dv">10000000</span>, <span class="dv">4</span>), </span>
-<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>         <span class="st">"This is the beginning of the chromosome"</span>, <span class="st">'chrX'</span>)</span>
-<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>g.annotate((<span class="dv">61000000</span>, <span class="dv">4</span>), (<span class="dv">40000000</span>, <span class="dv">4</span>), </span>
-<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>         <span class="st">"This is the centromere"</span>, <span class="st">'chrX'</span>)</span>
-<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>g.annotate((<span class="dv">90000000</span>, <span class="dv">1</span>), (<span class="dv">90000000</span>, <span class="dv">5</span>), </span>
-<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Something important in another axes"</span>, <span class="st">'chrX'</span>, </span>
-<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>         ax<span class="op">=</span>new_ax2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(<span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>) </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="dv">2</span>) </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>new_ax, new_ax2 <span class="op">=</span> g.add_axes(<span class="dv">2</span>, height_ratio<span class="op">=</span><span class="fl">0.6</span>, hspace<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>_df <span class="op">=</span> utils.stairs(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>])</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>new_ax.plot(_df.pos, _df.y, label<span class="op">=</span><span class="st">'Stairs'</span>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>new_ax.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), </span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>              fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>new_ax2.scatter(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'x'</span>], df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>, <span class="st">'y'</span>], s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'black'</span>,label<span class="op">=</span><span class="st">'Scatter'</span>)</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> utils.fit_lowess(df.loc[df.chrom <span class="op">==</span> <span class="st">'chrX'</span>], <span class="st">'x'</span>, <span class="st">'y'</span>)</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>new_ax2.plot(fit.x, fit.y, c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>new_ax2.legend(loc<span class="op">=</span><span class="st">'center left'</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">0.5</span>), fontsize<span class="op">=</span><span class="st">"10"</span>, frameon<span class="op">=</span><span class="va">False</span>) <span class="op">;</span></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>g.annotate((<span class="dv">0</span>, <span class="dv">4</span>), (<span class="dv">10000000</span>, <span class="dv">4</span>), </span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>         <span class="st">"This is the beginning of the chromosome"</span>, <span class="st">'chrX'</span>)</span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>g.annotate((<span class="dv">61000000</span>, <span class="dv">4</span>), (<span class="dv">40000000</span>, <span class="dv">4</span>), </span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>         <span class="st">"This is the centromere"</span>, <span class="st">'chrX'</span>)</span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>g.annotate((<span class="dv">90000000</span>, <span class="dv">1</span>), (<span class="dv">90000000</span>, <span class="dv">5</span>), </span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Something important in another axes"</span>, <span class="st">'chrX'</span>, </span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>         ax<span class="op">=</span>new_ax2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1970,22 +1834,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="zooms" class="level2">
 <h2 class="anchored" data-anchor-id="zooms">Zooms</h2>
 <div id="cell-71" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:26:23.860461Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:26:23.860349Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:26:24.346197Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:26:24.345806Z&quot;}}" data-execution_count="38">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    zooms<span class="op">=</span>[</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">45_000_000</span>, <span class="dv">55_000_000</span>),</span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">100_000_000</span>, <span class="dv">120_000_000</span>),</span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>) </span>
-<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="fl">3.5</span>, height<span class="op">=</span><span class="dv">1</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
-<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>g.add_horizon(data<span class="op">=</span>df, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, </span>
-<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>          yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
-<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>g.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, </span>
-<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>             yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
-<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>g.map_method(Axes.plot, data<span class="op">=</span>utils.fit_lowess(df, <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.02</span>), </span>
-<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>             x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
-<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> gplt.ChromIdeogram(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'chrX'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>    zooms<span class="op">=</span>[</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">45_000_000</span>, <span class="dv">55_000_000</span>),</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>        (<span class="dv">100_000_000</span>, <span class="dv">120_000_000</span>),</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>g.draw_chromosomes(base<span class="op">=</span><span class="fl">3.5</span>, height<span class="op">=</span><span class="dv">1</span>, facecolor<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>g.add_horizon(data<span class="op">=</span>df, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>g.map_fun(sns.scatterplot, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, </span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>          yaxis<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'seaborn'</span>)</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>g.map_method(Axes.scatter, data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, </span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>             yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), s<span class="op">=</span><span class="dv">5</span>, c<span class="op">=</span><span class="st">'C2'</span>, label<span class="op">=</span><span class="st">'matplotlib'</span>)</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>g.map_method(Axes.plot, data<span class="op">=</span>utils.fit_lowess(df, <span class="st">'x'</span>, <span class="st">'y'</span>, frac<span class="op">=</span><span class="fl">0.02</span>), </span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>             x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>, yaxis<span class="op">=</span>(<span class="fl">1.5</span>, <span class="fl">2.4</span>), c<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'Lowess'</span>)</span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>g.add_legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
