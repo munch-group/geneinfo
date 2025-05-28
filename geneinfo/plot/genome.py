@@ -1036,14 +1036,17 @@ class GenomeIdeogram:
 
 
     def bezier_lines(self, ax, pairs, base, height, adjust_heights,
-                     color,linewidth, zorder, **kwargs):
+                     color, color_cycle, linewidth, zorder, **kwargs):
     
         def _get_color(n, lightness=0.4):
             color_cycle = cycle([matplotlib.colors.to_hex(c) for c in sns.husl_palette(n, l=lightness)])
             for color in color_cycle:
                 yield color
         
-        husl_colors = _get_color(len(pairs), lightness=0.7)
+        if color_cycle is None:
+            husl_colors = _get_color(len(pairs), lightness=0.7)
+        else:
+            husl_colors = _get_color(color_cycle, lightness=0.7)
         
         bezier_path = np.linspace(0, 1, 100)
 
@@ -1073,7 +1076,7 @@ class GenomeIdeogram:
 
 
     def add_connections(self, annot:MutableSequence, base:float=None, 
-                    height:float=None, color:str=None, linewidth:float=1,
+                    height:float=None, color:str=None, color_cycle=None, linewidth:float=1,
                     zorder:float=100, adjust_heights=True, **kwargs:dict) -> None:
 
         if base is None:
@@ -1093,11 +1096,13 @@ class GenomeIdeogram:
         
             self.bezier_lines(ax, annot, base=base, height=height, 
                               adjust_heights=adjust_heights, color=color,
+                              color_cycle=color_cycle,
                               linewidth=linewidth, zorder=zorder, **kwargs)
             
             for ax in self.zoom_axes:
                 self.bezier_lines(ax, annot, base=base, height=height, 
                               adjust_heights=adjust_heights, color=color,
+                              color_cycle=color_cycle,
                               linewidth=linewidth, zorder=zorder, **kwargs)
     
 
