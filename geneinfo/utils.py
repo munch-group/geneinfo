@@ -315,6 +315,9 @@ class GeneList(UserList):
     _highlight_color = '#1876D2'
     highlight_color = _highlight_color
 
+    _markup = ['bold', 'color', 'underline', 'italic']
+    markup = _markup
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -434,14 +437,18 @@ class GeneList(UserList):
         return self
 
     def __lshift__(self, other):
-        if not hasattr(self, '_bold'):
-            setattr(self, '_bold', list(other))
-        elif not hasattr(self, '_color'):
-            setattr(self, '_color', list(other))
-        elif not hasattr(self, '_underline'):
-            setattr(self, '_underline', list(other))
-        elif not hasattr(self, '_italic'):
-            setattr(self, '_italic', list(other))
+        for style in self.markup:
+            if not hasattr(self, f'_{style}'):
+                setattr(self, f'_{style}', list(other))            
+                break
+        # if not hasattr(self, '_bold'):
+        #     setattr(self, '_bold', list(other))
+        # elif not hasattr(self, '_color'):
+        #     setattr(self, '_color', list(other))
+        # elif not hasattr(self, '_underline'):
+        #     setattr(self, '_underline', list(other))
+        # elif not hasattr(self, '_italic'):
+        #     setattr(self, '_italic', list(other))
         else:
             self._strip_styles()
             raise ValueError('Do not provide more than two three highlight lists')        

@@ -1,0 +1,52 @@
+[project]
+authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
+name = "geneinfo"
+requires-python = ">= 3.9"
+version = "5.2.3"
+classifiers = [
+    "Programming Language :: Python :: 3"
+]
+dependencies = [
+    'jupyter',
+    'ipython',
+    'matplotlib >= 3.0',
+    'seaborn',
+    'numpy >= 1.1',
+    'requests',
+    'biopython',
+    'goatools >= 1.2',
+    'tables', 
+    # 'pytables', # if conda package
+    'wget',
+    'pydot',
+    'statsmodels',
+]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+geneinfo = [
+    'data/*.txt', 
+    'data/*.csv', 
+    'data/*.pickle'
+  ]
+
+[project.urls]
+Homepage = "https://munch-group.org/geneinfo"
+Documentation = "https://munch-group.org/geneinfo"
+Repository = "https://github.com/munch-group/geneinfo.git"
+Issues = "https://github.com/munch-group/geneinfo/issues"
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "osx-64", "linux-64"]
+
+[tool.pixi.pypi-dependencies]
+geneinfo = { path = ".", editable = true }
+
+[tool.pixi.tasks]
