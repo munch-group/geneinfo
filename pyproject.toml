@@ -2,7 +2,7 @@
 authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
 name = "geneinfo"
 requires-python = ">= 3.9"
-version = "5.2.5"
+version = "5.2.6"
 classifiers = [
     "Programming Language :: Python :: 3"
 ]
