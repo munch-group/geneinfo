@@ -43,7 +43,7 @@ jobs:
         uses: munch-group/action-conda-build-upload@v1.4.0
         with:
           meta_yaml_dir: conda-build
-          python-version: ${{ matrix.python-version }}
+          # python-version: ${{ matrix.python-version }}
           # platform_all: true
           platform_osx-arm64: true
           platform_linux-64: true
