@@ -350,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Enrichment against all GO terms with all protein coding genes as background:</strong></p>
 <div id="cell-7" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.utils <span class="im">as</span> utils</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>gl <span class="op">=</span> utils.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>gl <span class="op">=</span> genelist.GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>glist(gl.get(<span class="st">'sfari_all_conf'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
