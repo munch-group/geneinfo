@@ -1,7 +1,7 @@
-# GeneListCollection { #geneinfo.utils.GeneListCollection }
+# GeneListCollection { #geneinfo.genelist.GeneListCollection }
 
 ```python
-geneinfo.utils.GeneListCollection(
+geneinfo.genelist.GeneListCollection(
     self
     url=None
     google_sheet=None

@@ -186,7 +186,7 @@ quartodoc:
     - title: Utilities
       desc: |
         These are utility functions to record your email in queries and to tabulate genes.
-      package: geneinfo.utils
+      package: geneinfo.genelist
       contents:
         - tabulate_genes
         - horizon

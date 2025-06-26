@@ -117,5 +117,5 @@ These are utility functions to record your email in queries and to tabulate gene
 | [horizon](horizon.qmd#geneinfo.utils.horizon) | Horizon bar plot made allowing multiple chromosomes and multiple samples. |
 | [stairs](stairs.qmd#geneinfo.utils.stairs) | Turn a df with start, end into one with pos to plot as stairs |
 | [clear_cache](clear_cache.qmd#geneinfo.utils.clear_cache) | Clear the cache of a shelve file. |
-| [GeneList](GeneList.qmd#geneinfo.utils.GeneList) |  |
-| [GeneListCollection](GeneListCollection.qmd#geneinfo.utils.GeneListCollection) |  |
+| [GeneList](GeneList.qmd#geneinfo.genelist.GeneList) |  |
+| [GeneListCollection](GeneListCollection.qmd#geneinfo.genelist.GeneListCollection) |  |

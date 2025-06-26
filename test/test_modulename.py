@@ -1,6 +1,6 @@
 import unittest
 
-from geneinfo.utils import GeneList
+from geneinfo.genelist import GeneList
 
 class TestGeneList(unittest.TestCase):
 

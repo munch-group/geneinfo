@@ -12,7 +12,7 @@ from collections.abc import Sequence, MutableSequence
 
 from ..intervals import *
 
-from ..utils import GeneList
+from ..genelist import GeneList
 
 from ..utils import shelve_it
 cache_dir = Path(os.path.dirname(__file__)).parent / 'data'

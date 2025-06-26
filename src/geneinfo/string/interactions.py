@@ -10,7 +10,7 @@ import requests
 
 from ..intervals import *
 
-from ..utils import GeneList
+from ..genelist import GeneList
 
 
 def _get_string_ids(my_genes):

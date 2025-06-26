@@ -1,7 +1,7 @@
-# GeneList { #geneinfo.utils.GeneList }
+# GeneList { #geneinfo.genelist.GeneList }
 
 ```python
-geneinfo.utils.GeneList(self, *args, **kwargs)
+geneinfo.genelist.GeneList(self, *args, **kwargs)
 ```
 
 
@@ -10,12 +10,12 @@ geneinfo.utils.GeneList(self, *args, **kwargs)
 
 | Name | Description |
 | --- | --- |
-| [download_gene_aliases](#geneinfo.utils.GeneList.download_gene_aliases) | Download mapping from any alias to the cannonical hgcn name for use in set operations. |
+| [download_gene_aliases](#geneinfo.genelist.GeneList.download_gene_aliases) | Download mapping from any alias to the cannonical hgcn name for use in set operations. |
 
-### download_gene_aliases { #geneinfo.utils.GeneList.download_gene_aliases }
+### download_gene_aliases { #geneinfo.genelist.GeneList.download_gene_aliases }
 
 ```python
-geneinfo.utils.GeneList.download_gene_aliases()
+geneinfo.genelist.GeneList.download_gene_aliases()
 ```
 
 Download mapping from any alias to the cannonical hgcn name for use in set operations.
