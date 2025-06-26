@@ -8,7 +8,7 @@ from typing import Any, TypeVar, List, Tuple, Dict, Union, Iterable
 
 from ..intervals import *
 from ..utils import horizon
-from ..information import gene_coords
+from ..coords import gene_coords
 
 import math
 from math import isclose, floor, log10

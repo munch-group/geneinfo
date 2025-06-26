@@ -9,7 +9,7 @@ from itertools import cycle
 
 from ..intervals import *
 from ..utils import horizon
-from ..information import gene_coords, chromosome_lengths, centromere_coords
+from ..coords import gene_coords, chromosome_lengths, centromere_coords
 
 import math
 from math import isclose, floor, log10

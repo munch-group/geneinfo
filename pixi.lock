@@ -1138,8 +1138,8 @@ packages:
   - python-dateutil
 - pypi: ./
   name: geneinfo
-  version: 5.2.16
-  sha256: ce5f8b286e4f2c2149edaf10ef3497277bfbb9b83ef496894b8954b875e50bce
+  version: 5.2.18
+  sha256: d9e1eb77962bc6624cf98f76353b7984f91ed7c1a6528a02b9464ed45d1a8164
   requires_dist:
   - jupyter
   - ipython

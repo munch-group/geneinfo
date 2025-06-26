@@ -9,7 +9,7 @@ import matplotlib.axes
 import matplotlib.pyplot as plt
 
 from ..intervals import *
-from ..information import gene_coords_region
+from ..coords import gene_coords_region
 
 
 def _plot_gene(name, txstart, txend, exons, offset, line_width, 
