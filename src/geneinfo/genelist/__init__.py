@@ -7,7 +7,7 @@ from math import sqrt
 import pandas as pd
 from IPython.display import Markdown, display
 
-from ..information import gene_coords
+from ..coords import gene_coords
 
 class GeneList(UserList):
 
