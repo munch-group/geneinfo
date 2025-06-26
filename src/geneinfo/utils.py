@@ -24,6 +24,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from scipy.stats import fisher_exact
 
 from .intervals import *
+from .information import gene_coords
 
 
 chrom_lengths = {'hg19': {'chr1': 249250621, 'chr2': 243199373, 'chr3': 198022430, 'chr4': 191154276, 
@@ -329,16 +330,47 @@ class GeneList(UserList):
     def reset_highlight_color(cls):
         cls.highlight_color = cls._highlight_color
 
-    def fisher(self, other, background, return_counts=False):
+
+    def _distance_prune(self, other, distance, assembly):
+        """
+        Prune genes that are closer than distance to each other.
+        """
+        ovl = self & other
+        coords = gene_coords(ovl, assembly=assembly)
+        coords = sorted(coords, key=lambda x: (x[0], (x[1] + x[2]) // 2))
+        pruned = []
+        last_end = -distance
+        for i in range(len(coords)):
+            chrom, start, end, name = coords[i]
+            if start - last_end < distance:
+                pruned.append(name)
+            else:
+                last_end = end
+        if not pruned:
+            print('No genes removed', file=sys.stderr)
+        else:
+            print(f'Removed: {", ".join(sorted(pruned))}', file=sys.stderr)
+                    
+        return GeneList(sorted(set(self).difference(set(pruned))))
+
+
+    def fisher(self, other, background, min_dist=(None, None), return_counts=False):
+
+        distance, assembly = min_dist
+        a, b = self, other
+        if min_dist is not None:
+            a = self._distance_prune(other, distance, assembly)
+
         M = len(background) 
-        N = len(background & self) 
-        n = len(background & other)
-        x = len(background & self & other)
+        N = len(background & a) 
+        n = len(background & b)
+        x = len(background & a & b)
         table = [[  x,           n - x          ],
                 [ N - x,        M - (n + N) + x]]
         if return_counts:
             return float(fisher_exact(table, alternative='greater').pvalue), table
-        return float(fisher_exact(table, alternative='greater').pvalue)      
+        return float(fisher_exact(table, alternative='greater').pvalue)    
+  
 
     # TODO: add alias mapping to GeneList
     def download_gene_aliases():
