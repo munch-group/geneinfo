@@ -1,2 +1,2 @@
 
-from .genelist import GeneList, GeneListCollection
+#from .genelist import GeneList, GeneListCollection
