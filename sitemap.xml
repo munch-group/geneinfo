@@ -2,222 +2,222 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/gene_plots.html</loc>
-    <lastmod>2025-06-26T15:01:01.754Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.102Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/cashing.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.004Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/gene_ids.html</loc>
-    <lastmod>2025-06-26T15:01:01.723Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.070Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/chrom_ideograms.html</loc>
-    <lastmod>2025-06-26T15:01:01.722Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.070Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/gene_information.html</loc>
-    <lastmod>2025-06-26T15:01:01.723Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.070Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/basics.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.004Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/gene_coord.html</loc>
-    <lastmod>2025-06-26T15:01:01.722Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.070Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/get_genes_for_go_terms.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/gene_info_region.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/go_annotation_table.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/get_terms_for_go_regex.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/go_info.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/go_term2name.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/get_go_terms_for_genes.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/download_data.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.002Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/index.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/gene_coord.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/get_genes_region_dataframe.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/string_network_table.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.004Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/show_go_dag_for_terms.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/hgcn_symbol.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/show_go_dag_enrichment_results.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/get_genes_for_go_regex.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/GeneList.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.002Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/gene_annotation_table.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/stairs.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/ChromIdeogram.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.002Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/clear_cache.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.002Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/email.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/GoogleSheet.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.002Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/GenomeIdeogram.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.002Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/gene_coords.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/symbols_protein_coding.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.004Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/go_name2term.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/show_string_network.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/ensembl2ncbi.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/horizon.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/show_go_evidence_codes.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/ensembl2symbol.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/tabulate_genes.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.004Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/gene_info.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/GeneListCollection.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.002Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/ensembl_id.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/gene_coords_region.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/go_enrichment.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/get_genes_region.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/show_go_dag_for_gene.html</loc>
-    <lastmod>2025-06-26T15:01:01.655Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/api/gene_plot.html</loc>
-    <lastmod>2025-06-26T15:01:01.654Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.003Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/getting_started.html</loc>
-    <lastmod>2025-06-26T15:01:01.757Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.105Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/go_enrichment.html</loc>
-    <lastmod>2025-06-26T15:01:01.806Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.153Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/go_graphs.html</loc>
-    <lastmod>2025-06-26T15:01:01.822Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.169Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/go_info.html</loc>
-    <lastmod>2025-06-26T15:01:01.838Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.185Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/string_nets.html</loc>
-    <lastmod>2025-06-26T15:01:01.844Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.191Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/gene_lists.html</loc>
-    <lastmod>2025-06-26T15:01:01.723Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.071Z</lastmod>
   </url>
   <url>
     <loc>https://munch-group.github.io/geneinfo/pages/new_retrieval_method.html</loc>
-    <lastmod>2025-06-26T15:01:01.841Z</lastmod>
+    <lastmod>2025-06-26T15:15:49.189Z</lastmod>
   </url>
 </urlset>
