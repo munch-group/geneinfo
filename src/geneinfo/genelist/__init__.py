@@ -56,7 +56,7 @@ class GeneList(UserList):
 
         distance, assembly = min_dist
         a, b = self, other
-        if min_dist is not None:
+        if min_dist[0] is not None:
             a = self._distance_prune(other, distance, assembly)
 
         M = len(background) 
