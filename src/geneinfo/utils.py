@@ -64,6 +64,22 @@ centromeres = {
     'chrX':    (58100000, 63800000),
     'chrY':    (10300000, 10400000)}    
 
+
+def _chrom_sort_key(chrom):
+    return [int(x) if x.isdigit() else x for x in re.split(r'(\d+)', chrom)]
+
+def chrom_sort_key(chrom):
+    """
+    Function for use as key in sorting chromosomes. Works for both
+    Python lists and numpy arrays/pandas series.
+    """
+    if isinstance(chrom, (list, tuple)):
+        return chrom_sort_key(chrom[0])
+    elif isinstance(chrom, Sequence):
+        return [_chrom_sort_key(x) for x in chrom]
+    else:
+        return _chrom_sort_key(chrom)
+
 def dummy_data():
     df_list = []
     for chrom, length in chrom_lengths['hg38'].items():

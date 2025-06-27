@@ -1,5 +1,9 @@
 import unittest
 
+import geneinfo.plot
+import geneinfo.information
+import geneinfo.utils
+import geneinfo.genelist 
 from geneinfo.genelist import GeneList
 
 class TestGeneList(unittest.TestCase):

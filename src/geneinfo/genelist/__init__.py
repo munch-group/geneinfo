@@ -1,4 +1,3 @@
-
 import sys
 from collections import UserList
 from scipy.stats import fisher_exact
@@ -33,6 +32,7 @@ class GeneList(UserList):
         """
         Prune genes that are closer than distance to each other.
         """
+        
         ovl = self & other
         coords = gene_coords(ovl, assembly=assembly)
         coords = sorted(coords, key=lambda x: (x[0], (x[1] + x[2]) // 2))

@@ -13,7 +13,8 @@ from collections.abc import Sequence, MutableSequence
 from ..intervals import *
 
 from ..genelist import GeneList
-from ..information import *
+from ..coords import gene_coords_region
+#from ..information import *
 
 from ..utils import shelve_it
 cache_dir = Path(os.path.dirname(__file__)).parent / 'data'
@@ -55,20 +56,6 @@ def list_assemblies() -> None:
     display(df)
 
 
-def _chrom_sort_key(chrom):
-    return [int(x) if x.isdigit() else x for x in re.split(r'(\d+)', chrom)]
-
-def chrom_sort_key(chrom):
-    """
-    Function for use as key in sorting chromosomes. Works for both
-    Python lists and numpy arrays/pandas series.
-    """
-    if isinstance(chrom, (list, tuple)):
-        return chrom_sort_key(chrom[0])
-    elif isinstance(chrom, Sequence):
-        return [_chrom_sort_key(x) for x in chrom]
-    else:
-        return _chrom_sort_key(chrom)
 
 
 @shelve_it()
@@ -468,3 +455,22 @@ def ensembl_get_genes_region(chrom, window_start, window_end, assembly=None,
 
     return gene_info
 
+def gene_info_region(chrom:str, window_start:int, window_end:int, 
+                    #  assembly:str='GRCh38', 
+                     assembly:str=None) -> None:
+    """
+    Displays HTML formatted information about genes in a chromosomal region.
+
+    Parameters
+    ----------
+    chrom : 
+        Chromosome identifier
+    window_start : 
+        Start of region
+    window_end : 
+        End of region (end base not included)
+    assembly : 
+        Genome assembly, e.g. 'hg38' or 'rheMac10'
+    """
+    for gene in gene_coords_region(chrom, window_start, window_end, assembly):    
+        gene_info(gene[0])

@@ -7,8 +7,7 @@ import requests
 from pathlib import Path
 from collections.abc import Sequence, MutableSequence
 
-from ..information import chrom_sort_key, gene_info
-from ..utils import shelve_it
+from ..utils import shelve_it, chrom_sort_key
 
 cache_dir = Path(os.path.dirname(__file__)).parent / 'data'
 
@@ -332,24 +331,5 @@ def gene_labels(names:Sequence, assembly:str) -> List[Tuple[str, int, str]]:
 #                                        columns=['name', 'start', 'end', 'strand'])
 
 
-def gene_info_region(chrom:str, window_start:int, window_end:int, 
-                    #  assembly:str='GRCh38', 
-                     assembly:str=None) -> None:
-    """
-    Displays HTML formatted information about genes in a chromosomal region.
-
-    Parameters
-    ----------
-    chrom : 
-        Chromosome identifier
-    window_start : 
-        Start of region
-    window_end : 
-        End of region (end base not included)
-    assembly : 
-        Genome assembly, e.g. 'hg38' or 'rheMac10'
-    """
-    for gene in gene_coords_region(chrom, window_start, window_end, assembly):    
-        gene_info(gene[0])
 
 
