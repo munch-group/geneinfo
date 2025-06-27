@@ -18,7 +18,7 @@ from typing import Any, TypeVar, List, Tuple, Dict, Union
 import warnings
 from itertools import chain
 import shelve
-
+from collections.abc import Sequence
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from .intervals import *
