@@ -7,7 +7,7 @@ import requests
 from pathlib import Path
 from collections.abc import Sequence, MutableSequence
 
-
+from ..information import chrom_sort_key, gene_info
 from ..utils import shelve_it
 
 cache_dir = Path(os.path.dirname(__file__)).parent / 'data'
