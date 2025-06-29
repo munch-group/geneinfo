@@ -19,13 +19,30 @@ class GeneList(UserList):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+
     @classmethod
     def set_highlight_color(cls, color):
         cls.highlight_color = color
 
+
     @classmethod
     def reset_highlight_color(cls):
         cls.highlight_color = cls._highlight_color
+
+
+    def name(self, name=None):
+        """
+        Set/get a name for the gene list.
+        """
+        if name is None:
+            if hasattr(self, '_name'):
+                return self._name
+            else:
+                return 'unnamed'
+        if not isinstance(name, str):
+            raise ValueError('Name must be a string.')
+        self._name = name
+        return self
 
 
     def _distance_prune(self, other, distance, assembly):
@@ -77,6 +94,7 @@ class GeneList(UserList):
         """
         ...
 
+
     def _tabulate(self):
         """
         Turn list into square'ish matrix
@@ -91,6 +109,7 @@ class GeneList(UserList):
             rows.append(self[r:r+nrows])
         return rows, col_width
         
+
     def __repr__(self):
         if not len(self):
             return '< Empty GeneList>'
@@ -102,6 +121,7 @@ class GeneList(UserList):
                 line.append(gene.ljust(col_width))
             repr.append(''.join(line))
         return('\n'.join(repr))
+
 
     def _repr_html_(self):
         if not len(self):
@@ -132,6 +152,7 @@ class GeneList(UserList):
             self._strip_styles()
             raise e
 
+
     def expand_amplicon_abbrev(self):
 
         new_list = []
@@ -157,14 +178,17 @@ class GeneList(UserList):
 
         self.data = sorted(set(new_list))
     
+
     def __str__(self):
         return repr(self)
+
 
     def _strip_styles(self):
         for attr in ['_bold', '_color', '_italic', '_underline']:
             if hasattr(self, attr):
                 delattr(self, attr)
         return self
+
 
     def __lshift__(self, other):
         for style in self.markup:
@@ -183,16 +207,19 @@ class GeneList(UserList):
             self._strip_styles()
             raise ValueError('Do not provide more than two three highlight lists')        
         return self
-        
+
+
     def __or__(self, other):
         self._strip_styles()
         other._strip_styles()
         return GeneList(sorted(set(self.data + other.data)))
 
+
     def __and__(self, other):
         self._strip_styles()
         other._strip_styles()        
         return GeneList(sorted(set(self.data).intersection(set(other.data))))
+
 
     def __xor__(self, other):
         self._strip_styles()
@@ -200,6 +227,7 @@ class GeneList(UserList):
         inter = set(self.data).intersection(set(other.data))
         union = set(self.data + other.data)
         return GeneList(sorted(union.difference(inter)))
+
 
 AMPL_ABBREV_MAP = {    
  'amplicon_chrX_CPXCR1': ['CPXCR1'],
@@ -248,6 +276,7 @@ AMPL_ABBREV_MAP = {
  'amplicon_chrX_XAGE5': ['XAGE5'],
 }
 
+
 class GeneListCollection(object):
 
     def __init__(self, url:str=None, google_sheet:str=None, tab='Sheet1'):
@@ -267,18 +296,21 @@ class GeneListCollection(object):
         self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
         self.names = self.df.columns.tolist()
 
+
     def all_genes(self):
         names = []
         for label in self.names:
             names.extend(self.get(label))
         return sorted(set(names))
     
+
     def get(self, name):
         sr = self.df[name]
         sr = self.df.loc[~sr.isnull(), name]
         # lst = sorted(self.expand_amplicon_abbrev(sr.tolist()))
         lst = sr.tolist()
         return GeneList(lst)
+
 
     def _repr_html_(self):
         out = ['| label | description |', '|:---|:---|']
@@ -290,8 +322,10 @@ class GeneListCollection(object):
             
         display(Markdown('\n'.join(out)))
 
+
     def __repr__(self):
         return ""
+  
   
     def __iter__(self):
          yield from self.names
