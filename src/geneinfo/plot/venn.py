@@ -278,7 +278,6 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
     import matplotlib.pyplot as plt
     import matplotlib
     from matplotlib.colors import ListedColormap
-    import venn
 
     if type(data[0]) is not tuple:
         _names = set()
