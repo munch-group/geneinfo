@@ -1,17 +1,8 @@
 name: Build and upload conda packages
 
-# on:
-#   release:
-#     types: ['released']
 on:
-  push:
-#   release:
-#     types:
-#       - 'released'
-#   branches:
-#     - 'main'      
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+  release:
+    types: ['released']
 
 # workflow_dispatch:        # Un comment line if you also want to trigger action manually
 
