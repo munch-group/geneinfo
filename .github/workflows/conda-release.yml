@@ -1,0 +1,104 @@
+name: Build and upload conda packages
+
+on:
+  push:
+#   release:
+#     types:
+#       - 'released'
+#   branches:
+#     - 'main'      
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
+jobs:
+
+  create_changelog_and_release_with_new_tag:
+
+    runs-on: ubuntu-latest
+    
+    permissions:
+        contents: write
+        pull-requests: write
+        repository-projects: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+          includeInvalidCommits: true
+          reverseOrder: true
+          useGitmojis: false
+          excludeTypes: build,docs,other,style
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          name: ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changes }}
+          token: ${{ github.token }}
+
+      - name: Commit CHANGELOG.md
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
+          commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
+          file_pattern: CHANGELOG.md
+
+
+  conda_deployment_with_new_tag:
+
+    name: Conda deployment of package for platform ${{ matrix.os }} with Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # os: [macOS-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+        # python-version: ["3.10", "3.11", "3.12", "3.13"] 
+        python-version: ["3.12"] 
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Conda environment creation and activation
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          python-version: ${{ matrix.python-version }}
+          environment-file: conda-build/build_env.yaml 
+          auto-update-conda: false
+          auto-activate-base: false
+          show-channel-urls: true
+
+      # - name: Install dependencies
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install -r requirements.txt
+
+      # - name: Test with pytest
+      #   run: |
+      #     pip install pytest
+      #     pytest test
+
+      - name: Build and upload the conda packages
+        uses: munch-group/action-conda-build-upload@v0.1.11
+        with:
+          meta_yaml_dir: conda-build
+          conda_build_args: -c conda-forge -c munch-group
+          # conda_build_args: "--python ${{ matrix.python-version }}"
+          platform_all: true
+          # platform_osx-arm64: true
+          # platform_linux-64: true
+          # platform_osx-64: true
+          user: munch-group
+          # label: auto
+          token: ${{ secrets.ANACONDA_TOKEN }}
+          overwrite: true
