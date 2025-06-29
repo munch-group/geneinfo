@@ -309,7 +309,7 @@ class GeneListCollection(object):
         sr = self.df.loc[~sr.isnull(), name]
         # lst = sorted(self.expand_amplicon_abbrev(sr.tolist()))
         lst = sr.tolist()
-        return GeneList(lst)
+        return GeneList(lst).name(name)
 
 
     def _repr_html_(self):

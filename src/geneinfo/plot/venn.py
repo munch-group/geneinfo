@@ -1,9 +1,10 @@
+from functools import partial
+import itertools
+import numpy as np
 from matplotlib.pyplot import subplots
 from matplotlib.patches import Ellipse, Polygon, Patch
 from matplotlib.colors import to_rgba
 from matplotlib.cm import ScalarMappable
-from math import pi, sin, cos
-from functools import partial
 
 SHAPE_COORDS = {
     2: [(.375, .500), (.625, .500)],
