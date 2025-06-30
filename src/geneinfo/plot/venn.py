@@ -303,7 +303,8 @@ def draw_venn(*, petal_labels, dataset_labels, pvalues, hint_hidden, colors, fig
             x, y = PETAL_LABEL_COORDS[n_sets][logic]
             if pvalues is not None:
                 if logic in pvalues:
-                    petal_label += '*' * (int(-np.log10(pvalues[logic]/5)) - 1)                                       
+                    p = max(pvalues[logic], 1/10000)
+                    petal_label += '*' * (int(-np.log10(p/5)) - 1)                                       
                     draw_text(ax, x, y, petal_label, fontsize=fontsize, 
                               color=textcolor, #fontweight='bold'
                               ) 
