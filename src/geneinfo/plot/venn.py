@@ -182,6 +182,28 @@ def generate_petal_labels(datasets, fmt="{size}"):
         )
     return petal_labels
 
+def generate_pvalues(datasets, maxp, background):
+    """Generate petal descriptions for venn diagram based on set sizes"""
+
+    from ..utils import fisher_test
+    
+    datasets = list(datasets)
+    n_sets = len(datasets)
+    dataset_union = set.union(*datasets)
+    universe_size = len(dataset_union)
+    pvalues = {}
+    for logic in generate_logics(n_sets):
+        included_sets = [
+            datasets[i] for i in range(n_sets) if logic[i] == "1"
+        ]
+        if len(included_sets) == 2:
+            p = fisher_test(included_sets[0], included_sets[1], 
+                            background=background)
+            if p < maxp:
+                pvalues[logic] = p
+
+    return pvalues
+
 def init_axes(ax, figsize):
     """Create axes if do not exist, set axes parameters"""
     if ax is None:
@@ -262,23 +284,26 @@ def is_valid_dataset_dict(data):
     else:
         return True
 
-def venn_dispatch(data, func, fisher=False, fmt="{size}", hint_hidden=False, cmap="Set2", 
+def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2", 
                   alpha=.4, figsize=(8, 8), fontsize=13, textcolor='black', 
-                  shape_coords=None, text_kwargs=None, 
+                  shape_coords=None, 
+                  fisher=False, maxp=0.05, 
                   legend_loc="upper right", ax=None):
     """Check input, generate petal labels, draw venn diagram"""
     if not is_valid_dataset_dict(data):
         raise TypeError("Only dictionaries of sets are understood")
     n_sets = len(data)
 
-    pvals = {}
+    pvalues = {}
     if fisher:
+        maxp, background = fisher
         from ..utils import fisher_test
-        pvals['111'] = fisher_test(*data)
+        pvalues = generate_pvalues(data.values(), maxp=maxp, background=background)
 
     return func(
         petal_labels=generate_petal_labels(data.values(), fmt),
         dataset_labels=data.keys(), hint_hidden=hint_hidden,
+        pvalues=pvalues,
         colors=generate_colors(n_colors=n_sets, cmap=cmap, alpha=alpha),
         figsize=figsize, fontsize=fontsize, textcolor=textcolor, 
         shape_coords=shape_coords, legend_loc=legend_loc, ax=ax, pvals=pvals,
@@ -287,7 +312,7 @@ def venn_dispatch(data, func, fisher=False, fmt="{size}", hint_hidden=False, cma
 _venn = partial(venn_dispatch, func=draw_venn, hint_hidden=False)
     
 def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow', 
-          fontsize=9, textcolor=None, shape_coords=None, text_kwargs=None, 
+          fontsize=9, textcolor=None, shape_coords=None, 
           figsize=None, fisher=False):
 
     import matplotlib.pyplot as plt
@@ -339,7 +364,7 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
         cmap = ListedColormap(cmap)
         subset = dict([data[i] for i in combo])
 
-        ax = _venn(subset, fisher=fisher, ax=ax, cmap=cmap, fontsize=fontsize, textcolor=textcolor, shape_coords=shape_coords, text_kwargs=text_kwargs)
+        ax = _venn(subset, fisher=fisher, ax=ax, cmap=cmap, fontsize=fontsize, textcolor=textcolor, shape_coords=shape_coords)
         ax.get_legend().remove()
         ax.axis('off')
 
