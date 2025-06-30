@@ -21,6 +21,7 @@ from itertools import chain
 import shelve
 from collections.abc import Sequence
 from statsmodels.nonparametric.smoothers_lowess import lowess
+from scipy.stats import fisher_exact
 
 from .intervals import *
 
@@ -122,6 +123,26 @@ class cache_disabled():
         global disable_cache
         use_cache = True
 
+def fisher_test(one, other, background, min_dist=None, return_counts=False):
+
+    a, b = one, other    
+
+    if min_dist is not None:
+        try:
+            a = one._distance_prune(other, *min_dist)
+        except AttributeError as e:
+            print('Distance pruning only works for GeneList objects.')
+            raise e
+        
+    M = len(background) 
+    N = len(background & a) 
+    n = len(background & b)
+    x = len(background & a & b)
+    table = [[  x,           n - x          ],
+            [ N - x,        M - (n + N) + x]]
+    if return_counts:
+        return float(fisher_exact(table, alternative='greater').pvalue), table
+    return float(fisher_exact(table, alternative='greater').pvalue)  
 
 def shelve_it() -> Callable:
     """

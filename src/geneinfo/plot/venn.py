@@ -203,7 +203,8 @@ def get_n_sets(petal_labels, dataset_labels):
             raise KeyError("Key not understood: " + logic)
     return n_sets
 
-def draw_venn(*, petal_labels, dataset_labels, hint_hidden, colors, figsize, fontsize, textcolor, shape_coords=None, pvals=None, legend_loc, ax):
+def draw_venn(*, petal_labels, dataset_labels, pvals, hint_hidden, colors, figsize, 
+              fontsize, textcolor, shape_coords=None, legend_loc, ax):
     """Draw true Venn diagram, annotate petals and dataset labels"""
     n_sets = get_n_sets(petal_labels, dataset_labels)
     if 2 <= n_sets < 6:
@@ -225,9 +226,12 @@ def draw_venn(*, petal_labels, dataset_labels, hint_hidden, colors, figsize, fon
         # some petals could have been modified manually:
         if logic in PETAL_LABEL_COORDS[n_sets]:
             x, y = PETAL_LABEL_COORDS[n_sets][logic]
+            kw = {}
             if pvals and logic in pvals:
-                petal_label += '*' * (int(-np.log10(pvals[logic]/5)) - 1) 
-            draw_text(ax, x, y, petal_label, fontsize=fontsize, color=textcolor)
+                kw['fontweight'] = 'bold'
+            # if text_kwargs and logic in text_kwargs:
+            #     petal_label += '*' * (int(-np.log10(text_kwargs[logic]/5)) - 1) 
+            draw_text(ax, x, y, petal_label, fontsize=fontsize, color=textcolor, **kw)
     if legend_loc is not None:
         ax.legend(dataset_labels, loc=legend_loc, prop={"size": fontsize})
     return ax
@@ -258,26 +262,40 @@ def is_valid_dataset_dict(data):
     else:
         return True
 
-def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2", alpha=.4, figsize=(8, 8), fontsize=13, textcolor='black', shape_coords=None, pvals=None, legend_loc="upper right", ax=None):
-    """Check input, generate petal labels, draw venn or pseudovenn diagram"""
+def venn_dispatch(data, func, fisher=False, fmt="{size}", hint_hidden=False, cmap="Set2", 
+                  alpha=.4, figsize=(8, 8), fontsize=13, textcolor='black', 
+                  shape_coords=None, text_kwargs=None, 
+                  legend_loc="upper right", ax=None):
+    """Check input, generate petal labels, draw venn diagram"""
     if not is_valid_dataset_dict(data):
         raise TypeError("Only dictionaries of sets are understood")
     n_sets = len(data)
+
+    pvals = {}
+    if fisher:
+        from ..utils import fisher_test
+        pvals['111'] = fisher_test(*data)
+
     return func(
         petal_labels=generate_petal_labels(data.values(), fmt),
         dataset_labels=data.keys(), hint_hidden=hint_hidden,
         colors=generate_colors(n_colors=n_sets, cmap=cmap, alpha=alpha),
-        figsize=figsize, fontsize=fontsize, textcolor=textcolor, shape_coords=shape_coords, pvals=pvals, legend_loc=legend_loc, ax=ax
+        figsize=figsize, fontsize=fontsize, textcolor=textcolor, 
+        shape_coords=shape_coords, legend_loc=legend_loc, ax=ax, pvals=pvals,
     )
 
 _venn = partial(venn_dispatch, func=draw_venn, hint_hidden=False)
     
 def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow', 
-          fontsize=9, textcolor=None, shape_coords=None, pvals=None, figsize=None):
+          fontsize=9, textcolor=None, shape_coords=None, text_kwargs=None, 
+          figsize=None, fisher=False):
 
     import matplotlib.pyplot as plt
     import matplotlib
     from matplotlib.colors import ListedColormap
+
+    if fisher and len(data) != 3:
+        raise ValueError("Fisher test requires nrsets_per_plot=3")
 
     if type(data[0]) is not tuple:
         _names = set()
@@ -320,7 +338,8 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
         cmap = viridis([vals[i] for i in combo])
         cmap = ListedColormap(cmap)
         subset = dict([data[i] for i in combo])
-        ax = _venn(subset, ax=ax, cmap=cmap, fontsize=fontsize, textcolor=textcolor, shape_coords=shape_coords, pvals=pvals)
+
+        ax = _venn(subset, fisher=fisher, ax=ax, cmap=cmap, fontsize=fontsize, textcolor=textcolor, shape_coords=shape_coords, text_kwargs=text_kwargs)
         ax.get_legend().remove()
         ax.axis('off')
 

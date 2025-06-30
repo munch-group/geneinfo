@@ -1,12 +1,13 @@
 import sys
 from collections import UserList
-from scipy.stats import fisher_exact
+# from scipy.stats import fisher_exact
 from itertools import zip_longest
 from math import sqrt
 import pandas as pd
 from IPython.display import Markdown, display
 
 from ..coords import gene_coords
+from ..utils import fisher_test
 
 class GeneList(UserList):
 
@@ -69,22 +70,25 @@ class GeneList(UserList):
         return GeneList(sorted(set(self).difference(set(pruned))))
 
 
-    def fisher(self, other, background, min_dist=(None, None), return_counts=False):
+    def fisher(self, other, background, min_dist=None, return_counts=False):
+        return fisher_test(self, other, background, min_dist=min_dist, return_counts=return_counts)
 
-        distance, assembly = min_dist
-        a, b = self, other
-        if min_dist[0] is not None:
-            a = self._distance_prune(other, distance, assembly)
+    # def fisher(self, other, background, min_dist=(None, None), return_counts=False):
 
-        M = len(background) 
-        N = len(background & a) 
-        n = len(background & b)
-        x = len(background & a & b)
-        table = [[  x,           n - x          ],
-                [ N - x,        M - (n + N) + x]]
-        if return_counts:
-            return float(fisher_exact(table, alternative='greater').pvalue), table
-        return float(fisher_exact(table, alternative='greater').pvalue)    
+    #     distance, assembly = min_dist
+    #     a, b = self, other
+    #     if min_dist[0] is not None:
+    #         a = self._distance_prune(other, distance, assembly)
+
+    #     M = len(background) 
+    #     N = len(background & a) 
+    #     n = len(background & b)
+    #     x = len(background & a & b)
+    #     table = [[  x,           n - x          ],
+    #             [ N - x,        M - (n + N) + x]]
+    #     if return_counts:
+    #         return float(fisher_exact(table, alternative='greater').pvalue), table
+    #     return float(fisher_exact(table, alternative='greater').pvalue)    
   
 
     # TODO: add alias mapping to GeneList
