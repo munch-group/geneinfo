@@ -1,5 +1,7 @@
 from functools import partial
 import itertools
+import random
+from collections import defaultdict
 import numpy as np
 from matplotlib.pyplot import subplots
 from matplotlib.patches import Ellipse, Polygon, Patch
@@ -146,11 +148,11 @@ def draw_triangle(ax, x1, y1, x2, y2, x3, y3, _dim, _angle, color):
         )
     )
 
-def draw_text(ax, x, y, text, fontsize, color="black"):
+def draw_text(ax, x, y, text, fontsize, color="black", **kwargs):
     """Wrapper for drawing text"""
     ax.text(
         x, y, text, fontsize=fontsize, color=color,
-        horizontalalignment="center", verticalalignment="center"
+        horizontalalignment="center", verticalalignment="center", **kwargs
     )
 
 def generate_logics(n_sets):
@@ -161,48 +163,99 @@ def generate_logics(n_sets):
 def generate_petal_labels(datasets, fmt="{size}"):
     """Generate petal descriptions for venn diagram based on set sizes"""
     datasets = list(datasets)
+    dataset_sizes = [len(dataset) for dataset in datasets]
     n_sets = len(datasets)
     dataset_union = set.union(*datasets)
     universe_size = len(dataset_union)
     petal_labels = {}
     for logic in generate_logics(n_sets):
-        included_sets = [
-            datasets[i] for i in range(n_sets) if logic[i] == "1"
-        ]
-        excluded_sets = [
-            datasets[i] for i in range(n_sets) if logic[i] == "0"
-        ]
+        included_sets = [datasets[i] for i in range(n_sets) if logic[i] == "1"]
+        excluded_sets = [datasets[i] for i in range(n_sets) if logic[i] == "0"]
         petal_set = (
             (dataset_union & set.intersection(*included_sets)) -
             set.union(set(), *excluded_sets)
         )
-        petal_labels[logic] = fmt.format(
-            logic=logic, size=len(petal_set),
-            percentage=(100*len(petal_set)/universe_size)
-        )
+        if fmt is not None:
+            petal_labels[logic] = fmt.format(
+                logic=logic, size=len(petal_set),
+                percentage=(100*len(petal_set)/universe_size)
+            )
+        else:
+            petal_labels[logic] = len(petal_set)
     return petal_labels
 
-def generate_pvalues(datasets, maxp, background):
-    """Generate petal descriptions for venn diagram based on set sizes"""
-
-    from ..utils import fisher_test
-    
+def generate_bootstrap_pvalues(obs_sizes, datasets):
     datasets = list(datasets)
-    n_sets = len(datasets)
-    dataset_union = set.union(*datasets)
-    universe_size = len(dataset_union)
-    pvalues = {}
-    for logic in generate_logics(n_sets):
-        included_sets = [
-            datasets[i] for i in range(n_sets) if logic[i] == "1"
-        ]
-        if len(included_sets) == 2:
-            p = fisher_test(included_sets[0], included_sets[1], 
-                            background=background)
-            if p < maxp:
-                pvalues[logic] = p
+    dataset_sizes = [len(dataset) for dataset in datasets]
+    concat_sets = []
+    for dataset in datasets:
+        concat_sets.extend(list(dataset))
+#    dataset_union = set.union(*datasets)
+    obs_counts = dict()
+    for logic, size in obs_sizes.items():
+        if sum(map(int, logic)) == 1:
+            continue
+        for other_logic, other_size in obs_sizes.items():
+            if logic == other_logic:
+                continue            
+            if sum(map(int, logic)) == sum(i and j for i, j in zip(map(int, logic), map(int, other_logic))):
+                size += other_size
+        obs_counts[logic] = size
 
-    return pvalues
+    boot_counts = defaultdict(list)
+    nr_bootstraps = 1000
+    for _ in range(nr_bootstraps):
+        boot_all = concat_sets
+        random.shuffle(boot_all)
+        boot_datasets = []
+        i = 0
+        for s in dataset_sizes:
+            boot_datasets.append(set(boot_all[i:i+s]))
+            i += s
+        boot_sizes = generate_petal_labels(boot_datasets, fmt=None)
+        for logic, size in boot_sizes.items():
+            if sum(map(int, logic)) == 1:
+                continue
+            for other_logic, other_size in boot_sizes.items():
+
+                if logic == other_logic:
+                    continue
+                if sum(map(int, logic)) == sum(i and j for i, j in zip(map(int, logic), map(int, other_logic))):
+                    size += other_size
+            boot_counts[logic].append(size)
+
+    p_values = {}
+    for logic, c in obs_counts.items():
+        p_values[logic] = 0
+        for bc in boot_counts[logic]:
+            if bc >= c:
+                p_values[logic] += 1/nr_bootstraps
+
+    return p_values
+
+
+
+# def generate_pvalues(datasets, maxp, background):
+#     """Generate petal descriptions for venn diagram based on set sizes"""
+
+#     from ..utils import fisher_test
+
+#     datasets = list(datasets)
+#     n_sets = len(datasets)
+#     dataset_union = set.union(*datasets)
+#     universe_size = len(dataset_union)
+#     pvalues = {}
+#     for logic in generate_logics(n_sets):
+#         included_sets = [
+#             datasets[i] for i in range(n_sets) if logic[i] == "1"
+#         ]
+#         if len(included_sets) == 2:
+#             p = fisher_test(included_sets[0], included_sets[1], 
+#                             background=background)
+#             if p < maxp:
+#                 pvalues[logic] = p
+
+#     return pvalues
 
 def init_axes(ax, figsize):
     """Create axes if do not exist, set axes parameters"""
@@ -225,7 +278,7 @@ def get_n_sets(petal_labels, dataset_labels):
             raise KeyError("Key not understood: " + logic)
     return n_sets
 
-def draw_venn(*, petal_labels, dataset_labels, pvals, hint_hidden, colors, figsize, 
+def draw_venn(*, petal_labels, dataset_labels, pvalues, hint_hidden, colors, figsize, 
               fontsize, textcolor, shape_coords=None, legend_loc, ax):
     """Draw true Venn diagram, annotate petals and dataset labels"""
     n_sets = get_n_sets(petal_labels, dataset_labels)
@@ -248,12 +301,19 @@ def draw_venn(*, petal_labels, dataset_labels, pvals, hint_hidden, colors, figsi
         # some petals could have been modified manually:
         if logic in PETAL_LABEL_COORDS[n_sets]:
             x, y = PETAL_LABEL_COORDS[n_sets][logic]
-            kw = {}
-            if pvals and logic in pvals:
-                kw['fontweight'] = 'bold'
+            if pvalues:
+                if logic in pvalues:
+                    petal_label += '*' * (int(-np.log10(pvalues[logic]/5)) - 1)                                       
+                    draw_text(ax, x, y, petal_label, fontsize=fontsize, 
+                              color=textcolor, #fontweight='bold'
+                              ) 
+                else:                    
+                    draw_text(ax, x, y, petal_label, fontsize=fontsize, 
+                              color="#999999")                    
+            else:
             # if text_kwargs and logic in text_kwargs:
             #     petal_label += '*' * (int(-np.log10(text_kwargs[logic]/5)) - 1) 
-            draw_text(ax, x, y, petal_label, fontsize=fontsize, color=textcolor, **kw)
+                draw_text(ax, x, y, petal_label, fontsize=fontsize, color=textcolor)
     if legend_loc is not None:
         ax.legend(dataset_labels, loc=legend_loc, prop={"size": fontsize})
     return ax
@@ -286,41 +346,48 @@ def is_valid_dataset_dict(data):
 
 def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2", 
                   alpha=.4, figsize=(8, 8), fontsize=13, textcolor='black', 
-                  shape_coords=None, 
-                  fisher=False, maxp=0.05, 
+                  test=False, shape_coords=None, 
                   legend_loc="upper right", ax=None):
     """Check input, generate petal labels, draw venn diagram"""
     if not is_valid_dataset_dict(data):
         raise TypeError("Only dictionaries of sets are understood")
     n_sets = len(data)
 
+    petal_labels=generate_petal_labels(data.values(), fmt)
+
     pvalues = {}
-    if fisher:
-        maxp, background = fisher
-        from ..utils import fisher_test
-        pvalues = generate_pvalues(data.values(), maxp=maxp, background=background)
+    if test:
+        # from ..utils import fisher_test
+        petal_counts = {}
+        for logic, petal_label in petal_labels.items():
+            petal_counts[logic] = int(petal_label)
+        # pvalues = generate_pvalues(data.values(), petal_counts, data.values())
+        pvalues = generate_bootstrap_pvalues(petal_counts, data.values())
+        keys = list(pvalues.keys())
+
+        for logic in keys:
+            if pvalues[logic] > 0.05:
+                del pvalues[logic]
+
 
     return func(
-        petal_labels=generate_petal_labels(data.values(), fmt),
+        petal_labels=petal_labels,
         dataset_labels=data.keys(), hint_hidden=hint_hidden,
         pvalues=pvalues,
         colors=generate_colors(n_colors=n_sets, cmap=cmap, alpha=alpha),
         figsize=figsize, fontsize=fontsize, textcolor=textcolor, 
-        shape_coords=shape_coords, legend_loc=legend_loc, ax=ax, pvals=pvals,
+        shape_coords=shape_coords, legend_loc=legend_loc, ax=ax,
     )
 
 _venn = partial(venn_dispatch, func=draw_venn, hint_hidden=False)
     
 def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow', 
           fontsize=9, textcolor=None, shape_coords=None, 
-          figsize=None, fisher=False):
+          figsize=None, test=False):
 
     import matplotlib.pyplot as plt
     import matplotlib
     from matplotlib.colors import ListedColormap
-
-    if fisher and len(data) != 3:
-        raise ValueError("Fisher test requires nrsets_per_plot=3")
 
     if type(data[0]) is not tuple:
         _names = set()
@@ -364,7 +431,8 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
         cmap = ListedColormap(cmap)
         subset = dict([data[i] for i in combo])
 
-        ax = _venn(subset, fisher=fisher, ax=ax, cmap=cmap, fontsize=fontsize, textcolor=textcolor, shape_coords=shape_coords)
+        ax = _venn(subset, test=test, ax=ax, cmap=cmap, fontsize=fontsize, 
+                   textcolor=textcolor, shape_coords=shape_coords)
         ax.get_legend().remove()
         ax.axis('off')
 
