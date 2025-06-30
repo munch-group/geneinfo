@@ -203,7 +203,7 @@ def generate_bootstrap_pvalues(obs_sizes, datasets):
         obs_counts[logic] = size
 
     boot_counts = defaultdict(list)
-    nr_bootstraps = 1000
+    nr_bootstraps = 10000
     for _ in range(nr_bootstraps):
         boot_all = concat_sets
         random.shuffle(boot_all)
@@ -301,7 +301,7 @@ def draw_venn(*, petal_labels, dataset_labels, pvalues, hint_hidden, colors, fig
         # some petals could have been modified manually:
         if logic in PETAL_LABEL_COORDS[n_sets]:
             x, y = PETAL_LABEL_COORDS[n_sets][logic]
-            if pvalues:
+            if pvalues is not None:
                 if logic in pvalues:
                     petal_label += '*' * (int(-np.log10(pvalues[logic]/5)) - 1)                                       
                     draw_text(ax, x, y, petal_label, fontsize=fontsize, 
@@ -355,8 +355,9 @@ def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2",
 
     petal_labels=generate_petal_labels(data.values(), fmt)
 
-    pvalues = {}
+    pvalues = None
     if test:
+        pvalues = {}
         # from ..utils import fisher_test
         petal_counts = {}
         for logic, petal_label in petal_labels.items():
