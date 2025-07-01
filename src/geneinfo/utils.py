@@ -127,10 +127,10 @@ def fisher_test(one, other, background, min_dist=None, return_counts=False):
 
     a, b = one, other    
 
-    not_in_background = a ^ (a & b)
+    not_in_background = a ^ (a & background)
     if not_in_background:
         print(f'Removed {len(not_in_background)} genes not in background set', file=sys.stderr)
-
+        print(not_in_background)
     if min_dist is not None:
         try:
             a = one._distance_prune(other, *min_dist)

@@ -211,30 +211,9 @@ def generate_bootstrap_pvalues(obs_labels, datasets, background):
         return counts
 
     obs_counts = get_counts(obs_labels)
-    # # get observed overlap counts. 
-    # obs_counts = dict()
-    # for logic, size in obs_sizes.items():
-
-    #     # overlaps are counted only if they are not single sets. 
-    #     if sum(map(int, logic)) == 1:
-    #         continue
-
-    #     # overlaps include nested overlaps ("111" counts are also
-    #     # included in both the "110" counts). I.e. overlaps between all three stets
-    #     # are also considered also overlaps between set one and two.
-    #     for other_logic, other_size in obs_sizes.items():            
-    #         if logic == other_logic:
-    #             continue 
-    #         if sum(map(int, logic)) == sum(i and j for i, j in zip(map(int, logic), map(int, other_logic))):
-    #             size += other_size
-
-    #     obs_counts[logic] = size
 
     datasets = list(datasets)
     dataset_sizes = [len(dataset) for dataset in datasets]
-    # concat_sets = []
-    # for dataset in datasets:
-    #     concat_sets.extend(list(dataset))
 
     dataset_union = set.union(*datasets)
     non_background = dataset_union.difference(set(background))
@@ -383,15 +362,18 @@ def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2",
         raise TypeError("Only dictionaries of sets are understood")
     n_sets = len(data)
 
-    petal_labels=generate_petal_labels(data.values(), fmt)
+    _data = data.copy()
+    for k, v in data.items():
+        _data[k] = _data[k].intersection(set(background))
+        removed = len(data[k]) - len(_data[k])
+        print(f'Ignoring {removed} genes in "{k}" not part of background set', file=sys.stderr)
+    data = _data
+
+    petal_labels = generate_petal_labels(data.values(), fmt)
 
     pvalues = None
     if background:
-        petal_counts = {}
-        for logic, petal_label in petal_labels.items():
-            petal_counts[logic] = int(petal_label)
-
-        pvalues = generate_bootstrap_pvalues(petal_counts, data.values(), background)
+        pvalues = generate_bootstrap_pvalues(petal_labels, data.values(), background)
 
         keys = list(pvalues.keys())
         for logic in keys:
