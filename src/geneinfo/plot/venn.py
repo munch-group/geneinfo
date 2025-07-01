@@ -153,7 +153,8 @@ def draw_text(ax, x, y, text, fontsize, color="black", **kwargs):
     """Wrapper for drawing text"""
     ax.text(
         x, y, text, fontsize=fontsize, color=color,
-        horizontalalignment="center", verticalalignment="center", **kwargs
+        horizontalalignment="center", verticalalignment="center", 
+        zorder=10, **kwargs
     )
 
 def generate_logics(n_sets):
@@ -309,20 +310,34 @@ def draw_venn(*, petal_labels, dataset_labels, pvalues, hint_hidden, colors, fig
         # some petals could have been modified manually:
         if logic in PETAL_LABEL_COORDS[n_sets]:
             x, y = PETAL_LABEL_COORDS[n_sets][logic]
+
+
+            # draw_text(ax, x, y, petal_label, fontsize=fontsize, color=textcolor)
+            # if pvalues and logic in pvalues:
+            #     p = max(pvalues[logic], 1/10000)
+            #     stars = '\n' + '*' * (int(-np.log10(p/5)) - 1)                                       
+            #     draw_text(ax, x, y, stars, fontsize=fontsize, 
+            #                   color=textcolor, fontweight='bold'
+            #                   ) 
+
+                            
             if pvalues is not None:
                 if logic in pvalues:
                     p = max(pvalues[logic], 1/10000)
-                    petal_label += '*' * (int(-np.log10(p/5)) - 1)                                       
+                    stars = '*' * (int(-np.log10(p/5)) - 1)                                       
+
+                    petal_label += '\n' + '*' * (int(-np.log10(p/5)) - 1)                                       
                     draw_text(ax, x, y, petal_label, fontsize=fontsize, 
                               color=textcolor, #fontweight='bold'
                               ) 
                 else:                    
                     draw_text(ax, x, y, petal_label, fontsize=fontsize, 
-                              color="#999999")                    
+                                 color=textcolor, 
+                                #  color="#999999"
+                              )                    
             else:
-            # if text_kwargs and logic in text_kwargs:
-            #     petal_label += '*' * (int(-np.log10(text_kwargs[logic]/5)) - 1) 
                 draw_text(ax, x, y, petal_label, fontsize=fontsize, color=textcolor)
+
     if legend_loc is not None:
         ax.legend(dataset_labels, loc=legend_loc, prop={"size": fontsize})
     return ax
@@ -392,9 +407,9 @@ def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2",
 
 _venn = partial(venn_dispatch, func=draw_venn, hint_hidden=False)
     
-def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow', 
+def venn(*data, ncols=4, nrows=None, petals=3, palette='rainbow', 
           fontsize=9, textcolor=None, shape_coords=None, 
-          figsize=None, background=None):
+          figsize=None, alpha=0.4, background=None):
 
     import matplotlib.pyplot as plt
     import matplotlib
@@ -411,11 +426,11 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
 
     nrsets = len(data)
 
-    nrsets_per_plot = min(nrsets, nrsets_per_plot)
+    petals = min(nrsets, petals)
 
     vals = np.linspace(0, 1, nrsets)
     viridis = matplotlib.colormaps[palette]
-    combinations = list(itertools.combinations(range(nrsets), nrsets_per_plot))
+    combinations = list(itertools.combinations(range(nrsets), petals))
 
     ncols = min(ncols, len(combinations))
 
@@ -423,7 +438,7 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
         nrows = len(combinations)//ncols + int(len(combinations) % ncols > 0)
 
     if figsize is None:
-        if nrsets == nrsets_per_plot:
+        if nrsets == petals:
             figsize=(4, 3)
         else:
             figsize=(10, 2.5*nrows)
@@ -443,7 +458,7 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
         subset = dict([data[i] for i in combo])
 
         ax = _venn(subset, background=background, ax=ax, cmap=cmap, fontsize=fontsize, 
-                   textcolor=textcolor, shape_coords=shape_coords)
+                   textcolor=textcolor, alpha=alpha, shape_coords=shape_coords)
         ax.get_legend().remove()
         ax.axis('off')
 
