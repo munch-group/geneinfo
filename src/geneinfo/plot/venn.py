@@ -1,3 +1,4 @@
+import sys
 from functools import partial
 import itertools
 import random
@@ -184,44 +185,72 @@ def generate_petal_labels(datasets, fmt="{size}"):
             petal_labels[logic] = len(petal_set)
     return petal_labels
 
-def generate_bootstrap_pvalues(obs_sizes, datasets):
+def generate_bootstrap_pvalues(obs_labels, datasets, background):
+
+    # overlaps are represented as binary strings, e.g. "110" for sets 1 and 2.
+
+    def get_counts(petal_labels):
+        counts = dict()
+        for logic, size in petal_labels.items():
+            size = int(size)
+            # overlaps are counted only if they are not single sets. 
+            if sum(map(int, logic)) == 1:
+                continue
+            # overlaps include nested overlaps ("111" counts are also
+            # included in both the "110" counts). I.e. overlaps between all three stets
+            # are also considered also overlaps between set one and two.
+            for other_logic, other_size in petal_labels.items():
+                other_size = int(other_size)            
+                if logic == other_logic:
+                    continue 
+
+                if sum(map(int, logic)) == sum(i and j for i, j in zip(map(int, logic), map(int, other_logic))):
+                    size += other_size
+            counts[logic] = size
+
+        return counts
+
+    obs_counts = get_counts(obs_labels)
+    # # get observed overlap counts. 
+    # obs_counts = dict()
+    # for logic, size in obs_sizes.items():
+
+    #     # overlaps are counted only if they are not single sets. 
+    #     if sum(map(int, logic)) == 1:
+    #         continue
+
+    #     # overlaps include nested overlaps ("111" counts are also
+    #     # included in both the "110" counts). I.e. overlaps between all three stets
+    #     # are also considered also overlaps between set one and two.
+    #     for other_logic, other_size in obs_sizes.items():            
+    #         if logic == other_logic:
+    #             continue 
+    #         if sum(map(int, logic)) == sum(i and j for i, j in zip(map(int, logic), map(int, other_logic))):
+    #             size += other_size
+
+    #     obs_counts[logic] = size
+
     datasets = list(datasets)
     dataset_sizes = [len(dataset) for dataset in datasets]
-    concat_sets = []
-    for dataset in datasets:
-        concat_sets.extend(list(dataset))
-#    dataset_union = set.union(*datasets)
-    obs_counts = dict()
-    for logic, size in obs_sizes.items():
-        if sum(map(int, logic)) == 1:
-            continue
-        for other_logic, other_size in obs_sizes.items():
-            if logic == other_logic:
-                continue            
-            if sum(map(int, logic)) == sum(i and j for i, j in zip(map(int, logic), map(int, other_logic))):
-                size += other_size
-        obs_counts[logic] = size
+    # concat_sets = []
+    # for dataset in datasets:
+    #     concat_sets.extend(list(dataset))
 
+    dataset_union = set.union(*datasets)
+    non_background = dataset_union.difference(set(background))
+    if non_background:
+        print(f"Warning: {len(non_background)} genes not in background set are ignored", file=sys.stderr)
+
+    # bootstrap
     boot_counts = defaultdict(list)
     nr_bootstraps = 10000
     for _ in range(nr_bootstraps):
-        boot_all = concat_sets
-        random.shuffle(boot_all)
+        # new randomly sampled datasets of original sizes
         boot_datasets = []
-        i = 0
         for s in dataset_sizes:
-            boot_datasets.append(set(boot_all[i:i+s]))
-            i += s
-        boot_sizes = generate_petal_labels(boot_datasets, fmt=None)
-        for logic, size in boot_sizes.items():
-            if sum(map(int, logic)) == 1:
-                continue
-            for other_logic, other_size in boot_sizes.items():
-
-                if logic == other_logic:
-                    continue
-                if sum(map(int, logic)) == sum(i and j for i, j in zip(map(int, logic), map(int, other_logic))):
-                    size += other_size
+            boot_datasets.append(set(random.sample(background, s)))
+        boot_labels = generate_petal_labels(boot_datasets)
+        for logic, size in get_counts(boot_labels).items():
             boot_counts[logic].append(size)
 
     p_values = {}
@@ -347,7 +376,7 @@ def is_valid_dataset_dict(data):
 
 def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2", 
                   alpha=.4, figsize=(8, 8), fontsize=13, textcolor='black', 
-                  test=False, shape_coords=None, 
+                  background=None, shape_coords=None, 
                   legend_loc="upper right", ax=None):
     """Check input, generate petal labels, draw venn diagram"""
     if not is_valid_dataset_dict(data):
@@ -357,16 +386,14 @@ def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2",
     petal_labels=generate_petal_labels(data.values(), fmt)
 
     pvalues = None
-    if test:
-        pvalues = {}
-        # from ..utils import fisher_test
+    if background:
         petal_counts = {}
         for logic, petal_label in petal_labels.items():
             petal_counts[logic] = int(petal_label)
-        # pvalues = generate_pvalues(data.values(), petal_counts, data.values())
-        pvalues = generate_bootstrap_pvalues(petal_counts, data.values())
-        keys = list(pvalues.keys())
 
+        pvalues = generate_bootstrap_pvalues(petal_counts, data.values(), background)
+
+        keys = list(pvalues.keys())
         for logic in keys:
             if pvalues[logic] > 0.05:
                 del pvalues[logic]
@@ -385,7 +412,7 @@ _venn = partial(venn_dispatch, func=draw_venn, hint_hidden=False)
     
 def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow', 
           fontsize=9, textcolor=None, shape_coords=None, 
-          figsize=None, test=False):
+          figsize=None, background=None):
 
     import matplotlib.pyplot as plt
     import matplotlib
@@ -417,7 +444,7 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
         if nrsets == nrsets_per_plot:
             figsize=(4, 3)
         else:
-            figsize=(8, 2.5*nrows)
+            figsize=(10, 2.5*nrows)
 
     fig, axes = plt.subplots(nrows, ncols, figsize=figsize, layout='constrained')
 
@@ -433,7 +460,7 @@ def venn(*data, ncols=4, nrows=None, nrsets_per_plot=3, palette='rainbow',
         cmap = ListedColormap(cmap)
         subset = dict([data[i] for i in combo])
 
-        ax = _venn(subset, test=test, ax=ax, cmap=cmap, fontsize=fontsize, 
+        ax = _venn(subset, background=background, ax=ax, cmap=cmap, fontsize=fontsize, 
                    textcolor=textcolor, shape_coords=shape_coords)
         ax.get_legend().remove()
         ax.axis('off')
