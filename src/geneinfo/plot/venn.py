@@ -215,10 +215,10 @@ def generate_bootstrap_pvalues(obs_labels, datasets, background):
     datasets = list(datasets)
     dataset_sizes = [len(dataset) for dataset in datasets]
 
-    dataset_union = set.union(*datasets)
-    non_background = dataset_union.difference(set(background))
-    if non_background:
-        print(f"Warning: {len(non_background)} genes not in background set are ignored", file=sys.stderr)
+    # dataset_union = set.union(*datasets)
+    # non_background = dataset_union.difference(set(background))
+    # if non_background:
+    #     print(f"Warning: {len(non_background)} genes not in background set are ignored", file=sys.stderr)
 
     # bootstrap
     boot_counts = defaultdict(list)
