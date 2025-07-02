@@ -382,7 +382,7 @@ def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2",
         _data[k] = _data[k].intersection(set(background))
         assert _data[k], f"Set {k} is empty after intersection with background"
         removed = len(data[k]) - len(_data[k])
-        print(f'Ignoring {removed} genes in "{k}" not part of background set', file=sys.stderr)
+        # print(f'Ignoring {removed} genes in "{k}" not part of background set', file=sys.stderr)
     data = _data
 
     petal_labels = generate_petal_labels(data.values(), fmt)
