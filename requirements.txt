@@ -10,3 +10,4 @@ pytables
 wget
 pydot
 statsmodels
+rapidfuzz

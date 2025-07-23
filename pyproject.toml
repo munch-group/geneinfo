@@ -22,6 +22,7 @@ dependencies = [
     'wget',
     'pydot',
     'statsmodels',
+    'rapidfuzz',
 ]
 
 classifiers = [
@@ -49,3 +50,7 @@ platforms = ["osx-arm64", "osx-64", "linux-64"]
 geneinfo = { path = ".", editable = true }
 
 [tool.pixi.tasks]
+
+[tool.pixi.dependencies]
+tqdm = ">=4.67.1,<5"
+rapidfuzz = ">=3.13.0,<4"

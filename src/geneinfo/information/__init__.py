@@ -474,3 +474,125 @@ def gene_info_region(chrom:str, window_start:int, window_end:int,
     """
     for gene in gene_coords_region(chrom, window_start, window_end, assembly):    
         gene_info(gene[0])
+
+################
+import textwrap
+import re
+import sys
+from collections import defaultdict
+import requests
+import unicodedata
+from rapidfuzz import process, fuzz
+import requests
+import pandas as pd
+    
+def fetch_tracks(assembly):
+    resp = requests.get(f"https://api.genome.ucsc.edu/list/tracks?genome={assembly}")
+    resp.raise_for_status()
+    tracks = resp.json()[assembly]
+    tups = [(name, data['longLabel']) for name, data in tracks.items()]
+    return sorted(tups, key=lambda t: t[0].upper())
+
+def list_ucsc_tracks(assembly=None, label_wrap=80):
+    search_ucsc_tracks(assembly=assembly,label_wrap=label_wrap)
+
+def search_ucsc_tracks(*queries, assembly=None, label_wrap=80):
+
+    assert assembly is not None
+    
+    def normalize(name):
+        name = name.lower()
+        name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+        name = re.sub(r"[^\w\s]", "", name)
+        return name.strip()
+
+    tracks = fetch_tracks(assembly=assembly)
+    track_names, track_labels = zip(*tracks)
+
+    if not queries:  
+        entries = tracks #names, labels = track_names, track_labels
+    else:        
+        normalized_track_names = [normalize(n) for n in track_names]
+        matches = defaultdict(float)
+        for query in queries:
+            for word in query.split():
+                # match = process.extractOne(query_normalized, normalized_names, scorer=fuzz.WRatio)
+                # match = process.extractOne(query_normalized, normalized_names, scorer=fuzz.WRatio, score_cutoff=90.0)
+                search = process.extract(normalize(word), normalized_track_names, scorer=fuzz.WRatio, score_cutoff=80.0, limit=100)
+                for name, score, index in search:
+                    matches[(name, index)] += score
+        
+        sorted_hits = sorted([(v, k) for k, v in matches.items()], reverse=True)
+
+        entries = []
+        for score, (name, index) in sorted_hits:
+            entries.append((track_names[index], track_labels[index]))
+
+    if entries:
+        ljust = max([len(e[0]) for e in entries]) + 2
+        for name, label in entries:
+            print(name.ljust(ljust) + '\n'.join(textwrap.wrap(label, width=label_wrap, subsequent_indent=' '*ljust)))
+
+def get_ucsc_track(track_name, assembly, chrom=None, start=None, end=None):
+    url = "https://api.genome.ucsc.edu/getData/track"
+    params = {"genome": assembly, "track": track_name}
+    if chrom is not None:
+        assert chrom.startswith('chr')
+        params['chrom'] = chrom
+        if start is not None and end is not None:
+            params['start'] = str(start)
+            params['end'] = str(end)            
+    response = requests.get(url, params=params)
+    if response.ok:
+    #    response.raise_for_status()
+        try:
+            track_data = response.json().get(track_name, [])
+        except json.JSONDecodeError:
+            print("Paramters does not represent a valid query", file=sys.stderr)
+            return
+
+        if type(track_data) is list:
+            print("Track has heterogenous data records. Returning only attributes (columns) shared by all entries.", file=sys.stderr)
+            
+            shared_keys = list(set([k for d in track_data for k in d]))
+            _track_data = defaultdict(list)
+            for d in track_data:
+                for k, v in d.items():
+                    _track_data[k].append(v)
+            track_data = _track_data
+                
+        try:
+            return pd.DataFrame(track_data)
+        except ValueError:
+            print(df)
+            raise
+
+    
+# key = '4TB2XFCS'
+# secret = 'prgc6t46emkfuknd'
+
+def download_4dn(identifier, dowload_dir=os.getcwd(), pgbar=False):
+    
+    def download_file(url, dowload_dir=dowload_dir):
+        if not os.path.exists(dowload_dir):
+            os.makedirs(dowload_dir)
+        file_name = url.split('/')[-1]
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open(file_name, 'wb') as f:
+                if pgbar:
+                    pbar = tqdm(total=int(r.headers['Content-Length']))
+                for chunk in r.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)         
+                        if pgbar:
+                            pbar.update(len(chunk))
+
+    url = f"https://data.4dnucleome.org/ga4gh/drs/v1/objects/{identifier}/access/https"
+    response = requests.get(url, auth=HTTPBasicAuth(key, secret))
+    if not response.ok:
+        assert 0
+    info = response.json()    
+    download_file(info["url"])
+
+download_4dn('4DNFIA85JYD7', pgbar=True)
