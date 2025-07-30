@@ -33,6 +33,7 @@ requirements:
     - wget
     - pydot
     - statsmodels
+    - rapidfuzz
 
 channels:    # your library dependencies
   - uibcdf

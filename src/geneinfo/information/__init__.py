@@ -7,6 +7,11 @@ import json
 import pandas as pd
 from typing import Any, TypeVar, List, Tuple, Dict, Union
 import requests
+from requests.auth import HTTPBasicAuth
+import textwrap
+import re
+import unicodedata
+from rapidfuzz import process, fuzz
 from pathlib import Path
 from collections.abc import Sequence, MutableSequence
 
@@ -475,16 +480,7 @@ def gene_info_region(chrom:str, window_start:int, window_end:int,
     for gene in gene_coords_region(chrom, window_start, window_end, assembly):    
         gene_info(gene[0])
 
-################
-import textwrap
-import re
-import sys
-from collections import defaultdict
-import requests
-import unicodedata
-from rapidfuzz import process, fuzz
-import requests
-import pandas as pd
+
     
 def fetch_tracks(assembly):
     resp = requests.get(f"https://api.genome.ucsc.edu/list/tracks?genome={assembly}")
