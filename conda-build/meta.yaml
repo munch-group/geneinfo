@@ -34,6 +34,7 @@ requirements:
     - pydot
     - statsmodels
     - rapidfuzz
+    - tqdm
 
 channels:    # your library dependencies
   - uibcdf

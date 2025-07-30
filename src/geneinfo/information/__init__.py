@@ -11,6 +11,7 @@ from requests.auth import HTTPBasicAuth
 import textwrap
 import re
 import unicodedata
+from tqdm.notebook import tqdm
 from rapidfuzz import process, fuzz
 from pathlib import Path
 from collections.abc import Sequence, MutableSequence
@@ -563,11 +564,9 @@ def get_ucsc_track(track_name, assembly, chrom=None, start=None, end=None):
             print(df)
             raise
 
-    
-# key = '4TB2XFCS'
-# secret = 'prgc6t46emkfuknd'
-
-def download_4dn(identifier, dowload_dir=os.getcwd(), pgbar=False):
+def download_4dn(identifier, user_4dn, secret_4dn, dowload_dir=os.getcwd(), 
+                 pgbar=False
+                 ):
     
     def download_file(url, dowload_dir=dowload_dir):
         if not os.path.exists(dowload_dir):
@@ -585,10 +584,8 @@ def download_4dn(identifier, dowload_dir=os.getcwd(), pgbar=False):
                             pbar.update(len(chunk))
 
     url = f"https://data.4dnucleome.org/ga4gh/drs/v1/objects/{identifier}/access/https"
-    response = requests.get(url, auth=HTTPBasicAuth(key, secret))
+    response = requests.get(url, auth=HTTPBasicAuth(user_4dn, secret_4dn))
     if not response.ok:
         assert 0
     info = response.json()    
     download_file(info["url"])
-
-download_4dn('4DNFIA85JYD7', pgbar=True)

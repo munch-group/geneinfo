@@ -11,3 +11,4 @@ wget
 pydot
 statsmodels
 rapidfuzz
+tqdm
