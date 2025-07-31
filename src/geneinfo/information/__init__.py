@@ -561,8 +561,7 @@ def get_ucsc_track(track_name, assembly, chrom=None, start=None, end=None):
         try:
             return pd.DataFrame(track_data)
         except ValueError:
-            print(df)
-            raise
+            raise        
 
 def download_4dn(identifier, user_4dn, secret_4dn, dowload_dir=os.getcwd(), 
                  pgbar=False
