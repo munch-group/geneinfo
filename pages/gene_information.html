@@ -288,6 +288,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#summary-gene-information" id="toc-summary-gene-information" class="nav-link active" data-scroll-target="#summary-gene-information">Summary gene information</a></li>
   <li><a href="#get-the-hgcn-symbol-for-an-alias" id="toc-get-the-hgcn-symbol-for-an-alias" class="nav-link" data-scroll-target="#get-the-hgcn-symbol-for-an-alias">Get the HGCN symbol for an alias</a></li>
   <li><a href="#gene-coordinates" id="toc-gene-coordinates" class="nav-link" data-scroll-target="#gene-coordinates">Gene coordinates</a></li>
+  <li><a href="#ucsc-track-data-download" id="toc-ucsc-track-data-download" class="nav-link" data-scroll-target="#ucsc-track-data-download">UCSC track data download</a></li>
   </ul>
 </nav>
     </div>
@@ -485,6 +486,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     (76972607, 76972720),
     (77041467, 77041702)]))]</code></pre>
 </div>
+</div>
+</section>
+<section id="ucsc-track-data-download" class="level2">
+<h2 class="anchored" data-anchor-id="ucsc-track-data-download">UCSC track data download</h2>
+<p>List tracks with short descriptions:</p>
+<div id="cell-20" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gi.search_ucsc_tracks(assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Search track using search terms:</p>
+<div id="cell-22" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gi.search_ucsc_tracks(<span class="st">'gene'</span>, <span class="st">'refseq'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Download a named track as a dataframe. Note that not all data can be made to fit into a dataframe.</p>
+<div id="cell-24" class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> gi.get_ucsc_track(<span class="st">'cpgIslandExt'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                    <span class="co">#    chrom='chrX', start=50_000_000, end=70_000_000</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                       )  </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

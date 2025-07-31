@@ -742,6 +742,17 @@
     ]
   },
   {
+    "objectID": "pages/gene_information.html#ucsc-track-data-download",
+    "href": "pages/gene_information.html#ucsc-track-data-download",
+    "title": "Gene information",
+    "section": "UCSC track data download",
+    "text": "UCSC track data download\nList tracks with short descriptions:\n\ngi.search_ucsc_tracks(assembly='hg38')\n\nSearch track using search terms:\n\ngi.search_ucsc_tracks('gene', 'refseq', assembly='hg38')\n\nDownload a named track as a dataframe. Note that not all data can be made to fit into a dataframe.\n\nimport geneinfo.information as gi\ndf = gi.get_ucsc_track('cpgIslandExt', assembly='hg38', \n                    #    chrom='chrX', start=50_000_000, end=70_000_000\n                       )  \n\ndf.head()",
+    "crumbs": [
+      "Information",
+      "Gene information"
+    ]
+  },
+  {
     "objectID": "pages/go_graphs.html",
     "href": "pages/go_graphs.html",
     "title": "GO graphs",
