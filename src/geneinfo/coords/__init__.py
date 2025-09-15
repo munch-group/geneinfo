@@ -26,6 +26,34 @@ def chromosome_lengths(assembly:str) -> List[Tuple[str, int]]:
     :
         List of tuples with chromosome name and length.
     """
+    if assembly == 'hs1':
+        return [
+            ('chr1', 248387328),
+            ('chr2', 242696752),
+            ('chr3', 201105948),
+            ('chr4', 193574945),
+            ('chr5', 182045439),
+            ('chr6', 172126628),
+            ('chr7', 160567428),
+            ('chr8', 146259331),
+            ('chr9', 150617247),
+            ('chr10', 134758134),
+            ('chr11', 135127769),
+            ('chr12', 133324548),
+            ('chr13', 113566686),
+            ('chr14', 101161492),
+            ('chr15', 99753195),
+            ('chr16', 96330374),
+            ('chr17', 84276897),
+            ('chr18', 80542538),
+            ('chr19', 61707364),
+            ('chr20', 66210255),
+            ('chr21', 45090682),
+            ('chr22', 51324926),
+            ('chrX', 154259566),
+            ('chrY', 62460029),
+        ]
+
     api_url = f'https://api.genome.ucsc.edu/list/chromosomes?genome={assembly};track=gold'
     response = requests.get(api_url)
     if not response.ok:
@@ -53,6 +81,35 @@ def centromere_coords(assembly:str) -> List[Tuple[str, int, int]]:
     :
         List of tuples with chromosome, start, and end of each centromere.
     """    
+
+    if assembly == 'hs1':
+        return [
+            ('chr1', 121796048, 126300487),
+            ('chr2', 92333543, 94673023),
+            ('chr3', 91738002, 96415026),
+            ('chr4', 49705154, 55199795),
+            ('chr5', 47039134, 49596625),
+            ('chr6', 58286706, 61058390),
+            ('chr7', 60414372, 63714499),
+            ('chr8', 44215832, 46325080),
+            ('chr9', 44951775, 47582595),
+            ('chr10', 39633793, 41664589),
+            ('chr11', 51035789, 54450838),
+            ('chr12', 34620838, 37202490),
+            ('chr13', 15547593, 17498291),
+            ('chr14', 10092112, 12708411),
+            ('chr15', 16678794, 17694466),
+            ('chr16', 35848286, 37829521),
+            ('chr17', 23892419, 27486939),
+            ('chr18', 15965699, 20933550),
+            ('chr19', 25817676, 29768171),
+            ('chr20', 26925852, 29099655),
+            ('chr21', 10962853, 11306205),
+            ('chr22', 12788180, 15711065),
+            ('chrX', 57820107, 60927025),
+            ('chrY', 10565750, 10883085),
+        ]
+
     api_url = f'https://api.genome.ucsc.edu/getData/track?genome={assembly};track=centromeres'
     response = requests.get(api_url)
     if not response.ok:
