@@ -144,4 +144,5 @@ docs/pages/geneinfo_cache/
 
 # pixi environments
 .pixi
+pixi.lock
 *.egg-info
