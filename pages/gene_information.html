@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.24">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,14 +69,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../pages/gene_ids.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-a986a95301e671fce2c6472dffc862a1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-1713c1db1ad41a796903378fc9ac7b2b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -117,6 +118,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">geneinfo</span>
     </a>
@@ -163,6 +166,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -315,13 +322,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:50.651789Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:50.651627Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:51.430968Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:51.430651Z&quot;}}" data-tags="[]" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="summary-gene-information" class="level2">
 <h2 class="anchored" data-anchor-id="summary-gene-information">Summary gene information</h2>
 <p><strong>Using gene symbol:</strong></p>
 <div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:51.433354Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:51.433096Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:52.296886Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:52.296457Z&quot;}}" data-tags="[]" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info(<span class="st">'USP4'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info(<span class="st">'USP4'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>USP4</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> UNP, Unph<br>
 <em>ubiquitin specific peptidase 4</em><br>
@@ -333,7 +340,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><strong>Using NCBI ID:</strong></p>
 <div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:52.332240Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:52.332084Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:53.123431Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:53.122744Z&quot;}}" data-tags="[]" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info(<span class="dv">7157</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info(<span class="dv">7157</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>TP53</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> BCC7, BMFS5, LFS1, P53, TRP53<br>
 <em>tumor protein p53</em><br>
@@ -345,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><strong>For a a list of genes:</strong></p>
 <div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:53.126781Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:53.126516Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:54.765820Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:54.765104Z&quot;}}" data-tags="[]" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info([<span class="st">'LARS2'</span>, <span class="st">'XCR1'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info([<span class="st">'LARS2'</span>, <span class="st">'XCR1'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>LARS2</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> HLASA, LEURS, PRLTS4, mtLeuRS<br>
 <em>leucyl-tRNA synthetase 2, mitochondrial</em><br>
@@ -365,7 +372,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><strong>For genes a region:</strong></p>
 <div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:54.769538Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:54.769267Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:57.121918Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:57.121274Z&quot;}}" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gi.gene_info_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>FGF16</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> FGF-16, MF4<br>
 <em>fibroblast growth factor 16</em><br>
@@ -386,7 +393,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="get-the-hgcn-symbol-for-an-alias" class="level2">
 <h2 class="anchored" data-anchor-id="get-the-hgcn-symbol-for-an-alias">Get the HGCN symbol for an alias</h2>
 <div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:57.125141Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:57.124875Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:57.153719Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:57.153406Z&quot;}}" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gi.hgcn_symbol([<span class="st">'CXorf23'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'ENSG00000173681'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gi.hgcn_symbol([<span class="st">'CXorf23'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'ENSG00000173681'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>['BCLAF3', 'BCLAF3', 'BCLAF3']</code></pre>
 </div>
@@ -396,7 +403,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="gene-coordinates">Gene coordinates</h2>
 <p>For a list of genes:</p>
 <div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:57.155675Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:57.155530Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:57.183640Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:57.183387Z&quot;}}" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coords([<span class="st">'ATRX'</span>, <span class="st">'MAGT1'</span>, <span class="st">'FOXP2'</span>], assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coords([<span class="st">'ATRX'</span>, <span class="st">'MAGT1'</span>, <span class="st">'FOXP2'</span>], assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>[('chrX', 77504879, 77786216, 'ATRX'),
  ('chrX', 77825746, 77895568, 'MAGT1'),
@@ -405,7 +412,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>For the genes in a genomic region:</p>
 <div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-02-09T10:27:57.185155Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-02-09T10:27:57.185058Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-02-09T10:27:57.199506Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-02-09T10:27:57.199266Z&quot;}}" data-tags="[]" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coords_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gi.gene_coords_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>[('FGF16',
   'chrX',
@@ -492,20 +499,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="ucsc-track-data-download">UCSC track data download</h2>
 <p>List tracks with short descriptions:</p>
 <div id="cell-20" class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gi.search_ucsc_tracks(assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gi.search_ucsc_tracks(assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Search track using search terms:</p>
 <div id="cell-22" class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gi.search_ucsc_tracks(<span class="st">'gene'</span>, <span class="st">'refseq'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gi.search_ucsc_tracks(<span class="st">'gene'</span>, <span class="st">'refseq'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Download a named track as a dataframe. Note that not all data can be made to fit into a dataframe.</p>
 <div id="cell-24" class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> gi.get_ucsc_track(<span class="st">'cpgIslandExt'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, </span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                    <span class="co">#    chrom='chrX', start=50_000_000, end=70_000_000</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                       )  </span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
@@ -563,13 +570,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

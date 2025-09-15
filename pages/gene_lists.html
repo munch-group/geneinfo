@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.24">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -58,7 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -69,14 +69,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../pages/go_enrichment.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-a986a95301e671fce2c6472dffc862a1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-1713c1db1ad41a796903378fc9ac7b2b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -104,7 +105,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
@@ -120,6 +121,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">geneinfo</span>
     </a>
@@ -166,6 +169,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -318,15 +325,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div id="cell-2" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneListCollection</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneList <span class="im">as</span> glist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneListCollection</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.utils <span class="im">import</span> GeneList <span class="im">as</span> glist</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="genelist" class="level2">
 <h2 class="anchored" data-anchor-id="genelist">GeneList</h2>
 <p>Long lists of gene names do not work well visually:</p>
 <div id="cell-5" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dummy_genes <span class="op">=</span> [<span class="st">'ABCB7'</span>, <span class="st">'ACTRT1'</span>, <span class="st">'AKAP4'</span>, <span class="st">'ALG13'</span>, <span class="st">'ARHGAP36'</span>, <span class="st">'ATP7A'</span>, <span class="st">'ATRX'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'BRCC3'</span>, <span class="st">'CAPN6'</span>, <span class="st">'CCNB3'</span>, <span class="st">'CFAP47'</span>, <span class="st">'CLCN5'</span>, <span class="st">'CMC4'</span>, <span class="st">'CNKSR2'</span>, <span class="st">'COX7B'</span>, <span class="st">'CYBB'</span>, <span class="st">'DCX'</span>, <span class="st">'DKC1'</span>, <span class="st">'DYNLT3'</span>, <span class="st">'ENOX2'</span>, <span class="st">'ENOX2-AS1'</span>, <span class="st">'EZHIP'</span>, <span class="st">'F8'</span>, <span class="st">'F8A1'</span>, <span class="st">'FAM120C'</span>, <span class="st">'FGF16'</span>]</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dummy_genes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dummy_genes <span class="op">=</span> [<span class="st">'ABCB7'</span>, <span class="st">'ACTRT1'</span>, <span class="st">'AKAP4'</span>, <span class="st">'ALG13'</span>, <span class="st">'ARHGAP36'</span>, <span class="st">'ATP7A'</span>, <span class="st">'ATRX'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'BRCC3'</span>, <span class="st">'CAPN6'</span>, <span class="st">'CCNB3'</span>, <span class="st">'CFAP47'</span>, <span class="st">'CLCN5'</span>, <span class="st">'CMC4'</span>, <span class="st">'CNKSR2'</span>, <span class="st">'COX7B'</span>, <span class="st">'CYBB'</span>, <span class="st">'DCX'</span>, <span class="st">'DKC1'</span>, <span class="st">'DYNLT3'</span>, <span class="st">'ENOX2'</span>, <span class="st">'ENOX2-AS1'</span>, <span class="st">'EZHIP'</span>, <span class="st">'F8'</span>, <span class="st">'F8A1'</span>, <span class="st">'FAM120C'</span>, <span class="st">'FGF16'</span>]</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dummy_genes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>['ABCB7',
  'ACTRT1',
@@ -360,8 +367,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>GeneList objects work just like normal lists but have some additional features that usefull for exploring sets of genes.</p>
 <p>When displayed they render as Markdown in columns to make them easier to read:</p>
 <div id="cell-7" class="cell gene-list" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">=</span> glist(dummy_genes)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>list_A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">=</span> glist(dummy_genes)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>list_A</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -405,8 +412,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="highlight-genes">Highlight genes</h2>
 <p>The bitwise operator <code>&lt;&lt;</code> is overloaded and highlights genes also present in another gene list:</p>
 <div id="cell-10" class="cell gene-list" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_B <span class="op">=</span> glist(dummy_genes[::<span class="dv">2</span>])</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_B <span class="op">=</span> glist(dummy_genes[::<span class="dv">2</span>])</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -446,8 +453,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="cell-11" class="cell gene-list" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>list_C <span class="op">=</span> glist(dummy_genes[:<span class="dv">12</span>])</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>list_C <span class="op">=</span> glist(dummy_genes[:<span class="dv">12</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_C</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -495,10 +502,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <p>Genes with all styles applied looks like <span style="font-weight: bold; color:#1876D2; text-decoration: underline; font-style: italic;">this</span>.</p>
 <div id="cell-13" class="cell gene-list" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_D <span class="op">=</span> glist(dummy_genes[::<span class="dv">4</span>])</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_D <span class="op">=</span> glist(dummy_genes[::<span class="dv">4</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>list_E <span class="op">=</span> glist(dummy_genes[<span class="dv">2</span>::<span class="dv">10</span>])</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B <span class="op">&lt;&lt;</span> list_C <span class="op">&lt;&lt;</span>  list_D <span class="op">&lt;&lt;</span> list_E</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B <span class="op">&lt;&lt;</span> list_C <span class="op">&lt;&lt;</span>  list_D <span class="op">&lt;&lt;</span> list_E</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -539,8 +546,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The highlight color can be changed by passing a HEX color to <code>set_highlight_color</code>:</p>
 <div id="cell-15" class="cell gene-list" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>glist.set_highlight_color(<span class="st">'#009D2B'</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>glist.set_highlight_color(<span class="st">'#009D2B'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -581,8 +588,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Reset highlght color:</p>
 <div id="cell-17" class="cell gene-list" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>glist.reset_highlight_color()</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>glist.reset_highlight_color()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -627,7 +634,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The bitwise operators, <code>&amp;</code>, <code>|</code>, and <code>^</code>, to allow set operations on gene lists.</p>
 <p>Highlight in A the intersection between B and C:</p>
 <div id="cell-21" class="cell gene-list" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="19">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -668,7 +675,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the union between B and C:</p>
 <div id="cell-23" class="cell gene-list" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="20">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -709,7 +716,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the genes not shared by B and C:</p>
 <div id="cell-25" class="cell gene-list" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -750,7 +757,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the genes in B but not in C (set difference):</p>
 <div id="cell-27" class="cell gene-list" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -791,7 +798,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Highlight in A the genes in C but not in B (set difference):</p>
 <div id="cell-29" class="cell gene-list" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="23">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -835,23 +842,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="genelistcollection">GeneListCollection</h2>
 <p>Load table of gene lists from a csv file:</p>
 <div id="cell-32" class="cell" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'google_sheet.csv'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Or from a Google Sheet using its ID and the sheet name:</p>
 <div id="cell-34" class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>See which neuron genes are also SFARI genes:</p>
 <div id="cell-36" class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="cell-39" class="cell" data-execution_count="37">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(glist(gene_lists.get(<span class="st">'cDEG'</span>)) </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(glist(gene_lists.get(<span class="st">'cDEG'</span>)) </span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'Hama'</span>))</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ech90_regions'</span>))</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'hum_nean_admix'</span>))</span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ari_nonPUR'</span>))</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="37">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
@@ -945,13 +952,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
