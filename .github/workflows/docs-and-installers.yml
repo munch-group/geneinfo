@@ -1,0 +1,204 @@
+name: Documentation and Installers
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    runs-on: macos-latest  # Always use macOS to build installers
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Install Python dependencies
+        run: pip install jupyter pandas pyyaml tabulate
+      
+      # Install NSIS and build installers every time
+      - name: Install NSIS
+        run: |
+          brew install makensis
+          echo "NSIS installed: $(makensis -VERSION)"
+      
+      - name: Install osslsigncode for Windows signing
+        run: |
+          if [ -n "${{ secrets.WINDOWS_CERT_BASE64 }}" ]; then
+            echo "Installing osslsigncode for Windows signing..."
+            brew install osslsigncode
+          fi
+      
+      - name: Build installers
+        id: build-installers
+        env:
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+          WINDOWS_CERT_BASE64: ${{ secrets.WINDOWS_CERT_BASE64 }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        run: |
+          cd src/franklin_cli/dependencies
+          chmod +x build_native_installers.sh
+          chmod +x *.sh 2>/dev/null || true
+          
+          echo "Building installers..."
+          ./build_native_installers.sh
+          
+          echo "Built installers:"
+          ls -lh dist/
+          
+          # Set outputs
+          echo "macos_size=$(du -h dist/Franklin-Installer-macOS.dmg | cut -f1)" >> $GITHUB_OUTPUT
+          echo "windows_size=$(du -h dist/Franklin-Installer-Windows.exe | cut -f1)" >> $GITHUB_OUTPUT
+          echo "python_size=$(du -h dist/franklin_installer_gui.py | cut -f1)" >> $GITHUB_OUTPUT
+      
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        # TinyTeX disabled due to 403 errors from rstudio/tinytex-releases
+        # with:
+        #   tinytex: true
+      
+      # - name: Install TinyTeX
+      #   run: |
+      #     quarto install tinytex --no-prompt
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v2
+
+      - name: Prepare installers directory
+        run: |
+          mkdir -p docs/installers
+          
+          # Copy native installers (always built)
+          echo "Copying built installers..."
+          cp -v src/franklin_cli/dependencies/dist/*.dmg docs/installers/ 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/dist/*.exe docs/installers/ 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/dist/*.py docs/installers/ 2>/dev/null || true
+          
+          # Copy web installer scripts
+          echo "Copying web installer scripts..."
+          cp -v src/franklin_cli/dependencies/web-install.sh docs/installers/install.sh 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/web-install.ps1 docs/installers/install.ps1 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/web-install-universal.html docs/installers/index.html 2>/dev/null || true
+          
+          # Build and copy role-specific installers
+          echo "Building role-specific installers..."
+          chmod +x src/franklin_cli/dependencies/build-role-installers.sh
+          src/franklin_cli/dependencies/build-role-installers.sh docs/installers
+          
+          # Copy individual component scripts for web installer
+          mkdir -p docs/installers/scripts
+          cp -v src/franklin_cli/dependencies/master-installer.sh docs/installers/scripts/ 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/Master-Installer.ps1 docs/installers/scripts/ 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/install-*.sh docs/installers/scripts/ 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/Install-*.ps1 docs/installers/scripts/ 2>/dev/null || true
+          cp -v src/franklin_cli/dependencies/dependency_checker.py docs/installers/scripts/ 2>/dev/null || true
+          
+          # Create markdown index alongside HTML
+          cat > docs/installers/README.md << 'EOF'
+          # Franklin Installers
+          
+          ## Web Installers (No Security Warnings)
+          
+          ### Quick Install
+          **macOS/Linux:**
+          ```bash
+          curl -fsSL https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/installers/install.sh | bash
+          ```
+          
+          **Windows PowerShell:**
+          ```powershell
+          irm https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/installers/install.ps1 | iex
+          ```
+          
+          ### Direct Script Downloads
+          - [install.sh](install.sh) - Unix/Linux/macOS installer
+          - [install.ps1](install.ps1) - Windows PowerShell installer
+          
+          ## Native Installers
+          
+          - [macOS Installer](Franklin-Installer-macOS.dmg) - DMG installer for macOS
+          - [Windows Installer](Franklin-Installer-Windows.exe) - EXE installer for Windows
+          - [Cross-platform GUI](franklin_installer_gui.py) - Python GUI installer
+          - [Dependency Checker](dependency_checker.py) - Dependency detection module
+          
+          ## Component Scripts
+          
+          All installer components are available in the [scripts/](scripts/) directory.
+          
+          ---
+          
+          Built: ${{ github.event.release.created_at || github.event.head_commit.timestamp || 'Current build' }}
+          Version: ${{ github.event.release.tag_name || github.ref_name }}
+          Commit: ${{ github.sha }}
+          EOF
+      
+      - name: Render Quarto documentation
+        uses: quarto-dev/quarto-actions/render@v2
+        env:
+          QUARTO_PROFILE: default
+        with:
+          path: docs
+          to: html
+      
+      - name: Copy installers to build directory
+        run: |
+          if [ -d "docs/_build" ] && [ -d "docs/installers" ]; then
+            mkdir -p docs/_build/installers
+            cp -rv docs/installers/* docs/_build/installers/
+          fi
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build
+      
+      # Upload release assets if this is a release
+      - name: Upload Release Assets
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            src/franklin_cli/dependencies/dist/*.dmg
+            src/franklin_cli/dependencies/dist/*.exe
+            src/franklin_cli/dependencies/dist/*.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
