@@ -16,6 +16,7 @@ requirements:
   host:
     - python
     - pip
+    - setuptools>=65.0    
   run:  # your library dependencies
     {% for dep in pyproject.get("project").get("dependencies") %}
     - {{ dep.lower() }}
