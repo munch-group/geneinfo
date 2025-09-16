@@ -36,7 +36,7 @@ dependencies:   # keep this block with only these packages
 
 test:
   imports:
-    - munch_group_template
+    - geneinfo
 
 about:
   home: https://github.com/munch-group/geneinfo.git
