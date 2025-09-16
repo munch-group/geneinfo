@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geneinfo"
-version = "5.5.17"
+version = "5.5.18"
 description = "..."
 requires-python = ">=3.9"
 authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
@@ -12,12 +12,12 @@ authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
 dependencies = [
     'jupyter',
     'ipython',
-    'matplotlib >= 3.0',
+    'matplotlib>=3.0',
     'seaborn',
-    'numpy >= 1.1',
+    'numpy>=1.1',
     'requests',
     'biopython',
-    'goatools >= 1.2',
+    'goatools>=1.2',
     'tables',
     'wget',
     'pydot',
