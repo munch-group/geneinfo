@@ -43,7 +43,7 @@ channels:    # your library dependencies
 
 dependencies:   # Keep this block with only these two packages
   - anaconda-client
-  - conda-build=24
+  - conda-build>=25.1.3 # from 25 the output file is a .conda not .tar.bz2
   - conda-verify
   
 test:
