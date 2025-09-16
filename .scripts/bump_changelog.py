@@ -335,7 +335,7 @@ def main():
         generator = ChangelogGenerator(args.repo, args.api_key)
         generator.run(args.version, args.yes)
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
         sys.exit(1)
 
 
