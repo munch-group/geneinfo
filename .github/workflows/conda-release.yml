@@ -91,7 +91,7 @@ jobs:
       #     pytest test
 
       - name: Build and upload the conda packages
-        uses: munch-group/action-conda-build-upload@v0.1.11
+        uses: munch-group/action-conda-build-upload@v0.1.26
         with:
           meta_yaml_dir: conda-build
           conda_build_args: -c conda-forge -c munch-group
@@ -103,4 +103,4 @@ jobs:
           user: munch-group
           # label: auto
           token: ${{ secrets.ANACONDA_TOKEN }}
-          overwrite: true
+          # overwrite: true
