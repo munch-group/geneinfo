@@ -18,11 +18,21 @@ requirements:
     - pip
     - setuptools>=65.0    
   run:  # your library dependencies
-    {% for dep in pyproject.get("project").get("dependencies") %}
-    - {{ dep.lower() }}
-    {% endfor %}  
-    - git
-    - gitui
+    - python
+    - jupyter
+    - ipython
+    - matplotlib>=3.0
+    - seaborn
+    - numpy>=1.1
+    - requests
+    - biopython
+    - goatools>=1.2
+    - pytables
+    - wget
+    - pydot
+    - statsmodels
+    - rapidfuzz
+    - tqdm
 
 channels:  # channels for your library dependencies
   - conda-forge
