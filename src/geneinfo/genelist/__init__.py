@@ -306,6 +306,11 @@ class GeneListCollection(object):
                 except yaml.YAMLError as e:
                     print(f"Yaml must honor this this format:\n\n{yaml_format}\n\n", file=sys.stderr)
                     raise e
+            for name in self.data.keys():
+                if 'genes' not in self.data[name]:
+                    raise ValueError(f'Gene list {name} must have a "genes" entry.')
+                if 'description' not in self.data[name]:
+                    self.data[name]['description'] = ''
         else:
             assert url or google_sheet, 'Either file/url or google_sheet id must be provided.'
 
