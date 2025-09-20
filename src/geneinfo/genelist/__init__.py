@@ -281,25 +281,53 @@ AMPL_ABBREV_MAP = {
 }
 
 
+yaml_format = """
+<list_label>:
+  description: |
+    <free text description of the gene list>
+    <free text description of the gene list>
+  genes: <gene_name>, <gene_name>, ...
+<list_label>:
+  description: |
+    <free text description of the gene list>
+    <free text description of the gene list>
+  genes: <gene_name>, <gene_name>, ...
+"""
+
 class GeneListCollection(object):
 
-    def __init__(self, url:str=None, google_sheet:str=None, tab='Sheet1'):
+    def __init__(self, yaml_file=None, url:str=None, google_sheet:str=None, tab='Sheet1'):
 
-        assert url or google_sheet, 'Either file/url or google_sheet id must be provided.'
+        if yaml_file is not None:
+            import yaml
+            with open(yaml_file) as f:
+                try:
+                    self.data = yaml.safe_load(f)
+                except yaml.YAMLError as e:
+                    print(f"Yaml must honor this this format:\n\n{yaml_format}\n\n", file=sys.stderr)
+                    raise e
+        else:
+            assert url or google_sheet, 'Either file/url or google_sheet id must be provided.'
 
-        if url is None:
-            url = f'https://docs.google.com/spreadsheets/d/{google_sheet}/gviz/tq?tqx=out:csv&sheet={tab}'
+            if url is None:
+                url = f'https://docs.google.com/spreadsheets/d/{google_sheet}/gviz/tq?tqx=out:csv&sheet={tab}'
 
-        self.desc = []
-        for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
-            if str(desc) == 'nan':
-                self.desc.append('')
             else:
-                self.desc.append(desc.replace('\n', ' '))
-        self.df = pd.read_csv(url, header=1, low_memory=False)
-        self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
-        self.names = self.df.columns.tolist()
-
+                self.desc = []
+                for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
+                    if str(desc) == 'nan':
+                        self.desc.append('')
+                    else:
+                        self.desc.append(desc.replace('\n', ' '))
+                self.df = pd.read_csv(url, header=1, low_memory=False)
+                self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
+                self.names = self.df.columns.tolist()
+                data = {}
+                for name, desc in zip(self.names, self.desc):
+                    data[name] = {}
+                    sr = self.df[name]
+                    data[name]['genes'] = self.df.loc[~sr.isnull(), name].to_list()
+                    data[name]['description'] = desc
 
     def all_genes(self):
         names = []
@@ -309,11 +337,11 @@ class GeneListCollection(object):
     
 
     def get(self, name):
-        sr = self.df[name]
-        sr = self.df.loc[~sr.isnull(), name]
-        # lst = sorted(self.expand_amplicon_abbrev(sr.tolist()))
-        lst = sr.tolist()
-        return GeneList(lst).name(name)
+        # sr = self.df[name]
+        # sr = self.df.loc[~sr.isnull(), name]
+        # # lst = sorted(self.expand_amplicon_abbrev(sr.tolist()))
+        # lst = sr.tolist()
+        return GeneList(self.data[name]['genes']).name(name)
 
 
     def _repr_html_(self):
