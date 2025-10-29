@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geneinfo"
-version = "5.5.32"
+version = "5.5.33"
 description = "..."
 requires-python = ">=3.9"
 authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
@@ -56,6 +56,7 @@ geneinfo = { path = ".", editable = true }
 tqdm = ">=4.67.1,<5"
 rapidfuzz = ">=3.13.0,<4"
 pip = ">=25.2,<26"
+pytables = ">=3.10.2,<4"
 
 [tool.pixi.tasks.bump-version]
 args = [

@@ -317,28 +317,27 @@ class GeneListCollection(object):
             if url is None:
                 url = f'https://docs.google.com/spreadsheets/d/{google_sheet}/gviz/tq?tqx=out:csv&sheet={tab}'
 
-            else:
-                self.desc = []
-                for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
-                    if str(desc) == 'nan':
-                        self.desc.append('')
-                    else:
-                        self.desc.append(desc.replace('\n', ' '))
-                self.df = pd.read_csv(url, header=1, low_memory=False)
-                self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
-                self.names = self.df.columns.tolist()
-                data = {}
-                for name, desc in zip(self.names, self.desc):
-                    data[name] = {}
-                    sr = self.df[name]
-                    data[name]['genes'] = self.df.loc[~sr.isnull(), name].to_list()
-                    data[name]['description'] = desc
+            self.desc = []
+            for desc in pd.read_csv(url, header=None, low_memory=False).iloc[0]:
+                if str(desc) == 'nan':
+                    self.desc.append('')
+                else:
+                    self.desc.append(desc.replace('\n', ' '))
+            self.df = pd.read_csv(url, header=1, low_memory=False)
+            self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
+            self.names = self.df.columns.tolist()
+            data = {}
+            for name, desc in zip(self.names, self.desc):
+                data[name] = {}
+                sr = self.df[name]
+                data[name]['genes'] = self.df.loc[~sr.isnull(), name].to_list()
+                data[name]['description'] = desc
 
     def all_genes(self):
-        names = []
-        for label in self.names:
-            names.extend(self.get(label))
-        return sorted(set(names))
+        gene_names = []
+        for list_name in self.data.keys():
+            gene_names.extend(self.get(list_name))
+        return GeneList(sorted(set(gene_names)))
     
 
     def get(self, name):
@@ -350,14 +349,41 @@ class GeneListCollection(object):
 
 
     def _repr_html_(self):
-        out = ['| label | description |', '|:---|:---|']
-        for name, desc in zip(self.names, self.desc):
+        records = []
+        for name in self.data.keys():
+            desc = self.data[name]['description']
             if pd.isnull(desc):
                 desc = ''
-            # out.append(f"- **{(name+':**').ljust(130)} {desc}")
-            out.append(f"| **{name}** | {desc} |")
+            records.append((name, desc))
+        df = pd.DataFrame.from_records(records, columns=['List label', 'Description'])
+        # return df._repr_html_()
+
+        # s = df.style.pipe(make_pretty)
+        # s.set_table_styles(
+        #     {c: [{'selector': '', 'props': [('text-align', 'left')]}] 
+        #          for c in df.columns if is_object_dtype(df[c]) and c != 'strand'},
+        #     overwrite=False
+        # )
+        # display(s)
+
+        s = df.style.set_table_styles(
+            {c: [{'selector': '', 'props': [('text-align', 'left')]}] 
+                 for c in df.columns},
+            overwrite=False
+        ).hide(axis="index")
+        
+        return s._repr_html_()
+
+
+        # out = ['| label | description |', '|:---|:---|']
+        # for name in self.data.keys():
+        #     desc = self.data[name]['description']
+        #     if pd.isnull(desc):
+        #         desc = ''
+        #     # out.append(f"- **{(name+':**').ljust(130)} {desc}")
+        #     out.append(f"| **{name}** | {desc} |")
             
-        display(Markdown('\n'.join(out)))
+        # display(Markdown('\n'.join(out)))
 
 
     def __repr__(self):
@@ -365,4 +391,4 @@ class GeneListCollection(object):
   
   
     def __iter__(self):
-         yield from self.names
+         yield from self.data.keys()
