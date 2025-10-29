@@ -851,7 +851,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    &lt;free text description of the gene list&gt;</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    &lt;free text description of the gene list&gt;</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">genes</span><span class="kw">:</span><span class="at"> &lt;gene_name&gt;, &lt;gene_name&gt;, ...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="cell-32" class="cell" data-execution_count="34">
+<div id="cell-32" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>yaml <span class="op">=</span> <span class="st">"""</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="st">cool_genes:</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="st">    description: "A list of cool genes"</span></span>
@@ -863,41 +863,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'gene_lists.yaml'</span>, <span class="st">'w'</span>) <span class="im">as</span> f:</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    f.write(yaml)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-33" class="cell" data-execution_count="41">
+<div id="cell-33" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'gene_lists.yaml'</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>gene_lists</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="41">
-<div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<style type="text/css">
+#T_5107b .col0 {
+  text-align: left;
+}
+#T_5107b .col1 {
+  text-align: left;
+}
+</style>
 
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<table id="T_5107b" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Label</th>
-<th data-quarto-table-cell-role="th">Description</th>
+<th id="T_5107b_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">List label</th>
+<th id="T_5107b_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">0</th>
-<td>cool_genes</td>
-<td>A list of cool genes</td>
+<td id="T_5107b_row0_col0" class="data row0 col0">cool_genes</td>
+<td id="T_5107b_row0_col1" class="data row0 col1">A list of cool genes</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">1</th>
-<td>target_genes</td>
-<td>A list of other genes</td>
+<td id="T_5107b_row1_col0" class="data row1 col0">target_genes</td>
+<td id="T_5107b_row1_col1" class="data row1 col1">A list of other genes</td>
 </tr>
 </tbody>
 </table>
-
 </div>
 </div>
-</div>
-<div id="cell-34" class="cell" data-execution_count="38">
+<div id="cell-34" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>gene_lists.get(<span class="st">'cool_genes'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="38">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
 <td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">TP53</td>
@@ -909,9 +910,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody></table>
 </div>
 </div>
-<div id="cell-35" class="cell" data-execution_count="39">
+<div id="cell-35" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gene_lists.all_genes()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="39">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
 <td style="background: transparent!important; line-height: 10px!important;text-align: left!important;">AKT1</td>
@@ -927,47 +928,236 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Or from a Google Sheet using its ID and the sheet name:</p>
-<div id="cell-37" class="cell" data-execution_count="25">
+<div id="cell-37" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>See which neuron genes are also SFARI genes:</p>
-<div id="cell-39" class="cell">
+<div id="cell-39" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-41" class="cell" data-execution_count="21">
+<div id="cell-41" class="cell" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gene_lists</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-error">
-<div class="ansi-escaped-output">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/geneinfo/.pixi/envs/default/lib/python3.14/site-packages/IPython/core/formatters.py:406</span>, in <span class="ansi-cyan-fg">BaseFormatter.__call__</span><span class="ansi-blue-fg">(self, obj)</span>
-<span class="ansi-green-fg">    404</span>     method = get_real_method(obj, <span style="color:rgb(0,135,0)">self</span>.print_method)
-<span class="ansi-green-fg">    405</span>     <span style="font-weight:bold;color:rgb(0,135,0)">if</span> method <span style="font-weight:bold;color:rgb(175,0,255)">is</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> <span style="font-weight:bold;color:rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">406</span>         <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    407</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span style="font-weight:bold;color:rgb(0,135,0)">None</span>
-<span class="ansi-green-fg">    408</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+<div class="cell-output cell-output-display" data-execution_count="30">
+<style type="text/css">
+#T_6c8cf .col0 {
+  text-align: left;
+}
+#T_6c8cf .col1 {
+  text-align: left;
+}
+</style>
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/geneinfo/src/geneinfo/genelist/__init__.py:354</span>, in <span class="ansi-cyan-fg">GeneListCollection._repr_html_</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-fg">    352</span> <span style="font-weight:bold;color:rgb(0,135,0)">def</span><span style="color:rgb(188,188,188)"> </span><span class="ansi-blue-fg">_repr_html_</span>(<span style="color:rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">    353</span>     out = [<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">| label | description |</span><span class="ansi-yellow-fg">'</span>, <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">|:---|:---|</span><span class="ansi-yellow-fg">'</span>]
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">354</span>     <span style="font-weight:bold;color:rgb(0,135,0)">for</span> name, desc <span style="font-weight:bold;color:rgb(175,0,255)">in</span> <span style="color:rgb(0,135,0)">zip</span>(<span style="color:rgb(0,135,0)" class="ansi-yellow-bg">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">names</span>, <span style="color:rgb(0,135,0)">self</span>.desc):
-<span class="ansi-green-fg">    355</span>         <span style="font-weight:bold;color:rgb(0,135,0)">if</span> pd.isnull(desc):
-<span class="ansi-green-fg">    356</span>             desc = <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">'</span>
-
-<span class="ansi-red-fg">AttributeError</span>: 'GeneListCollection' object has no attribute 'names'</pre>
-</div>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-<pre><code></code></pre>
+<table id="T_6c8cf" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th id="T_6c8cf_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">List label</th>
+<th id="T_6c8cf_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_6c8cf_row0_col0" class="data row0 col0">all_npx</td>
+<td id="T_6c8cf_row0_col1" class="data row0 col1">all NPX genes</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row1_col0" class="data row1 col0">neuron_genome_proteome</td>
+<td id="T_6c8cf_row1_col1" class="data row1 col1">Neuron proteome (whole genome)</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row2_col0" class="data row2 col0">neuron_npx_proteome</td>
+<td id="T_6c8cf_row2_col1" class="data row2 col1">NPX neuron proteome</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row3_col0" class="data row3 col0">matos_neuron</td>
+<td id="T_6c8cf_row3_col1" class="data row3 col1">Matos neuron genes</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row4_col0" class="data row4 col0">matos_common</td>
+<td id="T_6c8cf_row4_col1" class="data row4 col1">Matos neuron genes expressed in spermatids</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row5_col0" class="data row5 col0">hpa_brain_prot</td>
+<td id="T_6c8cf_row5_col1" class="data row5 col1">Brain genes form Human protein atlas</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row6_col0" class="data row6 col0">meritxell_spermatid_expr</td>
+<td id="T_6c8cf_row6_col1" class="data row6 col1"></td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row7_col0" class="data row7 col0">mult_copy</td>
+<td id="T_6c8cf_row7_col1" class="data row7 col1">Multi copy genes</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row8_col0" class="data row8 col0">primate_ampl_multi</td>
+<td id="T_6c8cf_row8_col1" class="data row8 col1">Ampliconic or multicopy in some primates</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row9_col0" class="data row9 col0">gametologs</td>
+<td id="T_6c8cf_row9_col1" class="data row9 col1">Gametologs in some primates</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row10_col0" class="data row10 col0">old_cDEG</td>
+<td id="T_6c8cf_row10_col1" class="data row10 col1">Old cDEG</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row11_col0" class="data row11 col0">cDEG</td>
+<td id="T_6c8cf_row11_col1" class="data row11 col1">The rerun cDEGs</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row12_col0" class="data row12 col0">cDEG_alt</td>
+<td id="T_6c8cf_row12_col1" class="data row12 col1"></td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row13_col0" class="data row13 col0">Old nDEG</td>
+<td id="T_6c8cf_row13_col1" class="data row13 col1">old nDEG</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row14_col0" class="data row14 col0">nDEG</td>
+<td id="T_6c8cf_row14_col1" class="data row14 col1">nDEG</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row15_col0" class="data row15 col0">hybridDEG</td>
+<td id="T_6c8cf_row15_col1" class="data row15 col1"></td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row16_col0" class="data row16 col0">chromatin_genes</td>
+<td id="T_6c8cf_row16_col1" class="data row16 col1">chromatin genes according to biology GPT</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row17_col0" class="data row17 col0">circRNA</td>
+<td id="T_6c8cf_row17_col1" class="data row17 col1">circRNA</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row18_col0" class="data row18 col0">xi</td>
+<td id="T_6c8cf_row18_col1" class="data row18 col1">Microtubule-Associated Proteins (MAPs)</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row19_col0" class="data row19 col0">xi_escape</td>
+<td id="T_6c8cf_row19_col1" class="data row19 col1">Subject to somatic X inactivation (XI)</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row20_col0" class="data row20 col0">xi_uncertain</td>
+<td id="T_6c8cf_row20_col1" class="data row20 col1">Escaping somatic X inactivation (XI)</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row21_col0" class="data row21 col0">xi_any_evidence</td>
+<td id="T_6c8cf_row21_col1" class="data row21 col1">cDEG and Xi escape</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row22_col0" class="data row22 col0">expr_mod_xi_copynr_fibrobl</td>
+<td id="T_6c8cf_row22_col1" class="data row22 col1">allDEG and Xi escape</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row23_col0" class="data row23 col0">expr_mod_xi_copynr_lcl</td>
+<td id="T_6c8cf_row23_col1" class="data row23 col1">Xi escapers in either ECH, hama or hum-nean</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row24_col0" class="data row24 col0">expr_mod_xi_copynr</td>
+<td id="T_6c8cf_row24_col1" class="data row24 col1">Xi escapers in ECH or hum-nean</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row25_col0" class="data row25 col0">pure_hama</td>
+<td id="T_6c8cf_row25_col1" class="data row25 col1">Xi escapers in hama or hum-nean</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row26_col0" class="data row26 col0">hum_nean_admix</td>
+<td id="T_6c8cf_row26_col1" class="data row26 col1">Xi escapers in hum-nean</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row27_col0" class="data row27 col0">ari_relate_EUR</td>
+<td id="T_6c8cf_row27_col1" class="data row27 col1">Xi escapers in ECH90</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row28_col0" class="data row28 col0">ari_relate_ASIA</td>
+<td id="T_6c8cf_row28_col1" class="data row28 col1">Xi escapers in hama</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row29_col0" class="data row29 col0">ari_relate_AFR</td>
+<td id="T_6c8cf_row29_col1" class="data row29 col1">Xi escaping (primate) gametologs</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row30_col0" class="data row30 col0">ari_nonPUR</td>
+<td id="T_6c8cf_row30_col1" class="data row30 col1">Xi escaping (primate) gametologs in hum-nean</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row31_col0" class="data row31 col0">ari_relate_PUR</td>
+<td id="T_6c8cf_row31_col1" class="data row31 col1">Xi escaping (primate) gametologs in hama</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row32_col0" class="data row32 col0">ari_all</td>
+<td id="T_6c8cf_row32_col1" class="data row32 col1">Xi escape in ari_nonPUR</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row33_col0" class="data row33 col0">candidates</td>
+<td id="T_6c8cf_row33_col1" class="data row33 col1">Xi escape in accel_reg_simiiformes_br</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row34_col0" class="data row34 col0">ech75_regions</td>
+<td id="T_6c8cf_row34_col1" class="data row34 col1">X genes uncertain XI status</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row35_col0" class="data row35 col0">ech90_regions</td>
+<td id="T_6c8cf_row35_col1" class="data row35 col1">Union of certain and uncertain XI status</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row36_col0" class="data row36 col0">linAR_all</td>
+<td id="T_6c8cf_row36_col1" class="data row36 col1">Expression modulated by Xi copy number (Fibroblast)</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row37_col0" class="data row37 col0">linAR_human</td>
+<td id="T_6c8cf_row37_col1" class="data row37 col1">Expression modulated by Xi copy number (LCL)</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row38_col0" class="data row38 col0">linAR_chimp</td>
+<td id="T_6c8cf_row38_col1" class="data row38 col1">Expression modulated by Xi copy number (Fibroblast or LCL)</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row39_col0" class="data row39 col0">linAR_gorilla</td>
+<td id="T_6c8cf_row39_col1" class="data row39 col1">Genes in 95% pure hamadryas regions in Gog</td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row40_col0" class="data row40 col0">linAR_orang</td>
+<td id="T_6c8cf_row40_col1" class="data row40 col1">Human-Neanderthal introgression</td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row41_col0" class="data row41 col0">accel_reg_simiiformes_br</td>
+<td id="T_6c8cf_row41_col1" class="data row41 col1"></td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row42_col0" class="data row42 col0">my_primate_codeml</td>
+<td id="T_6c8cf_row42_col1" class="data row42 col1"></td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row43_col0" class="data row43 col0">reg_sa_pheno</td>
+<td id="T_6c8cf_row43_col1" class="data row43 col1"></td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row44_col0" class="data row44 col0">sfari_all_conf</td>
+<td id="T_6c8cf_row44_col1" class="data row44 col1"></td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row45_col0" class="data row45 col0">intel_seiz_lang</td>
+<td id="T_6c8cf_row45_col1" class="data row45 col1"></td>
+</tr>
+<tr class="odd">
+<td id="T_6c8cf_row46_col0" class="data row46 col0">intelect_disabil</td>
+<td id="T_6c8cf_row46_col1" class="data row46 col1"></td>
+</tr>
+<tr class="even">
+<td id="T_6c8cf_row47_col0" class="data row47 col0">xbrain</td>
+<td id="T_6c8cf_row47_col1" class="data row47 col1">Candidate for explaining human and baboon sweeps</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="cell-43" class="cell" data-execution_count="37">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>(glist(gene_lists.get(<span class="st">'cDEG'</span>)) </span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'Hama'</span>))</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ech90_regions'</span>))</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'hum_nean_admix'</span>))</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ari_nonPUR'</span>))</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>(glist(gene_lists.get(<span class="st">'cDEG'</span>)) </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'Hama'</span>))</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ech90_regions'</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'hum_nean_admix'</span>))</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a> <span class="op">&lt;&lt;</span> glist(gene_lists.get(<span class="st">'ari_nonPUR'</span>))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="37">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
 <tbody><tr style="background: transparent!important; line-height: 10px!important;text-align: left!important;">
