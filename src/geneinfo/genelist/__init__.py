@@ -326,12 +326,12 @@ class GeneListCollection(object):
             self.df = pd.read_csv(url, header=1, low_memory=False)
             self.df = self.df.loc[:, [not x.startswith('Unnamed') for x in self.df.columns]]
             self.names = self.df.columns.tolist()
-            data = {}
+            self.data = {}
             for name, desc in zip(self.names, self.desc):
-                data[name] = {}
+                self.data[name] = {}
                 sr = self.df[name]
-                data[name]['genes'] = self.df.loc[~sr.isnull(), name].to_list()
-                data[name]['description'] = desc
+                self.data[name]['genes'] = self.df.loc[~sr.isnull(), name].to_list()
+                self.data[name]['description'] = desc
 
     def all_genes(self):
         gene_names = []
