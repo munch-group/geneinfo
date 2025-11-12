@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -74,7 +74,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -121,8 +121,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">geneinfo</span>
     </a>
@@ -169,10 +167,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="../index.html" class="sidebar-logo-link">
-      </a>
-      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -290,8 +284,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#reading-the-go-graphs" id="toc-reading-the-go-graphs" class="nav-link active" data-scroll-target="#reading-the-go-graphs">Reading the GO Graphs</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -322,6 +322,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="Terminal"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>conda run -n &lt;environment&gt; python -c 'import geneinfo.ontology ; geneinfo.ontology.download_data()'</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<section id="reading-the-go-graphs" class="level2">
+<h2 class="anchored" data-anchor-id="reading-the-go-graphs">Reading the GO Graphs</h2>
+<p>GOAtools uses colors in its Gene Ontology graphs to convey different types of information, primarily related to statistical significance from enrichment analyses. When plotting GO enrichment analysis results, GOAtools uses a color gradient to indicate statistical significance based on p-values:</p>
+<ul>
+<li><strong>Light red</strong>: p-value &lt; 0.005 (most significant)</li>
+<li><strong>Light orange</strong>: p-value &lt; 0.01 (highly significant)<br>
+</li>
+<li><strong>Yellow</strong>: p-value &lt; 0.05 (significant)</li>
+<li><strong>Grey</strong>: p-value &gt; 0.05 (not statistically significant)</li>
+</ul>
+<p>This color scheme allows you to quickly identify which GO terms show significant enrichment in your gene set, with warmer colors (red/orange) indicating stronger statistical significance.</p>
+<!-- 
+### **User-Defined Colors**
+
+GOAtools also allows users to specify custom colors for specific GO terms when creating plots. You can define colors using hex codes (like #fad2fa for magenta, #d2fafa for blue, #fafad2 for yellow) in a configuration file alongside the GO term IDs. This is useful when you want to highlight specific pathways or functional groups with distinct colors for visualization purposes.
+ -->
+<p>In more complex visualizations, GOAtools may use colors to indicate:</p>
+<ul>
+<li><strong>Purple boxes</strong>: GO terms found significant by one analysis tool</li>
+<li><strong>Green boxes</strong>: GO terms found significant by multiple analysis tools</li>
+<li><strong>Blue borders</strong>: GO terms that serve as GO headers (higher-level categories)</li>
+</ul>
+<p>The tool also indicates enrichment direction:</p>
+<ul>
+<li>Terms marked with “e” are enriched (over-represented) - meaning the concentration of that GO term in your study group is significantly higher than in the background population</li>
+<li>Terms marked with “p” are purified (under-represented) - meaning the concentration is significantly lower than expected</li>
+</ul>
+<p>Dashed lines may represent specific relationships like “part_of” (shown in magenta in some visualizations)</p>
 <p><strong>Show the sub-graph for a list of GO terms:</strong></p>
 <div id="d1f0a0bc-546a-4907-89c8-c200c2b4c2cc" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.ontology <span class="im">as</span> go</span>
@@ -379,6 +407,7 @@ Name: GeneID, dtype: int64</code></pre>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
