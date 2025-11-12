@@ -2,13 +2,13 @@
 
 ```python
 geneinfo.ontology.go_enrichment(
-    gene_list
-    taxid=9606
-    background_chrom=None
-    background_genes=None
-    terms=None
-    list_study_genes=False
-    alpha=0.05
+    gene_list,
+    taxid=9606,
+    background_chrom=None,
+    background_genes=None,
+    terms=None,
+    list_study_genes=False,
+    alpha=0.05,
 )
 ```
 

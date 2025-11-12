@@ -2,10 +2,10 @@
 
 ```python
 geneinfo.information.gene_info_region(
-    chrom
-    window_start
-    window_end
-    assembly=None
+    chrom,
+    window_start,
+    window_end,
+    assembly=None,
 )
 ```
 

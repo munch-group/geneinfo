@@ -1,7 +1,7 @@
 # GeneList { #geneinfo.genelist.GeneList }
 
 ```python
-geneinfo.genelist.GeneList(self, *args, **kwargs)
+geneinfo.genelist.GeneList(*args, **kwargs)
 ```
 
 
@@ -11,6 +11,8 @@ geneinfo.genelist.GeneList(self, *args, **kwargs)
 | Name | Description |
 | --- | --- |
 | [download_gene_aliases](#geneinfo.genelist.GeneList.download_gene_aliases) | Download mapping from any alias to the cannonical hgcn name for use in set operations. |
+| [fisher](#geneinfo.genelist.GeneList.fisher) | Fisher's exact test for overlap to and another gene list. |
+| [name](#geneinfo.genelist.GeneList.name) | Set/get a name for the gene list. |
 
 ### download_gene_aliases { #geneinfo.genelist.GeneList.download_gene_aliases }
 
@@ -19,3 +21,48 @@ geneinfo.genelist.GeneList.download_gene_aliases()
 ```
 
 Download mapping from any alias to the cannonical hgcn name for use in set operations.
+
+### fisher { #geneinfo.genelist.GeneList.fisher }
+
+```python
+geneinfo.genelist.GeneList.fisher(
+    other,
+    background,
+    min_dist=None,
+    return_counts=False,
+)
+```
+
+Fisher's exact test for overlap to and another gene list.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**other**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+
+:   Other gene list.
+
+<code>[**background**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+
+:   Background gene list.
+
+<code>[**min_dist**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Minimum distance between genes for distance pruning, by default None
+
+<code>[**return_counts**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Return contingency table, by default False
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation}</code>
+
+:   p-value from Fisher's exact test (and contingency table if return_counts is True).
+
+### name { #geneinfo.genelist.GeneList.name }
+
+```python
+geneinfo.genelist.GeneList.name(name=None)
+```
+
+Set/get a name for the gene list.

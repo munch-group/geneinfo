@@ -51,12 +51,13 @@ website:
       - api/gene_annotation_table.qmd
       section: Gene annotation
     - contents:
-      - api/tabulate_genes.qmd
+      - api/GeneList.qmd
+      - api/GeneListCollection.qmd
+      section: Gene lists
+    - contents:
       - api/horizon.qmd
       - api/stairs.qmd
       - api/clear_cache.qmd
-      - api/GeneList.qmd
-      - api/GeneListCollection.qmd
       section: Utilities
     id: api
   - id: dummy-sidebar

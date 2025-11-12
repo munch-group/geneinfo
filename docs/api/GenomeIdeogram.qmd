@@ -2,13 +2,12 @@
 
 ```python
 geneinfo.plot.GenomeIdeogram(
-    self
-    assembly
-    axes_height_inches=0.5
-    axes_width_inches=12
-    hspace=0
-    ylim=(0, 10)
-    font_size=10
+    assembly,
+    axes_height_inches=0.5,
+    axes_width_inches=12,
+    hspace=0,
+    ylim=(0, 10),
+    font_size=10,
 )
 ```
 
@@ -35,17 +34,17 @@ Class to plot ideograms of chromosomes in a genome assembly.
 
 ```python
 geneinfo.plot.GenomeIdeogram.add_horizon(
-    data=None
-    ch='chrom'
-    y='y'
-    x='x'
-    cut=None
-    quantile_span=None
-    beginzero=True
-    base=None
-    height=None
-    colors=['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue', '#F2DE9A', '#DA8630', '#972428', 'darkred', '#D3D3D3']
-    **kwargs
+    data=None,
+    ch='chrom',
+    y='y',
+    x='x',
+    cut=None,
+    quantile_span=None,
+    beginzero=True,
+    base=None,
+    height=None,
+    colors=['#CCE2DF', '#59A9A8', '#374E9B', 'midnightblue', '#F2DE9A', '#DA8630', '#972428', 'darkred', '#D3D3D3'],
+    **kwargs,
 )
 ```
 
@@ -97,19 +96,19 @@ Adds a horizon plot to the chromosome ideograms.
 
 ```python
 geneinfo.plot.GenomeIdeogram.add_labels(
-    annot
-    base=None
-    min_height=None
-    zoom_base=None
-    zoom_min_height=None
-    bold=[]
-    italic=[]
-    colored=[]
-    framed=[]
-    filled=[]
-    highlight_color='deeppink'
-    pad=0
-    **kwargs
+    annot,
+    base=None,
+    min_height=None,
+    zoom_base=None,
+    zoom_min_height=None,
+    bold=[],
+    italic=[],
+    colored=[],
+    framed=[],
+    filled=[],
+    highlight_color='deeppink',
+    pad=0,
+    **kwargs,
 )
 ```
 
@@ -168,27 +167,31 @@ Add text labels to the chromosome ideograms.
 ### add_legend { #geneinfo.plot.GenomeIdeogram.add_legend }
 
 ```python
-geneinfo.plot.GenomeIdeogram.add_legend(**kwargs)
+geneinfo.plot.GenomeIdeogram.add_legend(outside=False, **kwargs)
 ```
 
 Adds a legend to the chromosome ideograms.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
+<code>[**outside**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Place the legend outside the plot, by default False
+
 <code>[****kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
 
-:   Keyword arguments are passed to matplotlib's `legend`.  Defaults to {'loc': 'center left', 'bbox_to_anchor': (1.02, 0.5), 'frameon': False}.
+:   Keyword arguments are passed to matplotlib's `legend`.  Defaults to {'loc': 'center left', 'bbox_to_anchor': (1.02, 0.5), 'frameon': False} if `outside` is True, otherwise defaults to {'frameon': False}.
 
 ### add_segments { #geneinfo.plot.GenomeIdeogram.add_segments }
 
 ```python
 geneinfo.plot.GenomeIdeogram.add_segments(
-    annot
-    base=None
-    height=None
-    label=None
-    min_visible_width=200000
-    **kwargs
+    annot,
+    base=None,
+    height=None,
+    label=None,
+    min_visible_width=200000,
+    **kwargs,
 )
 ```
 
@@ -224,11 +227,11 @@ Add segments (rectangles) to the chromosome ideograms.
 
 ```python
 geneinfo.plot.GenomeIdeogram.add_vlines(
-    step=1000000
-    color='black'
-    linewidth=0.1
-    zorder=100
-    **kwargs
+    step=1000000,
+    color='black',
+    linewidth=0.1,
+    zorder=100,
+    **kwargs,
 )
 ```
 
@@ -256,13 +259,13 @@ Adds vertical lines to the chromosome ideograms.
 
 ```python
 geneinfo.plot.GenomeIdeogram.annotate(
-    xy=None
-    testxy=None
-    text=None
-    chrom=None
-    ax=None
-    wrap=30
-    **kwargs
+    xy=None,
+    testxy=None,
+    text=None,
+    chrom=None,
+    ax=None,
+    wrap=30,
+    **kwargs,
 )
 ```
 
@@ -302,12 +305,12 @@ Draws an annotation with an arrow to a point from a text box.
 
 ```python
 geneinfo.plot.GenomeIdeogram.draw_chromosomes(
-    base=4
-    height=2
-    facecolor='#EBEAEA'
-    edgecolor='black'
-    linewidth=0.7
-    **kwargs
+    base=4,
+    height=2,
+    facecolor='#EBEAEA',
+    edgecolor='black',
+    linewidth=0.7,
+    **kwargs,
 )
 ```
 
@@ -343,17 +346,17 @@ Draws chromosome ideograms.
 
 ```python
 geneinfo.plot.GenomeIdeogram.draw_text(
-    coord
-    x_pos
-    y_pos
-    text
-    textcolor
-    fontsize
-    linecolor
-    ax=None
-    y_line_bottom=0
-    highlight=None
-    **kwargs
+    coord,
+    x_pos,
+    y_pos,
+    text,
+    textcolor,
+    fontsize,
+    linecolor,
+    ax=None,
+    y_line_bottom=0,
+    highlight=None,
+    **kwargs,
 )
 ```
 
@@ -437,11 +440,11 @@ Computes polygon for rotated text label.
 
 ```python
 geneinfo.plot.GenomeIdeogram.map_fun(
-    fun
-    data=None
-    ch='chrom'
-    yaxis=(0.5, 3.5)
-    **kwargs
+    fun,
+    data=None,
+    ch='chrom',
+    yaxis=(0.5, 3.5),
+    **kwargs,
 )
 ```
 
@@ -481,11 +484,11 @@ Map a plotting function like seaborn.scatterplot to each ideogram panel (axis).
 
 ```python
 geneinfo.plot.GenomeIdeogram.map_method(
-    method
-    data=None
-    ch='chrom'
-    yaxis=(0.5, 3.5)
-    **kwargs
+    method,
+    data=None,
+    ch='chrom',
+    yaxis=(0.5, 3.5),
+    **kwargs,
 )
 ```
 

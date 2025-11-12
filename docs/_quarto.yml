@@ -126,7 +126,7 @@ quartodoc:
     - title: Gene coordinates
       desc: |
         These functions retrieve coordinates of named genes or genes in a chromosomal region.
-      package: geneinfo.information
+      package: geneinfo.coords
       contents:
         - gene_coords
         - gene_coords_region
@@ -183,14 +183,18 @@ quartodoc:
         - get_genes_for_go_regex
         - get_genes_for_go_terms
         - gene_annotation_table
+    - title: Gene lists
+      desc: |
+        Thin wrapper for lists, adding methods and operator overloading.
+      package: geneinfo.genelist
+      contents:
+        - GeneList
+        - GeneListCollection        
     - title: Utilities
       desc: |
         These are utility functions to record your email in queries and to tabulate genes.
-      package: geneinfo.genelist
+      package: geneinfo.utils
       contents:
-        - tabulate_genes
         - horizon
         - stairs
         - clear_cache
-        - GeneList
-        - GeneListCollection

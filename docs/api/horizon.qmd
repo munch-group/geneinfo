@@ -2,18 +2,18 @@
 
 ```python
 geneinfo.utils.horizon(
-    df
-    y=None
-    ax=None
-    cut=None
-    quantile_span=None
-    x='start'
-    beginzero=True
-    offset=0
-    height=None
-    palette='iker'
-    colors=None
-    **kwargs
+    df,
+    y=None,
+    ax=None,
+    cut=None,
+    quantile_span=None,
+    x='start',
+    beginzero=True,
+    offset=0,
+    height=None,
+    palette='iker',
+    colors=None,
+    **kwargs,
 )
 ```
 

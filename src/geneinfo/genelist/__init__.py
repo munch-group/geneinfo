@@ -71,6 +71,29 @@ class GeneList(UserList):
 
 
     def fisher(self, other, background, min_dist=None, return_counts=False):
+        """
+        Fisher's exact test for overlap to and another gene list.
+
+        Parameters
+        ----------
+        other : 
+            Other gene list.
+        background : 
+            Background gene list.
+        min_dist : 
+            Minimum distance between genes for distance pruning, by default None
+        return_counts : 
+            Return contingency table, by default False
+
+        Returns
+        -------
+        :
+            p-value from Fisher's exact test (and contingency table if return_counts is True).
+        """
+        if min_dist is not None:
+            # not implemented yet
+            raise NotImplementedError('Distance pruning not implemented yet in fisher method.')
+
         return fisher_test(self, other, background, min_dist=min_dist, return_counts=return_counts)
 
     # def fisher(self, other, background, min_dist=(None, None), return_counts=False):

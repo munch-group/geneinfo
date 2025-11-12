@@ -1,7 +1,7 @@
-# gene_coords { #geneinfo.information.gene_coords }
+# gene_coords { #geneinfo.coords.gene_coords }
 
 ```python
-geneinfo.information.gene_coords(names, assembly)
+geneinfo.coords.gene_coords(names, assembly)
 ```
 
 Get gene coordinates for a gene or list of genes.

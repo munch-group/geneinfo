@@ -2,10 +2,10 @@
 
 ```python
 geneinfo.genelist.GeneListCollection(
-    self
-    url=None
-    google_sheet=None
-    tab='Sheet1'
+    yaml_file=None,
+    url=None,
+    google_sheet=None,
+    tab='Sheet1',
 )
 ```
 

@@ -1,0 +1,7 @@
+
+cool_genes:
+    description: "A list of cool genes"
+    genes: ['TP53', 'BRCA1', 'EGFR', 'VEGFA', 'MYC']
+target_genes:
+    description: "A list of other genes"
+    genes: ['AKT1', 'PIK3CA', 'PTEN', 'TP53', 'BRCA1']

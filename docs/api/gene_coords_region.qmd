@@ -1,12 +1,12 @@
-# gene_coords_region { #geneinfo.information.gene_coords_region }
+# gene_coords_region { #geneinfo.coords.gene_coords_region }
 
 ```python
-geneinfo.information.gene_coords_region(
-    chrom=None
-    start=None
-    end=None
-    assembly=None
-    as_dataframe=False
+geneinfo.coords.gene_coords_region(
+    chrom=None,
+    start=None,
+    end=None,
+    assembly=None,
+    as_dataframe=False,
 )
 ```
 

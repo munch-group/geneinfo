@@ -2,20 +2,20 @@
 
 ```python
 geneinfo.plot.gene_plot(
-    chrom
-    start
-    end
-    assembly
-    highlight=[]
-    hard_limits=False
-    exact_exons=False
-    figsize=None
-    aspect=1
-    despine=False
-    clip_on=True
-    gene_density=60
-    font_size=None
-    return_axes=1
+    chrom,
+    start,
+    end,
+    assembly,
+    highlight=[],
+    hard_limits=False,
+    exact_exons=False,
+    figsize=None,
+    aspect=1,
+    despine=False,
+    clip_on=True,
+    gene_density=60,
+    font_size=None,
+    return_axes=1,
 )
 ```
 
