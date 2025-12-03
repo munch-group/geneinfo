@@ -44,7 +44,7 @@ Repository = "https://github.com/munch-group/geneinfo.git"
 Issues = "https://github.com/munch-group/geneinfo/issues"
 
 [tool.pixi.workspace]
-channels = ["conda-forge"]
+channels = ["conda-forge", "munch-group"]
 platforms = ["osx-arm64", "osx-64", "linux-64"]
 
 [tool.pixi.pypi-dependencies]
@@ -53,11 +53,12 @@ geneinfo = { path = ".", editable = true }
 [tool.pixi.tasks]
 
 [tool.pixi.dependencies]
-tqdm = ">=4.67.1,<5"
-rapidfuzz = ">=3.13.0,<4"
-pip = ">=25.2,<26"
-pytables = ">=3.10.2,<4"
-quartodoc = ">=0.11.1,<0.12"
+tqdm = "*"
+rapidfuzz = "*"
+pip = "*"
+pytables = "*"
+quartodoc = "*"
+geneinfo = "*"
 
 [tool.pixi.tasks.bump-version]
 args = [
