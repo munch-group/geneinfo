@@ -412,8 +412,9 @@ def get_genes_for_go_terms(terms, taxid=9606) -> pd.DataFrame:
         output_py = f'{cache_dir}/{taxid}_protein_genes.py'
         ncbi_tsv_to_py(ncbi_tsv, output_py, prt=null)
 
-    protein_genes = importlib.import_module(
-        output_py.replace('.py', '').replace('/', '.'))
+    spec = importlib.util.spec_from_file_location("protein_genes", output_py)
+    protein_genes = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(protein_genes)
     GENEID2NT = protein_genes.GENEID2NT
 
     fetch_ids = geneids
