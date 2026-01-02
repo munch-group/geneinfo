@@ -347,7 +347,7 @@ class GenomeIdeogram:
 
     def draw_chromosomes(self, base:float=4, height:float=2, 
                          facecolor:str='#EBEAEA', edgecolor:str='black', 
-                         linewidth:float=0.7, **kwargs:dict) -> None:
+                         linewidth:float=0.7, hide_sex_chrom=False,**kwargs:dict) -> None:
         """
         Draws chromosome ideograms.
 
@@ -363,6 +363,8 @@ class GenomeIdeogram:
             Ideogram edge color, by default 'black'
         linewidth : 
             Ideogram edge width, by default 0.7
+        hide_sex_chrom :
+            If True, hides X and Y chromosomes, by default False
         **kwargs :
             Additional keyword arguments for matplotlib.patches.Rectangle
         """
@@ -374,6 +376,11 @@ class GenomeIdeogram:
             for i in range(len(self.ax_list)):
                 chrom = self.chr_names[i]
                 ax = self.ax_list[i]
+                
+                if hide_sex_chrom and chrom in ['chrX', 'chrY']:
+                    ax.set_axis_off()
+                    continue
+
                 start, end = 0, self.chr_sizes[i]                
 
                 ideogram_base = self.map_y(base, ax)
