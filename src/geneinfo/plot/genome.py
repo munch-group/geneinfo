@@ -8,7 +8,7 @@ from typing import Any, TypeVar, List, Tuple, Dict, Union, Iterable
 from itertools import cycle
 
 from ..intervals import *
-from ..utils import horizon
+from ..utils import horizon, black_white
 from ..coords import gene_coords, chromosome_lengths, centromere_coords
 
 import math
@@ -825,11 +825,11 @@ class GenomeIdeogram:
         _annot = []
         for a in annot:
             if len(a) == 3:
-                a = a + ('black', 1.0, 'lightgray')
+                a = a + (None, 1.0, None)
             elif len(a) == 4:
-                a = a + (1.0, 'lightgray')
+                a = a + (1.0, None)
             elif len(a) == 5:
-                a = a + ('lightgray',)
+                a = a + (None,)
             elif len(a) == 6:
                 pass
             else:
@@ -845,37 +845,6 @@ class GenomeIdeogram:
 
         zoom_y0 = zoom_base
         zoom_y1 = zoom_base + zoom_min_height
-
-
-        hsv = matplotlib.colors.rgb_to_hsv(matplotlib.colors.to_rgb(highlight_color))
-        hsv[1] *= 0.15
-        highlight_fill = matplotlib.colors.hsv_to_rgb(hsv)
-
-        highlight = defaultdict(dict)
-        for gene in bold:
-            highlight[gene].update(dict(weight='bold'))
-        for gene in italic:
-            highlight[gene].update(dict(style='italic'))
-        for gene in colored:
-            highlight[gene].update(dict(color=highlight_color))
-        for gene in framed:
-            if 'bbox' not in highlight[gene]:
-                highlight[gene]['bbox'] = {}            
-            highlight[gene]['bbox'].update(dict(edgecolor='black', 
-                                                pad=max(1.5, pad), 
-                                                linewidth=0.5))
-        for gene in filled:
-            if 'bbox' not in highlight[gene]:
-                highlight[gene]['bbox'] = {}
-            highlight[gene]['bbox'].update(dict(facecolor=highlight_fill,
-                                                pad=max(1.5, pad)))
-
-        for gene in highlight:
-            if 'bbox' in highlight[gene]:
-                if 'edgecolor' not in highlight[gene]['bbox']:
-                    highlight[gene]['bbox']['edgecolor'] = 'none'
-                if 'facecolor' not in highlight[gene]['bbox']:
-                    highlight[gene]['bbox']['facecolor'] = 'none'
         
         chrom_annot = defaultdict(list)
         for a in annot:
@@ -886,6 +855,39 @@ class GenomeIdeogram:
                 continue
             ax = self.chr_axes[chrom]
 
+            foreground_color = black_white(ax)            
+
+            hsv = matplotlib.colors.rgb_to_hsv(matplotlib.colors.to_rgb(highlight_color))
+            hsv[1] *= 0.15
+            highlight_fill = matplotlib.colors.hsv_to_rgb(hsv)
+
+            highlight = defaultdict(dict)
+            for gene in bold:
+                highlight[gene].update(dict(weight='bold'))
+            for gene in italic:
+                highlight[gene].update(dict(style='italic'))
+            for gene in colored:
+                highlight[gene].update(dict(color=highlight_color))
+            for gene in framed:
+                if 'bbox' not in highlight[gene]:
+                    highlight[gene]['bbox'] = {}            
+                highlight[gene]['bbox'].update(dict(edgecolor=foreground_color, 
+                                                    pad=max(1.5, pad), 
+                                                    linewidth=0.5))
+            for gene in filled:
+                if 'bbox' not in highlight[gene]:
+                    highlight[gene]['bbox'] = {}
+                highlight[gene]['bbox'].update(dict(facecolor=highlight_fill,
+                                                    pad=max(1.5, pad)))
+
+            for gene in highlight:
+                if 'bbox' in highlight[gene]:
+                    if 'edgecolor' not in highlight[gene]['bbox']:
+                        highlight[gene]['bbox']['edgecolor'] = 'none'
+                    if 'facecolor' not in highlight[gene]['bbox']:
+                        highlight[gene]['bbox']['facecolor'] = 'none'
+
+
             annot = sorted(annot, reverse=True)
 
             y_unit = -sub(*self._scaled_y_lim(ax)) / -sub(*self.ylim)
@@ -893,6 +895,11 @@ class GenomeIdeogram:
         
             polybuff = []
             for pos, name, textcolor, textsize, linecolor in annot:
+
+                if textcolor is None:
+                    textcolor = foreground_color
+                if linecolor is None:
+                    linecolor = foreground_color
 
                 if type(highlight) is list or type(highlight) is set:
                     hl = name in highlight

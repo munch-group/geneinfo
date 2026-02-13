@@ -47,6 +47,7 @@ class ChromIdeogram(GenomeIdeogram):
     def __init__(self, chrom:str, assembly:str, axes_height_inches:int=2, axes_width_inches:int=12,
                  hspace:float=0.3, ylim:tuple=(0, 10), zooms:list=[], zoom_font_size:float=None,
                  zoom_height_ratio=1.0, zoom_effect_color:str='lightgray', zoom_effect_alpha:float=0.3,
+                 zoom_height_edgecolor:str='black',
                  wspace:float=0.1, font_size:float=4,
                 ):
         """
@@ -79,6 +80,8 @@ class ChromIdeogram(GenomeIdeogram):
             Face color of zoom effect patches, by default 'lightgray'
         zoom_effect_alpha: 
             Alpha of zoom effect patches, by default 0.3
+        zoom_effect_edgecolor: 
+            Edge color of zoom effect patches, by default 'black'
         """
         # self.species = species
         self.assembly = assembly
@@ -94,6 +97,7 @@ class ChromIdeogram(GenomeIdeogram):
         self.zoom_height_ratio = zoom_height_ratio
         self.zoom_effect_color = zoom_effect_color
         self.zoom_effect_alpha = zoom_effect_alpha
+        self.zoom_effect_edgecolor = zoom_height_edgecolor
 
         # self.chr_sizes = [self.chrom_lengths[assembly][chrom] 
         #                   for chrom in self.chr_names]
@@ -147,7 +151,10 @@ class ChromIdeogram(GenomeIdeogram):
                 axs["main"].set(xlim=xlim)
 
                 for i in range(len(zooms)):
-                    self.zoom_effect(axs[f"zoom{i}"], axs["main"], alpha=self.zoom_effect_alpha, facecolor=self.zoom_effect_color)
+                    self.zoom_effect(axs[f"zoom{i}"], axs["main"], 
+                                     alpha=self.zoom_effect_alpha, 
+                                     facecolor=self.zoom_effect_color,
+                                     edgecolor=self.zoom_effect_edgecolor)
                     axs[f"zoom{i}"].set(xlim=zooms[i])
                     axs[f"zoom{i}"].set_facecolor((0, 0, 0, 0))
                     # axs[f"zoom{i}"].set_xticks(np.arange(0, self.chr_sizes[0]+1, 10_000_000))

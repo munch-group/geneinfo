@@ -4,6 +4,7 @@ import pandas as pd
 from pandas.api.types import is_object_dtype
 import numpy as np
 from math import isclose, floor, log10
+import matplotlib
 import matplotlib.pyplot as plt
 from IPython.display import Markdown, display
 from pandas.api.types import is_object_dtype
@@ -66,6 +67,15 @@ centromeres = {
     'chrX':    (58100000, 63800000),
     'chrY':    (10300000, 10400000)}    
 
+
+def black_white(ax):
+    """Returns black for light backgrounds, white for dark backgrounds."""
+    if ax is None:
+        ax = plt.gca()
+    bg_color = ax.get_facecolor()
+    # Convert to grayscale to determine brightness
+    luminance = matplotlib.colors.rgb_to_hsv(matplotlib.colors.to_rgb(bg_color))[2]
+    return 'black' if luminance > 0.5 else '#FDFDFD'
 
 def _chrom_sort_key(chrom):
     return [int(x) if x.isdigit() else x for x in re.split(r'(\d+)', chrom)]
