@@ -866,25 +866,25 @@
     ]
   },
   {
-    "objectID": "api/show_string_network.html",
-    "href": "api/show_string_network.html",
-    "title": "show_string_network",
+    "objectID": "api/venn.html",
+    "href": "api/venn.html",
+    "title": "venn",
     "section": "",
-    "text": "geneinfo.string.show_string_network(my_genes, nodes=10)\nDisplay STRING network for a list of genes.\n\n\n\nmy_genes : Union[list, str]\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10",
+    "text": "geneinfo.plot.venn\n\n\n\n\n\nName\nDescription\n\n\n\n\ndraw_ellipse\nWrapper for drawing ellipse; called like draw_ellipse(ax, *coords, *dims, angle, color)\n\n\ndraw_hint_explanation\nAdd explanation of ’n/d*’ hints\n\n\ndraw_text\nWrapper for drawing text\n\n\ndraw_triangle\nWrapper for drawing triangle; called like draw_triangle(ax, *coords, None, None, color)\n\n\ndraw_venn\nDraw true Venn diagram, annotate petals and dataset labels\n\n\ngenerate_colors\nGenerate colors from matplotlib colormap; pass list to use exact colors\n\n\ngenerate_logics\nGenerate intersection identifiers in binary (0010 etc)\n\n\ngenerate_petal_labels\nGenerate petal descriptions for venn diagram based on set sizes\n\n\nget_n_sets\nInfer number of sets, check consistency\n\n\ninit_axes\nCreate axes if do not exist, set axes parameters\n\n\nis_valid_dataset_dict\nValidate passed data (must be dictionary of sets)\n\n\nless_transparent_color\nBump up color’s alpha\n\n\nupdate_hidden\nIncrement set’s hidden count (sizes of intersections that are not displayed)\n\n\nvenn_dispatch\nCheck input, generate petal labels, draw venn diagram\n\n\n\n\n\ngeneinfo.plot.venn.draw_ellipse(ax, x, y, w, h, a, color)\nWrapper for drawing ellipse; called like draw_ellipse(ax, *coords, *dims, angle, color)\n\n\n\ngeneinfo.plot.venn.draw_hint_explanation(\n    ax,\n    dataset_labels,\n    fontsize,\n    textcolor,\n)\nAdd explanation of ’n/d*’ hints\n\n\n\ngeneinfo.plot.venn.draw_text(ax, x, y, text, fontsize, color='black', **kwargs)\nWrapper for drawing text\n\n\n\ngeneinfo.plot.venn.draw_triangle(\n    ax,\n    x1,\n    y1,\n    x2,\n    y2,\n    x3,\n    y3,\n    _dim,\n    _angle,\n    color,\n)\nWrapper for drawing triangle; called like draw_triangle(ax, *coords, None, None, color)\n\n\n\ngeneinfo.plot.venn.draw_venn(\n    petal_labels,\n    dataset_labels,\n    pvalues,\n    hint_hidden,\n    colors,\n    figsize,\n    fontsize,\n    textcolor,\n    shape_coords=None,\n    legend_loc,\n    ax,\n)\nDraw true Venn diagram, annotate petals and dataset labels\n\n\n\ngeneinfo.plot.venn.generate_colors(cmap='viridis', n_colors=6, alpha=0.4)\nGenerate colors from matplotlib colormap; pass list to use exact colors\n\n\n\ngeneinfo.plot.venn.generate_logics(n_sets)\nGenerate intersection identifiers in binary (0010 etc)\n\n\n\ngeneinfo.plot.venn.generate_petal_labels(datasets, fmt='{size}')\nGenerate petal descriptions for venn diagram based on set sizes\n\n\n\ngeneinfo.plot.venn.get_n_sets(petal_labels, dataset_labels)\nInfer number of sets, check consistency\n\n\n\ngeneinfo.plot.venn.init_axes(ax, figsize)\nCreate axes if do not exist, set axes parameters\n\n\n\ngeneinfo.plot.venn.is_valid_dataset_dict(data)\nValidate passed data (must be dictionary of sets)\n\n\n\ngeneinfo.plot.venn.less_transparent_color(color, alpha_factor=2)\nBump up color’s alpha\n\n\n\ngeneinfo.plot.venn.update_hidden(hidden, logic, petal_labels)\nIncrement set’s hidden count (sizes of intersections that are not displayed)\n\n\n\ngeneinfo.plot.venn.venn_dispatch(\n    data,\n    func,\n    fmt='{size}',\n    hint_hidden=False,\n    cmap='Set2',\n    alpha=0.4,\n    figsize=(8, 8),\n    fontsize=13,\n    textcolor='black',\n    background=None,\n    shape_coords=None,\n    legend_loc='upper right',\n    ax=None,\n)\nCheck input, generate petal labels, draw venn diagram",
     "crumbs": [
-      "STRING networks",
-      "show_string_network"
+      "Gene plots",
+      "venn"
     ]
   },
   {
-    "objectID": "api/show_string_network.html#parameters",
-    "href": "api/show_string_network.html#parameters",
-    "title": "show_string_network",
+    "objectID": "api/venn.html#functions",
+    "href": "api/venn.html#functions",
+    "title": "venn",
     "section": "",
-    "text": "my_genes : Union[list, str]\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10",
+    "text": "Name\nDescription\n\n\n\n\ndraw_ellipse\nWrapper for drawing ellipse; called like draw_ellipse(ax, *coords, *dims, angle, color)\n\n\ndraw_hint_explanation\nAdd explanation of ’n/d*’ hints\n\n\ndraw_text\nWrapper for drawing text\n\n\ndraw_triangle\nWrapper for drawing triangle; called like draw_triangle(ax, *coords, None, None, color)\n\n\ndraw_venn\nDraw true Venn diagram, annotate petals and dataset labels\n\n\ngenerate_colors\nGenerate colors from matplotlib colormap; pass list to use exact colors\n\n\ngenerate_logics\nGenerate intersection identifiers in binary (0010 etc)\n\n\ngenerate_petal_labels\nGenerate petal descriptions for venn diagram based on set sizes\n\n\nget_n_sets\nInfer number of sets, check consistency\n\n\ninit_axes\nCreate axes if do not exist, set axes parameters\n\n\nis_valid_dataset_dict\nValidate passed data (must be dictionary of sets)\n\n\nless_transparent_color\nBump up color’s alpha\n\n\nupdate_hidden\nIncrement set’s hidden count (sizes of intersections that are not displayed)\n\n\nvenn_dispatch\nCheck input, generate petal labels, draw venn diagram\n\n\n\n\n\ngeneinfo.plot.venn.draw_ellipse(ax, x, y, w, h, a, color)\nWrapper for drawing ellipse; called like draw_ellipse(ax, *coords, *dims, angle, color)\n\n\n\ngeneinfo.plot.venn.draw_hint_explanation(\n    ax,\n    dataset_labels,\n    fontsize,\n    textcolor,\n)\nAdd explanation of ’n/d*’ hints\n\n\n\ngeneinfo.plot.venn.draw_text(ax, x, y, text, fontsize, color='black', **kwargs)\nWrapper for drawing text\n\n\n\ngeneinfo.plot.venn.draw_triangle(\n    ax,\n    x1,\n    y1,\n    x2,\n    y2,\n    x3,\n    y3,\n    _dim,\n    _angle,\n    color,\n)\nWrapper for drawing triangle; called like draw_triangle(ax, *coords, None, None, color)\n\n\n\ngeneinfo.plot.venn.draw_venn(\n    petal_labels,\n    dataset_labels,\n    pvalues,\n    hint_hidden,\n    colors,\n    figsize,\n    fontsize,\n    textcolor,\n    shape_coords=None,\n    legend_loc,\n    ax,\n)\nDraw true Venn diagram, annotate petals and dataset labels\n\n\n\ngeneinfo.plot.venn.generate_colors(cmap='viridis', n_colors=6, alpha=0.4)\nGenerate colors from matplotlib colormap; pass list to use exact colors\n\n\n\ngeneinfo.plot.venn.generate_logics(n_sets)\nGenerate intersection identifiers in binary (0010 etc)\n\n\n\ngeneinfo.plot.venn.generate_petal_labels(datasets, fmt='{size}')\nGenerate petal descriptions for venn diagram based on set sizes\n\n\n\ngeneinfo.plot.venn.get_n_sets(petal_labels, dataset_labels)\nInfer number of sets, check consistency\n\n\n\ngeneinfo.plot.venn.init_axes(ax, figsize)\nCreate axes if do not exist, set axes parameters\n\n\n\ngeneinfo.plot.venn.is_valid_dataset_dict(data)\nValidate passed data (must be dictionary of sets)\n\n\n\ngeneinfo.plot.venn.less_transparent_color(color, alpha_factor=2)\nBump up color’s alpha\n\n\n\ngeneinfo.plot.venn.update_hidden(hidden, logic, petal_labels)\nIncrement set’s hidden count (sizes of intersections that are not displayed)\n\n\n\ngeneinfo.plot.venn.venn_dispatch(\n    data,\n    func,\n    fmt='{size}',\n    hint_hidden=False,\n    cmap='Set2',\n    alpha=0.4,\n    figsize=(8, 8),\n    fontsize=13,\n    textcolor='black',\n    background=None,\n    shape_coords=None,\n    legend_loc='upper right',\n    ax=None,\n)\nCheck input, generate petal labels, draw venn diagram",
     "crumbs": [
-      "STRING networks",
-      "show_string_network"
+      "Gene plots",
+      "venn"
     ]
   },
   {
@@ -1005,6 +1005,28 @@
     "text": "These are utility functions to record your email in queries and to tabulate genes.\n\n\n\nhorizon\nHorizon bar plot made allowing multiple chromosomes and multiple samples.\n\n\nstairs\nTurn a df with start, end into one with pos to plot as stairs\n\n\nclear_cache\nClear the cache of a shelve file.",
     "crumbs": [
       "Function reference"
+    ]
+  },
+  {
+    "objectID": "api/show_string_network.html",
+    "href": "api/show_string_network.html",
+    "title": "show_string_network",
+    "section": "",
+    "text": "geneinfo.string.show_string_network(my_genes, nodes=10)\nDisplay STRING network for a list of genes.\n\n\n\nmy_genes : Union[list, str]\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10",
+    "crumbs": [
+      "STRING networks",
+      "show_string_network"
+    ]
+  },
+  {
+    "objectID": "api/show_string_network.html#parameters",
+    "href": "api/show_string_network.html#parameters",
+    "title": "show_string_network",
+    "section": "",
+    "text": "my_genes : Union[list, str]\n\nList of gene symbols\n\nnodes : int = 10\n\nNumber of nodes to show, by default 10",
+    "crumbs": [
+      "STRING networks",
+      "show_string_network"
     ]
   },
   {

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>go_name2term – geneinfo</title>
+<title>venn – geneinfo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../api/get_go_terms_for_genes.html" rel="next">
-<link href="../api/go_term2name.html" rel="prev">
+<link href="../api/gene_coords.html" rel="next">
+<link href="../api/ChromIdeogram.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -154,7 +154,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/go_info.html">GO information</a></li><li class="breadcrumb-item"><a href="../api/go_name2term.html">go_name2term</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/venn.html">venn</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -224,7 +224,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/venn.html" class="sidebar-item-text sidebar-link">
+  <a href="../api/venn.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">venn</span></a>
   </div>
 </li>
@@ -334,7 +334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../api/go_name2term.html" class="sidebar-item-text sidebar-link active">
+  <a href="../api/go_name2term.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">go_name2term</span></a>
   </div>
 </li>
@@ -519,43 +519,220 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#geneinfo.ontology.go_name2term" id="toc-geneinfo.ontology.go_name2term" class="nav-link active" data-scroll-target="#geneinfo.ontology.go_name2term">go_name2term</a>
+  <li><a href="#geneinfo.plot.venn" id="toc-geneinfo.plot.venn" class="nav-link active" data-scroll-target="#geneinfo.plot.venn">venn</a>
   <ul class="collapse">
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul class="collapse">
+  <li><a href="#geneinfo.plot.venn.draw_ellipse" id="toc-geneinfo.plot.venn.draw_ellipse" class="nav-link" data-scroll-target="#geneinfo.plot.venn.draw_ellipse">draw_ellipse</a></li>
+  <li><a href="#geneinfo.plot.venn.draw_hint_explanation" id="toc-geneinfo.plot.venn.draw_hint_explanation" class="nav-link" data-scroll-target="#geneinfo.plot.venn.draw_hint_explanation">draw_hint_explanation</a></li>
+  <li><a href="#geneinfo.plot.venn.draw_text" id="toc-geneinfo.plot.venn.draw_text" class="nav-link" data-scroll-target="#geneinfo.plot.venn.draw_text">draw_text</a></li>
+  <li><a href="#geneinfo.plot.venn.draw_triangle" id="toc-geneinfo.plot.venn.draw_triangle" class="nav-link" data-scroll-target="#geneinfo.plot.venn.draw_triangle">draw_triangle</a></li>
+  <li><a href="#geneinfo.plot.venn.draw_venn" id="toc-geneinfo.plot.venn.draw_venn" class="nav-link" data-scroll-target="#geneinfo.plot.venn.draw_venn">draw_venn</a></li>
+  <li><a href="#geneinfo.plot.venn.generate_colors" id="toc-geneinfo.plot.venn.generate_colors" class="nav-link" data-scroll-target="#geneinfo.plot.venn.generate_colors">generate_colors</a></li>
+  <li><a href="#geneinfo.plot.venn.generate_logics" id="toc-geneinfo.plot.venn.generate_logics" class="nav-link" data-scroll-target="#geneinfo.plot.venn.generate_logics">generate_logics</a></li>
+  <li><a href="#geneinfo.plot.venn.generate_petal_labels" id="toc-geneinfo.plot.venn.generate_petal_labels" class="nav-link" data-scroll-target="#geneinfo.plot.venn.generate_petal_labels">generate_petal_labels</a></li>
+  <li><a href="#geneinfo.plot.venn.get_n_sets" id="toc-geneinfo.plot.venn.get_n_sets" class="nav-link" data-scroll-target="#geneinfo.plot.venn.get_n_sets">get_n_sets</a></li>
+  <li><a href="#geneinfo.plot.venn.init_axes" id="toc-geneinfo.plot.venn.init_axes" class="nav-link" data-scroll-target="#geneinfo.plot.venn.init_axes">init_axes</a></li>
+  <li><a href="#geneinfo.plot.venn.is_valid_dataset_dict" id="toc-geneinfo.plot.venn.is_valid_dataset_dict" class="nav-link" data-scroll-target="#geneinfo.plot.venn.is_valid_dataset_dict">is_valid_dataset_dict</a></li>
+  <li><a href="#geneinfo.plot.venn.less_transparent_color" id="toc-geneinfo.plot.venn.less_transparent_color" class="nav-link" data-scroll-target="#geneinfo.plot.venn.less_transparent_color">less_transparent_color</a></li>
+  <li><a href="#geneinfo.plot.venn.update_hidden" id="toc-geneinfo.plot.venn.update_hidden" class="nav-link" data-scroll-target="#geneinfo.plot.venn.update_hidden">update_hidden</a></li>
+  <li><a href="#geneinfo.plot.venn.venn_dispatch" id="toc-geneinfo.plot.venn.venn_dispatch" class="nav-link" data-scroll-target="#geneinfo.plot.venn.venn_dispatch">venn_dispatch</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/go_info.html">GO information</a></li><li class="breadcrumb-item"><a href="../api/go_name2term.html">go_name2term</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/venn.html">venn</a></li></ol></nav></header>
 
 
 
 
-<section id="geneinfo.ontology.go_name2term" class="level1">
-<h1>go_name2term</h1>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.ontology.go_name2term(name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Converts a GO term name to its term.</p>
-<section id="parameters" class="level2 doc-section doc-section-parameters">
-<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
-<dl>
-<dt><code><span class="parameter-name"><strong>name</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
-<dd>
-<p>GO term name</p>
-</dd>
-</dl>
+<section id="geneinfo.plot.venn" class="level1">
+<h1>venn</h1>
+<p><code>geneinfo.plot.venn</code></p>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#geneinfo.plot.venn.draw_ellipse">draw_ellipse</a></td>
+<td>Wrapper for drawing ellipse; called like <code>draw_ellipse(ax, *coords, *dims, angle, color)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.venn.draw_hint_explanation">draw_hint_explanation</a></td>
+<td>Add explanation of ’n/d*’ hints</td>
+</tr>
+<tr class="odd">
+<td><a href="#geneinfo.plot.venn.draw_text">draw_text</a></td>
+<td>Wrapper for drawing text</td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.venn.draw_triangle">draw_triangle</a></td>
+<td>Wrapper for drawing triangle; called like <code>draw_triangle(ax, *coords, None, None, color)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#geneinfo.plot.venn.draw_venn">draw_venn</a></td>
+<td>Draw true Venn diagram, annotate petals and dataset labels</td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.venn.generate_colors">generate_colors</a></td>
+<td>Generate colors from matplotlib colormap; pass list to use exact colors</td>
+</tr>
+<tr class="odd">
+<td><a href="#geneinfo.plot.venn.generate_logics">generate_logics</a></td>
+<td>Generate intersection identifiers in binary (0010 etc)</td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.venn.generate_petal_labels">generate_petal_labels</a></td>
+<td>Generate petal descriptions for venn diagram based on set sizes</td>
+</tr>
+<tr class="odd">
+<td><a href="#geneinfo.plot.venn.get_n_sets">get_n_sets</a></td>
+<td>Infer number of sets, check consistency</td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.venn.init_axes">init_axes</a></td>
+<td>Create axes if do not exist, set axes parameters</td>
+</tr>
+<tr class="odd">
+<td><a href="#geneinfo.plot.venn.is_valid_dataset_dict">is_valid_dataset_dict</a></td>
+<td>Validate passed data (must be dictionary of sets)</td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.venn.less_transparent_color">less_transparent_color</a></td>
+<td>Bump up color’s alpha</td>
+</tr>
+<tr class="odd">
+<td><a href="#geneinfo.plot.venn.update_hidden">update_hidden</a></td>
+<td>Increment set’s hidden count (sizes of intersections that are not displayed)</td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.venn.venn_dispatch">venn_dispatch</a></td>
+<td>Check input, generate petal labels, draw venn diagram</td>
+</tr>
+</tbody>
+</table>
+<section id="geneinfo.plot.venn.draw_ellipse" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.draw_ellipse">draw_ellipse</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.draw_ellipse(ax, x, y, w, h, a, color)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wrapper for drawing ellipse; called like <code>draw_ellipse(ax, *coords, *dims, angle, color)</code></p>
 </section>
-<section id="returns" class="level2 doc-section doc-section-returns">
-<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
-<dl>
-<dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
-<dd>
-<p>GO term.</p>
-</dd>
-</dl>
+<section id="geneinfo.plot.venn.draw_hint_explanation" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.draw_hint_explanation">draw_hint_explanation</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.draw_hint_explanation(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    ax,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    dataset_labels,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    fontsize,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    textcolor,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add explanation of ’n/d*’ hints</p>
+</section>
+<section id="geneinfo.plot.venn.draw_text" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.draw_text">draw_text</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.draw_text(ax, x, y, text, fontsize, color<span class="op">=</span><span class="st">'black'</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wrapper for drawing text</p>
+</section>
+<section id="geneinfo.plot.venn.draw_triangle" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.draw_triangle">draw_triangle</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.draw_triangle(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    ax,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    x1,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    y1,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    x2,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    y2,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    x3,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    y3,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    _dim,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    _angle,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    color,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wrapper for drawing triangle; called like <code>draw_triangle(ax, *coords, None, None, color)</code></p>
+</section>
+<section id="geneinfo.plot.venn.draw_venn" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.draw_venn">draw_venn</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.draw_venn(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    petal_labels,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    dataset_labels,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    pvalues,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    hint_hidden,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    colors,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    figsize,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    fontsize,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    textcolor,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    shape_coords<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    legend_loc,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    ax,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Draw true Venn diagram, annotate petals and dataset labels</p>
+</section>
+<section id="geneinfo.plot.venn.generate_colors" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.generate_colors">generate_colors</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.generate_colors(cmap<span class="op">=</span><span class="st">'viridis'</span>, n_colors<span class="op">=</span><span class="dv">6</span>, alpha<span class="op">=</span><span class="fl">0.4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Generate colors from matplotlib colormap; pass list to use exact colors</p>
+</section>
+<section id="geneinfo.plot.venn.generate_logics" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.generate_logics">generate_logics</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.generate_logics(n_sets)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Generate intersection identifiers in binary (0010 etc)</p>
+</section>
+<section id="geneinfo.plot.venn.generate_petal_labels" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.generate_petal_labels">generate_petal_labels</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.generate_petal_labels(datasets, fmt<span class="op">=</span><span class="st">'</span><span class="sc">{size}</span><span class="st">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Generate petal descriptions for venn diagram based on set sizes</p>
+</section>
+<section id="geneinfo.plot.venn.get_n_sets" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.get_n_sets">get_n_sets</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.get_n_sets(petal_labels, dataset_labels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Infer number of sets, check consistency</p>
+</section>
+<section id="geneinfo.plot.venn.init_axes" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.init_axes">init_axes</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.init_axes(ax, figsize)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create axes if do not exist, set axes parameters</p>
+</section>
+<section id="geneinfo.plot.venn.is_valid_dataset_dict" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.is_valid_dataset_dict">is_valid_dataset_dict</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.is_valid_dataset_dict(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Validate passed data (must be dictionary of sets)</p>
+</section>
+<section id="geneinfo.plot.venn.less_transparent_color" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.less_transparent_color">less_transparent_color</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.less_transparent_color(color, alpha_factor<span class="op">=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Bump up color’s alpha</p>
+</section>
+<section id="geneinfo.plot.venn.update_hidden" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.update_hidden">update_hidden</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.update_hidden(hidden, logic, petal_labels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Increment set’s hidden count (sizes of intersections that are not displayed)</p>
+</section>
+<section id="geneinfo.plot.venn.venn_dispatch" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.venn.venn_dispatch">venn_dispatch</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.venn.venn_dispatch(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    func,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    fmt<span class="op">=</span><span class="st">'</span><span class="sc">{size}</span><span class="st">'</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    hint_hidden<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    cmap<span class="op">=</span><span class="st">'Set2'</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.4</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    fontsize<span class="op">=</span><span class="dv">13</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    textcolor<span class="op">=</span><span class="st">'black'</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    background<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    shape_coords<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    legend_loc<span class="op">=</span><span class="st">'upper right'</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check input, generate petal labels, draw venn diagram</p>
 
 
+</section>
 </section>
 </section>
 
@@ -962,13 +1139,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../api/go_term2name.html" class="pagination-link" aria-label="go_term2name">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">go_term2name</span>
+      <a href="../api/ChromIdeogram.html" class="pagination-link" aria-label="ChromIdeogram">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">ChromIdeogram</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../api/get_go_terms_for_genes.html" class="pagination-link" aria-label="get_go_terms_for_genes">
-        <span class="nav-page-text">get_go_terms_for_genes</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../api/gene_coords.html" class="pagination-link" aria-label="gene_coords">
+        <span class="nav-page-text">gene_coords</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
