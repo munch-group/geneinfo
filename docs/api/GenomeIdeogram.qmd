@@ -310,6 +310,7 @@ geneinfo.plot.GenomeIdeogram.draw_chromosomes(
     facecolor='#EBEAEA',
     edgecolor='black',
     linewidth=0.7,
+    hide_sex_chrom=False,
     **kwargs,
 )
 ```
@@ -337,6 +338,10 @@ Draws chromosome ideograms.
 <code>[**linewidth**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.7]{.parameter-default}</code>
 
 :   Ideogram edge width, by default 0.7
+
+<code>[**hide_sex_chrom**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   If True, hides X and Y chromosomes, by default False
 
 <code>[****kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
 

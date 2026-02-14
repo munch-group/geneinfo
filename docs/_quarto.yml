@@ -63,6 +63,7 @@ website:
           contents:
             - pages/gene_plots.ipynb
             - pages/chrom_ideograms.ipynb              
+            - pages/venn.ipynb              
             - pages/string_nets.ipynb
             - pages/go_graphs.ipynb                   
         - section: "Enrichment"
@@ -123,6 +124,7 @@ quartodoc:
         - gene_plot
         - GenomeIdeogram
         - ChromIdeogram
+        - venn
     - title: Gene coordinates
       desc: |
         These functions retrieve coordinates of named genes or genes in a chromosomal region.

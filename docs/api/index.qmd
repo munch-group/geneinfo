@@ -24,6 +24,7 @@ ideograms (chrom_ideogram).
 | [gene_plot](gene_plot.qmd#geneinfo.plot.gene_plot) | Plots gene ideograms for a chromosomal region and returns axes for  |
 | [GenomeIdeogram](GenomeIdeogram.qmd#geneinfo.plot.GenomeIdeogram) | Class to plot ideograms of chromosomes in a genome assembly. |
 | [ChromIdeogram](ChromIdeogram.qmd#geneinfo.plot.ChromIdeogram) | Child class of GenomeIdeogram for plotting single chromosome ideograms. |
+| [venn](venn.qmd#geneinfo.plot.venn) |  |
 
 ## Gene coordinates
 

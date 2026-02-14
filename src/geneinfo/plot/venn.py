@@ -8,6 +8,7 @@ from matplotlib.pyplot import subplots
 from matplotlib.patches import Ellipse, Polygon, Patch
 from matplotlib.colors import to_rgba
 from matplotlib.cm import ScalarMappable
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 
 SHAPE_COORDS = {
     2: [(.375, .500), (.625, .500)],
@@ -408,7 +409,7 @@ def venn_dispatch(data, func, fmt="{size}", hint_hidden=False, cmap="Set2",
 
 _venn = partial(venn_dispatch, func=draw_venn, hint_hidden=False)
     
-def venn(*data, ncols=4, nrows=None, petals=3, palette='rainbow', 
+def venn(*data, ncols=4, nrows=None, petals=3, cmap=None, 
           fontsize=9, textcolor=None, shape_coords=None, 
           figsize=None, alpha=0.4, background=None):
 
@@ -429,8 +430,6 @@ def venn(*data, ncols=4, nrows=None, petals=3, palette='rainbow',
 
     petals = min(nrsets, petals)
 
-    vals = np.linspace(0, 1, nrsets)
-    viridis = matplotlib.colormaps[palette]
     combinations = list(itertools.combinations(range(nrsets), petals))
 
     ncols = min(ncols, len(combinations))
@@ -446,6 +445,16 @@ def venn(*data, ncols=4, nrows=None, petals=3, palette='rainbow',
 
     fig, axes = plt.subplots(nrows, ncols, figsize=figsize, layout='constrained')
 
+    vals = np.linspace(0, 1, nrsets)
+
+    if isinstance(cmap, str):
+        cmap = matplotlib.colormaps[cmap]
+
+    if isinstance(cmap, ListedColormap):
+        cont_cmap = LinearSegmentedColormap.from_list("cont_cont", cmap.colors[:nrsets], N=256)
+    else:
+        cont_cmap = cmap
+
     if nrows == 1 and  ncols == 1:
         axes = np.array([axes])
 
@@ -454,7 +463,7 @@ def venn(*data, ncols=4, nrows=None, petals=3, palette='rainbow',
             ax.axis('off')
             continue
         combo = combinations[i]
-        cmap = viridis([vals[i] for i in combo])
+        cmap = cont_cmap([vals[i] for i in combo])
         cmap = ListedColormap(cmap)
         subset = dict([data[i] for i in combo])
 
@@ -464,10 +473,10 @@ def venn(*data, ncols=4, nrows=None, petals=3, palette='rainbow',
         ax.axis('off')
 
     handles = []
-    cmap = viridis([vals[i] for i in range(len(data))])
+    cmap = cont_cmap([vals[i] for i in range(len(data))])
     cmap = ListedColormap(cmap)
     for i, (label, _) in enumerate(data):
-        cmap = viridis([vals[i]])
+        cmap = cont_cmap([vals[i]])
         cmap = ListedColormap(cmap)
         handles.extend([Patch(color=cmap(vals[i]), label=label, alpha=0.7)])
 

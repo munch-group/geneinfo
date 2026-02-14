@@ -10,6 +10,7 @@ website:
       - api/gene_plot.qmd
       - api/GenomeIdeogram.qmd
       - api/ChromIdeogram.qmd
+      - api/venn.qmd
       section: Gene plots
     - contents:
       - api/gene_coords.qmd

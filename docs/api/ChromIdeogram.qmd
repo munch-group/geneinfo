@@ -13,6 +13,7 @@ geneinfo.plot.ChromIdeogram(
     zoom_height_ratio=1.0,
     zoom_effect_color='lightgray',
     zoom_effect_alpha=0.3,
+    zoom_height_edgecolor='black',
     wspace=0.1,
     font_size=4,
 )
