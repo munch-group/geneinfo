@@ -1,0 +1,178 @@
+# venn { #geneinfo.plot.venn }
+
+`geneinfo.plot.venn`
+
+
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [draw_ellipse](#geneinfo.plot.venn.draw_ellipse) | Wrapper for drawing ellipse; called like `draw_ellipse(ax, *coords, *dims, angle, color)` |
+| [draw_hint_explanation](#geneinfo.plot.venn.draw_hint_explanation) | Add explanation of 'n/d*' hints |
+| [draw_text](#geneinfo.plot.venn.draw_text) | Wrapper for drawing text |
+| [draw_triangle](#geneinfo.plot.venn.draw_triangle) | Wrapper for drawing triangle; called like `draw_triangle(ax, *coords, None, None, color)` |
+| [draw_venn](#geneinfo.plot.venn.draw_venn) | Draw true Venn diagram, annotate petals and dataset labels |
+| [generate_colors](#geneinfo.plot.venn.generate_colors) | Generate colors from matplotlib colormap; pass list to use exact colors |
+| [generate_logics](#geneinfo.plot.venn.generate_logics) | Generate intersection identifiers in binary (0010 etc) |
+| [generate_petal_labels](#geneinfo.plot.venn.generate_petal_labels) | Generate petal descriptions for venn diagram based on set sizes |
+| [get_n_sets](#geneinfo.plot.venn.get_n_sets) | Infer number of sets, check consistency |
+| [init_axes](#geneinfo.plot.venn.init_axes) | Create axes if do not exist, set axes parameters |
+| [is_valid_dataset_dict](#geneinfo.plot.venn.is_valid_dataset_dict) | Validate passed data (must be dictionary of sets) |
+| [less_transparent_color](#geneinfo.plot.venn.less_transparent_color) | Bump up color's alpha |
+| [update_hidden](#geneinfo.plot.venn.update_hidden) | Increment set's hidden count (sizes of intersections that are not displayed) |
+| [venn_dispatch](#geneinfo.plot.venn.venn_dispatch) | Check input, generate petal labels, draw venn diagram |
+
+### draw_ellipse { #geneinfo.plot.venn.draw_ellipse }
+
+```python
+geneinfo.plot.venn.draw_ellipse(ax, x, y, w, h, a, color)
+```
+
+Wrapper for drawing ellipse; called like `draw_ellipse(ax, *coords, *dims, angle, color)`
+
+### draw_hint_explanation { #geneinfo.plot.venn.draw_hint_explanation }
+
+```python
+geneinfo.plot.venn.draw_hint_explanation(
+    ax,
+    dataset_labels,
+    fontsize,
+    textcolor,
+)
+```
+
+Add explanation of 'n/d*' hints
+
+### draw_text { #geneinfo.plot.venn.draw_text }
+
+```python
+geneinfo.plot.venn.draw_text(ax, x, y, text, fontsize, color='black', **kwargs)
+```
+
+Wrapper for drawing text
+
+### draw_triangle { #geneinfo.plot.venn.draw_triangle }
+
+```python
+geneinfo.plot.venn.draw_triangle(
+    ax,
+    x1,
+    y1,
+    x2,
+    y2,
+    x3,
+    y3,
+    _dim,
+    _angle,
+    color,
+)
+```
+
+Wrapper for drawing triangle; called like `draw_triangle(ax, *coords, None, None, color)`
+
+### draw_venn { #geneinfo.plot.venn.draw_venn }
+
+```python
+geneinfo.plot.venn.draw_venn(
+    petal_labels,
+    dataset_labels,
+    pvalues,
+    hint_hidden,
+    colors,
+    figsize,
+    fontsize,
+    textcolor,
+    shape_coords=None,
+    legend_loc,
+    ax,
+)
+```
+
+Draw true Venn diagram, annotate petals and dataset labels
+
+### generate_colors { #geneinfo.plot.venn.generate_colors }
+
+```python
+geneinfo.plot.venn.generate_colors(cmap='viridis', n_colors=6, alpha=0.4)
+```
+
+Generate colors from matplotlib colormap; pass list to use exact colors
+
+### generate_logics { #geneinfo.plot.venn.generate_logics }
+
+```python
+geneinfo.plot.venn.generate_logics(n_sets)
+```
+
+Generate intersection identifiers in binary (0010 etc)
+
+### generate_petal_labels { #geneinfo.plot.venn.generate_petal_labels }
+
+```python
+geneinfo.plot.venn.generate_petal_labels(datasets, fmt='{size}')
+```
+
+Generate petal descriptions for venn diagram based on set sizes
+
+### get_n_sets { #geneinfo.plot.venn.get_n_sets }
+
+```python
+geneinfo.plot.venn.get_n_sets(petal_labels, dataset_labels)
+```
+
+Infer number of sets, check consistency
+
+### init_axes { #geneinfo.plot.venn.init_axes }
+
+```python
+geneinfo.plot.venn.init_axes(ax, figsize)
+```
+
+Create axes if do not exist, set axes parameters
+
+### is_valid_dataset_dict { #geneinfo.plot.venn.is_valid_dataset_dict }
+
+```python
+geneinfo.plot.venn.is_valid_dataset_dict(data)
+```
+
+Validate passed data (must be dictionary of sets)
+
+### less_transparent_color { #geneinfo.plot.venn.less_transparent_color }
+
+```python
+geneinfo.plot.venn.less_transparent_color(color, alpha_factor=2)
+```
+
+Bump up color's alpha
+
+### update_hidden { #geneinfo.plot.venn.update_hidden }
+
+```python
+geneinfo.plot.venn.update_hidden(hidden, logic, petal_labels)
+```
+
+Increment set's hidden count (sizes of intersections that are not displayed)
+
+### venn_dispatch { #geneinfo.plot.venn.venn_dispatch }
+
+```python
+geneinfo.plot.venn.venn_dispatch(
+    data,
+    func,
+    fmt='{size}',
+    hint_hidden=False,
+    cmap='Set2',
+    alpha=0.4,
+    figsize=(8, 8),
+    fontsize=13,
+    textcolor='black',
+    background=None,
+    shape_coords=None,
+    legend_loc='upper right',
+    ax=None,
+)
+```
+
+Check input, generate petal labels, draw venn diagram
