@@ -817,7 +817,7 @@ class GenomeIdeogram:
         if type(annot[0]) is str:
             _annot = []
             # annot is a list of gene names, not a list of tuples
-            for gene_name, (chrom, start, end, strand) in gene_coord(
+            for gene_name, (chrom, start, end, strand) in gene_coords(
                 annot, assembly=self.assembly).items():
                 _annot.append((chrom, (start + end)/2, gene_name))
             annot = _annot
@@ -825,7 +825,7 @@ class GenomeIdeogram:
         _annot = []
         for a in annot:
             if len(a) == 3:
-                a = a + (None, 1.0, None)
+                a = a + (None, 1.0, 'lightgray')
             elif len(a) == 4:
                 a = a + (1.0, None)
             elif len(a) == 5:
