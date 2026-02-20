@@ -1199,29 +1199,36 @@ class GenomeIdeogram:
             else:
                 dy = -sub(*self.ylim)
             df = group.reset_index() # create independent dataframe
-            df['y'] -= df.y.min()
-            df['y'] /= df.y.max()
-            df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim)) 
-                       / -sub(*self.ylim) + bottom 
+            y_min = df.y.min()
+            y_max = df.y.max()
+            df['y'] -= y_min
+            df['y'] /= y_max
+            df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+                       / -sub(*self.ylim) + bottom
                        /  -sub(*self.ylim) * -sub(*scaled_y_lim))
             x = df.x
             y = df.y
             if 'x' in kwargs: del kwargs['x']
-            if 'y' in kwargs: del kwargs['y'] 
+            if 'y' in kwargs: del kwargs['y']
 
+            y2 = None
             if 'y2' in kwargs:
                 if 'y2' not in df.columns:
                     df['y2'] = kwargs['y2']
-                df['y2'] -= df.y2.min()
-                df['y2'] /= df.y2.max()
-                df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim)) 
-                        / -sub(*self.ylim) + bottom 
+                df['y2'] -= y_min
+                df['y2'] /= y_max
+                df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim))
+                        / -sub(*self.ylim) + bottom
                         /  -sub(*self.ylim) * -sub(*scaled_y_lim))
                 y2 = df.y2
+                del kwargs['y2']
 
             method_name = method.__name__
-            method = getattr(ax, method_name, method_not_found) 
-            g = method(x, y, **kwargs)
+            method = getattr(ax, method_name, method_not_found)
+            if y2 is not None:
+                g = method(x, y, y2, **kwargs)
+            else:
+                g = method(x, y, **kwargs)
             
             for ax in self.zoom_axes:
                 scaled_y_lim = ax.get_ylim()
@@ -1230,18 +1237,35 @@ class GenomeIdeogram:
                 else:
                     dy = -sub(*self.ylim)
                 df = group.reset_index() # create independent dataframe
-                df['y'] -= df.y.min()
-                df['y'] /= df.y.max()
-                df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim)) 
-                           / -sub(*self.ylim) + bottom 
+                y_min = df.y.min()
+                y_max = df.y.max()
+                df['y'] -= y_min
+                df['y'] /= y_max
+                df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+                           / -sub(*self.ylim) + bottom
                            /  -sub(*self.ylim) * -sub(*scaled_y_lim))
                 x = df.x
                 y = df.y
                 if 'x' in kwargs: del kwargs['x']
-                if 'y' in kwargs: del kwargs['y']   
-                
-                method = getattr(ax, method_name, method_not_found) 
-                g = method(x, y, **kwargs)
+                if 'y' in kwargs: del kwargs['y']
+
+                y2 = None
+                if 'y2' in kwargs:
+                    if 'y2' not in df.columns:
+                        df['y2'] = kwargs['y2']
+                    df['y2'] -= y_min
+                    df['y2'] /= y_max
+                    df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim))
+                            / -sub(*self.ylim) + bottom
+                            /  -sub(*self.ylim) * -sub(*scaled_y_lim))
+                    y2 = df.y2
+                    del kwargs['y2']
+
+                method = getattr(ax, method_name, method_not_found)
+                if y2 is not None:
+                    g = method(x, y, y2, **kwargs)
+                else:
+                    g = method(x, y, **kwargs)
                 
                 try:
                     ax.get_legend().remove()
