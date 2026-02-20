@@ -1212,16 +1212,16 @@ class GenomeIdeogram:
             if 'y' in kwargs: del kwargs['y']
 
             y2 = None
-            if 'y2' in kwargs:
-                if 'y2' not in df.columns:
-                    df['y2'] = kwargs['y2']
+            y2_col = kwargs.pop('y2', None)
+            if y2_col is not None:
+                if y2_col not in df.columns:
+                    df['y2'] = y2_col
                 df['y2'] -= y_min
                 df['y2'] /= (y_max - y_min)
                 df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim))
                         / -sub(*self.ylim) + bottom
                         /  -sub(*self.ylim) * -sub(*scaled_y_lim))
                 y2 = df.y2
-                del kwargs['y2']
 
             method_name = method.__name__
             method = getattr(ax, method_name, method_not_found)
@@ -1229,7 +1229,7 @@ class GenomeIdeogram:
                 g = method(x, y, y2, **kwargs)
             else:
                 g = method(x, y, **kwargs)
-            
+
             for ax in self.zoom_axes:
                 scaled_y_lim = ax.get_ylim()
                 if 'ylim' in kwargs:
@@ -1246,20 +1246,17 @@ class GenomeIdeogram:
                            /  -sub(*self.ylim) * -sub(*scaled_y_lim))
                 x = df.x
                 y = df.y
-                if 'x' in kwargs: del kwargs['x']
-                if 'y' in kwargs: del kwargs['y']
 
                 y2 = None
-                if 'y2' in kwargs:
+                if y2_col is not None:
                     if 'y2' not in df.columns:
-                        df['y2'] = kwargs['y2']
+                        df['y2'] = y2_col
                     df['y2'] -= y_min
                     df['y2'] /= (y_max - y_min)
                     df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim))
                             / -sub(*self.ylim) + bottom
                             /  -sub(*self.ylim) * -sub(*scaled_y_lim))
                     y2 = df.y2
-                    del kwargs['y2']
 
                 method = getattr(ax, method_name, method_not_found)
                 if y2 is not None:
