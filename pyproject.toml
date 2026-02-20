@@ -4,11 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geneinfo"
-version = "5.6.9"
+version = "5.6.10"
 description = "..."
 requires-python = ">=3.9"
 authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
-
 dependencies = [
     'jupyter',
     'ipython',
@@ -25,17 +24,9 @@ dependencies = [
     'rapidfuzz',
     'tqdm',
 ]
-
 classifiers = [
     "Programming Language :: Python :: 3"
 ]
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-geneinfo = ["data/*.txt", "data/*.csv", "data/*.pickle"]
-
 
 [project.urls]
 Homepage = "https://munch-group.org/geneinfo"
@@ -43,14 +34,30 @@ Documentation = "https://munch-group.org/geneinfo"
 Repository = "https://github.com/munch-group/geneinfo.git"
 Issues = "https://github.com/munch-group/geneinfo/issues"
 
+# setuptools
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+geneinfo = ["data/*.txt", "data/*.csv", "data/*.pickle"]
+
+# pytest
+
+[tool.pytest.ini_options]
+testpaths = ["tests/pytest"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+
+# pixi
+
 [tool.pixi.workspace]
 channels = ["conda-forge", "munch-group"]
 platforms = ["osx-arm64", "osx-64", "linux-64"]
 
 [tool.pixi.pypi-dependencies]
 geneinfo = { path = ".", editable = true }
-
-[tool.pixi.tasks]
 
 [tool.pixi.dependencies]
 tqdm = "*"
@@ -60,26 +67,61 @@ pytables = "*"
 quartodoc = "*"
 geneinfo = "*"
 
-[tool.pixi.tasks.bump-version]
+
+[tool.pixi.environments]
+default = {solve-group = "default"}
+
+[tool.pixi.tasks.init]
+cmd = "python ./scripts/rename.py && gh repo set-default https://github.com/munch-group/{{new_name}}"
+
+[tool.pixi.tasks.install-dev]
+cmd = "XLA_FFI_INCLUDE_DIR=$(python -c 'from jax import ffi; print(ffi.include_dir())') pip install --no-build-isolation --force-reinstall --no-deps ."
+description = "Install phasic in development mode with FFI support"
+
+[tool.pixi.tasks.notebook]
+args = [ { "arg" = "notebook" } ]
+cmd = "jupyter nbconvert --log-level=WARN --to notebook --execute --inplace --TagRemovePreprocessor.enabled=True --TagRemovePreprocessor.remove_cell_tags='{\"skip-execution\"}' {{ notebook }}"
+
+[tool.pixi.tasks.api]
+cmd = "./scripts/docs-build-render.sh"
+description = "Build quartodoc api doc pages"
+
+[tool.pixi.tasks.docs]
+cmd = "./scripts/docs-run-notebooks.sh"
+description = "Execute documentation notebooks in-place"
+
+[tool.pixi.tasks.clean]
+cmd = "git clean -id"
+description = "Removes untracked files and directories but respects your .gitignores"
+
+[tool.pixi.tasks.test]
+cmd = "mkdir -p tests/pytest/tmp && jupyter nbconvert docs/pages/tutorial/*.ipynb --to script --TagRemovePreprocessor.enabled=True --TagRemovePreprocessor.remove_cell_tags='{\"skip-execution\"}' --output-dir tests/pytest/tmp && pytest tests/pytest/"
+description = "Run tests"
+
+[tool.pixi.tasks.commit]
+cmd = "./scripts/git-commit.sh"
+
+[tool.pixi.tasks.bump]
 args = [
   { "arg" = "kind", "default" = "patch" },  # can be patch, minor, major
   { "arg" = "flag", "default" = "" },     # can be --pre, --release
 ]
-cmd = "./.scripts/bump_version.py --{{ kind }} {{ flag }} &&  git add -u &&  git commit -m '{{ kind }} {{ flag }} version bump' && git push" 
-description = "Bump version patch and build/release conda packages"
+cmd = "./scripts/bump_version.py --{{ kind }} {{ flag }} && git add pyproject.toml && git commit -m '{{ kind }} {{ flag }} version bump'"
 
-[tool.pixi.tasks.bump-changelog]
-cmd = "./.scripts/bump_changelog.py --yes"
-description = "Bump version patch and build/release conda packages"
-
-[tool.pixi.tasks.acp]
+[tool.pixi.tasks.release]
 args = [
-  { "arg" = "message", "default" = "update" },  # can be --patch, --minor, --major
+  { "arg" = "kind", "default" = "patch" },  # can be patch, minor, major
+  { "arg" = "flag", "default" = "" },     # can be --pre, --release
 ]
-cmd = "git add -u ; git commit -m '{{ message }}' ; git push"
-description = "git add commit push of tracked files with optional message"
+cmd = "./scripts/bump_version.py --{{ kind }} {{ flag }} && git add pyproject.toml && git commit -m '{{ kind }} {{ flag }} version bump' && git push && ./scripts/github-release.sh"
+description = "Bump version patch and push tag to build/upload conda/pypi packages"
 
-[tool.pixi.tasks.github-release]
-cmd = "./.scripts/release-tag.sh"
-description = "Release latest version on Github"
+[tool.pixi.tasks.version]
+args = [
+  { "arg" = "kind", "default" = "patch" },  # can be patch, minor, major
+  { "arg" = "flag", "default" = "" },     # can be --pre, --release
+]
+cmd = "./scripts/bump_version.py --{{ kind }} {{ flag }} && git add pyproject.toml && git commit -m '{{ kind }} {{ flag }} version bump' && git push && ./scripts/github-release.sh"
+depends-on = ["test", "api", "docs", "commit"]
+description = "Bump version patch and push tag to build/upload conda/pypi packages"
 
