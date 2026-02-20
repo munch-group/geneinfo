@@ -68,14 +68,20 @@ centromeres = {
     'chrY':    (10300000, 10400000)}    
 
 
-def black_white(ax):
-    """Returns black for light backgrounds, white for dark backgrounds."""
+def in_dark_theme(ax=None):
+    """Returns True if the background is dark, False otherwise."""
     if ax is None:
+        plt.ioff()
         ax = plt.gca()
+        plt.ion()        
     bg_color = ax.get_facecolor()
     # Convert to grayscale to determine brightness
     luminance = matplotlib.colors.rgb_to_hsv(matplotlib.colors.to_rgb(bg_color))[2]
-    return 'black' if luminance > 0.5 else '#FDFDFD'
+    return bool(luminance < 0.5)
+
+def black_white(ax=None):
+    """Returns black for light backgrounds, white for dark backgrounds."""
+    return 'black' if in_dark_theme(ax=ax) else '#FDFDFD'
 
 def _chrom_sort_key(chrom):
     return [int(x) if x.isdigit() else x for x in re.split(r'(\d+)', chrom)]

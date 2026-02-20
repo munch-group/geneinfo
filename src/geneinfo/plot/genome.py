@@ -1,4 +1,5 @@
 
+import black
 import numpy as np
 from collections import defaultdict
 import pandas as pd
@@ -8,7 +9,7 @@ from typing import Any, TypeVar, List, Tuple, Dict, Union, Iterable
 from itertools import cycle
 
 from ..intervals import *
-from ..utils import horizon, black_white
+from ..utils import horizon, black_white, in_dark_theme
 from ..coords import gene_coords, chromosome_lengths, centromere_coords
 
 import math
@@ -345,8 +346,8 @@ class GenomeIdeogram:
                     ax.yaxis.set_ticks_position('none')
 
 
-    def draw_chromosomes(self, base:float=4, height:float=2, 
-                         facecolor:str='#EBEAEA', edgecolor:str='black', 
+    def draw_chromosomes(self, base:float=4, height=None, 
+                         facecolor=None, edgecolor=None, 
                          linewidth:float=0.7, hide_sex_chrom=False,**kwargs:dict) -> None:
         """
         Draws chromosome ideograms.
@@ -356,7 +357,7 @@ class GenomeIdeogram:
         base : 
             Placement of ideogram lower edge on y-axis scale, by default 4
         height : 
-            Height of ideogram on y-axis scale, by default 2
+            Height of ideogram on y-axis scale, by default 1
         facecolor : 
             Ideogram fill color, by default '#EBEAEA'
         edgecolor : 
@@ -368,6 +369,20 @@ class GenomeIdeogram:
         **kwargs :
             Additional keyword arguments for matplotlib.patches.Rectangle
         """
+
+        if height is None:
+            if len(self.ax_list) == 1:
+                height = 1
+            else:
+                height = 2
+
+        dark_theme = in_dark_theme(self.ax_list[0])
+
+        if facecolor is None:
+            facecolor = '#777777' if dark_theme else '#EBEAEA'
+        if edgecolor is None:
+            edgecolor = '#bbbbbb' if dark_theme else 'black'
+        
         self.ideogram_base = base
         self.ideogram_height = height
         
@@ -386,6 +401,7 @@ class GenomeIdeogram:
                 ideogram_base = self.map_y(base, ax)
                 ideogram_height = self.map_y(height, ax)
                 # draw centromere
+                centromere_color = '#bbbbbb' if dark_theme else '#777777'
                 ymin, ymax = ax.get_ylim()
                 if chrom in self.centromeres:
                     cent_start, cent_end = self.centromeres[chrom]
@@ -394,7 +410,7 @@ class GenomeIdeogram:
                         [cent_end, ideogram_base], 
                         [cent_end, ideogram_base+ideogram_height]]
                     g = ax.add_patch(patches.Polygon(xy, closed=True, zorder=2, 
-                                                    fill=True, color='#777777'))
+                                                    fill=True, color=centromere_color))
                 else:
                     cent_start, cent_end = 0, 0 
 
@@ -455,7 +471,7 @@ class GenomeIdeogram:
                         [cent_end, ideogram_base+ideogram_height]]
 
                     g = ax.add_patch(patches.Polygon(xy, closed=True, zorder=-1, 
-                                                     fill=True, color='#777777'))
+                                                     fill=True, color='#333333' if in_dark_theme() else '#777777'))
                     
                     # draw chrom
                     g = ax.add_patch(patches.Rectangle((start, ideogram_base),
@@ -496,6 +512,11 @@ class GenomeIdeogram:
                                                **kwargs
                                               ))               
         
+                    ax.spines['top'].set_visible(True)
+                    ax.spines['right'].set_visible(True)
+                    ax.spines['bottom'].set_visible(True)
+                    ax.spines['left'].set_visible(True)
+
     
     def _is_polygons_intersecting(self, a:Polygon, b:Polygon) -> bool:
         """
@@ -806,7 +827,7 @@ class GenomeIdeogram:
             base = self.ideogram_base + self.ideogram_height 
 
         if min_height is None:
-            min_height = self.ideogram_height * 0.5
+            min_height = self.ideogram_height * 1
 
         if zoom_base is None:
             zoom_base = base
@@ -822,10 +843,12 @@ class GenomeIdeogram:
                 _annot.append((chrom, (start + end)/2, gene_name))
             annot = _annot
 
+        default_text_color = 'white' if in_dark_theme() else 'black'
+        
         _annot = []
         for a in annot:
             if len(a) == 3:
-                a = a + (None, 1.0, 'lightgray')
+                a = a + (default_text_color, 1.0, 'lightgray')
             elif len(a) == 4:
                 a = a + (1.0, None)
             elif len(a) == 5:
@@ -855,8 +878,6 @@ class GenomeIdeogram:
                 continue
             ax = self.chr_axes[chrom]
 
-            foreground_color = black_white(ax)            
-
             hsv = matplotlib.colors.rgb_to_hsv(matplotlib.colors.to_rgb(highlight_color))
             hsv[1] *= 0.15
             highlight_fill = matplotlib.colors.hsv_to_rgb(hsv)
@@ -871,7 +892,7 @@ class GenomeIdeogram:
             for gene in framed:
                 if 'bbox' not in highlight[gene]:
                     highlight[gene]['bbox'] = {}            
-                highlight[gene]['bbox'].update(dict(edgecolor=foreground_color, 
+                highlight[gene]['bbox'].update(dict(edgecolor=default_text_color, 
                                                     pad=max(1.5, pad), 
                                                     linewidth=0.5))
             for gene in filled:
@@ -887,7 +908,6 @@ class GenomeIdeogram:
                     if 'facecolor' not in highlight[gene]['bbox']:
                         highlight[gene]['bbox']['facecolor'] = 'none'
 
-
             annot = sorted(annot, reverse=True)
 
             y_unit = -sub(*self._scaled_y_lim(ax)) / -sub(*self.ylim)
@@ -897,9 +917,9 @@ class GenomeIdeogram:
             for pos, name, textcolor, textsize, linecolor in annot:
 
                 if textcolor is None:
-                    textcolor = foreground_color
+                    textcolor = default_text_color
                 if linecolor is None:
-                    linecolor = foreground_color
+                    linecolor = default_text_color
 
                 if type(highlight) is list or type(highlight) is set:
                     hl = name in highlight
@@ -963,7 +983,6 @@ class GenomeIdeogram:
                 z = 100
                 for i, t in enumerate(reversed(ax.texts)):
                     t.set_zorder(z+i)
-                    
 
 
     def add_segments(self, annot:MutableSequence, base:float=None, 
@@ -1187,6 +1206,16 @@ class GenomeIdeogram:
         def method_not_found(): # just in case we dont have the function
             print('No Function '+method+' Found!')
 
+        if 'x' in kwargs:
+            _x = kwargs['x']
+        else:
+            _x = 'x'
+
+        if 'y' in kwargs:
+            _y = kwargs['y']
+        else:
+            _y = 'y'
+
         grouped = data.groupby(ch, observed=True)
         for chrom, group in grouped:
             if chrom not in self.chr_axes:
@@ -1199,15 +1228,15 @@ class GenomeIdeogram:
             else:
                 dy = -sub(*self.ylim)
             df = group.reset_index() # create independent dataframe
-            y_min = df.y.min()
-            y_max = df.y.max()
-            df['y'] -= y_min
-            df['y'] /= (y_max - y_min)
-            df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+            y_min = df[_y].min()
+            y_max = df[_y].max()
+            df[_y] -= y_min
+            df[_y] /= (y_max - y_min)
+            df[_y] = (df[_y] * ((top-bottom) * -sub(*scaled_y_lim))
                        / -sub(*self.ylim) + bottom
                        /  -sub(*self.ylim) * -sub(*scaled_y_lim))
-            x = df.x
-            y = df.y
+            x = df[_x]
+            y = df[_y]
             if 'x' in kwargs: del kwargs['x']
             if 'y' in kwargs: del kwargs['y']
 
@@ -1237,15 +1266,15 @@ class GenomeIdeogram:
                 else:
                     dy = -sub(*self.ylim)
                 df = group.reset_index() # create independent dataframe
-                y_min = df.y.min()
-                y_max = df.y.max()
-                df['y'] -= y_min
-                df['y'] /= (y_max - y_min)
-                df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+                y_min = df[_y].min()
+                y_max = df[_y].max()
+                df[_y] -= y_min
+                df[_y] /= (y_max - y_min)
+                df[_y] = (df[_y] * ((top-bottom) * -sub(*scaled_y_lim))
                            / -sub(*self.ylim) + bottom
                            /  -sub(*self.ylim) * -sub(*scaled_y_lim))
-                x = df.x
-                y = df.y
+                x = df[_x]
+                y = df[_y]
 
                 y2 = None
                 if y2_col is not None:
@@ -1296,7 +1325,17 @@ class GenomeIdeogram:
         **kwargs :
             Additional keyword arguments are passed to the plotting function as
             keyword arguments.            
-        """            
+        """
+        if 'x' in kwargs:
+            x = kwargs['x']
+        else:
+            x = 'x'
+
+        if 'y' in kwargs:
+            y = kwargs['y']
+        else:
+            y = 'y'
+
         grouped = data.groupby(ch, observed=True)
         for chrom, group in grouped:
             if chrom not in self.chr_axes:
@@ -1309,14 +1348,14 @@ class GenomeIdeogram:
                 dy = -sub(*self.ylim)
             df = group.reset_index() #.copy()
             if yaxis is None:
-                df['y'] = df.y * -sub(*scaled_y_lim) / -sub(*self.ylim)
+                df[y] = df[y] * -sub(*scaled_y_lim) / -sub(*self.ylim)
             else:
                 bottom, top = yaxis
-                y_min = df.y.min()
-                y_max = df.y.max()
-                df['y'] -= y_min
-                df['y'] /= (y_max - y_min)
-                df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+                y_min = df[y].min()
+                y_max = df[y].max()
+                df[y] -= y_min
+                df[y] /= (y_max - y_min)
+                df[y] = (df[y] * ((top-bottom) * -sub(*scaled_y_lim))
                            / -sub(*self.ylim) + bottom
                            /  -sub(*self.ylim) * -sub(*scaled_y_lim))
             g = fun(df, ax=ax, **kwargs)
@@ -1329,14 +1368,14 @@ class GenomeIdeogram:
                     dy = -sub(*self.ylim)
                 df = group.reset_index() #.copy()
                 if yaxis is None:
-                    df['y'] = df.y * -sub(*scaled_y_lim) / -sub(*self.ylim)
+                    df[y] = df[y] * -sub(*scaled_y_lim) / -sub(*self.ylim)
                 else:
                     bottom, top = yaxis
-                    y_min = df.y.min()
-                    y_max = df.y.max()
-                    df['y'] -= y_min
-                    df['y'] /= (y_max - y_min)
-                    df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+                    y_min = df[y].min()
+                    y_max = df[y].max()
+                    df[y] -= y_min
+                    df[y] /= (y_max - y_min)
+                    df[y] = (df[y] * ((top-bottom) * -sub(*scaled_y_lim))
                                / -sub(*self.ylim) + bottom
                                / -sub(*self.ylim) * -sub(*scaled_y_lim))
                 g = fun(df, ax=ax, **kwargs)
