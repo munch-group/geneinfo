@@ -1202,7 +1202,7 @@ class GenomeIdeogram:
             y_min = df.y.min()
             y_max = df.y.max()
             df['y'] -= y_min
-            df['y'] /= y_max
+            df['y'] /= (y_max - y_min)
             df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
                        / -sub(*self.ylim) + bottom
                        /  -sub(*self.ylim) * -sub(*scaled_y_lim))
@@ -1216,7 +1216,7 @@ class GenomeIdeogram:
                 if 'y2' not in df.columns:
                     df['y2'] = kwargs['y2']
                 df['y2'] -= y_min
-                df['y2'] /= y_max
+                df['y2'] /= (y_max - y_min)
                 df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim))
                         / -sub(*self.ylim) + bottom
                         /  -sub(*self.ylim) * -sub(*scaled_y_lim))
@@ -1240,7 +1240,7 @@ class GenomeIdeogram:
                 y_min = df.y.min()
                 y_max = df.y.max()
                 df['y'] -= y_min
-                df['y'] /= y_max
+                df['y'] /= (y_max - y_min)
                 df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
                            / -sub(*self.ylim) + bottom
                            /  -sub(*self.ylim) * -sub(*scaled_y_lim))
@@ -1254,7 +1254,7 @@ class GenomeIdeogram:
                     if 'y2' not in df.columns:
                         df['y2'] = kwargs['y2']
                     df['y2'] -= y_min
-                    df['y2'] /= y_max
+                    df['y2'] /= (y_max - y_min)
                     df['y2'] = (df.y2 * ((top-bottom) * -sub(*scaled_y_lim))
                             / -sub(*self.ylim) + bottom
                             /  -sub(*self.ylim) * -sub(*scaled_y_lim))
@@ -1315,10 +1315,12 @@ class GenomeIdeogram:
                 df['y'] = df.y * -sub(*scaled_y_lim) / -sub(*self.ylim)
             else:
                 bottom, top = yaxis
-                df['y'] -= df.y.min()
-                df['y'] /= df.y.max()
-                df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim)) 
-                           / -sub(*self.ylim) + bottom 
+                y_min = df.y.min()
+                y_max = df.y.max()
+                df['y'] -= y_min
+                df['y'] /= (y_max - y_min)
+                df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+                           / -sub(*self.ylim) + bottom
                            /  -sub(*self.ylim) * -sub(*scaled_y_lim))
             g = fun(df, ax=ax, **kwargs)
             
@@ -1333,10 +1335,12 @@ class GenomeIdeogram:
                     df['y'] = df.y * -sub(*scaled_y_lim) / -sub(*self.ylim)
                 else:
                     bottom, top = yaxis
-                    df['y'] -= df.y.min()
-                    df['y'] /= df.y.max()
-                    df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim)) 
-                               / -sub(*self.ylim) + bottom 
+                    y_min = df.y.min()
+                    y_max = df.y.max()
+                    df['y'] -= y_min
+                    df['y'] /= (y_max - y_min)
+                    df['y'] = (df.y * ((top-bottom) * -sub(*scaled_y_lim))
+                               / -sub(*self.ylim) + bottom
                                / -sub(*self.ylim) * -sub(*scaled_y_lim))
                 g = fun(df, ax=ax, **kwargs)
                 try:
