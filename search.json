@@ -250,7 +250,7 @@
     "href": "pages/gene_plots.html",
     "title": "Gene context",
     "section": "",
-    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nsns.set_style('white')\n\n# %config InlineBackend.figure_format = 'retina'\n%config InlineBackend.figure_format = 'svg'",
+    "text": "from collections import defaultdict\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\ntry:\n    from vscodenb import set_vscode_theme\n    set_vscode_theme(style='ticks', frame=False)\nexcept ImportError:\n    pass\n\nsns.set_palette('tab10')\n\n# %config InlineBackend.figure_format = 'retina'\n%config InlineBackend.figure_format = 'svg'",
     "crumbs": [
       "Visualization",
       "Gene context"
@@ -1700,7 +1700,7 @@
     "href": "pages/gene_information.html",
     "title": "Gene information",
     "section": "",
-    "text": "import geneinfo.information as gi",
+    "text": "try:\n    from vscodenb import set_vscode_theme\n    set_vscode_theme(style='ticks', frame=False)\nexcept ImportError:\n    pass\n\nimport seaborn as sns\nsns.set_palette('tab10')\n\n# %config InlineBackend.figure_format = 'retina'\n%config InlineBackend.figure_format = 'svg'\n\nimport geneinfo.information as gi",
     "crumbs": [
       "Information",
       "Gene information"
