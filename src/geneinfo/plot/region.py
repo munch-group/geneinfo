@@ -10,12 +10,15 @@ import matplotlib.pyplot as plt
 
 from ..intervals import *
 from ..coords import gene_coords_region
-
+from ..utils import black_white, in_dark_theme
 
 def _plot_gene(name, txstart, txend, exons, offset, line_width, 
                min_visible_width, font_size, ax, highlight=False, clip_on=True):
 
-    color='black'
+    if in_dark_theme(ax=ax):
+        color='white'
+    else:
+        color='black'
 
     line = ax.plot([txstart, txend], [offset, offset], color=color, 
                    linewidth=line_width/5, alpha=0.5)
