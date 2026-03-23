@@ -1,5 +1,5 @@
 """
-genuset.py  v0.6.0
+upset.py  v0.6.0
 ==================
 UpSet-style intersection plot where the count bars are replaced by stacked
 gene (or any element) name labels that grow upward from a shared baseline,
@@ -29,7 +29,7 @@ multiple stacked gene+matrix panel pairs — one per row of columns.
 
 Quickstart
 ----------
-    from genuset import upsetgenes
+    from geneinfo.plot import upset
     import matplotlib.pyplot as plt
 
     sets = {
@@ -37,7 +37,7 @@ Quickstart
         "PI3K pathway":   {"PTEN", "KRAS", "AKT1", "MTOR", "EGFR", "PIK3CA"},
         "DNA repair":     {"BRCA1", "TP53", "ATM", "CHEK2", "PTEN", "MLH1"},
     }
-    fig = upsetgenes(sets, title="Gene set overlaps")
+    fig = upset(sets, title="Gene set overlaps")
     fig.savefig("overlaps.pdf", bbox_inches="tight", transparent=True)
     plt.show()
 """
@@ -50,7 +50,7 @@ from typing import Optional
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 
-__all__ = ["upsetgenes", "compute_intersections"]
+__all__ = ["upset", "compute_intersections"]
 __version__ = "0.6.0"
 
 
@@ -94,7 +94,7 @@ def compute_intersections(
         ``'degree'`` - most sets involved first, then by size.
     max_cols :
         Truncate output to at most this many intersections after sorting.
-        When called from ``upsetgenes`` with ``wrap=True`` this cap is
+        When called from ``upset`` with ``wrap=True`` this cap is
         applied per row rather than to the total.
     singletons :
         If ``False``, remove degree-1 intersections before the ``max_cols``
@@ -155,7 +155,7 @@ def compute_intersections(
 # ── main API ───────────────────────────────────────────────────────────────────
 
 
-def upsetgenes(
+def upset(
     sets: Mapping[str, "set | list"],
     *,
     # ── data ──────────────────────────────────────────────────────────────────
@@ -377,17 +377,17 @@ def upsetgenes(
     --------
     Basic usage::
 
-        fig = upsetgenes({"A": {"x","y"}, "B": {"y","z"}, "C": {"z","x"}})
+        fig = upset({"A": {"x","y"}, "B": {"y","z"}, "C": {"z","x"}})
         plt.show()
 
     Wrap all intersections across multiple rows, 12 columns per row::
 
-        fig = upsetgenes(my_sets, wrap=True, max_cols=12, singletons=True)
+        fig = upset(my_sets, wrap=True, max_cols=12, singletons=True)
         fig.savefig("wrapped.pdf", bbox_inches="tight", transparent=True)
 
     Inclusive mode with per-set colour::
 
-        fig = upsetgenes(
+        fig = upset(
             my_sets,
             mode="inclusive",
             color=True,
@@ -399,11 +399,11 @@ def upsetgenes(
     Dark theme::
 
         with plt.style.context("dark_background"):
-            fig = upsetgenes(my_sets)
+            fig = upset(my_sets)
 
     Highlight a specific intersection::
 
-        fig = upsetgenes(
+        fig = upset(
             my_sets,
             highlight=[frozenset(["Cancer drivers", "DNA repair"])],
         )
@@ -413,7 +413,7 @@ def upsetgenes(
     n_sets = len(names)
 
     if n_sets < 2:
-        raise ValueError("upsetgenes requires at least 2 sets.")
+        raise ValueError("upset requires at least 2 sets.")
 
     highlight_set: set[frozenset[str]] = set(highlight) if highlight else set()
 
