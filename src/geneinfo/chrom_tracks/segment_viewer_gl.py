@@ -1325,7 +1325,7 @@ function tipHist(pos, chrom, cfg) {
 
 function tipSegment(pos, chrom, cfg, localY) {
   const nG = cfg.groups.length;
-  if (nG === 0) return null;
+  if (nG === 0 || localY < 0) return null;
   const gap = 0.08;
   const weights = cfg.groups.map(g => g.nInd || 1);
   const totalW = weights.reduce((a, b) => a + b, 0);
@@ -1341,6 +1341,7 @@ function tipSegment(pos, chrom, cfg, localY) {
 }
 
 function tipHeatmap(pos, chrom, cfg, localY) {
+  if (localY < 0) return null;
   const nG = cfg.groups.length;
   const weights = cfg.groups.map(g => g.nInd || 1);
   const totalW = weights.reduce((a, b) => a + b, 0);
@@ -1379,13 +1380,19 @@ const onMove = e => {
     if (mx < 0 || e.target !== glCanvas) { tooltip.style.display = 'none'; return; }
     const W = glCanvas.offsetWidth - LABEL_W;
     const pos = Math.round(vp.start + (mx / W) * (vp.end - vp.start));
-    let text = `${vp.chrom}:${pos.toLocaleString()}`;
-    const hit = trackAtY(e.offsetY);
-    if (hit) {
-      const extra = tipForTrack(pos, vp.chrom, hit.cfg, hit.localY);
-      if (extra) text += `\n${extra}`;
+    const lines = [`${vp.chrom}:${pos.toLocaleString()}`];
+    const cfgs = model.get('track_configs');
+    if (cfgs) {
+      const hit = trackAtY(e.offsetY);
+      let cssY = SCALEBAR_H;
+      for (const cfg of cfgs) {
+        const localY = (hit && hit.cfg.id === cfg.id) ? hit.localY : -1;
+        const tip = tipForTrack(pos, vp.chrom, cfg, localY);
+        if (tip) lines.push(`${cfg.name}: ${tip}`);
+        cssY += cfg.height;
+      }
     }
-    tooltip.textContent = text;
+    tooltip.textContent = lines.join('\n');
     tooltip.style.cssText = `display:block;left:${e.offsetX + 14}px;top:${e.offsetY - 6}px`;
     return;
   }
