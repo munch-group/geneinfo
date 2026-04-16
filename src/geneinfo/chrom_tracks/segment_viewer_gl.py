@@ -1234,15 +1234,24 @@ function trackAtY(offsetY) {
   return null;
 }
 
-function tipGene(pos, chrom, cfg) {
-  const genes = geneData?.[cfg.id]?.[chrom] ?? [];
-  const hits = [];
-  for (const g of genes) {
-    if (pos >= g.s && pos <= g.e)
-      hits.push(`${g.n || 'unnamed'} ${g.strand === '+' ? '\u2192' : '\u2190'}`);
-  }
-  return hits.length ? hits.join(', ') : null;
+// ── Tooltip format engine ───────────────────────────────────────────────────
+// Applies a Python-style format string: {key} or {key:.Nf}
+function fmtTip(fmt, obj) {
+  let ok = true;
+  const result = fmt.replace(/\{(\w+)(?::([^}]+))?\}/g, (_, key, spec) => {
+    if (!(key in obj)) { ok = false; return `{${key}}`; }
+    const v = obj[key];
+    if (spec && typeof v === 'number') {
+      const m = spec.match(/^\.(\d+)f$/);
+      if (m) return v.toFixed(parseInt(m[1]));
+    }
+    if (typeof v === 'number' && !spec) return v.toPrecision(4);
+    return String(v);
+  });
+  return ok ? result : null;
 }
+
+// ── Tooltip data extractors ─────────────────────────────────────────────────
 
 function bisectStride(arr, val, stride) {
   let lo = 0, hi = (arr.length / stride) | 0;
@@ -1253,8 +1262,18 @@ function bisectStride(arr, val, stride) {
   return lo;
 }
 
-function tipXY(pos, chrom, cfg) {
-  const parts = [];
+function tipDataGene(pos, chrom, cfg) {
+  const genes = geneData?.[cfg.id]?.[chrom] ?? [];
+  const hits = [];
+  for (const g of genes) {
+    if (pos >= g.s && pos <= g.e)
+      hits.push({ name: g.n || 'unnamed', strand: g.strand === '+' ? '\u2192' : '\u2190', start: g.s, end: g.e });
+  }
+  return hits.length ? hits : null;
+}
+
+function tipDataXY(pos, chrom, cfg) {
+  const items = [];
   for (const grp of cfg.groups) {
     const arr = rawXY?.[cfg.id]?.[chrom]?.[grp.id];
     if (!arr || arr.length < 2) continue;
@@ -1267,16 +1286,13 @@ function tipXY(pos, chrom, cfg) {
         if (d < bestDist) { bestDist = d; best = c; }
       }
     }
-    if (best < 0) continue;
-    const val = arr[best * 2 + 1];
-    const label = cfg.groups.length > 1 ? `${grp.name}: ` : '';
-    parts.push(`${label}${val.toPrecision(4)}`);
+    if (best >= 0) items.push({ group: grp.name, value: arr[best * 2 + 1], x: arr[best * 2] });
   }
-  return parts.length ? parts.join(', ') : null;
+  return items.length ? items : null;
 }
 
-function tipFill(pos, chrom, cfg) {
-  const parts = [];
+function tipDataFill(pos, chrom, cfg) {
+  const items = [];
   for (const grp of cfg.groups) {
     const arr = rawFill?.[cfg.id]?.[chrom]?.[grp.id];
     if (!arr || arr.length < 3) continue;
@@ -1289,18 +1305,15 @@ function tipFill(pos, chrom, cfg) {
         if (d < bestDist) { bestDist = d; best = c; }
       }
     }
-    if (best < 0) continue;
-    const lo = arr[best * 3 + 1], hi = arr[best * 3 + 2];
-    const label = cfg.groups.length > 1 ? `${grp.name}: ` : '';
-    parts.push(`${label}${lo.toPrecision(4)}\u2013${hi.toPrecision(4)}`);
+    if (best >= 0) items.push({ group: grp.name, lo: arr[best * 3 + 1], hi: arr[best * 3 + 2], x: arr[best * 3] });
   }
-  return parts.length ? parts.join(', ') : null;
+  return items.length ? items : null;
 }
 
-function tipHist(pos, chrom, cfg) {
+function tipDataHist(pos, chrom, cfg) {
   const binW = cfg.binWidth ?? 1;
   const halfW = binW / 2;
-  const parts = [];
+  const items = [];
   for (const grp of cfg.groups) {
     const raw = rawHist?.[cfg.id]?.[chrom]?.[grp.id];
     if (!raw) continue;
@@ -1312,18 +1325,16 @@ function tipHist(pos, chrom, cfg) {
       if (c >= 0 && c < n) {
         const cx = arr[c * 2];
         if (pos >= cx - halfW && pos <= cx + halfW) {
-          const val = arr[c * 2 + 1];
-          const label = cfg.groups.length > 1 ? `${grp.name}: ` : '';
-          parts.push(`${label}${val.toPrecision(4)}`);
+          items.push({ group: grp.name, value: arr[c * 2 + 1], x: cx });
           break;
         }
       }
     }
   }
-  return parts.length ? parts.join(', ') : null;
+  return items.length ? items : null;
 }
 
-function tipSegment(pos, chrom, cfg, localY) {
+function tipDataSegment(pos, chrom, cfg, localY) {
   const nG = cfg.groups.length;
   if (nG === 0 || localY < 0) return null;
   const gap = 0.08;
@@ -1335,12 +1346,12 @@ function tipSegment(pos, chrom, cfg, localY) {
     const bandTop = gap * 0.5 + (1 - gap) * cumW / totalW;
     cumW += weights[gi];
     const bandBot = gap * 0.5 + (1 - gap) * cumW / totalW;
-    if (frac >= bandTop && frac <= bandBot) return cfg.groups[gi].name;
+    if (frac >= bandTop && frac <= bandBot) return { group: cfg.groups[gi].name };
   }
-  return nG === 1 ? cfg.groups[0].name : null;
+  return nG === 1 ? { group: cfg.groups[0].name } : null;
 }
 
-function tipHeatmap(pos, chrom, cfg, localY) {
+function tipDataHeatmap(pos, chrom, cfg, localY) {
   if (localY < 0) return null;
   const nG = cfg.groups.length;
   const weights = cfg.groups.map(g => g.nInd || 1);
@@ -1355,22 +1366,81 @@ function tipHeatmap(pos, chrom, cfg, localY) {
       const grp = cfg.groups[gi];
       const indFrac = (frac - bandTop) / (bandBot - bandTop);
       const indIdx = Math.min(Math.floor(indFrac * (grp.nInd || 1)), (grp.nInd || 1) - 1);
-      return `${grp.name} [${indIdx + 1}/${grp.nInd}]`;
+      return { group: grp.name, individual: indIdx + 1, nInd: grp.nInd };
     }
   }
   return null;
 }
 
+// ── Tooltip dispatch ────────────────────────────────────────────────────────
+
+// Default formatters (replicate previous hardcoded behaviour)
+function defaultFmtGene(items) { return items.map(d => `${d.name} ${d.strand}`).join(', '); }
+function defaultFmtXY(items, nGroups) { return items.map(d => (nGroups > 1 ? `${d.group}: ` : '') + d.value.toPrecision(4)).join(', '); }
+function defaultFmtFill(items, nGroups) { return items.map(d => (nGroups > 1 ? `${d.group}: ` : '') + `${d.lo.toPrecision(4)}\u2013${d.hi.toPrecision(4)}`).join(', '); }
+function defaultFmtHist(items, nGroups) { return items.map(d => (nGroups > 1 ? `${d.group}: ` : '') + d.value.toPrecision(4)).join(', '); }
+function defaultFmtSegment(d) { return d.group; }
+function defaultFmtHeatmap(d) { return `${d.group} [${d.individual}/${d.nInd}]`; }
+
 function tipForTrack(pos, chrom, cfg, localY) {
+  if (cfg.tipFmt === false) return null;
+  let data, keys;
   switch (cfg.type) {
-    case 'gene':      return tipGene(pos, chrom, cfg);
-    case 'scatter':
-    case 'line':      return tipXY(pos, chrom, cfg);
-    case 'fill':      return tipFill(pos, chrom, cfg);
-    case 'histogram': return tipHist(pos, chrom, cfg);
-    case 'segment':   return tipSegment(pos, chrom, cfg, localY);
-    case 'heatmap':   return tipHeatmap(pos, chrom, cfg, localY);
-    default:          return null;
+    case 'gene':
+      data = tipDataGene(pos, chrom, cfg);
+      keys = 'name, strand, start, end';
+      if (!data) return null;
+      if (cfg.tipFmt) {
+        const parts = data.map(d => fmtTip(cfg.tipFmt, d)).filter(s => s !== null);
+        return parts.length ? parts.join(', ') : `keys: ${keys}`;
+      }
+      return defaultFmtGene(data);
+
+    case 'scatter': case 'line':
+      data = tipDataXY(pos, chrom, cfg);
+      keys = 'group, value, x';
+      if (!data) return null;
+      if (cfg.tipFmt) {
+        const parts = data.map(d => fmtTip(cfg.tipFmt, d)).filter(s => s !== null);
+        return parts.length ? parts.join(', ') : `keys: ${keys}`;
+      }
+      return defaultFmtXY(data, cfg.groups.length);
+
+    case 'fill':
+      data = tipDataFill(pos, chrom, cfg);
+      keys = 'group, lo, hi, x';
+      if (!data) return null;
+      if (cfg.tipFmt) {
+        const parts = data.map(d => fmtTip(cfg.tipFmt, d)).filter(s => s !== null);
+        return parts.length ? parts.join(', ') : `keys: ${keys}`;
+      }
+      return defaultFmtFill(data, cfg.groups.length);
+
+    case 'histogram':
+      data = tipDataHist(pos, chrom, cfg);
+      keys = 'group, value, x';
+      if (!data) return null;
+      if (cfg.tipFmt) {
+        const parts = data.map(d => fmtTip(cfg.tipFmt, d)).filter(s => s !== null);
+        return parts.length ? parts.join(', ') : `keys: ${keys}`;
+      }
+      return defaultFmtHist(data, cfg.groups.length);
+
+    case 'segment':
+      data = tipDataSegment(pos, chrom, cfg, localY);
+      keys = 'group';
+      if (!data) return null;
+      if (cfg.tipFmt) return fmtTip(cfg.tipFmt, data) ?? `keys: ${keys}`;
+      return defaultFmtSegment(data);
+
+    case 'heatmap':
+      data = tipDataHeatmap(pos, chrom, cfg, localY);
+      keys = 'group, individual, nInd';
+      if (!data) return null;
+      if (cfg.tipFmt) return fmtTip(cfg.tipFmt, data) ?? `keys: ${keys}`;
+      return defaultFmtHeatmap(data);
+
+    default: return null;
   }
 }
 
@@ -1388,7 +1458,12 @@ const onMove = e => {
       for (const cfg of cfgs) {
         const localY = (hit && hit.cfg.id === cfg.id) ? hit.localY : -1;
         const tip = tipForTrack(pos, vp.chrom, cfg, localY);
-        if (tip) lines.push(`${cfg.name}: ${tip}`);
+        const label = cfg.tipLabel ?? '';
+        if (tip) {
+          lines.push(label ? `${label} ${tip}` : tip);
+        } else if (label && cfg.tipFmt !== false) {
+          lines.push(label);
+        }
         cssY += cfg.height;
       }
     }
@@ -1621,6 +1696,8 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: Optional[Dict] = None,
         height: Optional[int] = None,
         density_windows: Union[tuple, int] = (256, 1024, 4096),
+        tip_fmt: Optional[str] = None,
+        tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
         """
         Segment track with GPU instanced rendering.
@@ -1640,6 +1717,8 @@ class SegmentViewer(anywidget.AnyWidget):
                           pixel per row).
         density_windows : Tuple of bin counts for multi-resolution density LOD.
                           A single int is also accepted (treated as one level).
+        tip_fmt         : Python format string for tooltip.
+                          Available keys: ``{group}``.
         """
         if isinstance(density_windows, int):
             density_windows = (density_windows,)
@@ -1720,6 +1799,8 @@ class SegmentViewer(anywidget.AnyWidget):
                  'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)])}
                 for i, g in enumerate(groups)
             ],
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
 
         self.track_data    = {**self.track_data, tid: {'segs': seg_out, 'dens': dens_out}}
@@ -1738,6 +1819,8 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: Optional[Dict] = None,
         height: Optional[int] = None,
         windows: int = 1000,
+        tip_fmt: Optional[str] = None,
+        tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
         """
         Heatmap track — one row per individual, GPU texture rendering.
@@ -1754,6 +1837,9 @@ class SegmentViewer(anywidget.AnyWidget):
                          to the larger of 90 and the total number of
                          individuals (one pixel per row).
         windows        : Number of pre-computed density bins (whole chromosome).
+        tip_fmt        : Python format string for tooltip.
+                         Available keys: ``{group}``, ``{individual}``,
+                         ``{nInd}``.
         """
         tid = self._tid()
 
@@ -1814,6 +1900,8 @@ class SegmentViewer(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': 'heatmap', 'name': name, 'height': height,
             'groups': grp_meta,
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
         self.track_data    = {**self.track_data, tid: hm_out}
         self.track_configs = [*self.track_configs, cfg]
@@ -1843,6 +1931,8 @@ class SegmentViewer(anywidget.AnyWidget):
         color: str = '#4488cc',
         height: int = 44,
         collapse: bool = True,
+        tip_fmt: Optional[str] = None,
+        tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
         """
         Gene / exon annotation track.
@@ -1861,6 +1951,9 @@ class SegmentViewer(anywidget.AnyWidget):
         collapse   : If True (default), merge exons across all transcripts
                      into a single union set.  If False, each transcript
                      becomes a separate row in the gene track.
+        tip_fmt    : Python format string for tooltip.
+                     Available keys: ``{name}``, ``{strand}``, ``{start}``,
+                     ``{end}``.
         """
         tid   = self._tid()
         gdata: Dict = {}
@@ -1918,6 +2011,8 @@ class SegmentViewer(anywidget.AnyWidget):
             'id': tid, 'type': 'gene', 'name': name,
             'height': height, 'color': color,
             'groups': [],
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
         self.track_data    = {**self.track_data, tid: gdata}
         self.track_configs = [*self.track_configs, cfg]
@@ -1936,6 +2031,8 @@ class SegmentViewer(anywidget.AnyWidget):
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
         point_size: int = 3,
+        tip_fmt: Optional[str] = None,
+        tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
         """
         Scatter track — point cloud.
@@ -1951,9 +2048,12 @@ class SegmentViewer(anywidget.AnyWidget):
         height     : Track height in CSS px.
         y_range    : (yMin, yMax) — auto-computed from data if None.
         point_size : Point diameter in CSS px.
+        tip_fmt    : Python format string for tooltip.
+                     Available keys: ``{group}``, ``{value}``, ``{x}``.
         """
         return self._add_xy_track(df, name, 'scatter', x, y, group_by,
-                                  color_map, height, y_range, point_size=point_size)
+                                  color_map, height, y_range, point_size=point_size,
+                                  tip_fmt=tip_fmt, tip_label=tip_label)
 
     # ── add_line_track ───────────────────────────────────────────────────────
     def add_line_track(
@@ -1967,6 +2067,8 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: Optional[Dict] = None,
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
+        tip_fmt: Optional[str] = None,
+        tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
         """
         Line track — connected line per group.
@@ -1981,12 +2083,15 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: {group_value: '#rrggbb'}.
         height   : Track height in CSS px.
         y_range  : (yMin, yMax) — auto-computed from data if None.
+        tip_fmt  : Python format string for tooltip.
+                   Available keys: ``{group}``, ``{value}``, ``{x}``.
         """
         return self._add_xy_track(df, name, 'line', x, y, group_by,
-                                  color_map, height, y_range)
+                                  color_map, height, y_range, tip_fmt=tip_fmt,
+                                  tip_label=tip_label)
 
     def _add_xy_track(self, df, name, track_type, x, y, group_by,
-                      color_map, height, y_range, point_size=3):
+                      color_map, height, y_range, point_size=3, tip_fmt=None, tip_label=None):
         """Shared implementation for scatter and line tracks."""
         tid = self._tid()
         if group_by and group_by in df.columns:
@@ -2033,6 +2138,8 @@ class SegmentViewer(anywidget.AnyWidget):
                  'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)])}
                 for i, g in enumerate(groups)
             ],
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
         self.track_data    = {**self.track_data, tid: xy_out}
         self.track_configs = [*self.track_configs, cfg]
@@ -2055,6 +2162,8 @@ class SegmentViewer(anywidget.AnyWidget):
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
         baseline: Optional[float] = None,
+        tip_fmt: Optional[str] = None,
+        tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
         """
         Fill-between track — filled area between two curves or from a
@@ -2083,6 +2192,8 @@ class SegmentViewer(anywidget.AnyWidget):
         y_range   : (yMin, yMax) — auto-computed from data if None.
         baseline  : Y value at which pos/neg colours switch.  Defaults to
                     0 when *y* is used, or 0.0 when *y_lo*/*y_hi* are used.
+        tip_fmt   : Python format string for tooltip.
+                    Available keys: ``{group}``, ``{lo}``, ``{hi}``, ``{x}``.
         """
         # Resolve single-y vs lo/hi mode
         if y is not None and (y_lo is not None or y_hi is not None):
@@ -2158,6 +2269,8 @@ class SegmentViewer(anywidget.AnyWidget):
                  'colorNeg': color_neg or '#888888'}
                 for i, g in enumerate(groups)
             ],
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
         self.track_data    = {**self.track_data, tid: fill_out}
         self.track_configs = [*self.track_configs, cfg]
@@ -2176,6 +2289,8 @@ class SegmentViewer(anywidget.AnyWidget):
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
         bin_width: Optional[float] = None,
+        tip_fmt: Optional[str] = None,
+        tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
         """
         Histogram track — vertical bars.
@@ -2192,6 +2307,8 @@ class SegmentViewer(anywidget.AnyWidget):
         y_range   : (yMin, yMax) — auto-computed from data if None.
         bin_width : Width of each bar in bp.  Auto-computed from data spacing
                     if None.
+        tip_fmt   : Python format string for tooltip.
+                    Available keys: ``{group}``, ``{value}``, ``{x}``.
         """
         tid = self._tid()
         if group_by and group_by in df.columns:
@@ -2245,6 +2362,8 @@ class SegmentViewer(anywidget.AnyWidget):
                  'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)])}
                 for i, g in enumerate(groups)
             ],
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
         self.track_data    = {**self.track_data, tid: hist_out}
         self.track_configs = [*self.track_configs, cfg]
