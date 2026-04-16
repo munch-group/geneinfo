@@ -91,10 +91,11 @@ def chrom_sort_key(chrom):
     Function for use as key in sorting chromosomes. Works for both
     Python lists and numpy arrays/pandas series.
     """
-#     if isinstance(chrom, (list, tuple)):
-#         return _chrom_sort_key
-#     elif isinstance(chrom, Sequence):    
-    if isinstance(chrom, np.ndarray):
+    if isinstance(chrom, str):
+        return _chrom_sort_key(chrom)
+    if isinstance(chrom, (list, tuple)):
+        return _chrom_sort_key(chrom[0])
+    elif isinstance(chrom, np.ndarray):
         return [_chrom_sort_key(x) for x in chrom]
     else:
         return _chrom_sort_key(chrom)
