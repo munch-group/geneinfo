@@ -92,7 +92,7 @@ def chrom_sort_key(chrom):
     Python lists and numpy arrays/pandas series.
     """
     if isinstance(chrom, (list, tuple)):
-        return chrom_sort_key(chrom[0])
+        return _chrom_sort_key
     elif isinstance(chrom, Sequence):
         return [_chrom_sort_key(x) for x in chrom]
     else:
