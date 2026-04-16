@@ -32,7 +32,10 @@ requirements:
     - pydot
     - statsmodels
     - rapidfuzz
-    - tqdm  
+    - tqdm
+    - anywidget
+    - traitlets>=5
+    - pandas
     # {% for dep in pyproject.get("project").get("dependencies") %}
     # - {{ dep.lower() }}
     # {% endfor %}  

@@ -23,6 +23,9 @@ dependencies = [
     'statsmodels',
     'rapidfuzz',
     'tqdm',
+    'anywidget',
+    'traitlets>=5',
+    'pandas',
 ]
 classifiers = [
     "Programming Language :: Python :: 3"
@@ -68,6 +71,7 @@ pytables = "*"
 quartodoc = "*"
 geneinfo = "*"
 vscodenb = ">=0.1.34,<0.2"
+pyarrow = ">=23.0.1,<24"
 
 
 [tool.pixi.environments]
