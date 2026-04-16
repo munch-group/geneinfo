@@ -121,7 +121,7 @@ _CSS = """
     pointer-events: none;
     display: none;
     z-index: 20;
-    white-space: nowrap;
+    white-space: pre;
     border: 1px solid var(--sv-input-border);
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
@@ -352,6 +352,9 @@ const gpuHM   = {};   // { tex, nInd, nWin }
 const gpuXY   = {};   // { buf, count }  — for scatter, line
 const gpuFill = {};   // { posBuf, posCount, negBuf, negCount }
 const gpuHist = {};   // { buf, starts, maxLen, count }  — instanced rects
+const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
+const rawFill = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,lo,hi,...]
+const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
 
 // ══════════════════════════════════════════════════════════════════════════════
 // BINARY DECODE
@@ -599,36 +602,45 @@ function uploadTrackData() {
       geneData[tid] = d;
     } else if (cfg.type === 'scatter' || cfg.type === 'line') {
       if (!gpuXY[tid]) gpuXY[tid] = {};
+      if (!rawXY[tid]) rawXY[tid] = {};
       const yMin = cfg.yMin ?? 0;
       const yMax = cfg.yMax ?? 1;
       for (const ch of Object.keys(d)) {
         gpuXY[tid][ch] = {};
+        rawXY[tid][ch] = {};
         for (const [gid, b64] of Object.entries(d[ch])) {
           const arr = b64F32(b64);
+          rawXY[tid][ch][gid] = arr;
           gpuXY[tid][ch][gid] = buildXYGPU(arr, yMin, yMax);
         }
       }
     } else if (cfg.type === 'fill') {
       if (!gpuFill[tid]) gpuFill[tid] = {};
+      if (!rawFill[tid]) rawFill[tid] = {};
       const yMin = cfg.yMin ?? 0;
       const yMax = cfg.yMax ?? 1;
       const baseline = cfg.baseline ?? 0;
       for (const ch of Object.keys(d)) {
         gpuFill[tid][ch] = {};
+        rawFill[tid][ch] = {};
         for (const [gid, b64] of Object.entries(d[ch])) {
           const arr = b64F32(b64);
+          rawFill[tid][ch][gid] = arr;
           gpuFill[tid][ch][gid] = buildFillGPU(arr, yMin, yMax, baseline);
         }
       }
     } else if (cfg.type === 'histogram') {
       if (!gpuHist[tid]) gpuHist[tid] = {};
+      if (!rawHist[tid]) rawHist[tid] = {};
       const yMin = cfg.yMin ?? 0;
       const yMax = cfg.yMax ?? 1;
       const binWidth = cfg.binWidth ?? 1;
       for (const ch of Object.keys(d)) {
         gpuHist[tid][ch] = {};
+        rawHist[tid][ch] = {};
         for (const [gid, b64] of Object.entries(d[ch])) {
           const arr = b64F32(b64);
+          rawHist[tid][ch][gid] = { data: arr, binWidth };
           const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
           gpuHist[tid][ch][gid] = buildHistGPU(arr, yMin, yMax, binWidth, color);
         }
@@ -1209,13 +1221,171 @@ glCanvas.addEventListener('mousedown', e => {
   glCanvas.classList.add('dragging');
 });
 
+// ── Tooltip helpers ─────────────────────────────────────────────────────────
+function trackAtY(offsetY) {
+  const cfgs = model.get('track_configs');
+  if (!cfgs) return null;
+  let cssY = SCALEBAR_H;
+  for (const cfg of cfgs) {
+    if (offsetY >= cssY && offsetY < cssY + cfg.height)
+      return { cfg, trackTop: cssY, localY: offsetY - cssY };
+    cssY += cfg.height;
+  }
+  return null;
+}
+
+function tipGene(pos, chrom, cfg) {
+  const genes = geneData?.[cfg.id]?.[chrom] ?? [];
+  const hits = [];
+  for (const g of genes) {
+    if (pos >= g.s && pos <= g.e)
+      hits.push(`${g.n || 'unnamed'} ${g.strand === '+' ? '\u2192' : '\u2190'}`);
+  }
+  return hits.length ? hits.join(', ') : null;
+}
+
+function bisectStride(arr, val, stride) {
+  let lo = 0, hi = (arr.length / stride) | 0;
+  while (lo < hi) {
+    const m = (lo + hi) >> 1;
+    arr[m * stride] < val ? lo = m + 1 : hi = m;
+  }
+  return lo;
+}
+
+function tipXY(pos, chrom, cfg) {
+  const parts = [];
+  for (const grp of cfg.groups) {
+    const arr = rawXY?.[cfg.id]?.[chrom]?.[grp.id];
+    if (!arr || arr.length < 2) continue;
+    const n = (arr.length / 2) | 0;
+    const idx = bisectStride(arr, pos, 2);
+    let best = -1, bestDist = Infinity;
+    for (const c of [idx - 1, idx]) {
+      if (c >= 0 && c < n) {
+        const d = Math.abs(arr[c * 2] - pos);
+        if (d < bestDist) { bestDist = d; best = c; }
+      }
+    }
+    if (best < 0) continue;
+    const val = arr[best * 2 + 1];
+    const label = cfg.groups.length > 1 ? `${grp.name}: ` : '';
+    parts.push(`${label}${val.toPrecision(4)}`);
+  }
+  return parts.length ? parts.join(', ') : null;
+}
+
+function tipFill(pos, chrom, cfg) {
+  const parts = [];
+  for (const grp of cfg.groups) {
+    const arr = rawFill?.[cfg.id]?.[chrom]?.[grp.id];
+    if (!arr || arr.length < 3) continue;
+    const n = (arr.length / 3) | 0;
+    const idx = bisectStride(arr, pos, 3);
+    let best = -1, bestDist = Infinity;
+    for (const c of [idx - 1, idx]) {
+      if (c >= 0 && c < n) {
+        const d = Math.abs(arr[c * 3] - pos);
+        if (d < bestDist) { bestDist = d; best = c; }
+      }
+    }
+    if (best < 0) continue;
+    const lo = arr[best * 3 + 1], hi = arr[best * 3 + 2];
+    const label = cfg.groups.length > 1 ? `${grp.name}: ` : '';
+    parts.push(`${label}${lo.toPrecision(4)}\u2013${hi.toPrecision(4)}`);
+  }
+  return parts.length ? parts.join(', ') : null;
+}
+
+function tipHist(pos, chrom, cfg) {
+  const binW = cfg.binWidth ?? 1;
+  const halfW = binW / 2;
+  const parts = [];
+  for (const grp of cfg.groups) {
+    const raw = rawHist?.[cfg.id]?.[chrom]?.[grp.id];
+    if (!raw) continue;
+    const arr = raw.data;
+    if (!arr || arr.length < 2) continue;
+    const n = (arr.length / 2) | 0;
+    const idx = bisectStride(arr, pos, 2);
+    for (const c of [idx - 1, idx]) {
+      if (c >= 0 && c < n) {
+        const cx = arr[c * 2];
+        if (pos >= cx - halfW && pos <= cx + halfW) {
+          const val = arr[c * 2 + 1];
+          const label = cfg.groups.length > 1 ? `${grp.name}: ` : '';
+          parts.push(`${label}${val.toPrecision(4)}`);
+          break;
+        }
+      }
+    }
+  }
+  return parts.length ? parts.join(', ') : null;
+}
+
+function tipSegment(pos, chrom, cfg, localY) {
+  const nG = cfg.groups.length;
+  if (nG === 0) return null;
+  const gap = 0.08;
+  const weights = cfg.groups.map(g => g.nInd || 1);
+  const totalW = weights.reduce((a, b) => a + b, 0);
+  const frac = localY / cfg.height;
+  let cumW = 0;
+  for (let gi = 0; gi < nG; gi++) {
+    const bandTop = gap * 0.5 + (1 - gap) * cumW / totalW;
+    cumW += weights[gi];
+    const bandBot = gap * 0.5 + (1 - gap) * cumW / totalW;
+    if (frac >= bandTop && frac <= bandBot) return cfg.groups[gi].name;
+  }
+  return nG === 1 ? cfg.groups[0].name : null;
+}
+
+function tipHeatmap(pos, chrom, cfg, localY) {
+  const nG = cfg.groups.length;
+  const weights = cfg.groups.map(g => g.nInd || 1);
+  const totalW = weights.reduce((a, b) => a + b, 0);
+  const frac = (localY - PAD_V) / cfg.height;
+  let cumW = 0;
+  for (let gi = 0; gi < nG; gi++) {
+    const bandTop = cumW / totalW;
+    cumW += weights[gi];
+    const bandBot = cumW / totalW;
+    if (frac >= bandTop && frac <= bandBot) {
+      const grp = cfg.groups[gi];
+      const indFrac = (frac - bandTop) / (bandBot - bandTop);
+      const indIdx = Math.min(Math.floor(indFrac * (grp.nInd || 1)), (grp.nInd || 1) - 1);
+      return `${grp.name} [${indIdx + 1}/${grp.nInd}]`;
+    }
+  }
+  return null;
+}
+
+function tipForTrack(pos, chrom, cfg, localY) {
+  switch (cfg.type) {
+    case 'gene':      return tipGene(pos, chrom, cfg);
+    case 'scatter':
+    case 'line':      return tipXY(pos, chrom, cfg);
+    case 'fill':      return tipFill(pos, chrom, cfg);
+    case 'histogram': return tipHist(pos, chrom, cfg);
+    case 'segment':   return tipSegment(pos, chrom, cfg, localY);
+    case 'heatmap':   return tipHeatmap(pos, chrom, cfg, localY);
+    default:          return null;
+  }
+}
+
 const onMove = e => {
   if (!isDragging) {
     const mx = e.offsetX - LABEL_W;
     if (mx < 0 || e.target !== glCanvas) { tooltip.style.display = 'none'; return; }
     const W = glCanvas.offsetWidth - LABEL_W;
     const pos = Math.round(vp.start + (mx / W) * (vp.end - vp.start));
-    tooltip.textContent = `${vp.chrom}:${pos.toLocaleString()}`;
+    let text = `${vp.chrom}:${pos.toLocaleString()}`;
+    const hit = trackAtY(e.offsetY);
+    if (hit) {
+      const extra = tipForTrack(pos, vp.chrom, hit.cfg, hit.localY);
+      if (extra) text += `\n${extra}`;
+    }
+    tooltip.textContent = text;
     tooltip.style.cssText = `display:block;left:${e.offsetX + 14}px;top:${e.offsetY - 6}px`;
     return;
   }
