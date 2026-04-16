@@ -2038,26 +2038,33 @@ class SegmentViewer(anywidget.AnyWidget):
         name: str,
         *,
         x: str = 'pos',
-        y_lo: str = 'lo',
-        y_hi: str = 'hi',
+        y: Optional[str] = None,
+        y_lo: Optional[str] = None,
+        y_hi: Optional[str] = None,
         group_by: Optional[str] = None,
         color_map: Optional[Dict] = None,
         color_pos: Optional[str] = None,
         color_neg: Optional[str] = None,
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
-        baseline: float = 0.0,
+        baseline: Optional[float] = None,
     ) -> 'SegmentViewer':
         """
-        Fill-between track — filled area between two curves.
+        Fill-between track — filled area between two curves or from a
+        single curve to a baseline.
 
         Supports different colors above and below a baseline.
 
+        Either supply ``y`` (fill from curve to baseline) or both
+        ``y_lo`` and ``y_hi`` (fill between two curves).
+
         Parameters
         ----------
-        df        : DataFrame with [chrom, x, y_lo, y_hi, ...].
+        df        : DataFrame with [chrom, x, ...] plus the y column(s).
         name      : Track display label.
         x         : Column for genomic position.
+        y         : Column for a single y value.  Fill extends from this
+                    curve to *baseline*.  Mutually exclusive with y_lo/y_hi.
         y_lo      : Column for lower y boundary.
         y_hi      : Column for upper y boundary.
         group_by  : Column whose unique values become separate groups.
@@ -2067,8 +2074,25 @@ class SegmentViewer(anywidget.AnyWidget):
         color_neg : Colour for region below baseline.
         height    : Track height in CSS px.
         y_range   : (yMin, yMax) — auto-computed from data if None.
-        baseline  : Y value at which pos/neg colours switch (default 0).
+        baseline  : Y value at which pos/neg colours switch.  Defaults to
+                    0 when *y* is used, or 0.0 when *y_lo*/*y_hi* are used.
         """
+        # Resolve single-y vs lo/hi mode
+        if y is not None and (y_lo is not None or y_hi is not None):
+            raise ValueError("Specify either 'y' or 'y_lo'/'y_hi', not both.")
+        if y is not None:
+            single_y = True
+            if baseline is None:
+                baseline = 0
+        else:
+            single_y = False
+            if y_lo is None:
+                y_lo = 'lo'
+            if y_hi is None:
+                y_hi = 'hi'
+            if baseline is None:
+                baseline = 0.0
+
         tid = self._tid()
         if group_by and group_by in df.columns:
             groups = sorted(df[group_by].dropna().unique(), key=str)
@@ -2082,6 +2106,12 @@ class SegmentViewer(anywidget.AnyWidget):
 
         if y_range is not None:
             yMin, yMax = y_range
+        elif single_y:
+            yMin = float(min(df[y].min(), baseline))
+            yMax = float(max(df[y].max(), baseline))
+            pad = (yMax - yMin) * 0.05 or 0.5
+            yMin -= pad
+            yMax += pad
         else:
             yMin = float(min(df[y_lo].min(), df[y_hi].min()))
             yMax = float(max(df[y_lo].max(), df[y_hi].max()))
@@ -2102,8 +2132,13 @@ class SegmentViewer(anywidget.AnyWidget):
                 gdf = gdf.sort_values(x)
                 arr = np.empty(len(gdf) * 3, dtype=np.float32)
                 arr[0::3] = gdf[x].to_numpy(dtype=np.float32)
-                arr[1::3] = gdf[y_lo].to_numpy(dtype=np.float32)
-                arr[2::3] = gdf[y_hi].to_numpy(dtype=np.float32)
+                if single_y:
+                    yvals = gdf[y].to_numpy(dtype=np.float32)
+                    arr[1::3] = np.minimum(yvals, baseline)
+                    arr[2::3] = np.maximum(yvals, baseline)
+                else:
+                    arr[1::3] = gdf[y_lo].to_numpy(dtype=np.float32)
+                    arr[2::3] = gdf[y_hi].to_numpy(dtype=np.float32)
                 fill_out[chrom][gid] = self._pack_f32(arr)
 
         cfg = {
