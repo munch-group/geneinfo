@@ -2237,6 +2237,11 @@ class SegmentViewer(anywidget.AnyWidget):
         group_col  = src['group_col']
         ind_col    = src['individual_col']
         inds_by_gi = src['inds_by_group']
+        # Per-segment shading contribution (matplotlib-style alpha → 0..255).
+        # Default alpha=0.5 → step 127 (≈ legacy 80, slightly bolder).
+        # alpha=1.0 → step 255 (single segment fully saturates the cell).
+        alpha = float(src.get('alpha', 0.5))
+        step  = max(1, min(255, int(round(255 * alpha))))
 
         span = max(1, x_end - x_start)
         out: Dict = {}
@@ -2263,7 +2268,7 @@ class SegmentViewer(anywidget.AnyWidget):
                     b0 = int(max(0, (s - x_start) / span * windows))
                     b1 = int(min(windows - 1, (e - x_start) / span * windows)) + 1
                     matrix[ii, b0:b1] = np.minimum(
-                        255, matrix[ii, b0:b1].astype(int) + 80
+                        255, matrix[ii, b0:b1].astype(int) + step
                     )
 
             out[gid] = {
@@ -2491,6 +2496,7 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: Optional[Dict] = None,
         height: Optional[int] = None,
         windows: int = 1000,
+        alpha: float = 0.5,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -2509,10 +2515,18 @@ class SegmentViewer(anywidget.AnyWidget):
                          to the larger of 90 and the total number of
                          individuals (one pixel per row).
         windows        : Number of pre-computed density bins (whole chromosome).
+        alpha          : Per-segment opacity (matplotlib-style).  Each
+                         overlapping segment adds ``alpha`` to the cell shading
+                         (clamped at 1.0).  Default 0.5 means two overlapping
+                         segments fully saturate the cell; 1.0 makes a single
+                         segment fully shaded.
         tip_fmt        : Python format string for tooltip.
                          Available keys: ``{group}``, ``{individual}``,
                          ``{nInd}``.
         """
+        if not (0.0 < float(alpha) <= 1.0):
+            raise ValueError(f"alpha must be in (0, 1], got {alpha}")
+        alpha = float(alpha)
         color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
 
@@ -2558,6 +2572,7 @@ class SegmentViewer(anywidget.AnyWidget):
             'individual_col': individual_col,
             'sort_by':        sort_by,
             'windows':        windows,
+            'alpha':          alpha,
             'inds_by_group':  inds_by_group,
         }
 
