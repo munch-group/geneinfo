@@ -1919,7 +1919,7 @@ glCanvas.addEventListener('wheel', e => {
   const frac   = mx / W;
   const range  = vp.end - vp.start;
   const anchor = vp.start + frac * range;
-  const zs     = model.get('zoom_speed') || 1.3;
+  const zs     = model.get('zoom_speed') || 1.02;
   const factor = e.deltaY > 0 ? zs : 1 / zs;
   const lo     = panLo(vp.chrom), hi = panHi(vp.chrom);
   const span   = hi - lo;
@@ -2162,7 +2162,7 @@ class SegmentViewer(anywidget.AnyWidget):
     track_configs = traitlets.List([]).tag(sync=True)
     track_data    = traitlets.Dict({}).tag(sync=True)
     viewport      = traitlets.Dict({'chrom': '', 'start': 0, 'end': 0}).tag(sync=True)
-    zoom_speed    = traitlets.Float(1.3).tag(sync=True)
+    zoom_speed    = traitlets.Float(1.02).tag(sync=True)
     pan_speed     = traitlets.Float(1.0).tag(sync=True)
     theme         = traitlets.Dict({
         'bg':           '#13131a',
