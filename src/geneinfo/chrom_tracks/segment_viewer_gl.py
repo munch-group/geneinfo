@@ -901,11 +901,9 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   octx.fillRect(LABEL_W, trackY, drawW, cfg.height);
   if (!genes.length) return;
 
-  const midY   = trackY + cfg.height / 2;
-  const exonH  = Math.min(14, Math.max(6, cfg.height * 0.42));
-  const exonY  = midY - exonH / 2;
-  const bodyH  = 2;
-  const bodyY  = midY - bodyH / 2;
+  const nRows  = Math.max(1, cfg.rows || 1);
+  const rowH   = cfg.height / nRows;
+  const exonH  = Math.min(14, Math.max(6, rowH * 0.42));
   const arrowSep = 70;
   const arrowA   = 4;
 
@@ -914,15 +912,23 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   octx.rect(LABEL_W, trackY, drawW, cfg.height);
   octx.clip();
 
+  // Track horizontal extent of label placements per row to avoid label overlap.
+  const labelUsed = Array.from({length: nRows}, () => []);
+
+  octx.font = '8px monospace';
   for (const gene of genes) {
     if (gene.e < vs || gene.s > ve) continue;
+    const rowIdx = gene.row | 0;
+    const midY   = trackY + (rowIdx + 0.5) * rowH;
+    const exonY  = midY - exonH / 2;
+    const bodyY  = midY - 1;
     const gx0 = LABEL_W + Math.max(0,     (gene.s - vs) / range * drawW);
     const gx1 = LABEL_W + Math.min(drawW, (gene.e - vs) / range * drawW);
     const gw  = gx1 - gx0;
     if (gw < 0.5) continue;
 
     octx.fillStyle = th.muted || '#666688';
-    octx.fillRect(gx0, bodyY, gw, bodyH);
+    octx.fillRect(gx0, bodyY, gw, 2);
 
     const dir = gene.strand === '+' ? 1 : -1;
     octx.strokeStyle = th.muted || '#666688';
@@ -953,13 +959,34 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
       }
     }
 
-    if (gw > 30 && gene.n) {
-      const cx = Math.max(gx0 + 2, Math.min(gx1 - 2, (gx0 + gx1) / 2));
-      octx.fillStyle    = th.label || '#9090c0';
-      octx.font         = '8px monospace';
-      octx.textAlign    = 'center';
-      octx.textBaseline = 'bottom';
-      octx.fillText(gene.n, cx, exonY - 1);
+    if (gene.n) {
+      const tw = octx.measureText(gene.n).width;
+      // Candidate placements (x is label center), in priority order:
+      //   1) centered above the gene body
+      //   2) just to the right of the gene body
+      //   3) just to the left
+      const gap = 3;
+      const cands = [
+        (gx0 + gx1) / 2,                // centered
+        gx1 + gap + tw / 2,             // right-flush, label to the right
+        gx0 - gap - tw / 2,             // left-flush, label to the left
+      ];
+      const used = labelUsed[rowIdx];
+      for (const cx of cands) {
+        const lx0 = cx - tw / 2 - 1, lx1 = cx + tw / 2 + 1;
+        if (lx0 < LABEL_W || lx1 > W_css) continue;
+        let overlaps = false;
+        for (const [a, b] of used) {
+          if (lx0 < b && lx1 > a) { overlaps = true; break; }
+        }
+        if (overlaps) continue;
+        octx.fillStyle    = th.label || '#9090c0';
+        octx.textAlign    = 'center';
+        octx.textBaseline = 'bottom';
+        octx.fillText(gene.n, cx, exonY - 1);
+        used.push([lx0, lx1]);
+        break;
+      }
     }
   }
   octx.restore();
@@ -2149,7 +2176,7 @@ class SegmentViewer(anywidget.AnyWidget):
         *,
         name: str = 'Genes',
         color: str = '#4488cc',
-        height: int = 44,
+        height: Optional[int] = None,
         collapse: bool = True,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
@@ -2167,10 +2194,12 @@ class SegmentViewer(anywidget.AnyWidget):
                      Only used with the DataFrame form of genes_data.
         name       : Track display label.
         color      : Exon block colour.
-        height     : Track height in CSS px.
+        height     : Track height in CSS px.  If not specified, auto-sizes
+                     to the required number of rows (positive strand above,
+                     negative strand below, each with sub-lanes on overlap).
         collapse   : If True (default), merge exons across all transcripts
                      into a single union set.  If False, each transcript
-                     becomes a separate row in the gene track.
+                     becomes its own row in the gene track.
         tip_fmt    : Python format string for tooltip.
                      Available keys: ``{name}``, ``{strand}``, ``{start}``,
                      ``{end}``.
@@ -2182,32 +2211,35 @@ class SegmentViewer(anywidget.AnyWidget):
             # genes_by_chrom dict: {chrom: [(name, chrom, start, end, strand, transcripts), ...]}
             for chrom, gene_list in genes_data.items():
                 chrom = str(chrom)
-                rows: List = []
+                recs: List = []
                 for entry in gene_list:
                     gname, _, gs, ge, strand, transcripts = entry
                     strand = str(strand) if strand in ('+', '-') else '+'
                     if collapse:
                         exons = self._collapse_exons(transcripts)
-                        rows.append({
+                        recs.append({
                             's': int(gs), 'e': int(ge),
                             'n': str(gname), 'strand': strand, 'exons': exons,
                         })
                     else:
                         for ti, tex in enumerate(transcripts):
                             exons = [[int(s), int(e)] for s, e in tex]
+                            # transcript extent may be narrower than gene extent
+                            ts = min((s for s, _ in exons), default=int(gs))
+                            te = max((e for _, e in exons), default=int(ge))
                             suffix = f' t{ti+1}' if len(transcripts) > 1 else ''
-                            rows.append({
-                                's': int(gs), 'e': int(ge),
+                            recs.append({
+                                's': int(ts), 'e': int(te),
                                 'n': f'{gname}{suffix}', 'strand': strand,
                                 'exons': exons,
                             })
-                gdata[chrom] = rows
+                gdata[chrom] = recs
         else:
             # DataFrame form (legacy API)
             genes_df = genes_data
             for chrom_val, cdf in genes_df.groupby('chrom'):
                 chrom = str(chrom_val)
-                rows = []
+                recs = []
                 for _, row in cdf.iterrows():
                     gname  = str(row.get('name',   ''))
                     strand = str(row.get('strand', '+'))
@@ -2222,15 +2254,27 @@ class SegmentViewer(anywidget.AnyWidget):
                             [int(r['start']), int(r['end'])]
                             for _, r in exons_df[mask].iterrows()
                         ]
-                    rows.append({
+                    recs.append({
                         's': int(row['start']), 'e': int(row['end']),
                         'n': gname, 'strand': strand, 'exons': exons,
                     })
-                gdata[chrom] = rows
+                gdata[chrom] = recs
+
+        # Pack all genes (both strands) into the minimum number of non-overlapping
+        # rows with a greedy interval lane-packing. Strand is preserved on each
+        # record and encoded via arrow direction at draw time.
+        max_rows = 1
+        for chrom, recs in gdata.items():
+            n_lanes = self._assign_lanes(recs, offset=0)
+            max_rows = max(max_rows, max(1, n_lanes))
+
+        if height is None:
+            height = max(44, max_rows * 22)
 
         cfg = {
             'id': tid, 'type': 'gene', 'name': name,
             'height': height, 'color': color,
+            'rows': max_rows,
             'groups': [],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
@@ -2238,6 +2282,26 @@ class SegmentViewer(anywidget.AnyWidget):
         self.track_data    = {**self.track_data, tid: gdata}
         self.track_configs = [*self.track_configs, cfg]
         return self
+
+    @staticmethod
+    def _assign_lanes(recs: List, offset: int = 0) -> int:
+        """Greedy interval lane-packing. Mutates each rec to add 'row' = offset+lane.
+        Returns the number of lanes used."""
+        if not recs:
+            return 0
+        lanes: List[int] = []  # last-used end for each lane
+        for r in sorted(recs, key=lambda x: (x.get('s', 0), x.get('e', 0))):
+            placed = False
+            for li, last_end in enumerate(lanes):
+                if r['s'] >= last_end:
+                    lanes[li] = r['e']
+                    r['row'] = offset + li
+                    placed = True
+                    break
+            if not placed:
+                r['row'] = offset + len(lanes)
+                lanes.append(r['e'])
+        return len(lanes)
 
     # ── add_scatter_track ────────────────────────────────────────────────────
     def add_scatter_track(
