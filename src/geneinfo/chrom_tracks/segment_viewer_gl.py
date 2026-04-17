@@ -531,8 +531,14 @@ function b64U8(b64) {
 }
 
 function hexRGB(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+  // Accept #rgb, #rrggbb, or #rrggbbaa — ignore alpha here, return 0..1 RGB.
+  let s = hex.startsWith('#') ? hex.slice(1) : hex;
+  if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (s.length === 8) s = s.slice(0, 6);
+  const r = parseInt(s.slice(0, 2), 16) / 255;
+  const g = parseInt(s.slice(2, 4), 16) / 255;
+  const b = parseInt(s.slice(4, 6), 16) / 255;
+  return [r, g, b];
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -696,6 +702,40 @@ function buildHistGPU(data, yMin, yMax, binWidth, color) {
   return { buf, starts, maxLen, count: n };
 }
 
+// Stacked histogram: input stride is (x, yLo, yHi) — pre-computed in Python
+// so each bar spans [yLo, yHi] in data units. No baseline inference needed.
+function buildHistStackedGPU(data, yMin, yMax, binWidth, color) {
+  const n = (data.length / 3) | 0;
+  if (n === 0) return null;
+  const [r, g, b] = hexRGB(color);
+  const range = yMax - yMin || 1;
+  const inst   = new Float32Array(n * 7);
+  const starts = new Float32Array(n);
+  let maxLen = 0;
+  const halfW = binWidth / 2;
+  for (let i = 0; i < n; i++) {
+    const x   = data[i * 3];
+    const lo  = data[i * 3 + 1];
+    const hi  = data[i * 3 + 2];
+    const s = x - halfW;
+    const e = x + halfW;
+    const loN = (lo - yMin) / range;
+    const hiN = (hi - yMin) / range;
+    const yLo = Math.min(loN, hiN);
+    const yHi = Math.max(loN, hiN);
+    starts[i] = s;
+    maxLen = Math.max(maxLen, e - s);
+    const o = i * 7;
+    inst[o]   = s; inst[o+1] = e;
+    inst[o+2] = yLo; inst[o+3] = yHi;
+    inst[o+4] = r; inst[o+5] = g; inst[o+6] = b;
+  }
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
+  return { buf, starts, maxLen, count: n };
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // DATA UPLOAD (from model → GPU)
 // ══════════════════════════════════════════════════════════════════════════════
@@ -794,14 +834,17 @@ function uploadTrackData() {
       const yMin = cfg.yMin ?? 0;
       const yMax = cfg.yMax ?? 1;
       const binWidth = cfg.binWidth ?? 1;
+      const stacked  = !!cfg.stacked;
       for (const ch of Object.keys(d)) {
         gpuHist[tid][ch] = {};
         rawHist[tid][ch] = {};
         for (const [gid, b64] of Object.entries(d[ch])) {
           const arr = b64F32(b64);
-          rawHist[tid][ch][gid] = { data: arr, binWidth };
+          rawHist[tid][ch][gid] = { data: arr, binWidth, stacked };
           const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
-          gpuHist[tid][ch][gid] = buildHistGPU(arr, yMin, yMax, binWidth, color);
+          gpuHist[tid][ch][gid] = stacked
+            ? buildHistStackedGPU(arr, yMin, yMax, binWidth, color)
+            : buildHistGPU(arr, yMin, yMax, binWidth, color);
         }
       }
     }
@@ -1085,8 +1128,12 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     const gx1 = LABEL_W + Math.min(drawW, (gene.e - vs) / range * drawW);
     const gw  = gx1 - gx0;
     if (gw < 0.5) continue;
+    // True (un-clipped) left edge of the gene body in pixel space — used to
+    // anchor arrow markers so they stay fixed relative to the gene as the
+    // user pans, rather than relative to the visible viewport edge.
+    const gxTrueLeft = LABEL_W + (gene.s - vs) / range * drawW;
     const cxTrue = LABEL_W + ((gene.s + gene.e) / 2 - vs) / range * drawW;
-    vis.push({ gene, gx0, gx1, gw, cxTrue, rowIdx: gene.row | 0 });
+    vis.push({ gene, gx0, gx1, gw, cxTrue, gxTrueLeft, rowIdx: gene.row | 0 });
   }
 
   // Feasibility: try to place every visible gene's label at a given font size.
@@ -1162,11 +1209,21 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     octx.fillRect(gx0, bodyY, gw, 2);
 
     // Arrows: inherit spine colour when 'stroke' active, else muted.
+    // Anchor to the gene's true (un-clipped) left edge so markers stay fixed
+    // relative to the gene when panning — rather than drifting with the
+    // viewport edge.
     const dir = gene.strand === '+' ? 1 : -1;
     octx.strokeStyle = has(gene, 'stroke') ? spineColor : spineBase;
     octx.lineWidth   = 1.2;
     octx.lineJoin    = 'round';
-    for (let ax = gx0 + arrowSep * 0.5; ax < gx1 - 6; ax += arrowSep) {
+    const axStart = v.gxTrueLeft + arrowSep * 0.5;
+    // Skip instances before the visible region.
+    let ax0 = axStart;
+    if (ax0 < gx0 + 2) {
+      const skip = Math.ceil((gx0 + 2 - ax0) / arrowSep);
+      ax0 += skip * arrowSep;
+    }
+    for (let ax = ax0; ax < gx1 - 6; ax += arrowSep) {
       octx.beginPath();
       octx.moveTo(ax - dir * arrowA, midY - arrowA);
       octx.lineTo(ax,                midY);
@@ -1640,13 +1697,17 @@ function tipDataHist(pos, chrom, cfg) {
     if (!raw) continue;
     const arr = raw.data;
     if (!arr || arr.length < 2) continue;
-    const n = (arr.length / 2) | 0;
-    const idx = bisectStride(arr, pos, 2);
+    const stride = raw.stacked ? 3 : 2;
+    const n = (arr.length / stride) | 0;
+    const idx = bisectStride(arr, pos, stride);
     for (const c of [idx - 1, idx]) {
       if (c >= 0 && c < n) {
-        const cx = arr[c * 2];
+        const cx = arr[c * stride];
         if (pos >= cx - halfW && pos <= cx + halfW) {
-          items.push({ group: grp.name, value: arr[c * 2 + 1], x: cx });
+          const value = raw.stacked
+            ? (arr[c * stride + 2] - arr[c * stride + 1])
+            : arr[c * stride + 1];
+          items.push({ group: grp.name, value, x: cx });
           break;
         }
       }
@@ -3074,6 +3135,7 @@ class SegmentViewer(anywidget.AnyWidget):
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
         bin_width: Optional[float] = None,
+        stack: bool = False,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -3092,6 +3154,10 @@ class SegmentViewer(anywidget.AnyWidget):
         y_range   : (yMin, yMax) — auto-computed from data if None.
         bin_width : Width of each bar in bp.  Auto-computed from data spacing
                     if None.
+        stack     : If True, group contributions at each x-bin stack on top
+                    of each other (positive values stack above the baseline,
+                    negative below).  Group order determines stacking order.
+                    Default False (bars from different groups overlap).
         tip_fmt   : Python format string for tooltip.
                     Available keys: ``{group}``, ``{value}``, ``{x}``.
         """
@@ -3107,14 +3173,6 @@ class SegmentViewer(anywidget.AnyWidget):
             color_map = {g: self._PALETTE[i % len(self._PALETTE)]
                          for i, g in enumerate(groups)}
 
-        if y_range is not None:
-            yMin, yMax = y_range
-        else:
-            yMin = min(0, float(df[y].min()))
-            yMax = float(df[y].max())
-            pad = (yMax - yMin) * 0.05 or 0.5
-            yMax += pad
-
         # Auto bin width from median spacing
         if bin_width is None:
             xs = df.sort_values(x)[x].to_numpy()
@@ -3124,25 +3182,88 @@ class SegmentViewer(anywidget.AnyWidget):
             else:
                 bin_width = 1.0
 
+        stacked = bool(stack) and len(groups) > 1
+
+        # Compute y-range.  When stacking, the effective maximum is the
+        # column-wise sum of positive group contributions (and minimum is the
+        # sum of negative contributions), not the largest single bar.
+        if y_range is not None:
+            yMin, yMax = y_range
+        elif stacked:
+            # Per-(chrom, x) column totals split into +/-.
+            pos_sum = np.zeros(1, dtype=np.float64)
+            neg_sum = np.zeros(1, dtype=np.float64)
+            for chrom_val, cdf in df.groupby('chrom'):
+                # sum of y per x, separately for positive and negative contributions
+                pos_by_x = cdf.loc[cdf[y] > 0].groupby(x)[y].sum()
+                neg_by_x = cdf.loc[cdf[y] < 0].groupby(x)[y].sum()
+                if not pos_by_x.empty:
+                    pos_sum = np.append(pos_sum, float(pos_by_x.max()))
+                if not neg_by_x.empty:
+                    neg_sum = np.append(neg_sum, float(neg_by_x.min()))
+            yMin = float(min(0.0, neg_sum.min()))
+            yMax = float(max(0.0, pos_sum.max()))
+            pad = (yMax - yMin) * 0.05 or 0.5
+            yMax += pad
+        else:
+            yMin = min(0, float(df[y].min()))
+            yMax = float(df[y].max())
+            pad = (yMax - yMin) * 0.05 or 0.5
+            yMax += pad
+
         hist_out: Dict = {}
         for chrom_val, cdf in df.groupby('chrom'):
             chrom = str(chrom_val)
             hist_out[chrom] = {}
-            for gi, group in enumerate(groups):
-                gid = str(gi)
-                gdf = cdf[cdf[group_by] == group] if group_by else cdf
-                if gdf.empty:
-                    hist_out[chrom][gid] = ''
-                    continue
-                gdf = gdf.sort_values(x)
-                arr = np.empty(len(gdf) * 2, dtype=np.float32)
-                arr[0::2] = gdf[x].to_numpy(dtype=np.float32)
-                arr[1::2] = gdf[y].to_numpy(dtype=np.float32)
-                hist_out[chrom][gid] = self._pack_f32(arr)
+
+            if stacked:
+                # Precompute cumulative offsets per x across groups. Positive
+                # contributions stack upward from 0; negative from 0 downward.
+                # For each x, we maintain running pos/neg cursors that advance
+                # as each group adds its value.
+                x_cursor: Dict[float, Dict[str, float]] = {}
+                for gi, group in enumerate(groups):
+                    gid = str(gi)
+                    gdf = cdf[cdf[group_by] == group] if group_by else cdf
+                    if gdf.empty:
+                        hist_out[chrom][gid] = ''
+                        continue
+                    gdf = gdf.sort_values(x)
+                    xs_arr = gdf[x].to_numpy(dtype=np.float64)
+                    ys_arr = gdf[y].to_numpy(dtype=np.float64)
+                    n = len(xs_arr)
+                    arr = np.empty(n * 3, dtype=np.float32)
+                    for k in range(n):
+                        xv = float(xs_arr[k])
+                        yv = float(ys_arr[k])
+                        cur = x_cursor.setdefault(xv, {'pos': 0.0, 'neg': 0.0})
+                        if yv >= 0:
+                            lo = cur['pos']; hi = cur['pos'] + yv
+                            cur['pos'] = hi
+                        else:
+                            hi = cur['neg']; lo = cur['neg'] + yv
+                            cur['neg'] = lo
+                        arr[k * 3]     = xv
+                        arr[k * 3 + 1] = lo
+                        arr[k * 3 + 2] = hi
+                    hist_out[chrom][gid] = self._pack_f32(arr)
+            else:
+                for gi, group in enumerate(groups):
+                    gid = str(gi)
+                    gdf = cdf[cdf[group_by] == group] if group_by else cdf
+                    if gdf.empty:
+                        hist_out[chrom][gid] = ''
+                        continue
+                    gdf = gdf.sort_values(x)
+                    arr = np.empty(len(gdf) * 2, dtype=np.float32)
+                    arr[0::2] = gdf[x].to_numpy(dtype=np.float32)
+                    arr[1::2] = gdf[y].to_numpy(dtype=np.float32)
+                    hist_out[chrom][gid] = self._pack_f32(arr)
 
         cfg = {
             'id': tid, 'type': 'histogram', 'name': name, 'height': height,
             'yMin': yMin, 'yMax': yMax, 'binWidth': bin_width,
+            'stacked': stacked,
             'groups': [
                 {'id': str(i), 'name': str(g),
                  'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)])}
