@@ -163,7 +163,7 @@ el.innerHTML = `
     <button class="sv-btn sv-rs" title="Reset view">⌂</button>
     <button class="sv-btn sv-hmr" title="Recompute heatmap(s) for current view" style="display:none">⟲</button>
     <button class="sv-btn sv-hmg" title="Restore global heatmap view" style="display:none">◱</button>
-    <button class="sv-btn sv-snap" title="Copy current view to clipboard">📷</button>
+    <button class="sv-btn sv-snap" title="Copy current view to clipboard">⧉</button>
     <div class="sv-sep"></div>
     <span class="sv-lod-badge sv-lod">▬ segments</span>
   </div>
@@ -1823,7 +1823,7 @@ snapBtn.addEventListener('click', async () => {
 
   const flash = (ok) => {
     const prev = snapBtn.textContent;
-    snapBtn.textContent = ok ? '✓' : '✗';
+    snapBtn.textContent = ok ? '✓' : '!';
     setTimeout(() => { snapBtn.textContent = prev; }, 900);
   };
 
