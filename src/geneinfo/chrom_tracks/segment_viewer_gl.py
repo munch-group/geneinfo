@@ -1937,6 +1937,8 @@ class SegmentViewer(anywidget.AnyWidget):
             groups = ['all']
             group_by = None
 
+        if isinstance(color_map, str):
+            color_map = {g: color_map for g in groups}
         if color_map is None:
             color_map = {g: self._PALETTE[i % len(self._PALETTE)]
                          for i, g in enumerate(groups)}
@@ -2057,6 +2059,8 @@ class SegmentViewer(anywidget.AnyWidget):
             groups = ['all']
             group_col = None
 
+        if isinstance(color_map, str):
+            color_map = {g: color_map for g in groups}
         if color_map is None:
             color_map = {g: self._PALETTE[i % len(self._PALETTE)]
                          for i, g in enumerate(groups)}
@@ -2156,8 +2160,8 @@ class SegmentViewer(anywidget.AnyWidget):
         Parameters
         ----------
         genes_data : Either a dict mapping chrom -> list of
-                     (gene_name, chrom, start, end, transcripts) tuples
-                     (as returned by geneinfo), or a DataFrame with
+                     (gene_name, chrom, start, end, strand, transcripts)
+                     tuples (as returned by geneinfo), or a DataFrame with
                      [chrom, start, end, name, strand].
         exons_df   : Optional DataFrame with [chrom, gene_name, start, end].
                      Only used with the DataFrame form of genes_data.
@@ -2175,17 +2179,18 @@ class SegmentViewer(anywidget.AnyWidget):
         gdata: Dict = {}
 
         if isinstance(genes_data, dict) and not isinstance(genes_data, pd.DataFrame):
-            # genes_by_chrom dict: {chrom: [(name, chrom, start, end, transcripts), ...]}
+            # genes_by_chrom dict: {chrom: [(name, chrom, start, end, strand, transcripts), ...]}
             for chrom, gene_list in genes_data.items():
                 chrom = str(chrom)
                 rows: List = []
                 for entry in gene_list:
-                    gname, _, gs, ge, transcripts = entry
+                    gname, _, gs, ge, strand, transcripts = entry
+                    strand = str(strand) if strand in ('+', '-') else '+'
                     if collapse:
                         exons = self._collapse_exons(transcripts)
                         rows.append({
                             's': int(gs), 'e': int(ge),
-                            'n': str(gname), 'strand': '+', 'exons': exons,
+                            'n': str(gname), 'strand': strand, 'exons': exons,
                         })
                     else:
                         for ti, tex in enumerate(transcripts):
@@ -2193,7 +2198,7 @@ class SegmentViewer(anywidget.AnyWidget):
                             suffix = f' t{ti+1}' if len(transcripts) > 1 else ''
                             rows.append({
                                 's': int(gs), 'e': int(ge),
-                                'n': f'{gname}{suffix}', 'strand': '+',
+                                'n': f'{gname}{suffix}', 'strand': strand,
                                 'exons': exons,
                             })
                 gdata[chrom] = rows
