@@ -2067,6 +2067,7 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: Optional[Dict] = None,
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
+        step: Optional[str] = None,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -2083,15 +2084,18 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: {group_value: '#rrggbb'}.
         height   : Track height in CSS px.
         y_range  : (yMin, yMax) — auto-computed from data if None.
+        step     : Step mode for staircase line, matching matplotlib's
+                   ``step`` parameter.  One of ``'pre'``, ``'post'``, or
+                   ``'mid'``.  None (default) gives smooth interpolation.
         tip_fmt  : Python format string for tooltip.
                    Available keys: ``{group}``, ``{value}``, ``{x}``.
         """
         return self._add_xy_track(df, name, 'line', x, y, group_by,
                                   color_map, height, y_range, tip_fmt=tip_fmt,
-                                  tip_label=tip_label)
+                                  tip_label=tip_label, step=step)
 
     def _add_xy_track(self, df, name, track_type, x, y, group_by,
-                      color_map, height, y_range, point_size=3, tip_fmt=None, tip_label=None):
+                      color_map, height, y_range, point_size=3, tip_fmt=None, tip_label=None, step=None):
         """Shared implementation for scatter and line tracks."""
         tid = self._tid()
         if group_by and group_by in df.columns:
@@ -2125,9 +2129,36 @@ class SegmentViewer(anywidget.AnyWidget):
                     xy_out[chrom][gid] = ''
                     continue
                 gdf = gdf.sort_values(x)
-                arr = np.empty(len(gdf) * 2, dtype=np.float32)
+                n = len(gdf)
+                arr = np.empty(n * 2, dtype=np.float32)
                 arr[0::2] = gdf[x].to_numpy(dtype=np.float32)
                 arr[1::2] = gdf[y].to_numpy(dtype=np.float32)
+                if step and n > 1:
+                    xs = arr[0::2]; ys = arr[1::2]
+                    if step == 'post':
+                        m = 2 * n - 1
+                        sx = np.empty(m, dtype=np.float32)
+                        sy = np.empty(m, dtype=np.float32)
+                        sx[0::2] = xs;  sx[1::2] = xs[1:]
+                        sy[0::2] = ys;  sy[1::2] = ys[:-1]
+                    elif step == 'pre':
+                        m = 2 * n - 1
+                        sx = np.empty(m, dtype=np.float32)
+                        sy = np.empty(m, dtype=np.float32)
+                        sx[0::2] = xs;  sx[1::2] = xs[:-1]
+                        sy[0::2] = ys;  sy[1::2] = ys[1:]
+                    elif step == 'mid':
+                        mids = (xs[:-1] + xs[1:]) / 2
+                        m = 2 * n
+                        sx = np.empty(m, dtype=np.float32)
+                        sy = np.empty(m, dtype=np.float32)
+                        sx[0::2] = np.concatenate([[xs[0]], mids])
+                        sx[1::2] = np.concatenate([mids, [xs[-1]]])
+                        sy[0::2] = ys;  sy[1::2] = ys
+                    else:
+                        raise ValueError(f"step must be 'pre', 'post', or 'mid', got {step!r}")
+                    arr = np.empty(m * 2, dtype=np.float32)
+                    arr[0::2] = sx; arr[1::2] = sy
                 xy_out[chrom][gid] = self._pack_f32(arr)
 
         cfg = {
@@ -2162,6 +2193,7 @@ class SegmentViewer(anywidget.AnyWidget):
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
         baseline: Optional[float] = None,
+        step: Optional[str] = None,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -2192,6 +2224,10 @@ class SegmentViewer(anywidget.AnyWidget):
         y_range   : (yMin, yMax) — auto-computed from data if None.
         baseline  : Y value at which pos/neg colours switch.  Defaults to
                     0 when *y* is used, or 0.0 when *y_lo*/*y_hi* are used.
+        step      : Step mode for staircase fill, matching matplotlib's
+                    ``fill_between(step=...)``.  One of ``'pre'``,
+                    ``'post'``, or ``'mid'``.  None (default) gives smooth
+                    linear interpolation.
         tip_fmt   : Python format string for tooltip.
                     Available keys: ``{group}``, ``{lo}``, ``{hi}``, ``{x}``.
         """
@@ -2248,7 +2284,8 @@ class SegmentViewer(anywidget.AnyWidget):
                     fill_out[chrom][gid] = ''
                     continue
                 gdf = gdf.sort_values(x)
-                arr = np.empty(len(gdf) * 3, dtype=np.float32)
+                n = len(gdf)
+                arr = np.empty(n * 3, dtype=np.float32)
                 arr[0::3] = gdf[x].to_numpy(dtype=np.float32)
                 if single_y:
                     yvals = gdf[y].to_numpy(dtype=np.float32)
@@ -2257,6 +2294,38 @@ class SegmentViewer(anywidget.AnyWidget):
                 else:
                     arr[1::3] = gdf[y_lo].to_numpy(dtype=np.float32)
                     arr[2::3] = gdf[y_hi].to_numpy(dtype=np.float32)
+                if step and n > 1:
+                    xs = arr[0::3]; los = arr[1::3]; his = arr[2::3]
+                    if step == 'post':
+                        m = 2 * n - 1
+                        sx  = np.empty(m, dtype=np.float32)
+                        slo = np.empty(m, dtype=np.float32)
+                        shi = np.empty(m, dtype=np.float32)
+                        sx[0::2] = xs;    sx[1::2] = xs[1:]
+                        slo[0::2] = los;  slo[1::2] = los[:-1]
+                        shi[0::2] = his;  shi[1::2] = his[:-1]
+                    elif step == 'pre':
+                        m = 2 * n - 1
+                        sx  = np.empty(m, dtype=np.float32)
+                        slo = np.empty(m, dtype=np.float32)
+                        shi = np.empty(m, dtype=np.float32)
+                        sx[0::2] = xs;    sx[1::2] = xs[:-1]
+                        slo[0::2] = los;  slo[1::2] = los[1:]
+                        shi[0::2] = his;  shi[1::2] = his[1:]
+                    elif step == 'mid':
+                        mids = (xs[:-1] + xs[1:]) / 2
+                        m = 2 * n
+                        sx  = np.empty(m, dtype=np.float32)
+                        slo = np.empty(m, dtype=np.float32)
+                        shi = np.empty(m, dtype=np.float32)
+                        sx[0::2] = np.concatenate([[xs[0]], mids])
+                        sx[1::2] = np.concatenate([mids, [xs[-1]]])
+                        slo[0::2] = los;  slo[1::2] = los
+                        shi[0::2] = his;  shi[1::2] = his
+                    else:
+                        raise ValueError(f"step must be 'pre', 'post', or 'mid', got {step!r}")
+                    arr = np.empty(m * 3, dtype=np.float32)
+                    arr[0::3] = sx; arr[1::3] = slo; arr[2::3] = shi
                 fill_out[chrom][gid] = self._pack_f32(arr)
 
         cfg = {
