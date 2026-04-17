@@ -35,11 +35,150 @@ API
 
 from __future__ import annotations
 import base64
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 import anywidget
+import matplotlib.colors as mcolors
 import numpy as np
 import pandas as pd
 import traitlets
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Colour resolution
+# ─────────────────────────────────────────────────────────────────────────────
+def resolve_color(c: Any) -> Any:
+    """Resolve a matplotlib-style colour spec to a CSS-compatible hex string.
+
+    Accepts anything matplotlib understands: named colours, ``'C0'`` cycle
+    references, hex strings, ``(r, g, b)`` / ``(r, g, b, a)`` tuples, etc.
+    Passes ``None`` through unchanged.  Preserves alpha as ``#RRGGBBAA`` when
+    present.
+    """
+    if c is None:
+        return None
+    # Resolve via matplotlib → RGBA tuple → hex. keep_alpha=True retains the
+    # alpha channel when the input carries one (e.g. '#rrggbbaa' or a 4-tuple).
+    rgba = mcolors.to_rgba(c)
+    return mcolors.to_hex(rgba, keep_alpha=True)
+
+
+def _resolve_color_mapping(m: Any) -> Any:
+    """Resolve colours in a dict or list, returning a new container.
+
+    Non-dict / non-list values are returned unchanged.  Strings are passed
+    through :func:`resolve_color`.  Nested dicts/lists are resolved recursively.
+    """
+    if m is None:
+        return None
+    if isinstance(m, dict):
+        return {k: _resolve_color_mapping(v) if isinstance(v, (dict, list))
+                else resolve_color(v) for k, v in m.items()}
+    if isinstance(m, list):
+        return [resolve_color(v) for v in m]
+    return resolve_color(m)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Built-in themes
+# ─────────────────────────────────────────────────────────────────────────────
+DARK_THEME: Dict[str, str] = {
+    'bg':           '#1F1F1F',
+    'fg':           '#f2f2f8',
+    'panel':        '#1F1F1F',
+    'border':       '#1F1F1F',
+    'input_bg':     '#2f2f2f',
+    'input_fg':     '#f2f2f8',
+    'input_border': '#4a4a55',
+    'accent':       '#88a0ff',
+    'muted':        '#9090a0',
+    'label':        '#c0c0d0',
+    'gene_exon':    '#88c0ee',
+    'gene_spine':   '#a8a8c0',
+    'gene_label':   '#d0d0e0',
+    # Lightened highlight palette — sibling hues to the light-theme values
+    # but pushed up in lightness so they read against a dark background.
+    'highlight_fill':    '#ff6d7f',
+    'highlight_spine':   '#ee66f2',
+    'highlight_outline': '#ffffff',
+    'highlight_label':   '#5fd88a',
+    'highlight_halo':    '#8899FF44',
+}
+
+LIGHT_THEME: Dict[str, str] = {
+    'bg':           '#FAF9F6',
+    'fg':           '#1a1a2e',
+    'panel':        '#FAF9F6',
+    'border':       '#FAF9F6',
+    'input_bg':     '#ffffff',
+    'input_fg':     '#1a1a2e',
+    'input_border': '#c0c0cc',
+    'accent':       '#3355dd',
+    'muted':        '#888899',
+    'label':        '#555566',
+    'gene_exon':    '#4488cc',
+    'gene_spine':   '#666688',
+    'gene_label':   '#9090c0',
+    'highlight_fill':    '#e03a4e',
+    'highlight_spine':   '#d80ce6',
+    'highlight_outline': '#000000',
+    'highlight_label':   '#169f4a',
+    'highlight_halo':    '#4152CF2F',
+}
+
+
+def _detect_default_theme() -> Dict[str, str]:
+    """Auto-detect a sensible default theme.
+
+    If ``vscodenb.is_vscode_dark_theme`` is importable and callable, use its
+    verdict. Otherwise default to the dark theme.
+    """
+    try:
+        from vscodenb import is_vscode_dark_theme  # type: ignore
+        is_dark, _ = is_vscode_dark_theme()
+        return DARK_THEME if is_dark else LIGHT_THEME
+    except Exception:
+        return DARK_THEME
+
+
+_default_theme: Dict[str, str] = _detect_default_theme()
+
+
+def set_default_theme(theme: Union[str, Dict[str, str]]) -> None:
+    """Set the theme used by newly created ``SegmentViewer`` instances.
+
+    Parameters
+    ----------
+    theme : one of
+        * ``'dark'``  — use the built-in dark theme.
+        * ``'light'`` — use the built-in light theme.
+        * ``'auto'``  — re-run the vscodenb-based auto-detection.
+        * ``dict``   — a custom theme dict (merged onto the dark theme so
+          missing keys fall back to sane defaults).
+    """
+    global _default_theme
+    if isinstance(theme, str):
+        key = theme.lower()
+        if key == 'dark':
+            _default_theme = dict(DARK_THEME)
+        elif key == 'light':
+            _default_theme = dict(LIGHT_THEME)
+        elif key == 'auto':
+            _default_theme = _detect_default_theme()
+        else:
+            raise ValueError(
+                f"Unknown theme name {theme!r}; use 'dark', 'light', 'auto', "
+                f"or pass a dict."
+            )
+    elif isinstance(theme, dict):
+        _default_theme = {**DARK_THEME, **_resolve_color_mapping(theme)}
+    else:
+        raise TypeError(f"theme must be a str or dict, got {type(theme).__name__}")
+
+
+def get_default_theme() -> Dict[str, str]:
+    """Return a copy of the currently active default theme."""
+    return dict(_default_theme)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CSS
@@ -898,13 +1037,15 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   const range  = ve - vs;
   const entry  = geneData?.[cfg.id]?.[vp.chrom];
   const genes  = entry?.records ?? (Array.isArray(entry) ? entry : []);
-  const color  = cfg.color || '#4488cc';
+  const color      = cfg.color     || th.gene_exon  || '#4488cc';
+  const spineBase  = th.gene_spine || th.muted      || '#666688';
+  const labelBase  = th.gene_label || th.label      || '#9090c0';
   const hlS    = cfg.highlightStyles || {};
-  const fillColor    = hlS.fillColor    || cfg.highlightColor || '#e03a4e';
-  const spineColor   = hlS.spineColor   || '#d80ce6';
-  const outlineColor = hlS.outlineColor || '#000000';
-  const labelColor   = hlS.labelColor   || '#169f4a';
-  const haloColor    = hlS.haloColor    || '#4152CF2F';
+  const fillColor    = hlS.fillColor    || cfg.highlightColor || th.highlight_fill    || '#e03a4e';
+  const spineColor   = hlS.spineColor   || th.highlight_spine   || '#d80ce6';
+  const outlineColor = hlS.outlineColor || th.highlight_outline || '#000000';
+  const labelColor   = hlS.labelColor   || th.highlight_label   || '#169f4a';
+  const haloColor    = hlS.haloColor    || th.highlight_halo    || '#4152CF2F';
 
   octx.fillStyle = th.bg || '#13131a';
   octx.fillRect(LABEL_W, trackY, drawW, cfg.height);
@@ -1017,12 +1158,12 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     const gx0 = v.gx0, gx1 = v.gx1, gw = v.gw;
 
     // Backbone / spine.
-    octx.fillStyle = has(gene, 'stroke') ? spineColor : (th.muted || '#666688');
+    octx.fillStyle = has(gene, 'stroke') ? spineColor : spineBase;
     octx.fillRect(gx0, bodyY, gw, 2);
 
     // Arrows: inherit spine colour when 'stroke' active, else muted.
     const dir = gene.strand === '+' ? 1 : -1;
-    octx.strokeStyle = has(gene, 'stroke') ? spineColor : (th.muted || '#666688');
+    octx.strokeStyle = has(gene, 'stroke') ? spineColor : spineBase;
     octx.lineWidth   = 1.2;
     octx.lineJoin    = 'round';
     for (let ax = gx0 + arrowSep * 0.5; ax < gx1 - 6; ax += arrowSep) {
@@ -1068,7 +1209,7 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     if (labelSize != null && labelCxs && labelCxs[i] != null && gene.n) {
       const { cx, tw } = labelCxs[i];
       octx.font         = fontFor(gene, labelSize);
-      octx.fillStyle    = has(gene, 'color') ? labelColor : (th.label || '#9090c0');
+      octx.fillStyle    = has(gene, 'color') ? labelColor : labelBase;
       octx.textAlign    = 'center';
       octx.textBaseline = 'bottom';
       octx.fillText(gene.n, cx, exonY - 1);
@@ -1653,7 +1794,8 @@ const onMove = e => {
   }
   const W     = glCanvas.offsetWidth - LABEL_W;
   const bpPx  = (dragVp0.end - dragVp0.start) / W;
-  const shift = -(e.clientX - dragX0) * bpPx;
+  const ps    = model.get('pan_speed') || 1.0;
+  const shift = -(e.clientX - dragX0) * bpPx * ps;
   const range = dragVp0.end - dragVp0.start;
   const lo    = panLo(dragVp0.chrom), hi = panHi(dragVp0.chrom);
   const ns    = clamp(dragVp0.start + shift, lo, hi - range);
@@ -1923,6 +2065,7 @@ class SegmentViewer(anywidget.AnyWidget):
     track_data    = traitlets.Dict({}).tag(sync=True)
     viewport      = traitlets.Dict({'chrom': '', 'start': 0, 'end': 0}).tag(sync=True)
     zoom_speed    = traitlets.Float(1.3).tag(sync=True)
+    pan_speed     = traitlets.Float(1.0).tag(sync=True)
     theme         = traitlets.Dict({
         'bg':           '#13131a',
         'fg':           '#d0d0e8',
@@ -1934,6 +2077,9 @@ class SegmentViewer(anywidget.AnyWidget):
         'accent':       '#4466ee',
         'muted':        '#666688',
         'label':        '#9090c0',
+        'gene_exon':    '#4488cc',
+        'gene_spine':   '#666688',
+        'gene_label':   '#9090c0',
     }).tag(sync=True)
 
     _PALETTE = [
@@ -1941,7 +2087,19 @@ class SegmentViewer(anywidget.AnyWidget):
         '#66bbcc', '#cc44aa', '#88aa44', '#aa6644',
     ]
 
+    @traitlets.validate('theme')
+    def _validate_theme(self, proposal):
+        # Normalise matplotlib-style colour specs (e.g. 'C0', 'red') to hex
+        # so the JS side always receives CSS-compatible values.
+        return _resolve_color_mapping(proposal['value'])
+
     def __init__(self, chrom_sizes: Dict[str, int], **kw):
+        # Respect an explicit ``theme=`` kwarg; otherwise apply the module-level
+        # default (see ``set_default_theme``).
+        if 'theme' in kw:
+            kw['theme'] = _resolve_color_mapping(kw['theme'])
+        else:
+            kw['theme'] = dict(_default_theme)
         super().__init__(**kw)
         self.chrom_sizes = {str(k): int(v) for k, v in chrom_sizes.items()}
         first = next(iter(self.chrom_sizes))
@@ -2088,6 +2246,7 @@ class SegmentViewer(anywidget.AnyWidget):
         tip_fmt         : Python format string for tooltip.
                           Available keys: ``{group}``.
         """
+        color_map = _resolve_color_mapping(color_map)
         if isinstance(density_windows, int):
             density_windows = (density_windows,)
         tid = self._tid()
@@ -2211,6 +2370,7 @@ class SegmentViewer(anywidget.AnyWidget):
                          Available keys: ``{group}``, ``{individual}``,
                          ``{nInd}``.
         """
+        color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
 
         if group_col and group_col in df.columns:
@@ -2313,16 +2473,16 @@ class SegmentViewer(anywidget.AnyWidget):
         exons_df=None,
         *,
         name: str = 'Genes',
-        color: str = '#4488cc',
+        color: Optional[str] = None,
         height: Optional[int] = None,
         collapse: bool = True,
         highlight: Optional[Union[List[str], Dict[str, List[str]]]] = None,
         highlight_color: Optional[str] = None,
-        highlight_fill_color:    str = '#e03a4e',
-        highlight_spine_color:   str = '#d80ce6',
-        highlight_outline_color: str = '#000000',
-        highlight_label_color:   str = '#169f4a',
-        highlight_halo_color:    str = '#4152CF2F',
+        highlight_fill_color:    Optional[str] = None,
+        highlight_spine_color:   Optional[str] = None,
+        highlight_outline_color: Optional[str] = None,
+        highlight_label_color:   Optional[str] = None,
+        highlight_halo_color:    Optional[str] = None,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -2339,6 +2499,7 @@ class SegmentViewer(anywidget.AnyWidget):
                           end].  Only used with the DataFrame form of genes_data.
         name            : Track display label.
         color           : Exon block colour for non-highlighted genes.
+                          If not given, falls back to ``theme['gene_exon']``.
         height          : Track height in CSS px.  If not specified, auto-sizes
                           to the required number of rows (positive strand above,
                           negative strand below, each with sub-lanes on overlap).
@@ -2364,6 +2525,15 @@ class SegmentViewer(anywidget.AnyWidget):
                           Available keys: ``{name}``, ``{strand}``, ``{start}``,
                           ``{end}``.
         """
+        # Resolve matplotlib-style colour specs (e.g. 'C0', named colours).
+        color                   = resolve_color(color)
+        highlight_color         = resolve_color(highlight_color)
+        highlight_fill_color    = resolve_color(highlight_fill_color)
+        highlight_spine_color   = resolve_color(highlight_spine_color)
+        highlight_outline_color = resolve_color(highlight_outline_color)
+        highlight_label_color   = resolve_color(highlight_label_color)
+        highlight_halo_color    = resolve_color(highlight_halo_color)
+
         # Backward-compatible alias: highlight_color overrides the fill colour.
         if highlight_color is not None:
             highlight_fill_color = highlight_color
@@ -2473,22 +2643,24 @@ class SegmentViewer(anywidget.AnyWidget):
             # the next row's label cannot touch the previous row's exon.
             height = max(30, max_rows * 30 + 2)
 
+        hl_styles: Dict[str, str] = {}
+        if highlight_fill_color    is not None: hl_styles['fillColor']    = highlight_fill_color
+        if highlight_spine_color   is not None: hl_styles['spineColor']   = highlight_spine_color
+        if highlight_outline_color is not None: hl_styles['outlineColor'] = highlight_outline_color
+        if highlight_label_color   is not None: hl_styles['labelColor']   = highlight_label_color
+        if highlight_halo_color    is not None: hl_styles['haloColor']    = highlight_halo_color
+
         cfg = {
             'id': tid, 'type': 'gene', 'name': name,
             'height': height, 'color': color,
-            'highlightColor': highlight_fill_color,  # legacy alias
-            'highlightStyles': {
-                'fillColor':    highlight_fill_color,
-                'spineColor':   highlight_spine_color,
-                'outlineColor': highlight_outline_color,
-                'labelColor':   highlight_label_color,
-                'haloColor':    highlight_halo_color,
-            },
+            'highlightStyles': hl_styles,
             'rows': max_rows,
             'groups': [],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
+        if highlight_fill_color is not None:
+            cfg['highlightColor'] = highlight_fill_color  # legacy alias
         self.track_data    = {**self.track_data, tid: gdata_out}
         self.track_configs = [*self.track_configs, cfg]
         return self
@@ -2637,6 +2809,7 @@ class SegmentViewer(anywidget.AnyWidget):
     def _add_xy_track(self, df, name, track_type, x, y, group_by,
                       color_map, height, y_range, point_size=3, tip_fmt=None, tip_label=None, step=None):
         """Shared implementation for scatter and line tracks."""
+        color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
         if group_by and group_by in df.columns:
             groups = sorted(df[group_by].dropna().unique(), key=str)
@@ -2771,6 +2944,9 @@ class SegmentViewer(anywidget.AnyWidget):
         tip_fmt   : Python format string for tooltip.
                     Available keys: ``{group}``, ``{lo}``, ``{hi}``, ``{x}``.
         """
+        color_map = _resolve_color_mapping(color_map)
+        color_pos = resolve_color(color_pos)
+        color_neg = resolve_color(color_neg)
         # Resolve single-y vs lo/hi mode
         if y is not None and (y_lo is not None or y_hi is not None):
             raise ValueError("Specify either 'y' or 'y_lo'/'y_hi', not both.")
@@ -2919,6 +3095,7 @@ class SegmentViewer(anywidget.AnyWidget):
         tip_fmt   : Python format string for tooltip.
                     Available keys: ``{group}``, ``{value}``, ``{x}``.
         """
+        color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
         if group_by and group_by in df.columns:
             groups = sorted(df[group_by].dropna().unique(), key=str)
