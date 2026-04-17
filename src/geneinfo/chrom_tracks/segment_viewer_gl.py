@@ -163,6 +163,7 @@ el.innerHTML = `
     <button class="sv-btn sv-rs" title="Reset view">⌂</button>
     <button class="sv-btn sv-hmr" title="Recompute heatmap(s) for current view" style="display:none">⟲</button>
     <button class="sv-btn sv-hmg" title="Restore global heatmap view" style="display:none">◱</button>
+    <button class="sv-btn sv-snap" title="Copy current view to clipboard">📷</button>
     <div class="sv-sep"></div>
     <span class="sv-lod-badge sv-lod">▬ segments</span>
   </div>
@@ -180,6 +181,7 @@ const zoomOutBtn= el.querySelector('.sv-zo');
 const resetBtn  = el.querySelector('.sv-rs');
 const hmRecBtn  = el.querySelector('.sv-hmr');
 const hmGlobBtn = el.querySelector('.sv-hmg');
+const snapBtn   = el.querySelector('.sv-snap');
 const lodBadge  = el.querySelector('.sv-lod');
 const wrap      = el.querySelector('.sv-wrap');
 const glCanvas  = el.querySelector('.sv-glcanvas');
@@ -897,22 +899,34 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   const entry  = geneData?.[cfg.id]?.[vp.chrom];
   const genes  = entry?.records ?? (Array.isArray(entry) ? entry : []);
   const color  = cfg.color || '#4488cc';
-  const hlColor = cfg.highlightColor || '#ee5566';
+  const hlS    = cfg.highlightStyles || {};
+  const fillColor    = hlS.fillColor    || cfg.highlightColor || '#e03a4e';
+  const spineColor   = hlS.spineColor   || '#d80ce6';
+  const outlineColor = hlS.outlineColor || '#000000';
+  const labelColor   = hlS.labelColor   || '#169f4a';
+  const haloColor    = hlS.haloColor    || '#4152CF2F';
 
   octx.fillStyle = th.bg || '#13131a';
   octx.fillRect(LABEL_W, trackY, drawW, cfg.height);
   if (!genes.length) return;
 
-  // Pack rows tightly at the top of the track at a fixed 28 px per row.
-  // The number of rows used for this chrom may be less than cfg.rows (the
-  // global max across all chroms), so any unused space is simply left empty
-  // at the bottom rather than stretched into the gene layout.
+  // Pack rows tightly at the top of the track. The number of rows used for
+  // this chrom may be less than cfg.rows (the global max across all chroms),
+  // so any unused space is simply left empty at the bottom rather than
+  // stretched into the gene layout.
   const nRowsChrom = Math.max(1, entry?.rows ?? cfg.rows ?? 1);
   const rowH       = Math.min(30, cfg.height / nRowsChrom);
   const exonH  = Math.min(14, Math.max(6, rowH * 0.45));
   const labelBand = 11; // space reserved above each exon for the label (fits up to 10 px font)
   const arrowSep = 70;
   const arrowA   = 4;
+
+  const has = (gene, k) => !!(gene.hl && gene.hl.indexOf(k) >= 0);
+  const fontFor = (gene, sizePx) => {
+    const bold   = has(gene, 'bold')   ? 'bold '    : '';
+    const italic = has(gene, 'italic') ? 'italic ' : '';
+    return `${italic}${bold}${sizePx}px monospace`;
+  };
 
   octx.save();
   octx.beginPath();
@@ -938,62 +952,77 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   // Labels are always centered on the gene body's *true* midpoint (computed
   // from gene.s/gene.e, not from the clipped pixel extent), so the inter-
   // label distance grows monotonically with zoom. A label that falls off a
-  // viewport edge is simply not drawn; it does not fail the tier.
-  const tryFont = (font) => {
-    octx.font = font;
-    // Half a character width padding on each side so adjacent gene labels
-    // keep at least one character-width of whitespace between them.
+  // viewport edge is simply not drawn; it does not fail the tier. The font
+  // string is built per gene so bold/italic highlights affect width.
+  const tryFontSize = (sizePx) => {
+    // Use the base (non-bold/non-italic) font for padding measurement so
+    // spacing stays consistent across genes.
+    octx.font = `${sizePx}px monospace`;
     const pad = octx.measureText('M').width / 2;
     const used = Array.from({length: nRowsChrom}, () => []);
     const cxs = new Array(vis.length).fill(null);
     for (let i = 0; i < vis.length; i++) {
       const v = vis[i];
       if (!v.gene.n) continue;
+      octx.font = fontFor(v.gene, sizePx);
       const tw = octx.measureText(v.gene.n).width;
       const cx  = v.cxTrue;
       const lx0 = cx - tw / 2 - pad, lx1 = cx + tw / 2 + pad;
-      // Off-canvas label: don't draw it, but don't kill the tier either.
       if (lx0 < LABEL_W || lx1 > W_css) continue;
       const u = used[v.rowIdx];
       for (const [a, b] of u) {
         if (lx0 < b && lx1 > a) return null;
       }
-      cxs[i] = cx;
+      cxs[i] = { cx, tw };
       u.push([lx0, lx1]);
     }
     return cxs;
   };
 
-  // Prefer the largest font that still fits every visible gene; fall back
-  // through smaller tiers, otherwise suppress labels entirely.
-  const fontTiers = ['10px monospace', '8px monospace', '6px monospace'];
-  let labelFont = null;
+  // Prefer the largest font tier that still fits every visible gene.
+  const fontSizes = [10, 8, 6];
+  let labelSize = null;
   let labelCxs = null;
-  for (const f of fontTiers) {
-    const cxs = tryFont(f);
-    if (cxs) { labelFont = f; labelCxs = cxs; break; }
+  for (const sz of fontSizes) {
+    const cxs = tryFontSize(sz);
+    if (cxs) { labelSize = sz; labelCxs = cxs; break; }
   }
 
-  // Draw pass.
-  if (labelFont) octx.font = labelFont;
+  // Halo pass (behind everything): fill a rounded rect slightly larger than
+  // the exon band for genes with `halo` active.
+  for (const v of vis) {
+    if (!has(v.gene, 'halo')) continue;
+    const rowTop = trackY + v.rowIdx * rowH;
+    const exonY  = rowTop + labelBand + 1;
+    const pad = 3;
+    const hy = exonY - pad;
+    const hh = exonH + pad * 2;
+    const hx0 = v.gx0 - pad;
+    const hw  = v.gw + pad * 2;
+    octx.fillStyle = haloColor;
+    octx.beginPath();
+    octx.roundRect(hx0, hy, hw, hh, Math.min(6, hh / 2));
+    octx.fill();
+  }
+
+  // Main draw pass.
   for (let i = 0; i < vis.length; i++) {
     const v = vis[i];
     const gene = v.gene;
     const rowIdx = v.rowIdx;
-    // Place exon top ~labelBand px below the row's top edge so the label
-    // sits above the exon and stays inside the track's clip rect (row 0
-    // labels were previously truncated at trackY).
     const rowTop = trackY + rowIdx * rowH;
     const exonY  = rowTop + labelBand + 1;
     const midY   = exonY + exonH / 2;
     const bodyY  = midY - 1;
     const gx0 = v.gx0, gx1 = v.gx1, gw = v.gw;
 
-    octx.fillStyle = th.muted || '#666688';
+    // Backbone / spine.
+    octx.fillStyle = has(gene, 'stroke') ? spineColor : (th.muted || '#666688');
     octx.fillRect(gx0, bodyY, gw, 2);
 
+    // Arrows: inherit spine colour when 'stroke' active, else muted.
     const dir = gene.strand === '+' ? 1 : -1;
-    octx.strokeStyle = th.muted || '#666688';
+    octx.strokeStyle = has(gene, 'stroke') ? spineColor : (th.muted || '#666688');
     octx.lineWidth   = 1.2;
     octx.lineJoin    = 'round';
     for (let ax = gx0 + arrowSep * 0.5; ax < gx1 - 6; ax += arrowSep) {
@@ -1004,8 +1033,10 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
       octx.stroke();
     }
 
+    // Exons (fill + optional outline).
     const exons = gene.exons?.length ? gene.exons : [[gene.s, gene.e]];
-    octx.fillStyle = gene.hl ? hlColor : color;
+    const exonFill    = has(gene, 'fill')    ? fillColor    : color;
+    const doOutline   = has(gene, 'outline');
     for (const [es, ee] of exons) {
       if (ee < vs || es > ve) continue;
       const ex0 = LABEL_W + Math.max(0,     (es - vs) / range * drawW);
@@ -1015,17 +1046,35 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
         const r = Math.min(2, exonH / 2, ew / 2);
         octx.beginPath();
         octx.roundRect(ex0, exonY, ew, exonH, r);
+        octx.fillStyle = exonFill;
         octx.fill();
+        if (doOutline) {
+          octx.strokeStyle = outlineColor;
+          octx.lineWidth   = 1;
+          octx.stroke();
+        }
       } else {
+        octx.fillStyle = exonFill;
         octx.fillRect(ex0, exonY, ew, exonH);
+        if (doOutline) {
+          octx.strokeStyle = outlineColor;
+          octx.lineWidth   = 1;
+          octx.strokeRect(ex0 + 0.5, exonY + 0.5, ew - 1, exonH - 1);
+        }
       }
     }
 
-    if (labelFont && labelCxs && labelCxs[i] != null && gene.n) {
-      octx.fillStyle    = th.label || '#9090c0';
+    // Label (per-gene font for bold/italic, per-gene colour, optional underline).
+    if (labelSize != null && labelCxs && labelCxs[i] != null && gene.n) {
+      const { cx, tw } = labelCxs[i];
+      octx.font         = fontFor(gene, labelSize);
+      octx.fillStyle    = has(gene, 'color') ? labelColor : (th.label || '#9090c0');
       octx.textAlign    = 'center';
       octx.textBaseline = 'bottom';
-      octx.fillText(gene.n, labelCxs[i], exonY - 1);
+      octx.fillText(gene.n, cx, exonY - 1);
+      if (has(gene, 'underline')) {
+        octx.fillRect(cx - tw / 2, exonY - 1, tw, 1);
+      }
     }
   }
   octx.restore();
@@ -1758,6 +1807,50 @@ hmGlobBtn.addEventListener('click', () => {
   }
 });
 
+snapBtn.addEventListener('click', async () => {
+  // Render synchronously so the WebGL drawing buffer still has valid pixels
+  // (the context was created without preserveDrawingBuffer, so otherwise the
+  // buffer may be cleared by the time we copy it).
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  render();
+
+  const w = glCanvas.width, h = glCanvas.height;
+  const out = document.createElement('canvas');
+  out.width = w; out.height = h;
+  const octx2 = out.getContext('2d');
+  octx2.drawImage(glCanvas, 0, 0);
+  octx2.drawImage(ov,       0, 0);
+
+  const flash = (ok) => {
+    const prev = snapBtn.textContent;
+    snapBtn.textContent = ok ? '✓' : '✗';
+    setTimeout(() => { snapBtn.textContent = prev; }, 900);
+  };
+
+  try {
+    if (!navigator.clipboard || !window.ClipboardItem) throw new Error('clipboard unsupported');
+    const blob = await new Promise(res => out.toBlob(res, 'image/png'));
+    if (!blob) throw new Error('toBlob failed');
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    flash(true);
+  } catch (err) {
+    console.warn('[SegmentViewer] clipboard copy failed, falling back to download:', err);
+    // Fallback: trigger a download so the user still gets the image.
+    out.toBlob(blob => {
+      if (!blob) return flash(false);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'segment-viewer.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      flash(true);
+    }, 'image/png');
+  }
+});
+
 // ══════════════════════════════════════════════════════════════════════════════
 // MODEL CHANGE LISTENERS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -2209,6 +2302,11 @@ class SegmentViewer(anywidget.AnyWidget):
                 merged.append([s, e])
         return merged
 
+    _HIGHLIGHT_KEYS = (
+        'fill', 'stroke', 'outline', 'color',
+        'bold', 'italic', 'underline', 'halo',
+    )
+
     def add_gene_track(
         self,
         genes_data,
@@ -2218,8 +2316,13 @@ class SegmentViewer(anywidget.AnyWidget):
         color: str = '#4488cc',
         height: Optional[int] = None,
         collapse: bool = True,
-        highlight: Optional[List[str]] = None,
-        highlight_color: str = '#ee5566',
+        highlight: Optional[Union[List[str], Dict[str, List[str]]]] = None,
+        highlight_color: Optional[str] = None,
+        highlight_fill_color:    str = '#e03a4e',
+        highlight_spine_color:   str = '#d80ce6',
+        highlight_outline_color: str = '#000000',
+        highlight_label_color:   str = '#169f4a',
+        highlight_halo_color:    str = '#4152CF2F',
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -2242,14 +2345,48 @@ class SegmentViewer(anywidget.AnyWidget):
         collapse        : If True (default), merge exons across all transcripts
                           into a single union set.  If False, each transcript
                           becomes its own row in the gene track.
-        highlight       : List of gene names whose exons should be drawn with
-                          ``highlight_color`` instead of ``color``.
-        highlight_color : Exon colour used for highlighted genes.
+        highlight       : Either a list of gene names (treated as
+                          ``{'fill': [...]}``) or a dict mapping a
+                          property key to a list of gene names.  Keys are:
+                          ``'fill'``, ``'stroke'``, ``'outline'``, ``'color'``,
+                          ``'bold'``, ``'italic'``, ``'underline'``, ``'halo'``.
+                          A gene may appear under multiple keys; all applicable
+                          properties are applied independently.
+        highlight_color : Deprecated alias for ``highlight_fill_color``.
+                          Kept for backward compatibility with the list form.
+        highlight_fill_color    : Exon fill colour for ``'fill'`` highlights.
+        highlight_spine_color   : Backbone colour for ``'stroke'`` highlights.
+        highlight_outline_color : Exon outline colour for ``'outline'`` highlights.
+        highlight_label_color   : Gene-name text colour for ``'color'`` highlights.
+        highlight_halo_color    : Halo rectangle colour (may include alpha)
+                                  for ``'halo'`` highlights.
         tip_fmt         : Python format string for tooltip.
                           Available keys: ``{name}``, ``{strand}``, ``{start}``,
                           ``{end}``.
         """
-        hl_set = {str(g) for g in (highlight or [])}
+        # Backward-compatible alias: highlight_color overrides the fill colour.
+        if highlight_color is not None:
+            highlight_fill_color = highlight_color
+
+        # Normalise `highlight` into {key: set(gene_names)}.
+        hl_sets: Dict[str, set] = {}
+        if highlight is None:
+            pass
+        elif isinstance(highlight, dict):
+            for k, names in highlight.items():
+                if k not in self._HIGHLIGHT_KEYS:
+                    raise ValueError(
+                        f"Unknown highlight key {k!r}; valid keys are "
+                        f"{self._HIGHLIGHT_KEYS}"
+                    )
+                hl_sets[k] = {str(g) for g in (names or [])}
+        else:
+            # list / iterable: apply default 'fill' property to listed genes.
+            hl_sets['fill'] = {str(g) for g in highlight}
+
+        def active_keys(gname: str) -> List[str]:
+            return [k for k in self._HIGHLIGHT_KEYS
+                    if gname in hl_sets.get(k, ())]
         tid   = self._tid()
         gdata: Dict = {}
 
@@ -2261,14 +2398,14 @@ class SegmentViewer(anywidget.AnyWidget):
                 for entry in gene_list:
                     gname, _, gs, ge, strand, transcripts = entry
                     strand = str(strand) if strand in ('+', '-') else '+'
-                    hl = str(gname) in hl_set
+                    hl = active_keys(str(gname))
                     if collapse:
                         exons = self._collapse_exons(transcripts)
                         rec = {
                             's': int(gs), 'e': int(ge),
                             'n': str(gname), 'strand': strand, 'exons': exons,
                         }
-                        if hl: rec['hl'] = True
+                        if hl: rec['hl'] = hl
                         recs.append(rec)
                     else:
                         for ti, tex in enumerate(transcripts):
@@ -2282,7 +2419,7 @@ class SegmentViewer(anywidget.AnyWidget):
                                 'n': f'{gname}{suffix}', 'strand': strand,
                                 'exons': exons,
                             }
-                            if hl: rec['hl'] = True
+                            if hl: rec['hl'] = hl
                             recs.append(rec)
                 gdata[chrom] = recs
         else:
@@ -2309,7 +2446,8 @@ class SegmentViewer(anywidget.AnyWidget):
                         's': int(row['start']), 'e': int(row['end']),
                         'n': gname, 'strand': strand, 'exons': exons,
                     }
-                    if gname in hl_set: rec['hl'] = True
+                    hl = active_keys(gname)
+                    if hl: rec['hl'] = hl
                     recs.append(rec)
                 gdata[chrom] = recs
 
@@ -2338,7 +2476,14 @@ class SegmentViewer(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': 'gene', 'name': name,
             'height': height, 'color': color,
-            'highlightColor': highlight_color,
+            'highlightColor': highlight_fill_color,  # legacy alias
+            'highlightStyles': {
+                'fillColor':    highlight_fill_color,
+                'spineColor':   highlight_spine_color,
+                'outlineColor': highlight_outline_color,
+                'labelColor':   highlight_label_color,
+                'haloColor':    highlight_halo_color,
+            },
             'rows': max_rows,
             'groups': [],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
