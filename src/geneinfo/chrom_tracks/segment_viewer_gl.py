@@ -601,6 +601,32 @@ function buildDensGPU(counts, chromSz) {
   return { buf, count: n * 4 };
 }
 
+// Stacked density: input is stride-3 (binIndex, yLo, yHi) per bin in
+// normalised [0,1] space.  We emit a triangle strip spanning yLo..yHi for
+// each bin so the same drawDensArea shader paints per-group stacked bands.
+function buildDensStackedGPU(arr, chromSz, nBins) {
+  const n = (arr.length / 3) | 0;
+  if (n === 0) return null;
+  const winSz = chromSz / nBins;
+  const verts = new Float32Array(n * 4 * 2);
+  let vi = 0;
+  for (let i = 0; i < n; i++) {
+    const bi = arr[i * 3];
+    const lo = arr[i * 3 + 1];
+    const hi = arr[i * 3 + 2];
+    const xL = bi * winSz;
+    const xR = (bi + 1) * winSz;
+    verts[vi++] = xL; verts[vi++] = lo;
+    verts[vi++] = xL; verts[vi++] = hi;
+    verts[vi++] = xR; verts[vi++] = lo;
+    verts[vi++] = xR; verts[vi++] = hi;
+  }
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  return { buf, count: n * 4 };
+}
+
 // Build heatmap texture
 function buildHeatmapGPU(u8, nInd, nWin, xStart, xEnd) {
   if (!u8 || u8.length === 0) return null;
@@ -753,6 +779,7 @@ function uploadTrackData() {
       const dens  = d.dens || {};
       const nG    = cfg.groups.length;
       const gap   = 0.08;
+      const stacked = !!cfg.stacked;
       const weights = cfg.groups.map(g => g.nInd || 1);
       const totalW  = weights.reduce((a, b) => a + b, 0);
       const usable  = 1.0 - gap;
@@ -777,8 +804,11 @@ function uploadTrackData() {
           for (const [nBins, b64] of Object.entries(densLevels)) {
             const cnts = b64F32(b64);
             if (!cnts || cnts.length === 0) continue;
-            const gpu = buildDensGPU(cnts, csz);
-            if (gpu) levels.push({ nBins: parseInt(nBins), binWidth: csz / parseInt(nBins), ...gpu });
+            const n = parseInt(nBins);
+            const gpu = stacked
+              ? buildDensStackedGPU(cnts, csz, n)
+              : buildDensGPU(cnts, csz);
+            if (gpu) levels.push({ nBins: n, binWidth: csz / n, ...gpu });
           }
           levels.sort((a, b) => a.nBins - b.nBins);
           gpuDens[tid][ch][gid] = levels;
@@ -1498,6 +1528,7 @@ function render() {
     const tb = cssNDC(trackBot - PAD_V, totalH_css);
 
     if (cfg.type === 'segment') {
+      const segStacked = !!cfg.stacked;
       for (const grp of cfg.groups) {
         const gid = grp.id;
         if (useDens) {
@@ -1508,8 +1539,14 @@ function render() {
             if (lv.binWidth * pxPerBp >= 2) level = lv;
           }
           if (level) {
-            drawDensArea(level, vs, ve, tt, tb, grp.color, 0.80);
-            drawDensArea(level, vs, ve, tt, tb, grp.color, 0.40);
+            if (segStacked) {
+              // Stacked: solid opaque fill so adjacent group bands read as
+              // distinct colours rather than bleeding into each other.
+              drawDensArea(level, vs, ve, tt, tb, grp.color, 1.0);
+            } else {
+              drawDensArea(level, vs, ve, tt, tb, grp.color, 0.80);
+              drawDensArea(level, vs, ve, tt, tb, grp.color, 0.40);
+            }
           }
         } else {
           drawRects(gpuSeg[cfg.id]?.[ch]?.[gid], vs, ve, tt, tb);
@@ -1757,7 +1794,7 @@ function tipDataHeatmap(pos, chrom, cfg, localY) {
 // ── Tooltip dispatch ────────────────────────────────────────────────────────
 
 // Default formatters (replicate previous hardcoded behaviour)
-function defaultFmtGene(items) { return items.map(d => `${d.name} ${d.strand}`).join(', '); }
+function defaultFmtGene(items) { return items.map(d => d.name).join(', '); }
 function defaultFmtXY(items, nGroups) { return items.map(d => (nGroups > 1 ? `${d.group}: ` : '') + d.value.toPrecision(4)).join(', '); }
 function defaultFmtFill(items, nGroups) { return items.map(d => (nGroups > 1 ? `${d.group}: ` : '') + `${d.lo.toPrecision(4)}\u2013${d.hi.toPrecision(4)}`).join(', '); }
 function defaultFmtHist(items, nGroups) { return items.map(d => (nGroups > 1 ? `${d.group}: ` : '') + d.value.toPrecision(4)).join(', '); }
@@ -2283,6 +2320,7 @@ class SegmentViewer(anywidget.AnyWidget):
         color_map: Optional[Dict] = None,
         height: Optional[int] = None,
         density_windows: Union[tuple, int] = (256, 1024, 4096),
+        stack: bool = False,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -2304,6 +2342,12 @@ class SegmentViewer(anywidget.AnyWidget):
                           pixel per row).
         density_windows : Tuple of bin counts for multi-resolution density LOD.
                           A single int is also accepted (treated as one level).
+        stack           : If True, groups' density contributions stack on top
+                          of each other in the zoomed-out density view (rather
+                          than overlapping).  Normalisation uses the combined
+                          max across all bins.  Requires ``group_by`` with more
+                          than one group and is ignored when ``individual_col``
+                          is set.
         tip_fmt         : Python format string for tooltip.
                           Available keys: ``{group}``.
         """
@@ -2338,6 +2382,10 @@ class SegmentViewer(anywidget.AnyWidget):
             total_rows = sum(grp_nind.values()) if use_ind else len(groups)
             height = max(90, total_rows)
 
+        # Stacking is only meaningful in the density overlay with >1 group and
+        # no per-individual layout.
+        stacked = bool(stack) and len(groups) > 1 and not use_ind
+
         seg_out: Dict  = {}
         dens_out: Dict = {}
 
@@ -2347,12 +2395,15 @@ class SegmentViewer(anywidget.AnyWidget):
             seg_out[chrom]  = {}
             dens_out[chrom] = {}
 
+            # First pass — segment rects and raw per-group per-level count arrays.
+            counts_per_level: Dict[int, Dict[str, np.ndarray]] = {n: {} for n in density_windows}
             for gi, group in enumerate(groups):
                 gid = str(gi)
                 gdf = cdf[cdf[group_by] == group] if group_by else cdf
                 if gdf.empty:
-                    seg_out[chrom][gid]  = ''
-                    dens_out[chrom][gid] = ''
+                    seg_out[chrom][gid] = ''
+                    for n in density_windows:
+                        counts_per_level[n][gid] = np.zeros(n, dtype=np.float32)
                     continue
 
                 gdf = gdf.sort_values('start')
@@ -2371,18 +2422,49 @@ class SegmentViewer(anywidget.AnyWidget):
                 seg_out[chrom][gid] = self._pack_f32(arr)
 
                 starts = gdf['start'].to_numpy()
-                levels = {}
                 for n in density_windows:
-                    bins = np.clip(
-                        (starts / csz * n).astype(int), 0, n - 1
-                    )
+                    bins = np.clip((starts / csz * n).astype(int), 0, n - 1)
                     counts = np.zeros(n, dtype=np.float32)
                     np.add.at(counts, bins, 1)
-                    levels[str(n)] = self._pack_f32(counts)
+                    counts_per_level[n][gid] = counts
+
+            # Second pass — serialise counts as either plain per-group arrays
+            # (non-stacked) or stride-3 (x_bin_left_norm, yLo, yHi) arrays in
+            # normalised [0,1] space (stacked).  In the stacked case we use a
+            # shared column-sum maximum so groups scale consistently.
+            for gi, group in enumerate(groups):
+                gid = str(gi)
+                if seg_out[chrom].get(gid) == '':
+                    dens_out[chrom][gid] = ''
+                    continue
+                levels: Dict[str, str] = {}
+                for n in density_windows:
+                    counts = counts_per_level[n][gid]
+                    if stacked:
+                        # column sum across all groups at each bin
+                        col_sum = np.zeros(n, dtype=np.float64)
+                        for gj in range(len(groups)):
+                            col_sum += counts_per_level[n][str(gj)].astype(np.float64)
+                        maxVal = float(col_sum.max()) or 1.0
+                        cum_prev = np.zeros(n, dtype=np.float64)
+                        for gj in range(gi):
+                            cum_prev += counts_per_level[n][str(gj)].astype(np.float64)
+                        yLo = cum_prev / maxVal
+                        yHi = (cum_prev + counts.astype(np.float64)) / maxVal
+                        # stride-3: xBinLeft (as bin index 0..n-1), yLo, yHi.
+                        # JS will convert xBinLeft to chromosome coords via nBins.
+                        arr = np.empty(n * 3, dtype=np.float32)
+                        arr[0::3] = np.arange(n, dtype=np.float32)
+                        arr[1::3] = yLo.astype(np.float32)
+                        arr[2::3] = yHi.astype(np.float32)
+                        levels[str(n)] = self._pack_f32(arr)
+                    else:
+                        levels[str(n)] = self._pack_f32(counts)
                 dens_out[chrom][gid] = levels
 
         cfg = {
             'id': tid, 'type': 'segment', 'name': name, 'height': height,
+            'stacked': stacked,
             'groups': [
                 {'id': str(i), 'name': str(g),
                  'nInd': grp_nind.get(str(i), 0),
