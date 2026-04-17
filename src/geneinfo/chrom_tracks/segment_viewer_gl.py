@@ -897,6 +897,7 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   const entry  = geneData?.[cfg.id]?.[vp.chrom];
   const genes  = entry?.records ?? (Array.isArray(entry) ? entry : []);
   const color  = cfg.color || '#4488cc';
+  const hlColor = cfg.highlightColor || '#ee5566';
 
   octx.fillStyle = th.bg || '#13131a';
   octx.fillRect(LABEL_W, trackY, drawW, cfg.height);
@@ -907,9 +908,9 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   // global max across all chroms), so any unused space is simply left empty
   // at the bottom rather than stretched into the gene layout.
   const nRowsChrom = Math.max(1, entry?.rows ?? cfg.rows ?? 1);
-  const rowH       = Math.min(28, cfg.height / nRowsChrom);
+  const rowH       = Math.min(30, cfg.height / nRowsChrom);
   const exonH  = Math.min(14, Math.max(6, rowH * 0.45));
-  const labelBand = 9;  // space reserved above each exon for the label
+  const labelBand = 11; // space reserved above each exon for the label (fits up to 10 px font)
   const arrowSep = 70;
   const arrowA   = 4;
 
@@ -918,9 +919,10 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   octx.rect(LABEL_W, trackY, drawW, cfg.height);
   octx.clip();
 
-  octx.font = '8px monospace';
-
   // Build a list of just the visible genes with their pixel extents.
+  // Keep both the *clipped* extents (for drawing body/exons inside the track)
+  // and the *true* (un-clipped) pixel midpoint (for stable label placement —
+  // using the clipped midpoint makes feasibility non-monotonic in zoom).
   const vis = [];
   for (const gene of genes) {
     if (gene.e < vs || gene.s > ve) continue;
@@ -928,43 +930,54 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     const gx1 = LABEL_W + Math.min(drawW, (gene.e - vs) / range * drawW);
     const gw  = gx1 - gx0;
     if (gw < 0.5) continue;
-    vis.push({ gene, gx0, gx1, gw, rowIdx: gene.row | 0 });
+    const cxTrue = LABEL_W + ((gene.s + gene.e) / 2 - vs) / range * drawW;
+    vis.push({ gene, gx0, gx1, gw, cxTrue, rowIdx: gene.row | 0 });
   }
 
-  // Feasibility pass: tentatively place every visible gene's label, aborting
-  // labelling for the whole track if any fails. Show labels only when all fit.
-  const labelUsed = Array.from({length: nRowsChrom}, () => []);
-  const gap = 3;
-  let showLabels = true;
-  for (const v of vis) {
-    if (!v.gene.n) { v.cx = null; continue; }
-    const tw = octx.measureText(v.gene.n).width;
-    v.tw = tw;
-    const cands = [
-      (v.gx0 + v.gx1) / 2,          // centered
-      v.gx1 + gap + tw / 2,         // right-flush
-      v.gx0 - gap - tw / 2,         // left-flush
-    ];
-    const used = labelUsed[v.rowIdx];
-    let placed = null;
-    for (const cx of cands) {
-      const lx0 = cx - tw / 2 - 1, lx1 = cx + tw / 2 + 1;
+  // Feasibility: try to place every visible gene's label at a given font size.
+  // Labels are always centered on the gene body's *true* midpoint (computed
+  // from gene.s/gene.e, not from the clipped pixel extent), so the inter-
+  // label distance grows monotonically with zoom. A label that falls off a
+  // viewport edge is simply not drawn; it does not fail the tier.
+  const tryFont = (font) => {
+    octx.font = font;
+    // Half a character width padding on each side so adjacent gene labels
+    // keep at least one character-width of whitespace between them.
+    const pad = octx.measureText('M').width / 2;
+    const used = Array.from({length: nRowsChrom}, () => []);
+    const cxs = new Array(vis.length).fill(null);
+    for (let i = 0; i < vis.length; i++) {
+      const v = vis[i];
+      if (!v.gene.n) continue;
+      const tw = octx.measureText(v.gene.n).width;
+      const cx  = v.cxTrue;
+      const lx0 = cx - tw / 2 - pad, lx1 = cx + tw / 2 + pad;
+      // Off-canvas label: don't draw it, but don't kill the tier either.
       if (lx0 < LABEL_W || lx1 > W_css) continue;
-      let overlaps = false;
-      for (const [a, b] of used) {
-        if (lx0 < b && lx1 > a) { overlaps = true; break; }
+      const u = used[v.rowIdx];
+      for (const [a, b] of u) {
+        if (lx0 < b && lx1 > a) return null;
       }
-      if (overlaps) continue;
-      placed = { cx, lx0, lx1 };
-      break;
+      cxs[i] = cx;
+      u.push([lx0, lx1]);
     }
-    if (!placed) { showLabels = false; break; }
-    v.cx = placed.cx;
-    used.push([placed.lx0, placed.lx1]);
+    return cxs;
+  };
+
+  // Prefer the largest font that still fits every visible gene; fall back
+  // through smaller tiers, otherwise suppress labels entirely.
+  const fontTiers = ['10px monospace', '8px monospace', '6px monospace'];
+  let labelFont = null;
+  let labelCxs = null;
+  for (const f of fontTiers) {
+    const cxs = tryFont(f);
+    if (cxs) { labelFont = f; labelCxs = cxs; break; }
   }
 
   // Draw pass.
-  for (const v of vis) {
+  if (labelFont) octx.font = labelFont;
+  for (let i = 0; i < vis.length; i++) {
+    const v = vis[i];
     const gene = v.gene;
     const rowIdx = v.rowIdx;
     // Place exon top ~labelBand px below the row's top edge so the label
@@ -992,7 +1005,7 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     }
 
     const exons = gene.exons?.length ? gene.exons : [[gene.s, gene.e]];
-    octx.fillStyle = color;
+    octx.fillStyle = gene.hl ? hlColor : color;
     for (const [es, ee] of exons) {
       if (ee < vs || es > ve) continue;
       const ex0 = LABEL_W + Math.max(0,     (es - vs) / range * drawW);
@@ -1008,11 +1021,11 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
       }
     }
 
-    if (showLabels && v.cx != null && gene.n) {
+    if (labelFont && labelCxs && labelCxs[i] != null && gene.n) {
       octx.fillStyle    = th.label || '#9090c0';
       octx.textAlign    = 'center';
       octx.textBaseline = 'bottom';
-      octx.fillText(gene.n, v.cx, exonY - 1);
+      octx.fillText(gene.n, labelCxs[i], exonY - 1);
     }
   }
   octx.restore();
@@ -2205,6 +2218,8 @@ class SegmentViewer(anywidget.AnyWidget):
         color: str = '#4488cc',
         height: Optional[int] = None,
         collapse: bool = True,
+        highlight: Optional[List[str]] = None,
+        highlight_color: str = '#ee5566',
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
     ) -> 'SegmentViewer':
@@ -2213,24 +2228,28 @@ class SegmentViewer(anywidget.AnyWidget):
 
         Parameters
         ----------
-        genes_data : Either a dict mapping chrom -> list of
-                     (gene_name, chrom, start, end, strand, transcripts)
-                     tuples (as returned by geneinfo), or a DataFrame with
-                     [chrom, start, end, name, strand].
-        exons_df   : Optional DataFrame with [chrom, gene_name, start, end].
-                     Only used with the DataFrame form of genes_data.
-        name       : Track display label.
-        color      : Exon block colour.
-        height     : Track height in CSS px.  If not specified, auto-sizes
-                     to the required number of rows (positive strand above,
-                     negative strand below, each with sub-lanes on overlap).
-        collapse   : If True (default), merge exons across all transcripts
-                     into a single union set.  If False, each transcript
-                     becomes its own row in the gene track.
-        tip_fmt    : Python format string for tooltip.
-                     Available keys: ``{name}``, ``{strand}``, ``{start}``,
-                     ``{end}``.
+        genes_data      : Either a dict mapping chrom -> list of
+                          (gene_name, chrom, start, end, strand, transcripts)
+                          tuples (as returned by geneinfo), or a DataFrame with
+                          [chrom, start, end, name, strand].
+        exons_df        : Optional DataFrame with [chrom, gene_name, start,
+                          end].  Only used with the DataFrame form of genes_data.
+        name            : Track display label.
+        color           : Exon block colour for non-highlighted genes.
+        height          : Track height in CSS px.  If not specified, auto-sizes
+                          to the required number of rows (positive strand above,
+                          negative strand below, each with sub-lanes on overlap).
+        collapse        : If True (default), merge exons across all transcripts
+                          into a single union set.  If False, each transcript
+                          becomes its own row in the gene track.
+        highlight       : List of gene names whose exons should be drawn with
+                          ``highlight_color`` instead of ``color``.
+        highlight_color : Exon colour used for highlighted genes.
+        tip_fmt         : Python format string for tooltip.
+                          Available keys: ``{name}``, ``{strand}``, ``{start}``,
+                          ``{end}``.
         """
+        hl_set = {str(g) for g in (highlight or [])}
         tid   = self._tid()
         gdata: Dict = {}
 
@@ -2242,12 +2261,15 @@ class SegmentViewer(anywidget.AnyWidget):
                 for entry in gene_list:
                     gname, _, gs, ge, strand, transcripts = entry
                     strand = str(strand) if strand in ('+', '-') else '+'
+                    hl = str(gname) in hl_set
                     if collapse:
                         exons = self._collapse_exons(transcripts)
-                        recs.append({
+                        rec = {
                             's': int(gs), 'e': int(ge),
                             'n': str(gname), 'strand': strand, 'exons': exons,
-                        })
+                        }
+                        if hl: rec['hl'] = True
+                        recs.append(rec)
                     else:
                         for ti, tex in enumerate(transcripts):
                             exons = [[int(s), int(e)] for s, e in tex]
@@ -2255,11 +2277,13 @@ class SegmentViewer(anywidget.AnyWidget):
                             ts = min((s for s, _ in exons), default=int(gs))
                             te = max((e for _, e in exons), default=int(ge))
                             suffix = f' t{ti+1}' if len(transcripts) > 1 else ''
-                            recs.append({
+                            rec = {
                                 's': int(ts), 'e': int(te),
                                 'n': f'{gname}{suffix}', 'strand': strand,
                                 'exons': exons,
-                            })
+                            }
+                            if hl: rec['hl'] = True
+                            recs.append(rec)
                 gdata[chrom] = recs
         else:
             # DataFrame form (legacy API)
@@ -2281,10 +2305,12 @@ class SegmentViewer(anywidget.AnyWidget):
                             [int(r['start']), int(r['end'])]
                             for _, r in exons_df[mask].iterrows()
                         ]
-                    recs.append({
+                    rec = {
                         's': int(row['start']), 'e': int(row['end']),
                         'n': gname, 'strand': strand, 'exons': exons,
-                    })
+                    }
+                    if gname in hl_set: rec['hl'] = True
+                    recs.append(rec)
                 gdata[chrom] = recs
 
         # Pack all genes (both strands) into the minimum number of non-overlapping
@@ -2305,13 +2331,14 @@ class SegmentViewer(anywidget.AnyWidget):
                      for ch, recs in gdata.items()}
 
         if height is None:
-            # Per row: ~9 px label band + ~11 px exon + ~8 px bottom gap so
+            # Per row: ~11 px label band + ~11 px exon + ~8 px bottom gap so
             # the next row's label cannot touch the previous row's exon.
-            height = max(28, max_rows * 28 + 2)
+            height = max(30, max_rows * 30 + 2)
 
         cfg = {
             'id': tid, 'type': 'gene', 'name': name,
             'height': height, 'color': color,
+            'highlightColor': highlight_color,
             'rows': max_rows,
             'groups': [],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
