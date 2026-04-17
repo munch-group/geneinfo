@@ -45,6 +45,9 @@ import traitlets
 # CSS
 # ─────────────────────────────────────────────────────────────────────────────
 _CSS = """
+.cell-output-ipywidget-background {
+    background-color: transparent !important;
+}
 .sv-root {
     font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
     font-size: 12px;
@@ -1036,16 +1039,6 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     octx.fillStyle = th.muted || '#666688';
     octx.fillText(fmtBp(t, nice), px, 4);
   }
-
-  // Position label
-  octx.fillStyle    = th.muted || '#666688';
-  octx.font         = '9px monospace';
-  octx.textAlign    = 'right';
-  octx.textBaseline = 'middle';
-  octx.fillText(
-    `${vp.chrom}:${Math.round(vs).toLocaleString()}–${Math.round(ve).toLocaleString()}`,
-    W_css - 6, SCALEBAR_H / 2
-  );
 
   // ── Gene tracks first (behind labels) ───────────────────────────────────
   let cssY = SCALEBAR_H;
