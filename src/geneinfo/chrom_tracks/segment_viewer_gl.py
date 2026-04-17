@@ -894,16 +894,22 @@ function fmtY(v) {
 function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   const drawW  = W_css - LABEL_W;
   const range  = ve - vs;
-  const genes  = geneData?.[cfg.id]?.[vp.chrom] ?? [];
+  const entry  = geneData?.[cfg.id]?.[vp.chrom];
+  const genes  = entry?.records ?? (Array.isArray(entry) ? entry : []);
   const color  = cfg.color || '#4488cc';
 
   octx.fillStyle = th.bg || '#13131a';
   octx.fillRect(LABEL_W, trackY, drawW, cfg.height);
   if (!genes.length) return;
 
-  const nRows  = Math.max(1, cfg.rows || 1);
-  const rowH   = cfg.height / nRows;
-  const exonH  = Math.min(14, Math.max(6, rowH * 0.42));
+  // Pack rows tightly at the top of the track at a fixed 28 px per row.
+  // The number of rows used for this chrom may be less than cfg.rows (the
+  // global max across all chroms), so any unused space is simply left empty
+  // at the bottom rather than stretched into the gene layout.
+  const nRowsChrom = Math.max(1, entry?.rows ?? cfg.rows ?? 1);
+  const rowH       = Math.min(28, cfg.height / nRowsChrom);
+  const exonH  = Math.min(14, Math.max(6, rowH * 0.45));
+  const labelBand = 9;  // space reserved above each exon for the label
   const arrowSep = 70;
   const arrowA   = 4;
 
@@ -912,20 +918,63 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   octx.rect(LABEL_W, trackY, drawW, cfg.height);
   octx.clip();
 
-  // Track horizontal extent of label placements per row to avoid label overlap.
-  const labelUsed = Array.from({length: nRows}, () => []);
-
   octx.font = '8px monospace';
+
+  // Build a list of just the visible genes with their pixel extents.
+  const vis = [];
   for (const gene of genes) {
     if (gene.e < vs || gene.s > ve) continue;
-    const rowIdx = gene.row | 0;
-    const midY   = trackY + (rowIdx + 0.5) * rowH;
-    const exonY  = midY - exonH / 2;
-    const bodyY  = midY - 1;
     const gx0 = LABEL_W + Math.max(0,     (gene.s - vs) / range * drawW);
     const gx1 = LABEL_W + Math.min(drawW, (gene.e - vs) / range * drawW);
     const gw  = gx1 - gx0;
     if (gw < 0.5) continue;
+    vis.push({ gene, gx0, gx1, gw, rowIdx: gene.row | 0 });
+  }
+
+  // Feasibility pass: tentatively place every visible gene's label, aborting
+  // labelling for the whole track if any fails. Show labels only when all fit.
+  const labelUsed = Array.from({length: nRowsChrom}, () => []);
+  const gap = 3;
+  let showLabels = true;
+  for (const v of vis) {
+    if (!v.gene.n) { v.cx = null; continue; }
+    const tw = octx.measureText(v.gene.n).width;
+    v.tw = tw;
+    const cands = [
+      (v.gx0 + v.gx1) / 2,          // centered
+      v.gx1 + gap + tw / 2,         // right-flush
+      v.gx0 - gap - tw / 2,         // left-flush
+    ];
+    const used = labelUsed[v.rowIdx];
+    let placed = null;
+    for (const cx of cands) {
+      const lx0 = cx - tw / 2 - 1, lx1 = cx + tw / 2 + 1;
+      if (lx0 < LABEL_W || lx1 > W_css) continue;
+      let overlaps = false;
+      for (const [a, b] of used) {
+        if (lx0 < b && lx1 > a) { overlaps = true; break; }
+      }
+      if (overlaps) continue;
+      placed = { cx, lx0, lx1 };
+      break;
+    }
+    if (!placed) { showLabels = false; break; }
+    v.cx = placed.cx;
+    used.push([placed.lx0, placed.lx1]);
+  }
+
+  // Draw pass.
+  for (const v of vis) {
+    const gene = v.gene;
+    const rowIdx = v.rowIdx;
+    // Place exon top ~labelBand px below the row's top edge so the label
+    // sits above the exon and stays inside the track's clip rect (row 0
+    // labels were previously truncated at trackY).
+    const rowTop = trackY + rowIdx * rowH;
+    const exonY  = rowTop + labelBand + 1;
+    const midY   = exonY + exonH / 2;
+    const bodyY  = midY - 1;
+    const gx0 = v.gx0, gx1 = v.gx1, gw = v.gw;
 
     octx.fillStyle = th.muted || '#666688';
     octx.fillRect(gx0, bodyY, gw, 2);
@@ -959,34 +1008,11 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
       }
     }
 
-    if (gene.n) {
-      const tw = octx.measureText(gene.n).width;
-      // Candidate placements (x is label center), in priority order:
-      //   1) centered above the gene body
-      //   2) just to the right of the gene body
-      //   3) just to the left
-      const gap = 3;
-      const cands = [
-        (gx0 + gx1) / 2,                // centered
-        gx1 + gap + tw / 2,             // right-flush, label to the right
-        gx0 - gap - tw / 2,             // left-flush, label to the left
-      ];
-      const used = labelUsed[rowIdx];
-      for (const cx of cands) {
-        const lx0 = cx - tw / 2 - 1, lx1 = cx + tw / 2 + 1;
-        if (lx0 < LABEL_W || lx1 > W_css) continue;
-        let overlaps = false;
-        for (const [a, b] of used) {
-          if (lx0 < b && lx1 > a) { overlaps = true; break; }
-        }
-        if (overlaps) continue;
-        octx.fillStyle    = th.label || '#9090c0';
-        octx.textAlign    = 'center';
-        octx.textBaseline = 'bottom';
-        octx.fillText(gene.n, cx, exonY - 1);
-        used.push([lx0, lx1]);
-        break;
-      }
+    if (showLabels && v.cx != null && gene.n) {
+      octx.fillStyle    = th.label || '#9090c0';
+      octx.textAlign    = 'center';
+      octx.textBaseline = 'bottom';
+      octx.fillText(gene.n, v.cx, exonY - 1);
     }
   }
   octx.restore();
@@ -1354,7 +1380,8 @@ function bisectStride(arr, val, stride) {
 }
 
 function tipDataGene(pos, chrom, cfg) {
-  const genes = geneData?.[cfg.id]?.[chrom] ?? [];
+  const entry = geneData?.[cfg.id]?.[chrom];
+  const genes = entry?.records ?? (Array.isArray(entry) ? entry : []);
   const hits = [];
   for (const g of genes) {
     if (pos >= g.s && pos <= g.e)
@@ -2264,12 +2291,23 @@ class SegmentViewer(anywidget.AnyWidget):
         # rows with a greedy interval lane-packing. Strand is preserved on each
         # record and encoded via arrow direction at draw time.
         max_rows = 1
+        rows_per_chrom: Dict[str, int] = {}
         for chrom, recs in gdata.items():
             n_lanes = self._assign_lanes(recs, offset=0)
-            max_rows = max(max_rows, max(1, n_lanes))
+            n = max(1, n_lanes)
+            rows_per_chrom[chrom] = n
+            max_rows = max(max_rows, n)
+
+        # Emit data as {chrom: {'records': [...], 'rows': n}} so the JS can
+        # size rows for the displayed chromosome only (avoids empty space when
+        # one chrom needs more rows than the currently viewed one).
+        gdata_out = {ch: {'records': recs, 'rows': rows_per_chrom[ch]}
+                     for ch, recs in gdata.items()}
 
         if height is None:
-            height = max(44, max_rows * 22)
+            # Per row: ~9 px label band + ~11 px exon + ~8 px bottom gap so
+            # the next row's label cannot touch the previous row's exon.
+            height = max(28, max_rows * 28 + 2)
 
         cfg = {
             'id': tid, 'type': 'gene', 'name': name,
@@ -2279,7 +2317,7 @@ class SegmentViewer(anywidget.AnyWidget):
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
-        self.track_data    = {**self.track_data, tid: gdata}
+        self.track_data    = {**self.track_data, tid: gdata_out}
         self.track_configs = [*self.track_configs, cfg]
         return self
 
