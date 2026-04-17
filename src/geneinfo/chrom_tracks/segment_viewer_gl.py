@@ -158,6 +158,8 @@ el.innerHTML = `
     <button class="sv-btn sv-zi" title="Zoom in (+)">＋</button>
     <button class="sv-btn sv-zo" title="Zoom out (−)">－</button>
     <button class="sv-btn sv-rs" title="Reset view">⌂</button>
+    <button class="sv-btn sv-hmr" title="Recompute heatmap(s) for current view" style="display:none">⟲</button>
+    <button class="sv-btn sv-hmg" title="Restore global heatmap view" style="display:none">◱</button>
     <div class="sv-sep"></div>
     <span class="sv-lod-badge sv-lod">▬ segments</span>
   </div>
@@ -173,6 +175,8 @@ const posInput  = el.querySelector('.sv-pos');
 const zoomInBtn = el.querySelector('.sv-zi');
 const zoomOutBtn= el.querySelector('.sv-zo');
 const resetBtn  = el.querySelector('.sv-rs');
+const hmRecBtn  = el.querySelector('.sv-hmr');
+const hmGlobBtn = el.querySelector('.sv-hmg');
 const lodBadge  = el.querySelector('.sv-lod');
 const wrap      = el.querySelector('.sv-wrap');
 const glCanvas  = el.querySelector('.sv-glcanvas');
@@ -356,6 +360,13 @@ const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
 const rawFill = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,lo,hi,...]
 const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
 
+// Per-chromosome pan/zoom clamp range. Defaults to the whole chromosome;
+// tightens to a recomputed heatmap's [xStart, xEnd] while any heatmap track
+// on that chrom is in "view" mode.
+const panRange = {};  // { [chrom]: { lo, hi } }
+function panLo(ch) { return panRange[ch]?.lo ?? 0; }
+function panHi(ch) { return panRange[ch]?.hi ?? (chromSizes[ch] || 1); }
+
 // ══════════════════════════════════════════════════════════════════════════════
 // BINARY DECODE
 // ══════════════════════════════════════════════════════════════════════════════
@@ -441,7 +452,7 @@ function buildDensGPU(counts, chromSz) {
 }
 
 // Build heatmap texture
-function buildHeatmapGPU(u8, nInd, nWin) {
+function buildHeatmapGPU(u8, nInd, nWin, xStart, xEnd) {
   if (!u8 || u8.length === 0) return null;
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -450,7 +461,7 @@ function buildHeatmapGPU(u8, nInd, nWin) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  return { tex, nInd, nWin };
+  return { tex, nInd, nWin, xStart, xEnd };
 }
 
 // Build XY buffer for scatter / line: normalize y to [0,1]
@@ -595,7 +606,11 @@ function uploadTrackData() {
         gpuHM[tid][ch] = {};
         for (const [gid, info] of Object.entries(d[ch])) {
           const u8 = b64U8(info.data);
-          gpuHM[tid][ch][gid] = buildHeatmapGPU(u8, info.nInd, info.nWin);
+          gpuHM[tid][ch][gid] = buildHeatmapGPU(
+            u8, info.nInd, info.nWin,
+            info.xStart ?? 0,
+            info.xEnd   ?? (chromSizes[ch] || 1),
+          );
         }
       }
     } else if (cfg.type === 'gene') {
@@ -646,6 +661,47 @@ function uploadTrackData() {
         }
       }
     }
+  }
+
+  // Recompute per-chrom pan clamp as the intersection of all heatmap domains
+  // on that chrom. If any heatmap is at full-chrom (or there are no heatmaps),
+  // the clamp for that chrom is cleared.
+  for (const ch of Object.keys(panRange)) delete panRange[ch];
+  for (const cfg of cfgs) {
+    if (cfg.type !== 'heatmap') continue;
+    const d = td[cfg.id];
+    if (!d) continue;
+    for (const ch of Object.keys(d)) {
+      const csz = chromSizes[ch] || 1;
+      let lo = 0, hi = csz;
+      for (const info of Object.values(d[ch])) {
+        const s = info.xStart ?? 0;
+        const e = info.xEnd   ?? csz;
+        lo = Math.max(lo, s);
+        hi = Math.min(hi, e);
+      }
+      if (lo > 0 || hi < csz) {
+        const prev = panRange[ch];
+        panRange[ch] = prev
+          ? { lo: Math.max(prev.lo, lo), hi: Math.min(prev.hi, hi) }
+          : { lo, hi };
+      }
+    }
+  }
+
+  // Clamp current viewport into the new allowed range.
+  const lo = panLo(vp.chrom), hi = panHi(vp.chrom);
+  let ns = vp.start, ne = vp.end;
+  const range = ne - ns;
+  if (range >= hi - lo) {
+    ns = lo; ne = hi;
+  } else {
+    if (ns < lo) { ns = lo; ne = ns + range; }
+    if (ne > hi) { ne = hi; ns = ne - range; }
+  }
+  if (ns !== vp.start || ne !== vp.end) {
+    vp = { chrom: vp.chrom, start: ns, end: ne };
+    syncVp();
   }
 }
 
@@ -770,8 +826,11 @@ function drawFill(gpuData, vs, ve, tt, tb, colorPos, colorNeg, alpha) {
 function drawHeatmapBand(hmData, vs, ve, chromSz, tt, tb, color) {
   if (!hmData) return;
   const [r, g, b] = hexRGB(color);
-  const ts0 = vs / chromSz;
-  const ts1 = ve / chromSz;
+  const dom0 = hmData.xStart ?? 0;
+  const dom1 = hmData.xEnd   ?? chromSz;
+  const span = (dom1 - dom0) || 1;
+  const ts0 = (vs - dom0) / span;
+  const ts1 = (ve - dom0) / span;
   const xL = curXL;
   const xR = 1.0;
   const q = new Float32Array([
@@ -803,7 +862,19 @@ function drawHeatmapBand(hmData, vs, ve, chromSz, tt, tb, color) {
 // OVERLAY: scale bar + track labels (2D canvas)
 // ══════════════════════════════════════════════════════════════════════════════
 
-function fmtBp(bp) {
+function fmtBp(bp, step) {
+  // `step` is the tick spacing in bp; use it to pick a precision that makes
+  // consecutive tick labels distinguishable. Falls back to a value-based rule
+  // when no step is supplied.
+  if (step != null && step > 0) {
+    const pick = (unit) => {
+      const d = Math.max(0, Math.ceil(-Math.log10(step / unit)));
+      return (bp / unit).toFixed(d);
+    };
+    if (Math.abs(bp) >= 1e6 || step >= 1e6) return pick(1e6) + ' Mb';
+    if (Math.abs(bp) >= 1e3 || step >= 1e3) return pick(1e3) + ' kb';
+    return Math.round(bp) + ' bp';
+  }
   if (bp >= 1e6) return (bp / 1e6).toFixed(bp >= 10e6 ? 1 : 2) + ' Mb';
   if (bp >= 1e3) return (bp / 1e3).toFixed(bp >= 10e3 ? 1 : 2) + ' kb';
   return Math.round(bp) + ' bp';
@@ -963,7 +1034,7 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     octx.lineTo(px, SCALEBAR_H);
     octx.stroke();
     octx.fillStyle = th.muted || '#666688';
-    octx.fillText(fmtBp(t), px, 4);
+    octx.fillText(fmtBp(t, nice), px, 4);
   }
 
   // Position label
@@ -1475,8 +1546,8 @@ const onMove = e => {
   const bpPx  = (dragVp0.end - dragVp0.start) / W;
   const shift = -(e.clientX - dragX0) * bpPx;
   const range = dragVp0.end - dragVp0.start;
-  const csz   = chromSizes[dragVp0.chrom] || 1e9;
-  const ns    = clamp(dragVp0.start + shift, 0, csz - range);
+  const lo    = panLo(dragVp0.chrom), hi = panHi(dragVp0.chrom);
+  const ns    = clamp(dragVp0.start + shift, lo, hi - range);
   vp = { chrom: dragVp0.chrom, start: ns, end: ns + range };
   scheduleRender();
 };
@@ -1501,9 +1572,10 @@ glCanvas.addEventListener('wheel', e => {
   const anchor = vp.start + frac * range;
   const zs     = model.get('zoom_speed') || 1.3;
   const factor = e.deltaY > 0 ? zs : 1 / zs;
-  const csz    = chromSizes[vp.chrom] || 1e9;
-  const nr     = clamp(range * factor, 500, csz);
-  const ns     = clamp(anchor - frac * nr, 0, csz - nr);
+  const lo     = panLo(vp.chrom), hi = panHi(vp.chrom);
+  const span   = hi - lo;
+  const nr     = clamp(range * factor, 500, span);
+  const ns     = clamp(anchor - frac * nr, lo, hi - nr);
   vp = { chrom: vp.chrom, start: ns, end: ns + nr };
   scheduleRender();
   clearTimeout(wheelTimer);
@@ -1514,10 +1586,10 @@ glCanvas.addEventListener('dblclick', e => {
   const W     = glCanvas.offsetWidth - LABEL_W;
   const frac  = clamp(e.offsetX - LABEL_W, 0, W) / W;
   const range = vp.end - vp.start;
-  const csz   = chromSizes[vp.chrom] || 1e9;
+  const lo    = panLo(vp.chrom), hi = panHi(vp.chrom);
   const nr    = Math.max(500, range / 2);
   const anchor = vp.start + frac * range;
-  const ns    = clamp(anchor - frac * nr, 0, csz - nr);
+  const ns    = clamp(anchor - frac * nr, lo, hi - nr);
   vp = { chrom: vp.chrom, start: ns, end: ns + nr };
   scheduleRender(); syncVp(); updatePosBox();
 });
@@ -1526,17 +1598,18 @@ const onKey = e => {
   if (!el.matches(':hover, :focus-within')) return;
   let { start: ns, end: ne } = vp;
   const range = ne - ns;
-  const csz   = chromSizes[vp.chrom] || 1e9;
+  const lo    = panLo(vp.chrom), hi = panHi(vp.chrom);
+  const span  = hi - lo;
   const step  = range * 0.15;
-  if (e.key === 'ArrowRight') { ns = clamp(ns + step, 0, csz - range); ne = ns + range; }
-  if (e.key === 'ArrowLeft')  { ns = clamp(ns - step, 0, csz - range); ne = ns + range; }
+  if (e.key === 'ArrowRight') { ns = clamp(ns + step, lo, hi - range); ne = ns + range; }
+  if (e.key === 'ArrowLeft')  { ns = clamp(ns - step, lo, hi - range); ne = ns + range; }
   if (e.key === '+' || e.key === '=') {
     const nr = Math.max(500, range / 1.5), mid = (ns + ne) / 2;
-    ns = clamp(mid - nr/2, 0, csz - nr); ne = ns + nr;
+    ns = clamp(mid - nr/2, lo, hi - nr); ne = ns + nr;
   }
   if (e.key === '-') {
-    const nr = Math.min(csz, range * 1.5), mid = (ns + ne) / 2;
-    ns = clamp(mid - nr/2, 0, csz - nr); ne = ns + nr;
+    const nr = Math.min(span, range * 1.5), mid = (ns + ne) / 2;
+    ns = clamp(mid - nr/2, lo, hi - nr); ne = ns + nr;
   }
   if (ns !== vp.start || ne !== vp.end) {
     vp = { chrom: vp.chrom, start: ns, end: ne };
@@ -1547,7 +1620,7 @@ window.addEventListener('keydown', onKey);
 
 chromSel.addEventListener('change', () => {
   const ch = chromSel.value;
-  vp = { chrom: ch, start: 0, end: chromSizes[ch] };
+  vp = { chrom: ch, start: panLo(ch), end: panHi(ch) };
   scheduleRender(); syncVp(); updatePosBox();
 });
 
@@ -1558,16 +1631,22 @@ posInput.addEventListener('keydown', e => {
   const ch = m[1] || vp.chrom;
   const s = +m[2], en = +m[3];
   if (en > s && chromSizes[ch] != null) {
-    vp = { chrom: ch, start: s, end: en };
-    chromSel.value = ch; scheduleRender(); syncVp();
+    const lo = panLo(ch), hi = panHi(ch);
+    const ns = clamp(s,  lo, hi);
+    const ne = clamp(en, lo, hi);
+    if (ne > ns) {
+      vp = { chrom: ch, start: ns, end: ne };
+      chromSel.value = ch; scheduleRender(); syncVp();
+    }
   }
 });
 
 const doZoom = f => {
   const mid = (vp.start + vp.end) / 2;
-  const csz = chromSizes[vp.chrom] || 1e9;
-  const nr  = clamp((vp.end - vp.start) * f, 500, csz);
-  const ns  = clamp(mid - nr / 2, 0, csz - nr);
+  const lo  = panLo(vp.chrom), hi = panHi(vp.chrom);
+  const span = hi - lo;
+  const nr  = clamp((vp.end - vp.start) * f, 500, span);
+  const ns  = clamp(mid - nr / 2, lo, hi - nr);
   vp = { chrom: vp.chrom, start: ns, end: ns + nr };
   scheduleRender(); syncVp(); updatePosBox();
 };
@@ -1575,8 +1654,48 @@ const doZoom = f => {
 zoomInBtn.addEventListener ('click', () => doZoom(0.5));
 zoomOutBtn.addEventListener('click', () => doZoom(2.0));
 resetBtn.addEventListener  ('click', () => {
-  vp = { chrom: vp.chrom, start: 0, end: chromSizes[vp.chrom] };
+  vp = { chrom: vp.chrom, start: panLo(vp.chrom), end: panHi(vp.chrom) };
   scheduleRender(); syncVp(); updatePosBox();
+});
+
+function updateHeatmapBtns() {
+  const cfgs = model.get('track_configs') || [];
+  const hasHM = cfgs.some(c => c.type === 'heatmap');
+  hmRecBtn.style.display  = hasHM ? '' : 'none';
+  hmGlobBtn.style.display = hasHM ? '' : 'none';
+}
+updateHeatmapBtns();
+
+function randId() {
+  return 'cmd-' + Math.random().toString(36).slice(2) + '-' + Date.now().toString(36);
+}
+function invokeCmd(name, msg) {
+  // Match anywidget's command envelope so the @command-decorated Python
+  // handler is routed correctly — plain model.send(...) with a custom
+  // envelope does not reliably reach on_msg in VS Code's Jupyter.
+  model.send({ id: randId(), kind: 'anywidget-command', name, msg });
+}
+
+hmRecBtn.addEventListener('click', () => {
+  const cfgs = model.get('track_configs') || [];
+  for (const c of cfgs) {
+    if (c.type === 'heatmap') {
+      invokeCmd('_cmd_heatmap_recompute', {
+        tid:  c.id,
+        chrom: vp.chrom,
+        xStart: Math.floor(vp.start),
+        xEnd:   Math.ceil(vp.end),
+      });
+    }
+  }
+});
+hmGlobBtn.addEventListener('click', () => {
+  const cfgs = model.get('track_configs') || [];
+  for (const c of cfgs) {
+    if (c.type === 'heatmap') {
+      invokeCmd('_cmd_heatmap_reset', { tid: c.id });
+    }
+  }
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1586,7 +1705,7 @@ model.on('change:theme', () => { applyTheme(); scheduleRender(); });
 model.on('change:chrom_sizes', () => {
   chromSizes = model.get('chrom_sizes'); buildChromSel(); scheduleRender();
 });
-model.on('change:track_configs', () => scheduleRender());
+model.on('change:track_configs', () => { updateHeatmapBtns(); scheduleRender(); });
 model.on('change:track_data', () => { uploadTrackData(); scheduleRender(); });
 
 model.on('change:viewport', () => {
@@ -1674,6 +1793,102 @@ class SegmentViewer(anywidget.AnyWidget):
         self.chrom_sizes = {str(k): int(v) for k, v in chrom_sizes.items()}
         first = next(iter(self.chrom_sizes))
         self.viewport = {'chrom': first, 'start': 0, 'end': self.chrom_sizes[first]}
+        self._heatmap_sources: Dict[str, Dict] = {}
+        self._heatmap_global:  Dict[str, Dict] = {}
+
+    @anywidget.experimental.command
+    def _cmd_heatmap_recompute(self, msg, buffers):
+        self._rebin_heatmap_for_view(
+            msg['tid'],
+            str(msg['chrom']),
+            int(msg['xStart']),
+            int(msg['xEnd']),
+        )
+        return (None, [])
+
+    @anywidget.experimental.command
+    def _cmd_heatmap_reset(self, msg, buffers):
+        self._restore_heatmap_global(msg['tid'])
+        return (None, [])
+
+    def _bin_heatmap_region(
+        self,
+        tid: str,
+        chrom: str,
+        x_start: int,
+        x_end: int,
+        windows: int,
+    ) -> Dict:
+        """Rebin heatmap data for a single chrom over [x_start, x_end]."""
+        src = self._heatmap_sources.get(tid)
+        if src is None:
+            return {}
+        df         = src['df']
+        groups     = src['groups']
+        group_col  = src['group_col']
+        ind_col    = src['individual_col']
+        inds_by_gi = src['inds_by_group']
+
+        span = max(1, x_end - x_start)
+        out: Dict = {}
+
+        cdf_all = df[df['chrom'].astype(str) == chrom]
+        for gi, group in enumerate(groups):
+            gid  = str(gi)
+            inds = inds_by_gi[gid]
+            nInd = len(inds)
+            ind_idx = {ind: i for i, ind in enumerate(inds)}
+            gdf  = cdf_all[cdf_all[group_col] == group] if group_col else cdf_all
+
+            matrix = np.zeros((nInd, windows), dtype=np.uint8)
+            if not gdf.empty:
+                starts_arr = gdf['start'].to_numpy()
+                ends_arr   = gdf['end'].to_numpy()
+                inds_arr   = gdf[ind_col].to_numpy()
+                for k in range(len(gdf)):
+                    ii = ind_idx.get(inds_arr[k])
+                    if ii is None: continue
+                    s = max(starts_arr[k], x_start)
+                    e = min(ends_arr[k],   x_end)
+                    if e <= s: continue
+                    b0 = int(max(0, (s - x_start) / span * windows))
+                    b1 = int(min(windows - 1, (e - x_start) / span * windows)) + 1
+                    matrix[ii, b0:b1] = np.minimum(
+                        255, matrix[ii, b0:b1].astype(int) + 80
+                    )
+
+            out[gid] = {
+                'data':   self._pack_u8(matrix.ravel()),
+                'nInd':   nInd,
+                'nWin':   windows,
+                'xStart': int(x_start),
+                'xEnd':   int(x_end),
+            }
+        return out
+
+    def _rebin_heatmap_for_view(
+        self, tid: str, chrom: str, x_start: int, x_end: int,
+    ) -> None:
+        src = self._heatmap_sources.get(tid)
+        if src is None:
+            return
+        new_entry = self._bin_heatmap_region(
+            tid, chrom, x_start, x_end, src['windows']
+        )
+        if not new_entry:
+            return
+        hm = {**self.track_data.get(tid, {})}
+        hm[chrom] = new_entry
+        self.track_data = {**self.track_data, tid: hm}
+
+    def _restore_heatmap_global(self, tid: str) -> None:
+        cached = self._heatmap_global.get(tid)
+        if cached is None:
+            return
+        self.track_data = {**self.track_data, tid: {
+            ch: {gid: {**entry} for gid, entry in groups.items()}
+            for ch, groups in cached.items()
+        }}
 
     def _tid(self): return f't{len(self.track_configs)}'
 
@@ -1853,45 +2068,53 @@ class SegmentViewer(anywidget.AnyWidget):
             color_map = {g: self._PALETTE[i % len(self._PALETTE)]
                          for i, g in enumerate(groups)}
 
-        hm_out: Dict  = {}
+        # Resolve per-group individual ordering once — stable across rebins.
+        inds_by_group: Dict[str, List] = {}
         grp_meta: List = []
-
         for gi, group in enumerate(groups):
             gdf = df[df[group_col] == group] if group_col else df
             inds = list(gdf[individual_col].unique())
             if sort_by and sort_by in gdf.columns:
                 order = gdf.groupby(individual_col)[sort_by].first().sort_values().index
                 inds  = [i for i in order if i in set(inds)]
-            nInd = len(inds)
-            ind_idx = {ind: i for i, ind in enumerate(inds)}
-
-            for chrom_val, cdf in gdf.groupby('chrom'):
-                chrom = str(chrom_val)
-                csz   = self.chrom_sizes.get(chrom, int(cdf['end'].max()))
-                matrix = np.zeros((nInd, windows), dtype=np.uint8)
-
-                for _, row in cdf.iterrows():
-                    ii = ind_idx.get(row[individual_col])
-                    if ii is None: continue
-                    b0 = int(max(0, row['start'] / csz * windows))
-                    b1 = int(min(windows - 1, row['end']   / csz * windows)) + 1
-                    matrix[ii, b0:b1] = np.minimum(
-                        255, matrix[ii, b0:b1].astype(int) + 80
-                    )
-
-                if chrom not in hm_out: hm_out[chrom] = {}
-                hm_out[chrom][str(gi)] = {
-                    'data': self._pack_u8(matrix.ravel()),
-                    'nInd': nInd,
-                    'nWin': windows,
-                }
-
+            inds_by_group[str(gi)] = inds
             grp_meta.append({
                 'id':    str(gi),
                 'name':  str(group),
                 'color': color_map.get(group, self._PALETTE[gi % len(self._PALETTE)]),
-                'nInd':  nInd,
+                'nInd':  len(inds),
             })
+
+        # Retain source data so we can rebin on demand.
+        needed_cols = ['chrom', 'start', 'end', individual_col]
+        if group_col and group_col not in needed_cols:
+            needed_cols.append(group_col)
+        if sort_by and sort_by in df.columns and sort_by not in needed_cols:
+            needed_cols.append(sort_by)
+        self._heatmap_sources[tid] = {
+            'df':             df[needed_cols].copy(),
+            'groups':         groups,
+            'group_col':      group_col,
+            'individual_col': individual_col,
+            'sort_by':        sort_by,
+            'windows':        windows,
+            'inds_by_group':  inds_by_group,
+        }
+
+        # Build initial (whole-chromosome) binning via the helper.
+        hm_out: Dict = {}
+        for chrom_val in df['chrom'].astype(str).unique():
+            chrom = str(chrom_val)
+            csz   = self.chrom_sizes.get(chrom)
+            if csz is None:
+                csz = int(df.loc[df['chrom'].astype(str) == chrom, 'end'].max())
+            hm_out[chrom] = self._bin_heatmap_region(tid, chrom, 0, csz, windows)
+
+        # Cache global snapshot for cheap reset.
+        self._heatmap_global[tid] = {
+            ch: {gid: {**entry} for gid, entry in groups_.items()}
+            for ch, groups_ in hm_out.items()
+        }
 
         if height is None:
             total_rows = sum(g['nInd'] for g in grp_meta)
