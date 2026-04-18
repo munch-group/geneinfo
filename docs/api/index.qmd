@@ -26,6 +26,15 @@ ideograms (chrom_ideogram).
 | [ChromIdeogram](ChromIdeogram.qmd#geneinfo.plot.ChromIdeogram) | Child class of GenomeIdeogram for plotting single chromosome ideograms. |
 | [venn](venn.qmd#geneinfo.plot.venn) |  |
 
+## Tracks widget
+
+Widget for zooming/panning large chromosome tracks with gene annotation.
+
+
+| | |
+| --- | --- |
+| [Tracks](Tracks.qmd#geneinfo.widget.Tracks) | WebGL2 genomic segment viewer rendered as a Jupyter widget. |
+
 ## Gene coordinates
 
 These functions retrieve coordinates of named genes or genes in a chromosomal region.

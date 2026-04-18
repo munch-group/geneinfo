@@ -6,6 +6,7 @@ geneinfo.coords.gene_coords_region(
     start=None,
     end=None,
     assembly=None,
+    include_strand=False,
     as_dataframe=False,
 )
 ```

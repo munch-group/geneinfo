@@ -1,0 +1,895 @@
+# Tracks { #geneinfo.widget.Tracks }
+
+```python
+geneinfo.widget.Tracks(chrom_sizes, **kw)
+```
+
+WebGL2 genomic segment viewer rendered as a Jupyter widget.
+
+Build a stack of tracks by chaining the ``add_*_track`` methods, then
+display the instance directly in a notebook cell. All pan / zoom is
+uniform-only (zero CPU/GPU buffer work per frame); segment viewport
+culling uses sorted attribute-pointer offsets.
+
+## Track types {.doc-section .doc-section-track-types}
+
+:meth:`add_segment_track`
+    Instanced GPU rectangles with automatic level-of-detail (LOD)
+    density fallback when zoomed out.
+:meth:`add_heatmap_track`
+    R8 texture rendering; handles 10 k+ individuals at 60 fps.
+:meth:`add_gene_track`
+    Exon blocks plus intron connectors (drawn on the 2D overlay).
+:meth:`add_scatter_track`
+    Point cloud (``gl.POINTS``).
+:meth:`add_line_track`
+    Connected polyline per group (``gl.LINE_STRIP``).
+:meth:`add_fill_track`
+    Fill-between two curves with optional pos/neg colour split.
+:meth:`add_histogram_track`
+    Vertical bars with multi-resolution LOD.
+
+## Toolbar {.doc-section .doc-section-toolbar}
+
+The widget renders a single-row toolbar above the canvas:
+
+Chromosome dropdown
+    Switches the visible chromosome and resets the viewport to the
+    full chromosome span.
+Position box
+    Free-text region selector. Accepts ``chr1:1,000–2,000`` or
+    ``chr1:1000-2000`` (the chromosome prefix is optional and
+    defaults to the current one). Press ``Enter`` to jump.
+``＋``  *Zoom in*
+    Halves the visible window around its centre.
+``－``  *Zoom out*
+    Doubles the visible window around its centre (clamped to the
+    chromosome).
+``⌂``  *Reset view*
+    Restores the viewport to the full chromosome (or, when a
+    heatmap defines a tighter pan range, that range).
+``⟲``  *Recompute heatmap(s)*
+    Visible only when at least one heatmap track is present.
+    Re-bins every heatmap at the current viewport for higher
+    resolution. Routed through the ``_cmd_heatmap_recompute``
+    command to :meth:`_rebin_heatmap_for_view`.
+``◱``  *Restore global heatmap*
+    Visible only when at least one heatmap track is present.
+    Restores the original whole-chromosome heatmap pixels via
+    :meth:`_restore_heatmap_global`.
+``⧉``  *Snapshot*
+    Composites the WebGL and overlay canvases and writes a PNG to
+    the system clipboard (falls back to a file download when
+    clipboard access is denied). The button briefly flashes ``✓``
+    on success or ``!`` on failure.
+LOD badge
+    Read-only indicator showing the current segment-track render
+    mode: ``▬ segments`` when individual rectangles are drawn,
+    ``▒ density`` when the density LOD is active.
+
+## Pan and zoom {.doc-section .doc-section-pan-and-zoom}
+
+Mouse wheel
+    Scroll wheel zooms in/out anchored on the cursor's genomic
+    position. The zoom-step factor per wheel tick is
+    :attr:`zoom_speed`.
+Click-drag
+    Press and drag inside the plot area to pan along the
+    chromosome.
+Double-click
+    Halves the visible window around the click position (a faster
+    alternative to the ``＋`` button when targeting a specific
+    location).
+Keyboard (when the widget has focus or hover)
+    ``←`` / ``→`` pan by 15 % of the current window.
+    ``+`` / ``=`` zoom in by 1.5×; ``-`` zooms out by 1.5×.
+Tooltip
+    Hovering over a track displays a tooltip whose contents come
+    from the track's ``tip_fmt`` / ``tip_label``. The tooltip
+    disappears on ``mouseleave``.
+
+## Synchronised attributes {.doc-section .doc-section-synchronised-attributes}
+
+These traits round-trip between Python and the browser; assigning
+them from Python updates the rendered view immediately.
+
+chrom_sizes : dict of str to int
+    Chromosome name → length in base pairs. Set once via
+    :meth:`__init__`; re-assigning it rebuilds the dropdown and
+    the pan-clamp ranges.
+track_configs : list of dict
+    One config per track. Maintained by the ``add_*_track``
+    methods; do not mutate directly.
+track_data : dict
+    Track-id-keyed payloads consumed by the JS uploader. Maintained
+    by the ``add_*_track`` methods; do not mutate directly.
+viewport : dict
+    ``{'chrom': str, 'start': int, 'end': int}``. Use
+    :meth:`set_viewport` or :meth:`zoom_to` to change it from
+    Python; the JS side updates it in response to pan/zoom and
+    toolbar input.
+zoom_speed : float, default ``1.02``
+    Multiplicative zoom step per wheel-tick. Higher values zoom
+    faster.
+pan_speed : float, default ``1.0``
+    Multiplier for click-drag pan velocity (genomic units per CSS
+    pixel of mouse movement).
+theme : dict
+    Colour palette and layout knobs. See :data:`DARK_THEME` and
+    :data:`LIGHT_THEME` for the recognised keys; numeric values
+    like ``sidebar_w`` (CSS pixel width of the left label column)
+    live alongside the colour strings. Mutating the trait via
+    ``viewer.theme = {...}`` re-applies the theme without reload.
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+>>> viewer = Tracks(chrom_sizes={'chr1': 248_956_422})
+>>> (viewer
+...  .add_gene_track(assembly='hg38')
+...  .zoom_to('chr1', 50_000_000, window=10_000_000))
+>>> viewer  # display in a notebook cell
+```
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [add_fill_track](#geneinfo.widget.Tracks.add_fill_track) | Add a fill-between track. |
+| [add_gene_track](#geneinfo.widget.Tracks.add_gene_track) | Add a gene / exon annotation track. |
+| [add_heatmap_track](#geneinfo.widget.Tracks.add_heatmap_track) | Add a heatmap track — one row per individual, GPU texture rendering. |
+| [add_histogram_track](#geneinfo.widget.Tracks.add_histogram_track) | Add a histogram track — vertical bars centred on each ``x``. |
+| [add_line_track](#geneinfo.widget.Tracks.add_line_track) | Add a line track — one connected polyline per group. |
+| [add_scatter_track](#geneinfo.widget.Tracks.add_scatter_track) | Add a scatter track — point cloud rendered with ``gl.POINTS``. |
+| [add_segment_track](#geneinfo.widget.Tracks.add_segment_track) | Add a segment track rendered with GPU-instanced rectangles. |
+| [set_viewport](#geneinfo.widget.Tracks.set_viewport) | Move the viewport to a new chromosome and base-pair window. |
+| [zoom_to](#geneinfo.widget.Tracks.zoom_to) | Centre the viewport on a position with a fixed window width. |
+
+### add_fill_track { #geneinfo.widget.Tracks.add_fill_track }
+
+```python
+geneinfo.widget.Tracks.add_fill_track(
+    df,
+    name,
+    *,
+    x='pos',
+    y=None,
+    y_lo=None,
+    y_hi=None,
+    group_by=None,
+    color_map=None,
+    color_pos='C0',
+    color_neg='C3',
+    height=60,
+    y_range=None,
+    baseline=None,
+    step=None,
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add a fill-between track.
+
+Either supply ``y`` (fill from a single curve to ``baseline``) or
+both ``y_lo`` and ``y_hi`` (fill between two curves). When
+``baseline`` is set, the area above and below it can be drawn in
+distinct colours.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**df**]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Long-format frame with columns ``chrom``, the column named by ``x``, plus the relevant y column(s).
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Track display label shown in the left panel.
+
+<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'pos\'``]{.parameter-default}</code>
+
+:   Column for genomic position.
+
+<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column for a single y value. Fill extends from this curve to ``baseline``. Mutually exclusive with ``y_lo`` / ``y_hi``.
+
+<code>[**y_lo**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column for the lower y boundary.
+
+<code>[**y_hi**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column for the upper y boundary.
+
+<code>[**group_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column whose unique values become separate groups.
+
+<code>[**color_map**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``{group_value: '#rrggbb'}``. When omitted, group colours cycle through ``'C0'``..``'C9'``.
+
+<code>[**color_pos**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'C0\'``]{.parameter-default}</code>
+
+:   Colour for the region above ``baseline``. Resolved with :func:`resolve_color`.
+
+<code>[**color_neg**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'C3\'``]{.parameter-default}</code>
+
+:   Colour for the region below ``baseline``.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [60]{.parameter-default}</code>
+
+:   Track height in CSS pixels.
+
+<code>[**y_range**]{.parameter-name} [:]{.parameter-annotation-sep} [tuple of (float, float)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``(y_min, y_max)``. Auto-computed from data with 5% padding when omitted.
+
+<code>[**baseline**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Y value at which the positive / negative colour split occurs. Defaults to ``0`` in single-``y`` mode. In ``y_lo`` / ``y_hi`` mode it defaults to ``None``, which disables dual colouring (each group is drawn in a single colour from ``color_map``). Pass an explicit number in lo/hi mode to re-enable the split.
+
+<code>[**step**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Step mode for a staircase fill, matching matplotlib's ``fill_between(step=...)``. One of ``'pre'``, ``'post'``, ``'mid'``. ``None`` gives smooth linear interpolation.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available keys: ``{group}``, ``{lo}``, ``{hi}``, ``{x}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If both ``y`` and ``y_lo`` / ``y_hi`` are supplied or if ``step`` is not in ``{None, 'pre', 'post', 'mid'}``.
+
+### add_gene_track { #geneinfo.widget.Tracks.add_gene_track }
+
+```python
+geneinfo.widget.Tracks.add_gene_track(
+    genes_data=None,
+    exons_df=None,
+    *,
+    assembly=None,
+    name='Genes',
+    color=None,
+    height=None,
+    collapse=True,
+    highlight=None,
+    highlight_color=None,
+    highlight_fill_color=None,
+    highlight_spine_color=None,
+    highlight_outline_color=None,
+    highlight_label_color=None,
+    highlight_halo_color=None,
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add a gene / exon annotation track.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**genes_data**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`) or [pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Either a dict mapping chromosome to a list of ``(gene_name, chrom, start, end, strand, transcripts)`` tuples (as returned by ``geneinfo``), or a DataFrame with columns ``chrom``, ``start``, ``end``, ``name``, ``strand``. Mutually exclusive with ``assembly``; exactly one must be provided.
+
+<code>[**exons_df**]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Frame with ``chrom``, ``gene_name``, ``start``, ``end``. Only used with the DataFrame form of ``genes_data``.
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Assembly identifier (e.g. ``'hg38'``). When given, ``genes_data`` is fetched automatically via :func:`geneinfo.coords.gene_coords_region` for every chromosome in :func:`geneinfo.coords.chromosome_lengths`. Mutually exclusive with ``genes_data``.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'Genes\'``]{.parameter-default}</code>
+
+:   Track display label.
+
+<code>[**color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Exon block colour for non-highlighted genes (matplotlib colour spec). Falls back to ``theme['gene_exon']``.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Track height in CSS pixels. Defaults to the required number of rows (positive strand above, negative below, each with sub-lanes on overlap).
+
+<code>[**collapse**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   If True, merge exons across all transcripts into a single union set. If False, each transcript becomes its own row.
+
+<code>[**highlight**]{.parameter-name} [:]{.parameter-annotation-sep} [list of str or dict of str to list of str]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Either a list of gene names (treated as ``{'fill': [...]}``) or a dict mapping a property key to a list of gene names. Valid keys are ``'fill'``, ``'stroke'``, ``'outline'``, ``'color'``, ``'bold'``, ``'italic'``, ``'underline'``, ``'halo'``. A gene may appear under multiple keys; all applicable properties are applied independently.
+
+<code>[**highlight_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Deprecated alias for ``highlight_fill_color``. Retained for backward compatibility with the list form of ``highlight``.
+
+<code>[**highlight_fill_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Exon fill colour for ``'fill'`` highlights.
+
+<code>[**highlight_spine_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Backbone colour for ``'stroke'`` highlights.
+
+<code>[**highlight_outline_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Exon outline colour for ``'outline'`` highlights.
+
+<code>[**highlight_label_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Gene-name text colour for ``'color'`` highlights.
+
+<code>[**highlight_halo_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Halo rectangle colour (may include alpha) for ``'halo'`` highlights.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available keys: ``{name}``, ``{strand}``, ``{start}``, ``{end}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If neither or both of ``genes_data`` and ``assembly`` are given, or if ``highlight`` carries an unknown property key.
+
+### add_heatmap_track { #geneinfo.widget.Tracks.add_heatmap_track }
+
+```python
+geneinfo.widget.Tracks.add_heatmap_track(
+    df,
+    name,
+    *,
+    individual_col='sample',
+    group_col=None,
+    sort_by=None,
+    color_map=None,
+    height=None,
+    windows=1000,
+    alpha=0.5,
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add a heatmap track — one row per individual, GPU texture rendering.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**df**]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Long-format frame with columns ``chrom``, ``start``, ``end``, and at least the column named by ``individual_col``.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Track display label shown in the left panel.
+
+<code>[**individual_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'sample\'``]{.parameter-default}</code>
+
+:   Column identifying each haplotype / sample row.
+
+<code>[**group_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column for grouping individuals into coloured bands.
+
+<code>[**sort_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column used to sort individuals within each group.
+
+<code>[**color_map**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``{group_value: '#rrggbb'}``. When omitted, colours cycle through the built-in palette in group order.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Track height in CSS pixels. Defaults to ``max(90, n_individuals)``, i.e. at least one pixel per row.
+
+<code>[**windows**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1000]{.parameter-default}</code>
+
+:   Number of pre-computed density bins covering the whole chromosome.
+
+<code>[**alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.5]{.parameter-default}</code>
+
+:   Per-segment opacity (matplotlib-style). Each overlapping segment adds ``alpha`` to the cell shading, clamped at ``1.0``. Must lie in ``(0, 1]``.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available keys: ``{group}``, ``{individual}``, ``{nInd}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If ``alpha`` is not in ``(0, 1]``.
+
+### add_histogram_track { #geneinfo.widget.Tracks.add_histogram_track }
+
+```python
+geneinfo.widget.Tracks.add_histogram_track(
+    df,
+    name,
+    *,
+    x='pos',
+    y='value',
+    group_by=None,
+    color_map=None,
+    height=60,
+    y_range=None,
+    bin_width=None,
+    stack=True,
+    density_windows=(256, 1024, 4096),
+    aggregate='mean',
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add a histogram track — vertical bars centred on each ``x``.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**df**]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Long-format frame with columns ``chrom``, the column named by ``x``, and the column named by ``y``.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Track display label shown in the left panel.
+
+<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'pos\'``]{.parameter-default}</code>
+
+:   Column for genomic position (the bin centre).
+
+<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'value\'``]{.parameter-default}</code>
+
+:   Column for bar height.
+
+<code>[**group_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column whose unique values become separate groups.
+
+<code>[**color_map**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``{group_value: '#rrggbb'}``. Defaults to the built-in palette cycled in group order.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [60]{.parameter-default}</code>
+
+:   Track height in CSS pixels.
+
+<code>[**y_range**]{.parameter-name} [:]{.parameter-annotation-sep} [tuple of (float, float)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``(y_min, y_max)``. Auto-computed from data with 5% padding when omitted; always includes the baseline ``0``.
+
+<code>[**bin_width**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Width of each bar in base pairs at the finest zoom level. Auto-computed from the median spacing of ``x`` when omitted.
+
+<code>[**stack**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   If True, group contributions at each x-bin stack on top of each other (positive values above ``0``, negative below). Group order determines stacking order. Set to False to overlap bars from different groups instead.
+
+<code>[**density_windows**]{.parameter-name} [:]{.parameter-annotation-sep} [tuple of int or int]{.parameter-annotation} [ = ]{.parameter-default-sep} [``(256, 1024, 4096)``]{.parameter-default}</code>
+
+:   Bin counts for the multi-resolution LOD, matching the segment-track convention. When zoomed out, the renderer picks the finest level whose bin maps to at least ~2 CSS pixels, keeping the visible bar count bounded by chromosome size. Pass an empty tuple to disable LOD (always render the original bars).
+
+<code>[**aggregate**]{.parameter-name} [:]{.parameter-annotation-sep} [(\'mean\', \'sum\', \'max\')]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'mean\']{.parameter-default}</code>
+
+:   How to combine multiple input bins that fall inside a single LOD bin. Only relevant when LOD is engaged.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available keys: ``{group}``, ``{value}``, ``{x}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If ``aggregate`` is not one of ``'mean'``, ``'sum'``, ``'max'``.
+
+### add_line_track { #geneinfo.widget.Tracks.add_line_track }
+
+```python
+geneinfo.widget.Tracks.add_line_track(
+    df,
+    name,
+    *,
+    x='pos',
+    y='value',
+    group_by=None,
+    color_map=None,
+    height=60,
+    y_range=None,
+    step=None,
+    alpha=None,
+    color=None,
+    c=None,
+    lw=None,
+    linewidth=None,
+    ls=None,
+    linestyle=None,
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add a line track — one connected polyline per group.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**df**]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Long-format frame with columns ``chrom``, the column named by ``x``, the column named by ``y``, and any optional ``group_by`` column.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Track display label shown in the left panel.
+
+<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'pos\'``]{.parameter-default}</code>
+
+:   Column for genomic position.
+
+<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'value\'``]{.parameter-default}</code>
+
+:   Column for the y-axis value.
+
+<code>[**group_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column whose unique values become separate groups (each drawn as its own polyline).
+
+<code>[**color_map**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``{group_value: '#rrggbb'}``. Overridden by ``color``/``c`` when those are supplied.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [60]{.parameter-default}</code>
+
+:   Track height in CSS pixels.
+
+<code>[**y_range**]{.parameter-name} [:]{.parameter-annotation-sep} [tuple of (float, float)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``(y_min, y_max)``. Auto-computed from data with 5% padding when omitted.
+
+<code>[**step**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Step mode for a staircase line, matching matplotlib's ``step`` parameter. One of ``'pre'``, ``'post'``, ``'mid'``. ``None`` gives a straight-line interpolation between samples.
+
+<code>[**alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Opacity in ``[0, 1]`` applied to every group. Defaults to ``1.0``. If ``color`` carries an alpha channel and ``alpha`` is not given, that alpha is lifted out.
+
+<code>[**color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Any](`typing.Any`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Single matplotlib-style colour applied to all groups. Overrides ``color_map``. Examples: ``'C0'``, ``'red'``, ``'#ff8800'``, ``'#ff880040'``, ``(1, 0, 0, 0.5)``.
+
+<code>[**c**]{.parameter-name} [:]{.parameter-annotation-sep} [[Any](`typing.Any`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Single matplotlib-style colour applied to all groups. Overrides ``color_map``. Examples: ``'C0'``, ``'red'``, ``'#ff8800'``, ``'#ff880040'``, ``(1, 0, 0, 0.5)``.
+
+<code>[**lw**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Accepted only as ``None`` or ``1`` — WebGL2 fixes line width at 1 device pixel. Other values raise :class:`NotImplementedError`. For thicker bands use :meth:`add_fill_track`.
+
+<code>[**linewidth**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Accepted only as ``None`` or ``1`` — WebGL2 fixes line width at 1 device pixel. Other values raise :class:`NotImplementedError`. For thicker bands use :meth:`add_fill_track`.
+
+<code>[**ls**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Accepted only as ``None`` / ``'-'`` / ``'solid'``. Dashed and dotted lines raise :class:`NotImplementedError`.
+
+<code>[**linestyle**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Accepted only as ``None`` / ``'-'`` / ``'solid'``. Dashed and dotted lines raise :class:`NotImplementedError`.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available keys: ``{group}``, ``{value}``, ``{x}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[TypeError](`TypeError`)]{.parameter-annotation}</code>
+
+:   If conflicting aliases are passed (e.g. both ``lw`` and ``linewidth``, or both ``color`` and ``c``).
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If ``alpha`` is outside ``[0, 1]`` or ``step`` is not in ``{None, 'pre', 'post', 'mid'}``.
+
+<code>[:]{.parameter-annotation-sep} [[NotImplementedError](`NotImplementedError`)]{.parameter-annotation}</code>
+
+:   For ``linewidth`` other than ``None`` / ``1`` or ``linestyle`` other than ``None`` / ``'-'`` / ``'solid'``.
+
+### add_scatter_track { #geneinfo.widget.Tracks.add_scatter_track }
+
+```python
+geneinfo.widget.Tracks.add_scatter_track(
+    df,
+    name,
+    *,
+    x='pos',
+    y='value',
+    group_by=None,
+    color_map=None,
+    height=60,
+    y_range=None,
+    point_size=3,
+    alpha=None,
+    color=None,
+    c=None,
+    s=None,
+    size=None,
+    marker=None,
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add a scatter track — point cloud rendered with ``gl.POINTS``.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**df**]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Long-format frame with columns ``chrom``, the column named by ``x``, the column named by ``y``, and any optional ``group_by`` column.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Track display label shown in the left panel.
+
+<code>[**x**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'pos\'``]{.parameter-default}</code>
+
+:   Column for genomic position.
+
+<code>[**y**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'value\'``]{.parameter-default}</code>
+
+:   Column for the y-axis value.
+
+<code>[**group_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column whose unique values become separate groups (each drawn with its own colour).
+
+<code>[**color_map**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``{group_value: '#rrggbb'}``. Overridden by ``color``/``c`` when those are supplied.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [60]{.parameter-default}</code>
+
+:   Track height in CSS pixels.
+
+<code>[**y_range**]{.parameter-name} [:]{.parameter-annotation-sep} [tuple of (float, float)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``(y_min, y_max)``. Auto-computed from data with 5% padding when omitted.
+
+<code>[**point_size**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [3]{.parameter-default}</code>
+
+:   Point diameter in CSS pixels. Aliases: ``s`` / ``size``.
+
+<code>[**alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Opacity in ``[0, 1]`` applied to every group. Defaults to ``0.85`` (the prior visual). If ``color`` carries an alpha channel and ``alpha`` is not given, that alpha is lifted out.
+
+<code>[**color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Any](`typing.Any`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Single matplotlib-style colour applied to all groups. Overrides ``color_map``. Examples: ``'C0'``, ``'red'``, ``'#ff8800'``, ``'#ff880040'``, ``(1, 0, 0, 0.5)``.
+
+<code>[**c**]{.parameter-name} [:]{.parameter-annotation-sep} [[Any](`typing.Any`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Single matplotlib-style colour applied to all groups. Overrides ``color_map``. Examples: ``'C0'``, ``'red'``, ``'#ff8800'``, ``'#ff880040'``, ``(1, 0, 0, 0.5)``.
+
+<code>[**s**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Aliases for ``point_size``.
+
+<code>[**size**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Aliases for ``point_size``.
+
+<code>[**marker**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Accepted only as ``None`` / ``'.'`` / ``'s'`` (filled square, the only shape WebGL ``gl.POINTS`` produces). Other values raise :class:`NotImplementedError` rather than silently rendering a square.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available keys: ``{group}``, ``{value}``, ``{x}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[TypeError](`TypeError`)]{.parameter-annotation}</code>
+
+:   If conflicting aliases are passed (e.g. both ``s`` and ``point_size``, or both ``color`` and ``c``).
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If ``alpha`` is outside ``[0, 1]``.
+
+<code>[:]{.parameter-annotation-sep} [[NotImplementedError](`NotImplementedError`)]{.parameter-annotation}</code>
+
+:   If ``marker`` is anything other than ``None`` / ``'.'`` / ``'s'``.
+
+### add_segment_track { #geneinfo.widget.Tracks.add_segment_track }
+
+```python
+geneinfo.widget.Tracks.add_segment_track(
+    df,
+    name,
+    *,
+    group_by=None,
+    individual_col=None,
+    color_map=None,
+    height=None,
+    density_windows=(256, 1024, 4096),
+    stack=False,
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add a segment track rendered with GPU-instanced rectangles.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**df**]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Long-format frame with columns ``chrom``, ``start``, ``end``, and any of the optional ``group_by`` / ``individual_col`` columns referenced below.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Track display label shown in the left panel.
+
+<code>[**group_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column whose unique values become separate sub-rows.
+
+<code>[**individual_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Column identifying individuals. When provided, each individual gets its own horizontal row within the group band (stacked haplotype view); track height auto-adapts so each row is at least 1 px.
+
+<code>[**color_map**]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   ``{group_value: '#rrggbb'}``. When omitted, colours cycle through the built-in palette in group order.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Track height in CSS pixels. Defaults to ``max(90, nrows)``, i.e. at least one pixel per row.
+
+<code>[**density_windows**]{.parameter-name} [:]{.parameter-annotation-sep} [tuple of int or int]{.parameter-annotation} [ = ]{.parameter-default-sep} [``(256, 1024, 4096)``]{.parameter-default}</code>
+
+:   Bin counts for the multi-resolution density LOD. A single ``int`` is treated as one level.
+
+<code>[**stack**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   If True, groups' density contributions stack on top of each other in the zoomed-out density view (rather than overlapping). Normalisation uses the combined max across all bins. Requires ``group_by`` with more than one group; ignored when ``individual_col`` is set.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available key: ``{group}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+### set_viewport { #geneinfo.widget.Tracks.set_viewport }
+
+```python
+geneinfo.widget.Tracks.set_viewport(chrom, start, end)
+```
+
+Move the viewport to a new chromosome and base-pair window.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Chromosome name (must exist in the widget's ``chrom_sizes``).
+
+<code>[**start**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation}</code>
+
+:   Inclusive start position in base pairs. Negative values are clamped to ``0``.
+
+<code>[**end**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation}</code>
+
+:   Exclusive end position in base pairs. Values past the end of the chromosome are clamped to its length.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+### zoom_to { #geneinfo.widget.Tracks.zoom_to }
+
+```python
+geneinfo.widget.Tracks.zoom_to(chrom, center, window=1000000)
+```
+
+Centre the viewport on a position with a fixed window width.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Chromosome name.
+
+<code>[**center**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation}</code>
+
+:   Genomic position to centre on, in base pairs.
+
+<code>[**window**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``1_000_000``]{.parameter-default}</code>
+
+:   Total window width in base pairs. The viewport is set to ``[center - window // 2, center + window // 2)`` then clamped to the chromosome bounds by :meth:`set_viewport`.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.

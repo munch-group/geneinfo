@@ -306,9 +306,9 @@ Draws an annotation with an arrow to a point from a text box.
 ```python
 geneinfo.plot.GenomeIdeogram.draw_chromosomes(
     base=4,
-    height=2,
-    facecolor='#EBEAEA',
-    edgecolor='black',
+    height=None,
+    facecolor=None,
+    edgecolor=None,
     linewidth=0.7,
     hide_sex_chrom=False,
     **kwargs,
@@ -323,15 +323,15 @@ Draws chromosome ideograms.
 
 :   Placement of ideogram lower edge on y-axis scale, by default 4
 
-<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [2]{.parameter-default}</code>
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Height of ideogram on y-axis scale, by default 2
+:   Height of ideogram on y-axis scale, by default 1
 
-<code>[**facecolor**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'#EBEAEA\']{.parameter-default}</code>
+<code>[**facecolor**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
 :   Ideogram fill color, by default '#EBEAEA'
 
-<code>[**edgecolor**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'black\']{.parameter-default}</code>
+<code>[**edgecolor**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
 :   Ideogram edge color, by default 'black'
 

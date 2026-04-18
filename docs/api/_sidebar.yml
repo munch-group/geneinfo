@@ -13,6 +13,9 @@ website:
       - api/venn.qmd
       section: Gene plots
     - contents:
+      - api/Tracks.qmd
+      section: Tracks widget
+    - contents:
       - api/gene_coords.qmd
       - api/gene_coords_region.qmd
       section: Gene coordinates

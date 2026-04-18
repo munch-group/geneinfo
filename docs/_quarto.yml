@@ -65,7 +65,8 @@ website:
             - pages/chrom_ideograms.ipynb              
             - pages/venn.ipynb              
             - pages/string_nets.ipynb
-            - pages/go_graphs.ipynb                   
+            - pages/go_graphs.ipynb  
+            - pages/tracks_widget.ipynb                 
         - section: "Enrichment"
           contents:
             - pages/go_info.ipynb                   
@@ -126,6 +127,12 @@ quartodoc:
         - GenomeIdeogram
         - ChromIdeogram
         - venn
+    - title: Tracks widget
+      desc: |
+        Widget for zooming/panning large chromosome tracks with gene annotation.
+      package: geneinfo.widget
+      contents:
+        - Tracks
     - title: Gene coordinates
       desc: |
         These functions retrieve coordinates of named genes or genes in a chromosomal region.
