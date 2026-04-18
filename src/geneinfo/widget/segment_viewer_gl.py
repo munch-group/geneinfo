@@ -89,9 +89,9 @@ DARK_THEME: Dict[str, str] = {
     'input_bg':     '#2f2f2f',
     'input_fg':     '#f2f2f8',
     'input_border': '#4a4a55',
-    'accent':       '#88a0ff',
-    'muted':        '#9090a0',
-    'label':        '#c0c0d0',
+    'focus_border': '#88a0ff',
+    'axis_text':    '#9090a0',
+    'track_label':  '#c0c0d0',
     'gene_exon':    '#88c0ee',
     'gene_spine':   '#a8a8c0',
     'gene_label':   '#d0d0e0',
@@ -112,12 +112,12 @@ LIGHT_THEME: Dict[str, str] = {
     'input_bg':     '#ffffff',
     'input_fg':     '#1a1a2e',
     'input_border': '#c0c0cc',
-    'accent':       '#3355dd',
-    'muted':        '#888899',
-    'label':        '#555566',
+    'focus_border': '#3355dd',
+    'axis_text':    '#888899',
+    'track_label':  '#555566',
     'gene_exon':    '#4488cc',
     'gene_spine':   '#666688',
-    'gene_label':   '#9090c0',
+    'gene_label':   '#000000',
     'highlight_fill':    '#e03a4e',
     'highlight_spine':   '#d80ce6',
     'highlight_outline': '#000000',
@@ -208,7 +208,7 @@ _CSS = """
     flex-wrap: wrap;
     min-height: 32px;
 }
-.sv-label-sm { font-size: 10px; color: var(--sv-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.sv-label-sm { font-size: 10px; color: var(--sv-axis-text); letter-spacing: 0.08em; text-transform: uppercase; }
 .sv-toolbar select, .sv-toolbar input {
     padding: 3px 7px;
     border: 1px solid var(--sv-input-border);
@@ -221,7 +221,7 @@ _CSS = """
     transition: border-color 0.12s;
 }
 .sv-toolbar input { width: 210px; }
-.sv-toolbar select:focus, .sv-toolbar input:focus { border-color: var(--sv-accent); }
+.sv-toolbar select:focus, .sv-toolbar input:focus { border-color: var(--sv-focus-border); }
 .sv-btn {
     padding: 2px 9px;
     border: 1px solid var(--sv-input-border);
@@ -234,7 +234,7 @@ _CSS = """
     line-height: 1.3;
     transition: background 0.1s, border-color 0.1s;
 }
-.sv-btn:hover { background: var(--sv-panel); border-color: var(--sv-accent); }
+.sv-btn:hover { background: var(--sv-panel); border-color: var(--sv-focus-border); }
 .sv-sep { flex: 1; }
 .sv-lod-badge {
     font-size: 9px;
@@ -242,7 +242,7 @@ _CSS = """
     border-radius: 10px;
     background: var(--sv-bg);
     border: 1px solid var(--sv-input-border);
-    color: var(--sv-muted);
+    color: var(--sv-axis-text);
     letter-spacing: 0.06em;
 }
 .sv-wrap {
@@ -344,9 +344,9 @@ function applyTheme() {
   root.setProperty('--sv-input-bg',     t.input_bg     || '#0d0d14');
   root.setProperty('--sv-input-fg',     t.input_fg     || '#c0c0dc');
   root.setProperty('--sv-input-border', t.input_border || '#33334a');
-  root.setProperty('--sv-accent',       t.accent       || '#4466ee');
-  root.setProperty('--sv-muted',        t.muted        || '#666688');
-  root.setProperty('--sv-label',        t.label        || '#9090c0');
+  root.setProperty('--sv-focus-border', t.focus_border || '#4466ee');
+  root.setProperty('--sv-axis-text',    t.axis_text    || '#666688');
+  root.setProperty('--sv-track-label',  t.track_label  || '#9090c0');
 }
 applyTheme();
 
@@ -1111,8 +1111,8 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   const entry  = geneData?.[cfg.id]?.[vp.chrom];
   const genes  = entry?.records ?? (Array.isArray(entry) ? entry : []);
   const color      = cfg.color     || th.gene_exon  || '#4488cc';
-  const spineBase  = th.gene_spine || th.muted      || '#666688';
-  const labelBase  = th.gene_label || th.label      || '#9090c0';
+  const spineBase  = th.gene_spine || th.axis_text   || '#666688';
+  const labelBase  = th.gene_label || th.track_label || '#9090c0';
   const hlS    = cfg.highlightStyles || {};
   const fillColor    = hlS.fillColor    || cfg.highlightColor || th.highlight_fill    || '#e03a4e';
   const spineColor   = hlS.spineColor   || th.highlight_spine   || '#d80ce6';
@@ -1317,7 +1317,7 @@ function drawYAxis(cfg, trackY) {
   octx.font         = '8px monospace';
   octx.textAlign    = 'right';
   octx.textBaseline = 'middle';
-  octx.fillStyle    = th.muted || '#666688';
+  octx.fillStyle    = th.axis_text || '#666688';
   octx.strokeStyle  = th.border || '#252530';
   octx.lineWidth    = 0.5;
   for (let i = 0; i <= nTicks; i++) {
@@ -1379,7 +1379,7 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     octx.moveTo(px, SCALEBAR_H - 5);
     octx.lineTo(px, SCALEBAR_H);
     octx.stroke();
-    octx.fillStyle = th.muted || '#666688';
+    octx.fillStyle = th.axis_text || '#666688';
     octx.fillText(fmtBp(t, nice), px, 4);
   }
 
@@ -1406,7 +1406,7 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     octx.beginPath();
     octx.rect(0, cssY, LABEL_W - 4, cfg.height);
     octx.clip();
-    octx.fillStyle    = th.label || '#9090c0';
+    octx.fillStyle    = th.track_label || '#9090c0';
     octx.font         = 'bold 10px monospace';
     octx.textAlign    = 'left';
     octx.textBaseline = 'top';
@@ -2172,9 +2172,9 @@ class Tracks(anywidget.AnyWidget):
         'input_bg':     '#0d0d14',
         'input_fg':     '#c0c0dc',
         'input_border': '#33334a',
-        'accent':       '#4466ee',
-        'muted':        '#666688',
-        'label':        '#9090c0',
+        'focus_border': '#4466ee',
+        'axis_text':    '#666688',
+        'track_label':  '#9090c0',
         'gene_exon':    '#4488cc',
         'gene_spine':   '#666688',
         'gene_label':   '#9090c0',
@@ -2627,9 +2627,10 @@ class Tracks(anywidget.AnyWidget):
 
     def add_gene_track(
         self,
-        genes_data,
+        genes_data=None,
         exons_df=None,
         *,
+        assembly: Optional[str] = None,
         name: str = 'Genes',
         color: Optional[str] = None,
         height: Optional[int] = None,
@@ -2653,8 +2654,15 @@ class Tracks(anywidget.AnyWidget):
                           (gene_name, chrom, start, end, strand, transcripts)
                           tuples (as returned by geneinfo), or a DataFrame with
                           [chrom, start, end, name, strand].
+                          Mutually exclusive with ``assembly``; exactly one
+                          must be provided.
         exons_df        : Optional DataFrame with [chrom, gene_name, start,
                           end].  Only used with the DataFrame form of genes_data.
+        assembly        : Assembly identifier (e.g. ``'hg38'``). If given,
+                          ``genes_data`` is fetched automatically via
+                          ``gene_coords_region`` for every chromosome in
+                          ``chromosome_lengths(assembly)``. Mutually exclusive
+                          with ``genes_data``.
         name            : Track display label.
         color           : Exon block colour for non-highlighted genes.
                           If not given, falls back to ``theme['gene_exon']``.
@@ -2683,6 +2691,22 @@ class Tracks(anywidget.AnyWidget):
                           Available keys: ``{name}``, ``{strand}``, ``{start}``,
                           ``{end}``.
         """
+        if (genes_data is None) == (assembly is None):
+            raise ValueError(
+                "add_gene_track requires exactly one of `genes_data` or "
+                "`assembly` to be specified."
+            )
+
+        if assembly is not None:
+            from ..coords import gene_coords_region, chromosome_lengths
+            chrom_names, _ = zip(*chromosome_lengths(assembly=assembly))
+            genes_data = {
+                chrom: gene_coords_region(
+                    chrom, assembly=assembly, include_strand=True
+                )
+                for chrom in chrom_names
+            }
+
         # Resolve matplotlib-style colour specs (e.g. 'C0', named colours).
         color                   = resolve_color(color)
         highlight_color         = resolve_color(highlight_color)
@@ -3059,8 +3083,8 @@ class Tracks(anywidget.AnyWidget):
         y_hi: Optional[str] = None,
         group_by: Optional[str] = None,
         color_map: Optional[Dict] = None,
-        color_pos: Optional[str] = None,
-        color_neg: Optional[str] = None,
+        color_pos: Optional[str] = 'C0',
+        color_neg: Optional[str] = 'C3',
         height: int = 60,
         y_range: Optional[Tuple[float, float]] = None,
         baseline: Optional[float] = None,
@@ -3088,13 +3112,19 @@ class Tracks(anywidget.AnyWidget):
         y_hi      : Column for upper y boundary.
         group_by  : Column whose unique values become separate groups.
         color_map : {group_value: '#rrggbb'} — used for both pos/neg if
-                    color_pos/color_neg not specified.
-        color_pos : Colour for region above baseline.
-        color_neg : Colour for region below baseline.
+                    color_pos/color_neg not specified.  Defaults to the
+                    matplotlib cycle ``'C0'``..``'C9'`` (cycled) when not
+                    given.
+        color_pos : Colour for region above baseline.  Default ``'C0'``.
+        color_neg : Colour for region below baseline.  Default ``'C3'``.
         height    : Track height in CSS px.
         y_range   : (yMin, yMax) — auto-computed from data if None.
         baseline  : Y value at which pos/neg colours switch.  Defaults to
-                    0 when *y* is used, or 0.0 when *y_lo*/*y_hi* are used.
+                    0 when *y* is used.  In *y_lo*/*y_hi* mode it defaults
+                    to ``None``, which disables dual colouring — each group
+                    is drawn in a single colour from ``color_map`` (or the
+                    ``'C0'``..``'C9'`` cycle).  Pass an explicit number in
+                    lo/hi mode to re-enable pos/neg split colouring.
         step      : Step mode for staircase fill, matching matplotlib's
                     ``fill_between(step=...)``.  One of ``'pre'``,
                     ``'post'``, or ``'mid'``.  None (default) gives smooth
@@ -3118,8 +3148,8 @@ class Tracks(anywidget.AnyWidget):
                 y_lo = 'lo'
             if y_hi is None:
                 y_hi = 'hi'
-            if baseline is None:
-                baseline = 0.0
+            # In lo/hi mode, leave baseline as None unless the user gave one.
+            # No baseline -> no pos/neg split, single colour per group.
 
         tid = self._tid()
         if group_by and group_by in df.columns:
@@ -3128,8 +3158,9 @@ class Tracks(anywidget.AnyWidget):
             groups = ['all']
             group_by = None
 
+        default_palette = [resolve_color(f'C{i}') for i in range(10)]
         if color_map is None:
-            color_map = {g: self._PALETTE[i % len(self._PALETTE)]
+            color_map = {g: default_palette[i % len(default_palette)]
                          for i, g in enumerate(groups)}
 
         if y_range is not None:
@@ -3202,16 +3233,20 @@ class Tracks(anywidget.AnyWidget):
                     arr[0::3] = sx; arr[1::3] = slo; arr[2::3] = shi
                 fill_out[chrom][gid] = self._pack_f32(arr)
 
+        dual = baseline is not None
+
+        def _group_cfg(i, g):
+            base = color_map.get(g, default_palette[i % len(default_palette)])
+            entry = {'id': str(i), 'name': str(g), 'color': base}
+            if dual:
+                entry['colorPos'] = color_pos or base
+                entry['colorNeg'] = color_neg or '#888888'
+            return entry
+
         cfg = {
             'id': tid, 'type': 'fill', 'name': name, 'height': height,
             'yMin': yMin, 'yMax': yMax, 'baseline': baseline,
-            'groups': [
-                {'id': str(i), 'name': str(g),
-                 'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)]),
-                 'colorPos': color_pos or color_map.get(g, self._PALETTE[i % len(self._PALETTE)]),
-                 'colorNeg': color_neg or '#888888'}
-                for i, g in enumerate(groups)
-            ],
+            'groups': [_group_cfg(i, g) for i, g in enumerate(groups)],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }

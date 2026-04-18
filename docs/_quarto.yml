@@ -6,7 +6,7 @@ project:
   #   - objects-test.txt
 
 execute:
-  freeze: auto
+  # freeze: auto
   echo: true
 
 metadata-files:
@@ -90,6 +90,7 @@ format:
     # highlight-style: arrow
     mermaid:
       theme: neutral 
+    embed-resources: true      
 
 quartodoc:
   package: geneinfo

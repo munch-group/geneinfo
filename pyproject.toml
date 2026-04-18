@@ -72,6 +72,7 @@ quartodoc = "*"
 geneinfo = "*"
 vscodenb = ">=0.1.34,<0.2"
 pyarrow = ">=23.0.1,<24"
+nbdime = ">=4.0.4,<5"
 
 
 [tool.pixi.environments]

@@ -130,8 +130,64 @@ def centromere_coords(assembly:str) -> List[Tuple[str, int, int]]:
     # df.sort_values('chrom', key=lambda sr: [chrom_sort_key(x) for x in sr]).reset_index(drop=True)
 
 
+# @shelve_it()
+# def gene_coords_region(chrom=None, start=None, end=None, assembly=None, as_dataframe=False):
+#     """
+#     Gets gene structure information for genes in a chromosomal region.
+
+#     Parameters
+#     ----------
+#     chrom : 
+#         Chromosome identifier
+#     start : 
+#         Start of region
+#     end : 
+#         End of region (end base not included)
+#     assembly : 
+#         Genome assembly as USCS genome identifier. E.g. hg38 or rheMac10
+#     as_dataframe : 
+#         Return dataframe instead of list of tuples, by default False
+
+#     Returns
+#     -------
+#     :
+#         List of gene information. Each gene is a tuple with the following elements:
+#         - gene name
+#         - gene start
+#         - gene end
+#         - list of list of exons (start, end) for a transcript
+#     """    
+#     assert assembly is not None
+#     api_url = f'https://api.genome.ucsc.edu/getData/track?genome={assembly};track=ncbiRefSeq;chrom={chrom}'
+#     if start is not None and end is not None:
+#         api_url += f';start={start};end={end}'
+    
+#     response = requests.get(api_url)
+#     if not response.ok:
+#         response.raise_for_status()
+
+#     data = defaultdict(list)
+#     for d in response.json()['ncbiRefSeq']:
+#         if d['chrom'] != chrom:
+#             continue
+#         exon_starts = [int(x) for x in d['exonStarts'].split(',') if x]
+#         exon_ends = [int(x) for x in d['exonEnds'].split(',') if x]
+#         exons = list(zip(exon_starts, exon_ends))    
+#         data[(d['chrom'], d['name2'])].append((d['txStart'], d['txEnd'], exons))
+#     records = []
+#     for (ch, name), val in data.items():
+#         starts, ends, exons = zip(*val)
+#         # records.append((chrom, name, starts, ends, exons))
+#         records.append((name, ch, min(starts), max(ends), exons))
+#     # for (chrom, name), (starts, ends, exons) in data.items():
+#     #     records.append((name, chrom, min(starts), max(ends), exons))
+#     if as_dataframe:
+#         return pd.DataFrame().from_records(records, columns=['name', 'chrom', 'start', 'end', 'exons'])
+#     else:
+#         return records
+
 @shelve_it()
-def gene_coords_region(chrom=None, start=None, end=None, assembly=None, as_dataframe=False):
+def gene_coords_region(chrom=None, start=None, end=None, assembly=None, include_strand=False, as_dataframe=False):
     """
     Gets gene structure information for genes in a chromosomal region.
 
@@ -170,19 +226,30 @@ def gene_coords_region(chrom=None, start=None, end=None, assembly=None, as_dataf
     for d in response.json()['ncbiRefSeq']:
         if d['chrom'] != chrom:
             continue
+        
         exon_starts = [int(x) for x in d['exonStarts'].split(',') if x]
         exon_ends = [int(x) for x in d['exonEnds'].split(',') if x]
         exons = list(zip(exon_starts, exon_ends))    
-        data[(d['chrom'], d['name2'])].append((d['txStart'], d['txEnd'], exons))
+        if include_strand:
+            key = (d['chrom'], d['name2'], d['strand'])
+        else:
+            key = (d['chrom'], d['name2'])
+        data[key].append((d['txStart'], d['txEnd'], exons))
+
     records = []
-    for (ch, name), val in data.items():
+    for key, val in data.items():
         starts, ends, exons = zip(*val)
-        # records.append((chrom, name, starts, ends, exons))
-        records.append((name, ch, min(starts), max(ends), exons))
-    # for (chrom, name), (starts, ends, exons) in data.items():
-    #     records.append((name, chrom, min(starts), max(ends), exons))
+        if include_strand:
+            records.append((key[1], key[0], min(starts), max(ends), key[2], exons))
+        else:
+            records.append((key[1], key[0], min(starts), max(ends), exons))
+
+    col_names = ['name', 'chrom', 'start', 'end', 'exons']
+    if include_strand:
+        col_names.insert(4, 'strand')
+
     if as_dataframe:
-        return pd.DataFrame().from_records(records, columns=['name', 'chrom', 'start', 'end', 'exons'])
+        return pd.DataFrame().from_records(records, columns=col_names)
     else:
         return records
 
