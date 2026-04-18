@@ -147,3 +147,5 @@ docs/pages/geneinfo_cache/
 pixi.lock
 
 *.egg-info
+
+*.html
