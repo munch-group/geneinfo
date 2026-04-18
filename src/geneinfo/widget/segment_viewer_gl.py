@@ -21,7 +21,7 @@ Performance
 
 API
 ---
-    viewer = SegmentViewer(chrom_sizes)
+    viewer = Tracks(chrom_sizes)
     viewer.add_segment_track(df, 'Segments', group_by='pop', individual_col='ind')
     viewer.add_heatmap_track(df, 'Haplotypes', individual_col='sample', group_col='pop')
     viewer.add_gene_track(genes_df, exons_df, name='Genes')
@@ -144,7 +144,7 @@ _default_theme: Dict[str, str] = _detect_default_theme()
 
 
 def set_default_theme(theme: Union[str, Dict[str, str]]) -> None:
-    """Set the theme used by newly created ``SegmentViewer`` instances.
+    """Set the theme used by newly created ``Tracks`` instances.
 
     Parameters
     ----------
@@ -2074,7 +2074,7 @@ snapBtn.addEventListener('click', async () => {
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
     flash(true);
   } catch (err) {
-    console.warn('[SegmentViewer] clipboard copy failed, falling back to download:', err);
+    console.warn('[Tracks] clipboard copy failed, falling back to download:', err);
     // Fallback: trigger a download so the user still gets the image.
     out.toBlob(blob => {
       if (!blob) return flash(false);
@@ -2137,7 +2137,7 @@ return () => {
 # ─────────────────────────────────────────────────────────────────────────────
 # Widget
 # ─────────────────────────────────────────────────────────────────────────────
-class SegmentViewer(anywidget.AnyWidget):
+class Tracks(anywidget.AnyWidget):
     """
     WebGL2 genomic segment viewer.
 
@@ -2328,7 +2328,7 @@ class SegmentViewer(anywidget.AnyWidget):
         stack: bool = False,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
-    ) -> 'SegmentViewer':
+    ) -> 'Tracks':
         """
         Segment track with GPU instanced rendering.
 
@@ -2499,7 +2499,7 @@ class SegmentViewer(anywidget.AnyWidget):
         alpha: float = 0.5,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
-    ) -> 'SegmentViewer':
+    ) -> 'Tracks':
         """
         Heatmap track — one row per individual, GPU texture rendering.
 
@@ -2643,7 +2643,7 @@ class SegmentViewer(anywidget.AnyWidget):
         highlight_halo_color:    Optional[str] = None,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
-    ) -> 'SegmentViewer':
+    ) -> 'Tracks':
         """
         Gene / exon annotation track.
 
@@ -2903,7 +2903,7 @@ class SegmentViewer(anywidget.AnyWidget):
         point_size: int = 3,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
-    ) -> 'SegmentViewer':
+    ) -> 'Tracks':
         """
         Scatter track — point cloud.
 
@@ -2940,7 +2940,7 @@ class SegmentViewer(anywidget.AnyWidget):
         step: Optional[str] = None,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
-    ) -> 'SegmentViewer':
+    ) -> 'Tracks':
         """
         Line track — connected line per group.
 
@@ -3067,7 +3067,7 @@ class SegmentViewer(anywidget.AnyWidget):
         step: Optional[str] = None,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
-    ) -> 'SegmentViewer':
+    ) -> 'Tracks':
         """
         Fill-between track — filled area between two curves or from a
         single curve to a baseline.
@@ -3235,7 +3235,7 @@ class SegmentViewer(anywidget.AnyWidget):
         stack: bool = False,
         tip_fmt: Optional[str] = None,
         tip_label: Optional[str] = None,
-    ) -> 'SegmentViewer':
+    ) -> 'Tracks':
         """
         Histogram track — vertical bars.
 
@@ -3374,7 +3374,7 @@ class SegmentViewer(anywidget.AnyWidget):
         return self
 
     # ── Navigation ───────────────────────────────────────────────────────────
-    def set_viewport(self, chrom: str, start: int, end: int) -> 'SegmentViewer':
+    def set_viewport(self, chrom: str, start: int, end: int) -> 'Tracks':
         csz = self.chrom_sizes.get(str(chrom), end)
         self.viewport = {
             'chrom': str(chrom),
@@ -3383,7 +3383,7 @@ class SegmentViewer(anywidget.AnyWidget):
         }
         return self
 
-    def zoom_to(self, chrom: str, center: int, window: int = 1_000_000) -> 'SegmentViewer':
+    def zoom_to(self, chrom: str, center: int, window: int = 1_000_000) -> 'Tracks':
         """Centre view on *center* ± *window*/2 bp."""
         half = window // 2
         return self.set_viewport(chrom, center - half, center + half)

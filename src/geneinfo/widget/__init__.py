@@ -1,6 +1,6 @@
 
 from .segment_viewer_gl import (
-    SegmentViewer,
+    Tracks,
     DARK_THEME,
     LIGHT_THEME,
     set_default_theme,
