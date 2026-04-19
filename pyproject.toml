@@ -91,7 +91,7 @@ description = "Install phasic in development mode with FFI support"
 
 [tool.pixi.tasks.notebook]
 args = [ { "arg" = "notebook" } ]
-cmd = "jupyter nbconvert --log-level=WARN --to notebook --execute --inplace --TagRemovePreprocessor.enabled=True --TagRemovePreprocessor.remove_cell_tags='{\"skip-execution\"}' {{ notebook }}"
+cmd = "NBCONVERT_BGCOLOR=white PYDEVD_DISABLE_FILE_VALIDATION=1 jupyter nbconvert --log-level=WARN --to notebook --execute --inplace --TagRemovePreprocessor.enabled=True --TagRemovePreprocessor.remove_cell_tags='{\"skip-execution\"}' {{ notebook }}"
 
 [tool.pixi.tasks.api]
 cmd = "./scripts/docs-build-render.sh"

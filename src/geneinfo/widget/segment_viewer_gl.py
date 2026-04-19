@@ -503,13 +503,31 @@ out vec2 vTex;
 void main() { gl_Position = vec4(aPos, 0.0, 1.0); vTex = aTex; }`;
 
 const FS_TEX = `#version 300 es
-precision mediump float;
+precision highp float;
 uniform sampler2D uTex;
-uniform vec3 uBg, uFg;
+uniform vec3  uBg, uFg;
+uniform float uNWin;
 in vec2 vTex;
 out vec4 fragColor;
 void main() {
-  float v = texture(uTex, vTex).r;
+  // When nWin > plotPx, a single fragment covers many texels on the X axis.
+  // Hardware bilinear (or nearest) sampling would shimmer as the sampled pair
+  // changes with sub-pixel pan; instead, we explicitly box-average across the
+  // texel span this fragment covers. Y keeps nearest sampling so individual
+  // rows remain crisp.
+  float dUdx = abs(dFdx(vTex.x));           // tex-space width of one fragment
+  float span = dUdx * uNWin;                // in texel units
+  int N = int(min(span, 64.0)) + 1;         // sample count; cap for safety
+  float v = 0.0;
+  // Centre-aligned samples that evenly cover [vTex.x - dUdx/2, vTex.x + dUdx/2].
+  float step = dUdx / float(N);
+  float x0   = vTex.x - dUdx * 0.5 + step * 0.5;
+  for (int i = 0; i < 64; i++) {
+    if (i >= N) break;
+    float u = x0 + step * float(i);
+    v += textureLod(uTex, vec2(u, vTex.y), 0.0).r;
+  }
+  v /= float(N);
   fragColor = vec4(mix(uBg, uFg, v), 1.0);
 }`;
 
@@ -570,11 +588,12 @@ const dLoc = {
 
 // texture program locations
 const tLoc = {
-  aPos: gl.getAttribLocation (texProg, 'aPos'),
-  aTex: gl.getAttribLocation (texProg, 'aTex'),
-  uTex: gl.getUniformLocation(texProg, 'uTex'),
-  uBg:  gl.getUniformLocation(texProg, 'uBg'),
-  uFg:  gl.getUniformLocation(texProg, 'uFg'),
+  aPos:  gl.getAttribLocation (texProg, 'aPos'),
+  aTex:  gl.getAttribLocation (texProg, 'aTex'),
+  uTex:  gl.getUniformLocation(texProg, 'uTex'),
+  uBg:   gl.getUniformLocation(texProg, 'uBg'),
+  uFg:   gl.getUniformLocation(texProg, 'uFg'),
+  uNWin: gl.getUniformLocation(texProg, 'uNWin'),
 };
 
 // ─── Static unit quad buffer (shared) ─────────────────────────────────────
@@ -728,7 +747,11 @@ function buildHeatmapGPU(u8, nInd, nWin, xStart, xEnd) {
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, nWin, nInd, 0, gl.RED, gl.UNSIGNED_BYTE, u8);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // We do our own X-axis box-filter in the fragment shader (see FS_TEX), so
+  // keep per-texel reads crisp and rely on NEAREST sampling vertically. Mipmaps
+  // would also downsample in the nInd (row) dimension, which is semantically
+  // wrong: we want to preserve individuals, not blend them.
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -1207,6 +1230,7 @@ function drawHeatmapBand(hmData, vs, ve, chromSz, tt, tb, color) {
   const [bgR, bgG, bgB] = hexRGB(th.bg || '#13131a');
   gl.uniform3f(tLoc.uBg, bgR, bgG, bgB);
   gl.uniform3f(tLoc.uFg, r, g, b);
+  gl.uniform1f(tLoc.uNWin, hmData.nWin || 1);
   const stride = 16;
   gl.enableVertexAttribArray(tLoc.aPos);
   gl.vertexAttribPointer(tLoc.aPos, 2, gl.FLOAT, false, stride, 0);
