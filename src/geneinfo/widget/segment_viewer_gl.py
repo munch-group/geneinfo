@@ -385,6 +385,7 @@ el.innerHTML = `
     <button class="sv-btn sv-rs" title="Reset view">⌂</button>
     <button class="sv-btn sv-hmr" title="Recompute heatmap(s) for current view" style="display:none">⟲</button>
     <button class="sv-btn sv-hmg" title="Restore global heatmap view" style="display:none">◱</button>
+    <button class="sv-btn sv-gl"  title="Show all gene labels (when &lt;100 visible)" style="display:none">🏷</button>
     <button class="sv-btn sv-snap" title="Copy current view to clipboard">⧉</button>
     <div class="sv-sep"></div>
     <span class="sv-lod-badge sv-lod">▬ segments</span>
@@ -403,6 +404,7 @@ const zoomOutBtn= el.querySelector('.sv-zo');
 const resetBtn  = el.querySelector('.sv-rs');
 const hmRecBtn  = el.querySelector('.sv-hmr');
 const hmGlobBtn = el.querySelector('.sv-hmg');
+const geneLblBtn= el.querySelector('.sv-gl');
 const snapBtn   = el.querySelector('.sv-snap');
 const lodBadge  = el.querySelector('.sv-lod');
 const wrap      = el.querySelector('.sv-wrap');
@@ -1340,8 +1342,6 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   // viewport edge is simply not drawn; it does not fail the tier. The font
   // string is built per gene so bold/italic highlights affect width.
   const tryFontSize = (sizePx) => {
-    // Use the base (non-bold/non-italic) font for padding measurement so
-    // spacing stays consistent across genes.
     octx.font = `${sizePx}px monospace`;
     const pad = octx.measureText('M').width / 2;
     const used = Array.from({length: nRowsChrom}, () => []);
@@ -1364,13 +1364,32 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     return cxs;
   };
 
-  // Prefer the largest font tier that still fits every visible gene.
   const fontSizes = [10, 8, 6];
   let labelSize = null;
   let labelCxs = null;
-  for (const sz of fontSizes) {
-    const cxs = tryFontSize(sz);
-    if (cxs) { labelSize = sz; labelCxs = cxs; break; }
+
+  // Force-all mode: when the user has toggled the gene-label button and the
+  // view contains fewer than GENE_LABEL_FORCE_MAX genes, place every visible
+  // label without collision checks.
+  if (forceAllLabels && vis.length < GENE_LABEL_FORCE_MAX) {
+    const sz = 8;
+    octx.font = `${sz}px monospace`;
+    const cxs = new Array(vis.length).fill(null);
+    for (let i = 0; i < vis.length; i++) {
+      const v = vis[i];
+      if (!v.gene.n) continue;
+      octx.font = fontFor(v.gene, sz);
+      const tw = octx.measureText(v.gene.n).width;
+      cxs[i] = { cx: v.cxTrue, tw };
+    }
+    labelSize = sz; labelCxs = cxs;
+  } else {
+    // Prefer the largest tier that fits every visible gene; otherwise no
+    // labels are drawn.
+    for (const sz of fontSizes) {
+      const cxs = tryFontSize(sz);
+      if (cxs) { labelSize = sz; labelCxs = cxs; break; }
+    }
   }
 
   // Halo pass (behind everything): fill a rounded rect slightly larger than
@@ -2216,8 +2235,27 @@ function updateHeatmapBtns() {
   const hasHM = cfgs.some(c => c.type === 'heatmap');
   hmRecBtn.style.display  = hasHM ? '' : 'none';
   hmGlobBtn.style.display = hasHM ? '' : 'none';
+  const hasGene = cfgs.some(c => c.type === 'gene');
+  geneLblBtn.style.display = hasGene ? '' : 'none';
 }
 updateHeatmapBtns();
+
+// Force-show-all-labels mode for gene tracks (overrides collision-based
+// placement when fewer than GENE_LABEL_FORCE_MAX genes are visible).
+let forceAllLabels = false;
+const GENE_LABEL_FORCE_MAX = 100;
+const syncGeneLblBtn = () => {
+  geneLblBtn.style.opacity = forceAllLabels ? '1' : '0.55';
+  geneLblBtn.title = forceAllLabels
+    ? 'Hide overlapping gene labels (revert to adaptive placement)'
+    : 'Show all gene labels (when <100 visible)';
+};
+syncGeneLblBtn();
+geneLblBtn.addEventListener('click', () => {
+  forceAllLabels = !forceAllLabels;
+  syncGeneLblBtn();
+  scheduleRender();
+});
 
 function randId() {
   return 'cmd-' + Math.random().toString(36).slice(2) + '-' + Date.now().toString(36);
