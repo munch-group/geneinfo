@@ -1705,7 +1705,7 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
       const x0 = LABEL_W + (s - vs) / range * drawW;
       const x1 = LABEL_W + (e - vs) / range * drawW;
       const w  = Math.max(0.5, x1 - x0);
-      const a  = (b.alpha == null) ? 0.2
+      const a  = (b.alpha == null) ? 0.1
                  : Math.max(0, Math.min(1, +b.alpha));
       octx.globalAlpha = a;
       octx.fillStyle   = b.color || '#ffcc44';
@@ -4660,7 +4660,7 @@ class Tracks(anywidget.AnyWidget):
         chrom: str | None = None,
         *,
         color: str = '#ffcc44',
-        alpha: float = 0.2,
+        alpha: float = 0.1,
         edgecolor: str | None = None,
         edgewidth: float = 0.0,
         dash: list | None = None,
@@ -4679,7 +4679,7 @@ class Tracks(anywidget.AnyWidget):
             chromosome. Ignored when ``spans`` is a dict.
         color : str, default ``'#ffcc44'``
             Fill colour.
-        alpha : float, default ``0.2``
+        alpha : float, default ``0.1``
             Fill opacity in ``[0, 1]``.
         edgecolor : str, optional
             Outline colour. Defaults to ``color`` if an ``edgewidth`` is
