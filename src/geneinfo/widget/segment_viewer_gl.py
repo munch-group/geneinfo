@@ -382,10 +382,14 @@ el.innerHTML = `
     <input  class="sv-pos" placeholder="chr1:0–248956422" />
     <button class="sv-btn sv-zi" title="Zoom in (+)">＋</button>
     <button class="sv-btn sv-zo" title="Zoom out (−)">－</button>
+    <button class="sv-btn sv-pff" title="Pan 90% of the view left">&laquo;</button>
+    <button class="sv-btn sv-phf" title="Pan half a view left">&lsaquo;</button>
+    <button class="sv-btn sv-phr" title="Pan half a view right">&rsaquo;</button>
+    <button class="sv-btn sv-pfr" title="Pan 90% of the view right">&raquo;</button>
     <button class="sv-btn sv-rs" title="Reset view">⌂</button>
     <button class="sv-btn sv-hmr" title="Recompute heatmap(s) for current view" style="display:none">⟲</button>
     <button class="sv-btn sv-hmg" title="Restore global heatmap view" style="display:none">◱</button>
-    <button class="sv-btn sv-gl"  title="Show all gene labels (when &lt;100 visible)" style="display:none">🏷</button>
+    <button class="sv-btn sv-gl"  title="Show all gene labels (when &lt;100 visible)" style="display:none">A</button>
     <button class="sv-btn sv-snap" title="Copy current view to clipboard">⧉</button>
     <div class="sv-sep"></div>
     <span class="sv-lod-badge sv-lod">▬ segments</span>
@@ -402,6 +406,10 @@ const posInput  = el.querySelector('.sv-pos');
 const zoomInBtn = el.querySelector('.sv-zi');
 const zoomOutBtn= el.querySelector('.sv-zo');
 const resetBtn  = el.querySelector('.sv-rs');
+const panFFBtn  = el.querySelector('.sv-pff');
+const panHFBtn  = el.querySelector('.sv-phf');
+const panHRBtn  = el.querySelector('.sv-phr');
+const panFRBtn  = el.querySelector('.sv-pfr');
 const hmRecBtn  = el.querySelector('.sv-hmr');
 const hmGlobBtn = el.querySelector('.sv-hmg');
 const geneLblBtn= el.querySelector('.sv-gl');
@@ -1298,11 +1306,21 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   // so any unused space is simply left empty at the bottom rather than
   // stretched into the gene layout.
   const nRowsChrom = Math.max(1, entry?.rows ?? cfg.rows ?? 1);
-  const rowH       = Math.min(30, h / nRowsChrom);
-  const exonH  = Math.min(14, Math.max(6, rowH * 0.45));
+  // Keep rows at their natural size (≤30 px) even when the caller supplied a
+  // much larger explicit height. The surplus space is redistributed: each
+  // row is placed on a ``rowStride``-tall slot and the unused portion of each
+  // slot becomes vertical air, with half a slot of padding above the first
+  // row and below the last so the stack is centred. When ``h`` is tight
+  // (auto mode or small explicit heights) ``rowStride === rowH`` and
+  // ``rowPad === 0``, reproducing the original layout exactly.
+  const rawRowH   = h / nRowsChrom;
+  const rowH      = Math.min(30, rawRowH);
+  const exonH     = Math.min(14, Math.max(6, rowH * 0.45));
   const labelBand = 11; // space reserved above each exon for the label (fits up to 10 px font)
-  const arrowSep = 70;
-  const arrowA   = 4;
+  const rowStride = Math.max(rowH, rawRowH);
+  const rowPad    = Math.max(0, (rawRowH - rowH) / 2);
+  const arrowSep  = 70;
+  const arrowA    = 4;
 
   const has = (gene, k) => !!(gene.hl && gene.hl.indexOf(k) >= 0);
   const fontFor = (gene, sizePx) => {
@@ -1407,7 +1425,7 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   // the exon band for genes with `halo` active.
   for (const v of vis) {
     if (!has(v.gene, 'halo')) continue;
-    const rowTop = trackY + v.rowIdx * rowH;
+    const rowTop = trackY + rowPad + v.rowIdx * rowStride;
     const exonY  = rowTop + labelBand + 1;
     const pad = 3;
     const hy = exonY - pad;
@@ -1425,7 +1443,7 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     const v = vis[i];
     const gene = v.gene;
     const rowIdx = v.rowIdx;
-    const rowTop = trackY + rowIdx * rowH;
+    const rowTop = trackY + rowPad + rowIdx * rowStride;
     const exonY  = rowTop + labelBand + 1;
     const midY   = exonY + exonH / 2;
     const bodyY  = midY - 1;
@@ -2242,6 +2260,21 @@ const doZoom = f => {
 
 zoomInBtn.addEventListener ('click', () => doZoom(0.5));
 zoomOutBtn.addEventListener('click', () => doZoom(2.0));
+
+// Pan by a fraction of the current view width, clamped to the chromosome
+// bounds. Positive fraction pans right, negative pans left.
+const doPan = f => {
+  const w   = vp.end - vp.start;
+  const lo  = panLo(vp.chrom), hi = panHi(vp.chrom);
+  const ns  = clamp(vp.start + w * f, lo, hi - w);
+  vp = { chrom: vp.chrom, start: ns, end: ns + w };
+  scheduleRender(); syncVp(); updatePosBox();
+};
+
+panFFBtn.addEventListener('click', () => doPan(-0.9));
+panHFBtn.addEventListener('click', () => doPan(-0.5));
+panHRBtn.addEventListener('click', () => doPan( 0.5));
+panFRBtn.addEventListener('click', () => doPan( 0.9));
 resetBtn.addEventListener  ('click', () => {
   vp = { chrom: vp.chrom, start: panLo(vp.chrom), end: panHi(vp.chrom) };
   scheduleRender(); syncVp(); updatePosBox();
