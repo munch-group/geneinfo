@@ -6,7 +6,7 @@ project:
   #   - objects-test.txt
 
 execute:
-  # freeze: auto
+  freeze: auto
   echo: true
 
 metadata-files:
@@ -91,7 +91,7 @@ format:
     # highlight-style: arrow
     mermaid:
       theme: neutral 
-    embed-resources: true      
+    # embed-resources: true  # need to render the tracks widget, but becomes too large then
 
 quartodoc:
   package: geneinfo
