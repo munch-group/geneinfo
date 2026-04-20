@@ -3474,19 +3474,20 @@ class Tracks(anywidget.AnyWidget):
     def _assign_lanes(recs: list[dict[str, Any]], offset: int = 0) -> int:
         """Pack overlapping gene records into the fewest possible rows.
 
-        Row 0 is reserved for ``+``-strand genes and row 1 for
-        ``-``-strand genes when both strands are present. A gene that
-        cannot fit in its own-strand row falls through to the
-        opposite-strand row, then to shared overflow rows (2, 3, …).
-        When only one strand is present, row 0 is its primary row and
-        overflow starts at row 1. Each record is mutated in place to
-        add a ``'row'`` key equal to ``offset + lane``.
+        Classic first-fit interval colouring: records are sorted by
+        ``(start, end)`` and each is placed in the lowest-index row
+        whose current rightmost edge is at or before the record's
+        start. This is optimal for interval graphs (the number of rows
+        used equals the maximum clique size, i.e. the deepest stack of
+        overlapping intervals) and keeps upper rows as densely packed
+        as possible. Strand does not influence row choice — arrow
+        direction already encodes strand per-gene.
 
         Parameters
         ----------
         recs : list of dict
-            Gene records carrying at least ``'s'`` (start), ``'e'``
-            (end) and ``'strand'`` keys.
+            Gene records carrying at least ``'s'`` (start) and ``'e'``
+            (end) keys.
         offset : int, default 0
             Constant added to every assigned lane index so the caller
             can stack multiple lane-packs vertically.
@@ -3499,49 +3500,17 @@ class Tracks(anywidget.AnyWidget):
         if not recs:
             return 0
 
-        has_plus  = any(r.get('strand') == '+' for r in recs)
-        has_minus = any(r.get('strand') != '+' for r in recs)
-
-        if has_plus and has_minus:
-            plus_primary  = 0
-            minus_primary = 1
-            overflow_start = 2
-        elif has_plus:
-            plus_primary  = 0
-            minus_primary = None
-            overflow_start = 1
-        else:
-            plus_primary  = None
-            minus_primary = 0
-            overflow_start = 1
-
         NEG_INF = float('-inf')
         lane_end: list[float] = []
-        # Ensure primary rows exist with empty lane state.
-        while len(lane_end) < overflow_start:
-            lane_end.append(NEG_INF)
 
         for r in sorted(recs, key=lambda x: (x.get('s', 0), x.get('e', 0))):
-            is_plus = r.get('strand') == '+'
-            own  = plus_primary  if is_plus else minus_primary
-            opp  = minus_primary if is_plus else plus_primary
-
-            candidates: list[int] = []
-            if own is not None:
-                candidates.append(own)
-            if opp is not None:
-                candidates.append(opp)
-            # Overflow rows already created
-            candidates.extend(range(overflow_start, len(lane_end)))
-
             placed_row = None
-            for row in candidates:
+            for row in range(len(lane_end)):
                 if r['s'] >= lane_end[row]:
                     placed_row = row
                     break
 
             if placed_row is None:
-                # Need a fresh overflow row
                 placed_row = len(lane_end)
                 lane_end.append(NEG_INF)
 
