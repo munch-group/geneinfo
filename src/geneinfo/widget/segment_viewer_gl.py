@@ -1690,6 +1690,34 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     cssY += ch;
   }
 
+  // ── User-specified vertical marker lines ─────────────────────────────────
+  const vlines = model.get('vlines') || [];
+  if (vlines.length) {
+    octx.save();
+    octx.lineCap = 'butt';
+    for (const v of vlines) {
+      if (!v || v.chrom !== vp.chrom) continue;
+      const pos = +v.pos;
+      if (!(pos >= vs && pos <= ve)) continue;
+      const px = LABEL_W + (pos - vs) / range * drawW;
+      if (px < LABEL_W || px > W_css) continue;
+      const lw = +v.width || 1.0;
+      octx.strokeStyle = v.color || '#ff4444';
+      octx.lineWidth   = lw;
+      const dashArr = Array.isArray(v.dash) && v.dash.length
+        ? v.dash.map(n => +n) : [];
+      octx.setLineDash(dashArr);
+      octx.beginPath();
+      // Snap to half-pixel only when lineWidth is odd, to keep the line crisp.
+      const xSnap = (lw % 2 === 1) ? Math.round(px) + 0.5 : Math.round(px);
+      octx.moveTo(xSnap, SCALEBAR_H);
+      octx.lineTo(xSnap, H_css);
+      octx.stroke();
+    }
+    octx.setLineDash([]);
+    octx.restore();
+  }
+
   octx.restore();
 }
 
@@ -2396,6 +2424,7 @@ model.on('change:chrom_sizes', () => {
 });
 model.on('change:track_configs', () => { updateHeatmapBtns(); scheduleRender(); });
 model.on('change:track_data', () => { uploadTrackData(); scheduleRender(); });
+model.on('change:vlines', () => { scheduleRender(); });
 
 model.on('change:viewport', () => {
   if (!isDragging) {
@@ -2567,6 +2596,7 @@ class Tracks(anywidget.AnyWidget):
     track_configs = traitlets.List([]).tag(sync=True)
     track_data    = traitlets.Dict({}).tag(sync=True)
     viewport      = traitlets.Dict({'chrom': '', 'start': 0, 'end': 0}).tag(sync=True)
+    vlines        = traitlets.List([]).tag(sync=True)
     zoom_speed    = traitlets.Float(1.02).tag(sync=True)
     pan_speed     = traitlets.Float(1.0).tag(sync=True)
     theme         = traitlets.Dict({
@@ -4504,6 +4534,79 @@ class Tracks(anywidget.AnyWidget):
         }
         self.track_data    = {**self.track_data, tid: hist_out}
         self.track_configs = [*self.track_configs, cfg]
+        return self
+
+    # ── Overlays ─────────────────────────────────────────────────────────────
+    def add_vlines(
+        self,
+        positions,
+        chrom: str | None = None,
+        *,
+        color: str = '#ff4444',
+        linewidth: float = 1.0,
+        dash: list | None = None,
+        replace: bool = False,
+    ) -> 'Tracks':
+        """Add thin vertical guide lines across all tracks.
+
+        Parameters
+        ----------
+        positions : int | Iterable[int] | dict[str, Iterable[int]]
+            Base-pair positions. If a dict, keys are chromosome names
+            and values are iterables of positions on that chromosome;
+            the ``chrom`` argument is ignored in that case.
+        chrom : str, optional
+            Chromosome for the positions. Defaults to the current
+            viewport chromosome. Ignored when ``positions`` is a dict.
+        color : str, default ``'#ff4444'``
+            Matplotlib-style colour spec; resolved through
+            :func:`_resolve_color_mapping` so names like ``'C0'`` or
+            ``'red'`` work.
+        linewidth : float, default ``1.0``
+            Line width in CSS pixels.
+        dash : list of int, optional
+            Canvas dash pattern, e.g. ``[4, 3]``. ``None`` = solid.
+        replace : bool, default ``False``
+            If True, replace existing vlines. Otherwise append.
+
+        Returns
+        -------
+        Tracks
+            ``self``, to support fluent chaining.
+        """
+        resolved = _resolve_color_mapping(color)
+
+        if isinstance(positions, dict):
+            items = [(str(c), positions[c]) for c in positions]
+        else:
+            c = chrom if chrom is not None else self.viewport.get('chrom', '')
+            if isinstance(positions, (int, float)):
+                positions = [positions]
+            items = [(str(c), positions)]
+
+        new_entries = []
+        for c, pos_iter in items:
+            for p in pos_iter:
+                new_entries.append({
+                    'chrom': c,
+                    'pos':   int(p),
+                    'color': resolved,
+                    'width': float(linewidth),
+                    'dash':  list(dash) if dash else [],
+                })
+
+        self.vlines = new_entries if replace else [*self.vlines, *new_entries]
+        return self
+
+    def clear_vlines(self) -> 'Tracks':
+        """Remove all vertical marker lines.
+
+        Returns
+        -------
+        Tracks
+            ``self``, to support fluent chaining.
+        """
+        self.vlines = []
         return self
 
     # ── Navigation ───────────────────────────────────────────────────────────
