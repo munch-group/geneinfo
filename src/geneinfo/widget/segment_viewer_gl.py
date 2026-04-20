@@ -1323,24 +1323,35 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
   const vis = [];
   for (const gene of genes) {
     if (gene.e < vs || gene.s > ve) continue;
-    const gx0 = LABEL_W + Math.max(0,     (gene.s - vs) / range * drawW);
-    const gx1 = LABEL_W + Math.min(drawW, (gene.e - vs) / range * drawW);
+    // ``gene.s``/``gene.e`` may be inflated by label_padding (an invisible
+    // prefix that participates in row packing and label centering). The true
+    // gene footprint ``gs``/``ge`` (falling back to ``s``/``e`` when no
+    // padding was applied) is what we actually draw as spine, exons and
+    // arrows — the padded extent stays invisible.
+    const gs = (gene.gs != null) ? gene.gs : gene.s;
+    const ge = (gene.ge != null) ? gene.ge : gene.e;
+    const gx0 = LABEL_W + Math.max(0,     (gs - vs) / range * drawW);
+    const gx1 = LABEL_W + Math.min(drawW, (ge - vs) / range * drawW);
     const gw  = gx1 - gx0;
     if (gw < 0.5) continue;
     // True (un-clipped) left edge of the gene body in pixel space — used to
     // anchor arrow markers so they stay fixed relative to the gene as the
     // user pans, rather than relative to the visible viewport edge.
-    const gxTrueLeft = LABEL_W + (gene.s - vs) / range * drawW;
-    const cxTrue = LABEL_W + ((gene.s + gene.e) / 2 - vs) / range * drawW;
+    const gxTrueLeft = LABEL_W + (gs - vs) / range * drawW;
+    // Label midpoint uses the *true* gene bounds so the name stays centred
+    // on the visible gene body. The invisible prefix only serves to open up
+    // a neighbouring row when genes are close — it must not drag the label
+    // off the visible footprint.
+    const cxTrue = LABEL_W + ((gs + ge) / 2 - vs) / range * drawW;
     vis.push({ gene, gx0, gx1, gw, cxTrue, gxTrueLeft, rowIdx: gene.row | 0 });
   }
 
   // Feasibility: try to place every visible gene's label at a given font size.
-  // Labels are always centered on the gene body's *true* midpoint (computed
-  // from gene.s/gene.e, not from the clipped pixel extent), so the inter-
-  // label distance grows monotonically with zoom. A label that falls off a
-  // viewport edge is simply not drawn; it does not fail the tier. The font
-  // string is built per gene so bold/italic highlights affect width.
+  // Labels are always centred on the gene body's *true* midpoint (computed
+  // from gs/ge, i.e. the un-padded extent — and un-clipped, so the inter-
+  // label distance grows monotonically with zoom). A label that falls off
+  // a viewport edge is simply not drawn; it does not fail the tier. The
+  // font string is built per gene so bold/italic highlights affect width.
   const tryFontSize = (sizePx) => {
     octx.font = `${sizePx}px monospace`;
     const pad = octx.measureText('M').width / 2;
@@ -1447,8 +1458,12 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
       octx.stroke();
     }
 
-    // Exons (fill + optional outline).
-    const exons = gene.exons?.length ? gene.exons : [[gene.s, gene.e]];
+    // Exons (fill + optional outline). When no explicit exons are supplied,
+    // draw a single block spanning the true gene footprint (which equals
+    // ``s``/``e`` when no padding was applied).
+    const gs = (gene.gs != null) ? gene.gs : gene.s;
+    const ge = (gene.ge != null) ? gene.ge : gene.e;
+    const exons = gene.exons?.length ? gene.exons : [[gs, ge]];
     const exonFill    = has(gene, 'fill')    ? fillColor    : color;
     const doOutline   = has(gene, 'outline');
     for (const [es, ee] of exons) {
@@ -1904,8 +1919,10 @@ function tipDataGene(pos, chrom, cfg) {
   const genes = entry?.records ?? (Array.isArray(entry) ? entry : []);
   const hits = [];
   for (const g of genes) {
-    if (pos >= g.s && pos <= g.e)
-      hits.push({ name: g.n || 'unnamed', strand: g.strand === '+' ? '\u2192' : '\u2190', start: g.s, end: g.e });
+    const gs = (g.gs != null) ? g.gs : g.s;
+    const ge = (g.ge != null) ? g.ge : g.e;
+    if (pos >= gs && pos <= ge)
+      hits.push({ name: g.n || 'unnamed', strand: g.strand === '+' ? '\u2192' : '\u2190', start: gs, end: ge });
   }
   return hits.length ? hits : null;
 }
@@ -3179,6 +3196,7 @@ class Tracks(anywidget.AnyWidget):
         color: str | None = None,
         height: int | None = None,
         collapse: bool = True,
+        label_padding: int = 0,
         highlight: list[str] | dict[str, list[str]] | None = None,
         highlight_color: str | None = None,
         highlight_fill_color:    str | None = None,
@@ -3221,6 +3239,17 @@ class Tracks(anywidget.AnyWidget):
         collapse : bool, default True
             If True, merge exons across all transcripts into a single
             union set. If False, each transcript becomes its own row.
+        label_padding : int, default 0
+            Genomic bp of extra space reserved on the label-facing side
+            of every gene — to the left for ``+``-strand genes and to
+            the right for ``-``-strand genes — when assigning rows and
+            placing labels. Modeled as an invisible prefix attached to
+            each gene: row packing, label centring and label collision
+            all see the padded extent, while the spine, exons, arrows
+            and tooltip range continue to reflect the gene's true
+            bounds. Genes too close to a preceding gene are bumped to
+            a lower row so the invisible prefix can hold the label.
+            ``0`` reproduces the prior overlap-only packing exactly.
         highlight : list of str or dict of str to list of str, optional
             Either a list of gene names (treated as ``{'fill': [...]}``)
             or a dict mapping a property key to a list of gene names.
@@ -3265,6 +3294,9 @@ class Tracks(anywidget.AnyWidget):
                 "add_gene_track requires exactly one of `genes_data` or "
                 "`assembly` to be specified."
             )
+
+        if label_padding < 0:
+            raise ValueError("label_padding must be non-negative.")
 
         if assembly is not None:
             from ..coords import gene_coords_region, chromosome_lengths
@@ -3372,6 +3404,24 @@ class Tracks(anywidget.AnyWidget):
                     recs.append(rec)
                 gdata[chrom] = recs
 
+        # Apply label_padding uniformly by extending each record's packing
+        # extent on the side where the gene name reads from — the left for
+        # ``+``-strand genes, the right for ``-``-strand. The true gene bounds
+        # are preserved as ``gs``/``ge`` so the renderer still draws spine,
+        # exons and arrows over the real gene footprint. Because ``s``/``e``
+        # drive row packing, label midpoint, viewport culling and inter-label
+        # collision detection, inflating them is equivalent to prepending an
+        # invisible exon: the same code path handles padding=0 and >0.
+        if label_padding:
+            for recs in gdata.values():
+                for rec in recs:
+                    rec['gs'] = rec['s']
+                    rec['ge'] = rec['e']
+                    if rec.get('strand') == '+':
+                        rec['s'] = rec['s'] - label_padding
+                    else:
+                        rec['e'] = rec['e'] + label_padding
+
         # Pack all genes (both strands) into the minimum number of non-overlapping
         # rows with a greedy interval lane-packing. Strand is preserved on each
         # record and encoded via arrow direction at draw time.
@@ -3409,6 +3459,7 @@ class Tracks(anywidget.AnyWidget):
             'rows': max_rows,
             'rowsPerChrom': rows_per_chrom,
             'heightAuto': height_auto,
+            'labelPadding': label_padding,
             'groups': [],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
