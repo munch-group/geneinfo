@@ -1690,6 +1690,42 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     cssY += ch;
   }
 
+  // ── User-specified vertical blocks (filled spans across all tracks) ──────
+  const vblocks = model.get('vblocks') || [];
+  if (vblocks.length) {
+    octx.save();
+    for (const b of vblocks) {
+      if (!b || b.chrom !== vp.chrom) continue;
+      const bs = +b.start, be = +b.end;
+      if (!(be > bs)) continue;
+      // Clip to viewport.
+      const s = Math.max(bs, vs);
+      const e = Math.min(be, ve);
+      if (!(e > s)) continue;
+      const x0 = LABEL_W + (s - vs) / range * drawW;
+      const x1 = LABEL_W + (e - vs) / range * drawW;
+      const w  = Math.max(0.5, x1 - x0);
+      const a  = (b.alpha == null) ? 0.2
+                 : Math.max(0, Math.min(1, +b.alpha));
+      octx.globalAlpha = a;
+      octx.fillStyle   = b.color || '#ffcc44';
+      octx.fillRect(x0, SCALEBAR_H, w, H_css - SCALEBAR_H);
+      const edge = +b.edgewidth || 0;
+      if (edge > 0) {
+        octx.strokeStyle = b.edgecolor || b.color || '#ffcc44';
+        octx.lineWidth   = edge;
+        octx.setLineDash(
+          Array.isArray(b.dash) && b.dash.length
+            ? b.dash.map(n => +n) : []
+        );
+        octx.strokeRect(x0 + 0.5, SCALEBAR_H + 0.5,
+                        w - 1, H_css - SCALEBAR_H - 1);
+        octx.setLineDash([]);
+      }
+    }
+    octx.restore();
+  }
+
   // ── User-specified vertical marker lines ─────────────────────────────────
   const vlines = model.get('vlines') || [];
   if (vlines.length) {
@@ -1702,6 +1738,9 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
       const px = LABEL_W + (pos - vs) / range * drawW;
       if (px < LABEL_W || px > W_css) continue;
       const lw = +v.width || 1.0;
+      const a  = (v.alpha == null) ? 1.0
+                 : Math.max(0, Math.min(1, +v.alpha));
+      octx.globalAlpha = a;
       octx.strokeStyle = v.color || '#ff4444';
       octx.lineWidth   = lw;
       const dashArr = Array.isArray(v.dash) && v.dash.length
@@ -2425,6 +2464,7 @@ model.on('change:chrom_sizes', () => {
 model.on('change:track_configs', () => { updateHeatmapBtns(); scheduleRender(); });
 model.on('change:track_data', () => { uploadTrackData(); scheduleRender(); });
 model.on('change:vlines', () => { scheduleRender(); });
+model.on('change:vblocks', () => { scheduleRender(); });
 
 model.on('change:viewport', () => {
   if (!isDragging) {
@@ -2597,6 +2637,7 @@ class Tracks(anywidget.AnyWidget):
     track_data    = traitlets.Dict({}).tag(sync=True)
     viewport      = traitlets.Dict({'chrom': '', 'start': 0, 'end': 0}).tag(sync=True)
     vlines        = traitlets.List([]).tag(sync=True)
+    vblocks       = traitlets.List([]).tag(sync=True)
     zoom_speed    = traitlets.Float(1.02).tag(sync=True)
     pan_speed     = traitlets.Float(1.0).tag(sync=True)
     theme         = traitlets.Dict({
@@ -4544,6 +4585,7 @@ class Tracks(anywidget.AnyWidget):
         *,
         color: str = '#ff4444',
         linewidth: float = 1.0,
+        alpha: float = 1.0,
         dash: list | None = None,
         replace: bool = False,
     ) -> 'Tracks':
@@ -4564,6 +4606,8 @@ class Tracks(anywidget.AnyWidget):
             ``'red'`` work.
         linewidth : float, default ``1.0``
             Line width in CSS pixels.
+        alpha : float, default ``1.0``
+            Opacity in ``[0, 1]``. Values outside the range are clamped.
         dash : list of int, optional
             Canvas dash pattern, e.g. ``[4, 3]``. ``None`` = solid.
         replace : bool, default ``False``
@@ -4592,6 +4636,7 @@ class Tracks(anywidget.AnyWidget):
                     'pos':   int(p),
                     'color': resolved,
                     'width': float(linewidth),
+                    'alpha': float(max(0.0, min(1.0, alpha))),
                     'dash':  list(dash) if dash else [],
                 })
 
@@ -4607,6 +4652,98 @@ class Tracks(anywidget.AnyWidget):
             ``self``, to support fluent chaining.
         """
         self.vlines = []
+        return self
+
+    def add_vblocks(
+        self,
+        spans,
+        chrom: str | None = None,
+        *,
+        color: str = '#ffcc44',
+        alpha: float = 0.2,
+        edgecolor: str | None = None,
+        edgewidth: float = 0.0,
+        dash: list | None = None,
+        replace: bool = False,
+    ) -> 'Tracks':
+        """Add shaded vertical blocks spanning all tracks.
+
+        Parameters
+        ----------
+        spans : tuple | Iterable[tuple] | dict[str, Iterable[tuple]]
+            ``(start, end)`` pairs in base pairs. If a dict, keys are
+            chromosome names and values are iterables of pairs on that
+            chromosome; the ``chrom`` argument is ignored in that case.
+        chrom : str, optional
+            Chromosome for the spans. Defaults to the current viewport
+            chromosome. Ignored when ``spans`` is a dict.
+        color : str, default ``'#ffcc44'``
+            Fill colour.
+        alpha : float, default ``0.2``
+            Fill opacity in ``[0, 1]``.
+        edgecolor : str, optional
+            Outline colour. Defaults to ``color`` if an ``edgewidth`` is
+            given.
+        edgewidth : float, default ``0.0``
+            Outline width in CSS pixels. ``0`` disables the outline.
+        dash : list of int, optional
+            Dash pattern for the outline, e.g. ``[4, 3]``.
+        replace : bool, default ``False``
+            If True, replace existing vblocks. Otherwise append.
+
+        Returns
+        -------
+        Tracks
+            ``self``, to support fluent chaining.
+        """
+        fill  = _resolve_color_mapping(color)
+        edge  = _resolve_color_mapping(edgecolor) if edgecolor else ''
+
+        def _pairs(it):
+            out = []
+            if (isinstance(it, (tuple, list)) and len(it) == 2
+                    and all(isinstance(x, (int, float)) for x in it)):
+                out.append((int(it[0]), int(it[1])))
+            else:
+                for pair in it:
+                    out.append((int(pair[0]), int(pair[1])))
+            return out
+
+        if isinstance(spans, dict):
+            items = [(str(c), _pairs(spans[c])) for c in spans]
+        else:
+            c = chrom if chrom is not None else self.viewport.get('chrom', '')
+            items = [(str(c), _pairs(spans))]
+
+        a = float(max(0.0, min(1.0, alpha)))
+        new_entries = []
+        for c, pairs in items:
+            for s, e in pairs:
+                if e < s:
+                    s, e = e, s
+                new_entries.append({
+                    'chrom':     c,
+                    'start':     int(s),
+                    'end':       int(e),
+                    'color':     fill,
+                    'alpha':     a,
+                    'edgecolor': edge,
+                    'edgewidth': float(edgewidth),
+                    'dash':      list(dash) if dash else [],
+                })
+
+        self.vblocks = new_entries if replace else [*self.vblocks, *new_entries]
+        return self
+
+    def clear_vblocks(self) -> 'Tracks':
+        """Remove all vertical blocks.
+
+        Returns
+        -------
+        Tracks
+            ``self``, to support fluent chaining.
+        """
+        self.vblocks = []
         return self
 
     # ── Navigation ───────────────────────────────────────────────────────────
