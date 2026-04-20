@@ -1348,10 +1348,14 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
     // arrows — the padded extent stays invisible.
     const gs = (gene.gs != null) ? gene.gs : gene.s;
     const ge = (gene.ge != null) ? gene.ge : gene.e;
-    const gx0 = LABEL_W + Math.max(0,     (gs - vs) / range * drawW);
-    const gx1 = LABEL_W + Math.min(drawW, (ge - vs) / range * drawW);
+    // Floor gene width at 1 px so sub-pixel genes remain visible at extreme
+    // zoom-out instead of disappearing entirely. Matches the per-exon floor
+    // applied further down so a single-exon gene and its fallback exon agree.
+    const gx0Raw = LABEL_W + Math.max(0,     (gs - vs) / range * drawW);
+    const gx1Raw = LABEL_W + Math.min(drawW, (ge - vs) / range * drawW);
+    const gx0 = gx0Raw;
+    const gx1 = Math.max(gx0 + 1, gx1Raw);
     const gw  = gx1 - gx0;
-    if (gw < 0.5) continue;
     // True (un-clipped) left edge of the gene body in pixel space — used to
     // anchor arrow markers so they stay fixed relative to the gene as the
     // user pans, rather than relative to the visible viewport edge.
