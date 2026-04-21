@@ -25,7 +25,7 @@ API
     viewer.add_segment_track(df, 'Segments', group_by='pop', individual_col='ind')
     viewer.add_heatmap_track(df, 'Haplotypes', individual_col='sample', group_col='pop')
     viewer.add_gene_track(genes_df, exons_df, name='Genes')
-    viewer.add_scatter_track(df, 'Fst', x='pos', y='fst', group_by='pop')
+    viewer.add_point_track(df, 'Fst', x='pos', y='fst', group_by='pop')
     viewer.add_line_track(df, 'Rate', x='pos', y='rate')
     viewer.add_fill_track(df, 'CI', x='pos', y_lo='lo', y_hi='hi')
     viewer.add_histogram_track(df, 'Depth', x='pos', y='depth')
@@ -35,6 +35,7 @@ API
 
 from __future__ import annotations
 import base64
+import warnings
 from typing import Any
 import anywidget
 import matplotlib.colors as mcolors
@@ -96,6 +97,178 @@ def _split_alpha(spec: Any) -> tuple[str | None, float | None]:
     a = float(rgba[3])
     rgb_hex = mcolors.to_hex(rgba, keep_alpha=False)
     return rgb_hex, (None if a == 1.0 else a)
+
+
+def _resolve_qualitative_palette(palette: Any, n: int) -> list[str]:
+    """Return ``n`` hex colours to use as a qualitative group palette.
+
+    Parameters
+    ----------
+    palette : None, str, list, or matplotlib.colors.Colormap
+        - ``None`` — use the currently active matplotlib property cycle
+          (the ``'C0'``, ``'C1'``, ... colours). Falls back to the
+          categorical ``'tab10'`` colormap if the cycle is empty.
+        - ``str`` — either a matplotlib colormap name (``'viridis'``,
+          ``'tab10'``, ``'Set2'``, ...) or a single CSS-compatible colour
+          literal (``'red'``, ``'#ff8800'``, ``'C3'``). Colormap names
+          are expanded to ``n`` evenly-spaced samples; categorical
+          colormaps (``'tab*'``, ``'Set*'``, ``'Pastel*'``, ``'Paired'``,
+          ``'Accent'``, ``'Dark2'``) cycle through their native entries
+          instead of resampling, to avoid muddying the qualitative
+          distinction.
+        - ``matplotlib.colors.Colormap`` instance — sampled as above.
+        - ``list``/``tuple`` — used verbatim (cycled if too short).
+    n : int
+        Number of distinct colours required.
+
+    Returns
+    -------
+    list of str
+        ``n`` hex colours (``'#rrggbb'``), in palette order.
+    """
+    import matplotlib as mpl
+
+    def _lookup_cmap(name: str):
+        """Fetch a colormap by name across matplotlib versions; ``None`` on miss."""
+        colormaps = getattr(mpl, "colormaps", None)
+        if colormaps is not None:
+            try:
+                return colormaps[name]
+            except (KeyError, ValueError):
+                return None
+        # matplotlib < 3.7 fallback.
+        try:
+            import matplotlib.cm as mcm
+            return mcm.get_cmap(name)
+        except (KeyError, ValueError):
+            return None
+
+    if n <= 0:
+        return []
+
+    # Explicit list/tuple — cycle verbatim.
+    if isinstance(palette, (list, tuple)):
+        if not palette:
+            raise ValueError("palette list is empty")
+        cycle = [mcolors.to_hex(resolve_color(c) if isinstance(c, str) else c,
+                                keep_alpha=False)
+                 for c in palette]
+        return [cycle[i % len(cycle)] for i in range(n)]
+
+    # No palette: fall back to the active matplotlib prop_cycle.
+    if palette is None:
+        prop_cycle = mpl.rcParams.get("axes.prop_cycle")
+        cycle_colors: list[str] = []
+        if prop_cycle is not None:
+            try:
+                cycle_colors = [mcolors.to_hex(c, keep_alpha=False)
+                                for c in prop_cycle.by_key().get("color", [])]
+            except Exception:
+                cycle_colors = []
+        if not cycle_colors:
+            fallback_cmap = _lookup_cmap("tab10")
+            if fallback_cmap is not None and hasattr(fallback_cmap, "colors"):
+                cycle_colors = [mcolors.to_hex(c, keep_alpha=False)
+                                for c in fallback_cmap.colors]
+        return [cycle_colors[i % len(cycle_colors)] for i in range(n)]
+
+    # Resolve a Colormap object (from name or instance).
+    cmap = None
+    if isinstance(palette, mcolors.Colormap):
+        cmap = palette
+    elif isinstance(palette, str):
+        cmap = _lookup_cmap(palette)
+        if cmap is None:
+            # Treat as a single colour literal; replicate it n times.
+            return [mcolors.to_hex(resolve_color(palette), keep_alpha=False)] * n
+
+    if cmap is None:
+        raise TypeError(
+            f"palette must be None, str, list/tuple, or matplotlib Colormap; "
+            f"got {type(palette).__name__}"
+        )
+
+    # Categorical (ListedColormap) with a small native palette: cycle through
+    # its entries so qualitative distinctions stay crisp.
+    if isinstance(cmap, mcolors.ListedColormap) and cmap.N <= 32:
+        native = [mcolors.to_hex(c, keep_alpha=False) for c in cmap.colors]
+        return [native[i % len(native)] for i in range(n)]
+
+    # Continuous colormap: sample n points across [0, 1].
+    if n == 1:
+        samples = [0.5]
+    else:
+        samples = [i / (n - 1) for i in range(n)]
+    return [mcolors.to_hex(cmap(s), keep_alpha=False) for s in samples]
+
+
+# Heuristic: at or below this many unique values, treat a numeric value_col
+# as discrete categories rather than binning it for continuous colouring.
+_VALUE_COL_DISCRETE_THRESHOLD = 8
+
+
+def _synthesise_value_groups(
+    df: pd.DataFrame,
+    value_col: str,
+    *,
+    n_bins: int,
+    vmin: float | None,
+    vmax: float | None,
+) -> tuple[pd.DataFrame, str]:
+    """Return ``(df_with_group_col, group_col_name)`` for per-point colouring.
+
+    Adds a synthetic categorical column that encodes the ``value_col``
+    so downstream per-group rendering can pick up one palette colour per
+    point class. Numeric columns with more than
+    :data:`_VALUE_COL_DISCRETE_THRESHOLD` unique values are binned by
+    equal-width ranges within ``[vmin, vmax]`` (auto-inferred when those
+    are omitted); fewer-unique or non-numeric columns are treated as
+    discrete categories sorted in natural order.
+    """
+    col = df[value_col]
+    is_numeric = (
+        pd.api.types.is_numeric_dtype(col)
+        and not pd.api.types.is_bool_dtype(col)
+    )
+    new_col = f"__{value_col}_bin__"
+
+    if is_numeric and col.dropna().nunique() > _VALUE_COL_DISCRETE_THRESHOLD:
+        vals = col.to_numpy(dtype=float, copy=True)
+        finite = vals[np.isfinite(vals)]
+        if finite.size == 0:
+            # Fall back to a single bucket — no meaningful colouring possible.
+            df = df.assign(**{new_col: "no data"})
+            return df, new_col
+        lo = float(vmin) if vmin is not None else float(finite.min())
+        hi = float(vmax) if vmax is not None else float(finite.max())
+        if hi <= lo:
+            hi = lo + 1e-9
+        edges = np.linspace(lo, hi, n_bins + 1)
+        # Right-inclusive bin labels like "[0.00, 0.14)"; clamp out-of-range
+        # values into the first/last bin so vmin/vmax clip instead of drop.
+        clipped = np.clip(vals, lo, hi)
+        idx = np.digitize(clipped, edges[1:-1], right=False)
+        labels = [
+            f"[{edges[i]:.3g}, {edges[i + 1]:.3g}{']' if i == n_bins - 1 else ')'}"
+            for i in range(n_bins)
+        ]
+        out = pd.Series(
+            [labels[i] if np.isfinite(vals[k]) else "no data"
+             for k, i in enumerate(idx)],
+            index=df.index,
+            dtype="category",
+        )
+        out = out.cat.set_categories(labels + ["no data"], ordered=True)
+        df = df.assign(**{new_col: out})
+        return df, new_col
+
+    # Discrete path: non-numeric, boolean, or low-cardinality numeric column.
+    cats = sorted(col.dropna().unique().tolist(), key=str)
+    out = col.astype("string").fillna("no data")
+    df = df.assign(**{new_col: pd.Categorical(
+        out, categories=[str(c) for c in cats] + ["no data"], ordered=True,
+    )})
+    return df, new_col
 
 
 def _resolve_color_mapping(m: Any) -> Any:
@@ -1139,10 +1312,55 @@ function uploadTrackData() {
       for (const ch of Object.keys(d)) {
         gpuXY[tid][ch] = {};
         rawXY[tid][ch] = {};
-        for (const [gid, b64] of Object.entries(d[ch])) {
-          const arr = b64F32(b64);
-          rawXY[tid][ch][gid] = arr;
-          gpuXY[tid][ch][gid] = buildXYGPU(arr, yMin, yMax);
+        for (const [gid, payload] of Object.entries(d[ch])) {
+          // Backwards compat: old payload was a bare base64 string. New
+          // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
+          if (typeof payload === 'string') {
+            if (payload === '') {
+              gpuXY[tid][ch][gid] = { base: null, levels: [] };
+              continue;
+            }
+            const arr = b64F32(payload);
+            rawXY[tid][ch][gid] = arr;
+            gpuXY[tid][ch][gid] = { base: buildXYGPU(arr, yMin, yMax), levels: [] };
+            continue;
+          }
+          if (!payload || !payload.base) {
+            gpuXY[tid][ch][gid] = { base: null, levels: [] };
+            continue;
+          }
+          const baseArr = b64F32(payload.base);
+          rawXY[tid][ch][gid] = baseArr;
+          // The base buffer uses the cfg-level (raw-data) y range. Each
+          // LOD level uses its own aggregate-range (from cfg.lodYRange)
+          // so the axis can rescale when switching levels — aggregates
+          // like 'sum' can land well outside the raw range.
+          const slot = {
+            base: buildXYGPU(baseArr, yMin, yMax),
+            baseYMin: yMin, baseYMax: yMax,
+            levels: [],
+          };
+          const lods = payload.lods || {};
+          const bw   = payload.binWidth || {};
+          const lodYR = cfg.lodYRange || {};
+          for (const [nKey, b64] of Object.entries(lods)) {
+            const arr = b64F32(b64);
+            const r = lodYR[nKey];
+            const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
+            const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
+            slot.levels.push({
+              n: +nKey,
+              binWidth: bw[nKey] || 0,
+              gpu: buildXYGPU(arr, lvlYMin, lvlYMax),
+              yMin: lvlYMin,
+              yMax: lvlYMax,
+            });
+          }
+          // Sort coarsest (smallest n / largest binWidth) → finest, matching
+          // the histogram LOD ordering so pickXYLevel can use the same
+          // "overwrite on qualifying level" idiom.
+          slot.levels.sort((a, b) => a.n - b.n);
+          gpuXY[tid][ch][gid] = slot;
         }
       }
     } else if (cfg.type === 'fill') {
@@ -1345,6 +1563,54 @@ function drawDensArea(gpuData, vs, ve, tt, tb, color, alpha) {
   setupDensProg(vs, ve, tt, tb, color, alpha);
   bindDensBuf(gpuData.buf);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, gpuData.count);
+}
+
+// Pick the finest XY-track LOD whose bins still span >= 2 CSS pixels at the
+// current view. Returns a {gpu, yMin, yMax} record:
+//  - When zoomed in past the finest LOD (its bin covers many CSS px),
+//    prefer the unaggregated `base` buffer so fine detail isn't smoothed
+//    away. "Many CSS px" means the finest LOD's bins are much wider than
+//    the 2-px threshold — at that point aggregation is obscuring detail
+//    the user could read directly from the raw samples.
+//  - Otherwise pick the finest LOD whose bins still span >= 2 CSS px.
+//  - Fall back to `base` when no LOD qualifies, or to the coarsest LOD
+//    if `base` is missing (extreme zoom-out).
+function pickXYLevelInfo(slot, pxPerBp) {
+  if (!slot) return null;
+  // If we're zoomed in far enough that even the finest LOD's bins would
+  // cover more than BASE_SWITCH_PX CSS pixels, render the raw samples.
+  // Threshold is generous (well beyond the 2-px qualification bar) to
+  // avoid popping between base and the finest LOD at marginal zooms.
+  const BASE_SWITCH_PX = 8;
+  if (slot.base && slot.levels && slot.levels.length) {
+    const finest = slot.levels[slot.levels.length - 1];
+    if (finest.binWidth * pxPerBp > BASE_SWITCH_PX) {
+      return { gpu: slot.base, yMin: slot.baseYMin, yMax: slot.baseYMax };
+    }
+  }
+  let pick = null;
+  if (slot.levels) {
+    for (const lv of slot.levels) {
+      if (lv.binWidth * pxPerBp >= 2) pick = lv;
+    }
+  }
+  if (pick) {
+    return { gpu: pick.gpu, yMin: pick.yMin, yMax: pick.yMax };
+  }
+  if (slot.base) {
+    return { gpu: slot.base, yMin: slot.baseYMin, yMax: slot.baseYMax };
+  }
+  if (slot.levels && slot.levels.length) {
+    const lv = slot.levels[0];
+    return { gpu: lv.gpu, yMin: lv.yMin, yMax: lv.yMax };
+  }
+  return null;
+}
+
+// Shorthand that just returns the GPU buffer (for the draw path).
+function pickXYLevel(slot, pxPerBp) {
+  const info = pickXYLevelInfo(slot, pxPerBp);
+  return info ? info.gpu : null;
 }
 
 // Draw line strip
@@ -1719,9 +1985,12 @@ function drawGeneTrack2D(cfg, trackY, vs, ve, W_css) {
 }
 
 // ── Y-axis ticks for quantitative tracks ───────────────────────────────────
-function drawYAxis(cfg, trackY) {
-  const yMin = cfg.yMin ?? 0;
-  const yMax = cfg.yMax ?? 1;
+// Optional yMinOverride/yMaxOverride let the caller render labels matching
+// the currently-active LOD level's range (scatter/line tracks switch range
+// per level when cfg.lodYRange is present).
+function drawYAxis(cfg, trackY, yMinOverride, yMaxOverride) {
+  const yMin = (yMinOverride != null) ? yMinOverride : (cfg.yMin ?? 0);
+  const yMax = (yMaxOverride != null) ? yMaxOverride : (cfg.yMax ?? 1);
   const h = cfg.height - PAD_V * 2;
   const nTicks = Math.min(5, Math.max(2, Math.floor(h / 20)));
   octx.font         = '8px monospace';
@@ -1894,9 +2163,22 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     }
     octx.restore();
 
-    // Y-axis ticks for quantitative tracks
+    // Y-axis ticks for quantitative tracks. For scatter/line, the active
+    // LOD level may carry its own Y range (cfg.lodYRange) — fetch the
+    // currently picked level and use its range if it has one.
     if (['scatter', 'line', 'fill', 'histogram'].includes(cfg.type)) {
-      drawYAxis(cfg, cssY);
+      let yMinAct = cfg.yMin;
+      let yMaxAct = cfg.yMax;
+      if ((cfg.type === 'scatter' || cfg.type === 'line') && cfg.lodYRange) {
+        const axisPxPerBp = (W_css - LABEL_W) / (ve - vs);
+        const slot = gpuXY[cfg.id]?.[ch]?.[cfg.groups?.[0]?.id];
+        const pick = pickXYLevelInfo(slot, axisPxPerBp);
+        if (pick && pick.yMin != null && pick.yMax != null) {
+          yMinAct = pick.yMin;
+          yMaxAct = pick.yMax;
+        }
+      }
+      drawYAxis(cfg, cssY, yMinAct, yMaxAct);
     }
 
     cssY += ch;
@@ -2090,13 +2372,21 @@ function render() {
     } else if (cfg.type === 'scatter') {
       const pointSize = cfg.pointSize || 3;
       const alpha     = cfg.alpha ?? 0.85;
+      const pxPerBp   = (W_css - LABEL_W) / (ve - vs);
       for (const grp of cfg.groups) {
-        drawPoints(gpuXY[cfg.id]?.[ch]?.[grp.id], vs, ve, tt, tb, grp.color, alpha, pointSize);
+        const slot = gpuXY[cfg.id]?.[ch]?.[grp.id];
+        if (!slot) continue;
+        const gpu = pickXYLevel(slot, pxPerBp);
+        if (gpu) drawPoints(gpu, vs, ve, tt, tb, grp.color, alpha, pointSize);
       }
     } else if (cfg.type === 'line') {
-      const alpha = cfg.alpha ?? 1.0;
+      const alpha   = cfg.alpha ?? 1.0;
+      const pxPerBp = (W_css - LABEL_W) / (ve - vs);
       for (const grp of cfg.groups) {
-        drawLine(gpuXY[cfg.id]?.[ch]?.[grp.id], vs, ve, tt, tb, grp.color, alpha);
+        const slot = gpuXY[cfg.id]?.[ch]?.[grp.id];
+        if (!slot) continue;
+        const gpu = pickXYLevel(slot, pxPerBp);
+        if (gpu) drawLine(gpu, vs, ve, tt, tb, grp.color, alpha);
       }
     } else if (cfg.type === 'fill') {
       for (const grp of cfg.groups) {
@@ -2732,7 +3022,7 @@ class Tracks(anywidget.AnyWidget):
         R8 texture rendering; handles 10 k+ individuals at 60 fps.
     :meth:`add_gene_track`
         Exon blocks plus intron connectors (drawn on the 2D overlay).
-    :meth:`add_scatter_track`
+    :meth:`add_point_track`
         Point cloud (``gl.POINTS``).
     :meth:`add_line_track`
         Connected polyline per group (``gl.LINE_STRIP``).
@@ -3219,6 +3509,7 @@ class Tracks(anywidget.AnyWidget):
         group_by: str | None = None,
         individual_col: str | None = None,
         color_map: dict | None = None,
+        palette: Any = None,
         height: int | None = None,
         density_windows: tuple | int = (256, 1024, 4096),
         stack: bool = False,
@@ -3246,8 +3537,10 @@ class Tracks(anywidget.AnyWidget):
             ``{group_value: '#rrggbb'}``. When omitted, colours cycle
             through the built-in palette in group order.
         height : int, optional
-            Track height in CSS pixels. Defaults to ``max(90, nrows)``,
-            i.e. at least one pixel per row.
+            Track height in CSS pixels. Defaults to ``max(60, nrows)``
+            (matches the other plot tracks' default of 60, with an
+            automatic bump when ``individual_col`` produces more rows
+            than that).
         density_windows : tuple of int or int, default ``(256, 1024, 4096)``
             Bin counts for the multi-resolution density LOD. A single
             ``int`` is treated as one level.
@@ -3279,11 +3572,11 @@ class Tracks(anywidget.AnyWidget):
             groups = ['all']
             group_by = None
 
+        default_palette = _resolve_qualitative_palette(palette, len(groups))
         if isinstance(color_map, str):
             color_map = {g: color_map for g in groups}
         if color_map is None:
-            color_map = {g: self._PALETTE[i % len(self._PALETTE)]
-                         for i, g in enumerate(groups)}
+            color_map = {g: default_palette[i] for i, g in enumerate(groups)}
 
         # Build global per-group individual maps (consistent across chromosomes)
         use_ind = individual_col and individual_col in df.columns
@@ -3298,7 +3591,7 @@ class Tracks(anywidget.AnyWidget):
 
         if height is None:
             total_rows = sum(grp_nind.values()) if use_ind else len(groups)
-            height = max(90, total_rows)
+            height = max(60, total_rows)
 
         # Stacking is only meaningful in the density overlay with >1 group and
         # no per-individual layout.
@@ -3386,7 +3679,7 @@ class Tracks(anywidget.AnyWidget):
             'groups': [
                 {'id': str(i), 'name': str(g),
                  'nInd': grp_nind.get(str(i), 0),
-                 'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)])}
+                 'color': color_map.get(g, default_palette[i])}
                 for i, g in enumerate(groups)
             ],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
@@ -4462,8 +4755,8 @@ class Tracks(anywidget.AnyWidget):
 
         return len(lane_end)
 
-    # ── add_scatter_track ────────────────────────────────────────────────────
-    def add_scatter_track(
+    # ── add_point_track ──────────────────────────────────────────────────────
+    def add_point_track(
         self,
         df: pd.DataFrame,
         name: str,
@@ -4471,7 +4764,12 @@ class Tracks(anywidget.AnyWidget):
         x: str = 'pos',
         y: str = 'value',
         group_by: str | None = None,
+        value_col: str | None = None,
+        n_bins: int = 70,
+        vmin: float | None = None,
+        vmax: float | None = None,
         color_map: dict | None = None,
+        palette: Any = None,
         height: int = 60,
         y_range: tuple[float, float] | None = None,
         point_size: int = 3,
@@ -4481,17 +4779,20 @@ class Tracks(anywidget.AnyWidget):
         s: float | None = None,
         size: float | None = None,
         marker: str | None = None,
+        density_windows: tuple | int = (256, 1024, 4096),
+        aggregate: str = 'mean',
+        y_range_per_lod: bool = True,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
     ) -> 'Tracks':
-        """Add a scatter track — point cloud rendered with ``gl.POINTS``.
+        """Add a point track — point cloud rendered with ``gl.POINTS``.
 
         Parameters
         ----------
         df : pandas.DataFrame
             Long-format frame with columns ``chrom``, the column named by
             ``x``, the column named by ``y``, and any optional
-            ``group_by`` column.
+            ``group_by`` / ``value_col`` columns.
         name : str
             Track display label shown in the left panel.
         x : str, default ``'pos'``
@@ -4500,10 +4801,32 @@ class Tracks(anywidget.AnyWidget):
             Column for the y-axis value.
         group_by : str, optional
             Column whose unique values become separate groups (each
-            drawn with its own colour).
+            drawn with its own colour). Mutually exclusive with
+            ``value_col``.
+        value_col : str, optional
+            Column used to colour individual points. Non-numeric or
+            low-cardinality values are treated as discrete categories
+            (one colour per category). Numeric columns are binned into
+            ``n_bins`` quantile buckets and coloured along the palette.
+            Mutually exclusive with ``group_by``.
+        n_bins : int, default 70
+            Number of bins when ``value_col`` is continuous. Large
+            defaults (≈10× categorical resolution) give a visually
+            smooth colour ramp; pass a smaller value (e.g. 5–9) for a
+            banded look or when a matching colorbar is in play.
+        vmin, vmax : float, optional
+            Clamp the continuous range when binning ``value_col``.
+            Auto-inferred from the data when omitted.
         color_map : dict, optional
             ``{group_value: '#rrggbb'}``. Overridden by ``color``/``c``
             when those are supplied.
+        palette : None, str, list, or matplotlib.colors.Colormap, optional
+            Group palette. ``None`` uses the active matplotlib
+            ``axes.prop_cycle``. Strings are resolved as colormap names
+            first (``'viridis'``, ``'tab10'``, ...) then fall back to
+            single-colour literals. For ``value_col`` with a continuous
+            column the default becomes ``'viridis'`` when ``palette`` is
+            left as ``None``.
         height : int, default 60
             Track height in CSS pixels.
         y_range : tuple of (float, float), optional
@@ -4516,9 +4839,8 @@ class Tracks(anywidget.AnyWidget):
             ``0.85`` (the prior visual). If ``color`` carries an alpha
             channel and ``alpha`` is not given, that alpha is lifted out.
         color, c : Any, optional
-            Single matplotlib-style colour applied to all groups.
-            Overrides ``color_map``. Examples: ``'C0'``, ``'red'``,
-            ``'#ff8800'``, ``'#ff880040'``, ``(1, 0, 0, 0.5)``.
+            Single matplotlib-style colour applied to all points.
+            Overrides ``color_map`` and ``value_col`` colouring.
         s, size : float, optional
             Aliases for ``point_size``.
         marker : str, optional
@@ -4541,20 +4863,49 @@ class Tracks(anywidget.AnyWidget):
         Raises
         ------
         TypeError
-            If conflicting aliases are passed (e.g. both ``s`` and
-            ``point_size``, or both ``color`` and ``c``).
+            If conflicting aliases are passed, or if both ``group_by``
+            and ``value_col`` are supplied.
         ValueError
-            If ``alpha`` is outside ``[0, 1]``.
+            If ``alpha`` is outside ``[0, 1]`` or ``n_bins < 1``.
         NotImplementedError
             If ``marker`` is anything other than ``None`` / ``'.'`` /
             ``'s'``.
         """
+        if group_by is not None and value_col is not None:
+            raise TypeError(
+                "pass either `group_by` or `value_col`, not both"
+            )
+        # When value_col is given, synthesise a categorical group column
+        # so the renderer's per-group colouring path can still be used.
+        if value_col is not None:
+            if value_col not in df.columns:
+                raise KeyError(f"value_col={value_col!r} not in df.columns")
+            if n_bins < 1:
+                raise ValueError(f"n_bins must be >= 1, got {n_bins}")
+            df, group_by = _synthesise_value_groups(
+                df, value_col, n_bins=n_bins, vmin=vmin, vmax=vmax,
+            )
+            # Default to a continuous colormap when the user didn't pick one.
+            if palette is None and color_map is None and color is None and c is None:
+                palette = 'viridis'
+
         return self._add_xy_track(
             df, name, 'scatter', x, y, group_by,
             color_map, height, y_range, point_size=point_size,
             tip_fmt=tip_fmt, tip_label=tip_label,
             alpha=alpha, color=color, c=c, s=s, size=size, marker=marker,
+            palette=palette,
+            density_windows=density_windows, aggregate=aggregate,
+            y_range_per_lod=y_range_per_lod,
         )
+
+    # Backwards-compatible alias (deprecated — use :meth:`add_point_track`).
+    def add_scatter_track(self, *args: Any, **kwargs: Any) -> 'Tracks':
+        warnings.warn(
+            "add_scatter_track is deprecated; use add_point_track instead.",
+            DeprecationWarning, stacklevel=2,
+        )
+        return self.add_point_track(*args, **kwargs)
 
     # ── add_line_track ───────────────────────────────────────────────────────
     def add_line_track(
@@ -4566,6 +4917,7 @@ class Tracks(anywidget.AnyWidget):
         y: str = 'value',
         group_by: str | None = None,
         color_map: dict | None = None,
+        palette: Any = None,
         height: int = 60,
         y_range: tuple[float, float] | None = None,
         step: str | None = None,
@@ -4576,6 +4928,9 @@ class Tracks(anywidget.AnyWidget):
         linewidth: float | None = None,
         ls: str | None = None,
         linestyle: str | None = None,
+        density_windows: tuple | int = (256, 1024, 4096),
+        aggregate: str = 'mean',
+        y_range_per_lod: bool = True,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
     ) -> 'Tracks':
@@ -4654,6 +5009,9 @@ class Tracks(anywidget.AnyWidget):
             tip_label=tip_label, step=step,
             alpha=alpha, color=color, c=c,
             lw=lw, linewidth=linewidth, ls=ls, linestyle=linestyle,
+            palette=palette,
+            density_windows=density_windows, aggregate=aggregate,
+            y_range_per_lod=y_range_per_lod,
         )
 
     def _add_xy_track(
@@ -4681,6 +5039,10 @@ class Tracks(anywidget.AnyWidget):
         linewidth: float | None = None,
         ls: str | None = None,
         linestyle: str | None = None,
+        palette: Any = None,
+        density_windows: tuple | int = (256, 1024, 4096),
+        aggregate: str = 'mean',
+        y_range_per_lod: bool = True,
     ) -> 'Tracks':
         """Shared implementation for scatter and line tracks.
 
@@ -4693,7 +5055,7 @@ class Tracks(anywidget.AnyWidget):
         Parameters
         ----------
         df, name, x, y, group_by, color_map, height, y_range, tip_fmt, tip_label
-            See :meth:`add_scatter_track` and :meth:`add_line_track` for
+            See :meth:`add_point_track` and :meth:`add_line_track` for
             the user-facing semantics; values flow through unchanged.
         track_type : {'scatter', 'line'}
             Which renderer branch to emit. Drives which of the
@@ -4792,17 +5154,24 @@ class Tracks(anywidget.AnyWidget):
         color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
         if group_by and group_by in df.columns:
-            groups = sorted(df[group_by].dropna().unique(), key=str)
+            col = df[group_by].dropna()
+            # Respect an explicit Categorical order; otherwise sort by string.
+            if isinstance(col.dtype, pd.CategoricalDtype):
+                cats = list(col.cat.categories)
+                present = set(col.unique())
+                groups = [c for c in cats if c in present]
+            else:
+                groups = sorted(col.unique(), key=str)
         else:
             groups = ['all']
             group_by = None
 
+        default_palette = _resolve_qualitative_palette(palette, len(groups))
         if single_color_hex is not None:
             # Track-level `color`/`c` overrides per-group colour_map entirely.
             color_map = {g: single_color_hex for g in groups}
         elif color_map is None:
-            color_map = {g: self._PALETTE[i % len(self._PALETTE)]
-                         for i, g in enumerate(groups)}
+            color_map = {g: default_palette[i] for i, g in enumerate(groups)}
 
         # Compute y range
         if y_range is not None:
@@ -4814,57 +5183,167 @@ class Tracks(anywidget.AnyWidget):
             yMin -= pad
             yMax += pad
 
+        # Normalise density_windows: accept int, tuple, or list.
+        if isinstance(density_windows, int):
+            density_windows = (density_windows,)
+        else:
+            density_windows = tuple(int(n) for n in density_windows if int(n) > 0)
+        if aggregate not in ('mean', 'sum', 'max'):
+            raise ValueError(
+                f"aggregate must be 'mean', 'sum', or 'max', got {aggregate!r}"
+            )
+
+        # Track per-level (yMin, yMax) extrema across all (chrom, group) pairs
+        # so the axis can rescale when the renderer switches LOD levels.
+        # Aggregates (especially 'sum') can land well outside the raw range.
+        lod_y_range: dict[str, list[float]] = {
+            str(n): [float('inf'), float('-inf')] for n in density_windows
+        }
+
         xy_out: dict = {}
         for chrom_val, cdf in df.groupby('chrom'):
             chrom = str(chrom_val)
             xy_out[chrom] = {}
+            csz = self.chrom_sizes.get(chrom)
             for gi, group in enumerate(groups):
                 gid = str(gi)
                 gdf = cdf[cdf[group_by] == group] if group_by else cdf
                 if gdf.empty:
-                    xy_out[chrom][gid] = ''
+                    xy_out[chrom][gid] = {'base': '', 'lods': {}, 'binWidth': {}}
                     continue
                 gdf = gdf.sort_values(x)
                 n = len(gdf)
-                arr = np.empty(n * 2, dtype=np.float32)
-                arr[0::2] = gdf[x].to_numpy(dtype=np.float32)
-                arr[1::2] = gdf[y].to_numpy(dtype=np.float32)
-                if step and n > 1:
-                    xs = arr[0::2]; ys = arr[1::2]
+                xs_arr = gdf[x].to_numpy(dtype=np.float64)
+                ys_arr = gdf[y].to_numpy(dtype=np.float64)
+
+                def _step_expand(xs_in, ys_in):
+                    """Apply the track's step mode to paired x/y arrays.
+
+                    Returns a stride-2 float32 buffer ready for _pack_f32.
+                    Falls back to the straight xs/ys interleave when step
+                    is None or the input has fewer than 2 points.
+                    """
+                    nn = len(xs_in)
+                    arr_flat = np.empty(nn * 2, dtype=np.float32)
+                    arr_flat[0::2] = np.asarray(xs_in, dtype=np.float32)
+                    arr_flat[1::2] = np.asarray(ys_in, dtype=np.float32)
+                    if not step or nn < 2:
+                        return arr_flat
+                    xs = arr_flat[0::2]; ys = arr_flat[1::2]
                     if step == 'post':
-                        m = 2 * n - 1
-                        sx = np.empty(m, dtype=np.float32)
-                        sy = np.empty(m, dtype=np.float32)
+                        mm = 2 * nn - 1
+                        sx = np.empty(mm, dtype=np.float32)
+                        sy = np.empty(mm, dtype=np.float32)
                         sx[0::2] = xs;  sx[1::2] = xs[1:]
                         sy[0::2] = ys;  sy[1::2] = ys[:-1]
                     elif step == 'pre':
-                        m = 2 * n - 1
-                        sx = np.empty(m, dtype=np.float32)
-                        sy = np.empty(m, dtype=np.float32)
+                        mm = 2 * nn - 1
+                        sx = np.empty(mm, dtype=np.float32)
+                        sy = np.empty(mm, dtype=np.float32)
                         sx[0::2] = xs;  sx[1::2] = xs[:-1]
                         sy[0::2] = ys;  sy[1::2] = ys[1:]
                     elif step == 'mid':
                         mids = (xs[:-1] + xs[1:]) / 2
-                        m = 2 * n
-                        sx = np.empty(m, dtype=np.float32)
-                        sy = np.empty(m, dtype=np.float32)
+                        mm = 2 * nn
+                        sx = np.empty(mm, dtype=np.float32)
+                        sy = np.empty(mm, dtype=np.float32)
                         sx[0::2] = np.concatenate([[xs[0]], mids])
                         sx[1::2] = np.concatenate([mids, [xs[-1]]])
                         sy[0::2] = ys;  sy[1::2] = ys
                     else:
-                        raise ValueError(f"step must be 'pre', 'post', or 'mid', got {step!r}")
-                    arr = np.empty(m * 2, dtype=np.float32)
-                    arr[0::2] = sx; arr[1::2] = sy
-                xy_out[chrom][gid] = self._pack_f32(arr)
+                        raise ValueError(
+                            f"step must be 'pre', 'post', or 'mid', got {step!r}"
+                        )
+                    out = np.empty(mm * 2, dtype=np.float32)
+                    out[0::2] = sx; out[1::2] = sy
+                    return out
+
+                # ── base buffer (stride-2, with optional step expansion) ──
+                base_b64 = self._pack_f32(_step_expand(xs_arr, ys_arr))
+
+                # ── LOD levels: stride-2 (bin_centre, aggregate_y) for
+                # non-empty bins only. Aggregate from the pre-step samples
+                # (so step expansion doesn't inflate bin counts), then
+                # step-expand each level's output so staircase semantics
+                # are preserved across all zooms. ───────────────────────────
+                lods: dict[str, str] = {}
+                bin_widths: dict[str, float] = {}
+                level_csz = csz if csz else (float(xs_arr.max()) + 1.0)
+                if level_csz > 0:
+                    for nbin in density_windows:
+                        bins = np.clip(
+                            (xs_arr / level_csz * nbin).astype(int), 0, nbin - 1
+                        )
+                        counts = np.zeros(nbin, dtype=np.float64)
+                        np.add.at(counts, bins, 1)
+                        if aggregate == 'sum':
+                            sums = np.zeros(nbin, dtype=np.float64)
+                            np.add.at(sums, bins, ys_arr)
+                            lvl = sums
+                        elif aggregate == 'max':
+                            lvl_init = np.full(nbin, -np.inf, dtype=np.float64)
+                            np.maximum.at(lvl_init, bins, ys_arr)
+                            lvl = np.where(np.isfinite(lvl_init), lvl_init, 0.0)
+                        else:  # 'mean'
+                            sums = np.zeros(nbin, dtype=np.float64)
+                            np.add.at(sums, bins, ys_arr)
+                            with np.errstate(divide='ignore', invalid='ignore'):
+                                lvl = np.where(counts > 0, sums / counts, 0.0)
+
+                        mask = counts > 0
+                        nnz = int(mask.sum())
+                        if nnz == 0:
+                            continue
+                        bw = level_csz / nbin
+                        xs_out = (np.flatnonzero(mask).astype(np.float64) + 0.5) * bw
+                        ys_out = lvl[mask]
+                        # Apply the same step expansion that the base uses
+                        # so a stepped line keeps its staircase shape at
+                        # every LOD level.
+                        lods[str(nbin)] = self._pack_f32(_step_expand(xs_out, ys_out))
+                        bin_widths[str(nbin)] = float(bw)
+
+                        # Widen this level's extrema to cover every group/chrom
+                        # that contributes to it.
+                        ymn = float(ys_out.min())
+                        ymx = float(ys_out.max())
+                        slot = lod_y_range[str(nbin)]
+                        if ymn < slot[0]: slot[0] = ymn
+                        if ymx > slot[1]: slot[1] = ymx
+
+                xy_out[chrom][gid] = {
+                    'base': base_b64,
+                    'lods': lods,
+                    'binWidth': bin_widths,
+                }
+
+        # Per-LOD Y ranges: when y_range_per_lod is True and the caller
+        # didn't force a fixed y_range, emit a per-level {yMin, yMax} map
+        # so the JS can rescale the axis when it switches LOD levels.
+        # Aggregates (especially 'sum') can differ from the raw range by
+        # orders of magnitude; keeping a single axis makes the line clip
+        # or collapse to a thin band.
+        lod_y_range_out: dict[str, dict[str, float]] = {}
+        if y_range_per_lod and y_range is None:
+            for nkey, (lo, hi) in lod_y_range.items():
+                if not (np.isfinite(lo) and np.isfinite(hi)):
+                    continue
+                pad = (hi - lo) * 0.05 or 0.5
+                lod_y_range_out[nkey] = {
+                    'yMin': float(lo - pad),
+                    'yMax': float(hi + pad),
+                }
 
         cfg = {
             'id': tid, 'type': track_type, 'name': name, 'height': height,
             'yMin': yMin, 'yMax': yMax, 'pointSize': point_size,
+            'densityWindows': list(density_windows),
             'groups': [
                 {'id': str(i), 'name': str(g),
-                 'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)])}
+                 'color': color_map.get(g, default_palette[i])}
                 for i, g in enumerate(groups)
             ],
+            **({'lodYRange': lod_y_range_out} if lod_y_range_out else {}),
             **(({'alpha': alpha} if alpha is not None else {})),
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
@@ -4885,6 +5364,7 @@ class Tracks(anywidget.AnyWidget):
         y_hi: str | None = None,
         group_by: str | None = None,
         color_map: dict | None = None,
+        palette: Any = None,
         color_pos: str | None = 'C0',
         color_neg: str | None = 'C3',
         height: int = 60,
@@ -4987,10 +5467,9 @@ class Tracks(anywidget.AnyWidget):
             groups = ['all']
             group_by = None
 
-        default_palette = [resolve_color(f'C{i}') for i in range(10)]
+        default_palette = _resolve_qualitative_palette(palette, len(groups))
         if color_map is None:
-            color_map = {g: default_palette[i % len(default_palette)]
-                         for i, g in enumerate(groups)}
+            color_map = {g: default_palette[i] for i, g in enumerate(groups)}
 
         if y_range is not None:
             yMin, yMax = y_range
@@ -5065,7 +5544,7 @@ class Tracks(anywidget.AnyWidget):
         dual = baseline is not None
 
         def _group_cfg(i, g):
-            base = color_map.get(g, default_palette[i % len(default_palette)])
+            base = color_map.get(g, default_palette[i])
             entry = {'id': str(i), 'name': str(g), 'color': base}
             if dual:
                 entry['colorPos'] = color_pos or base
@@ -5093,6 +5572,7 @@ class Tracks(anywidget.AnyWidget):
         y: str = 'value',
         group_by: str | None = None,
         color_map: dict | None = None,
+        palette: Any = None,
         height: int = 60,
         y_range: tuple[float, float] | None = None,
         bin_width: float | None = None,
@@ -5176,9 +5656,9 @@ class Tracks(anywidget.AnyWidget):
             groups = ['all']
             group_by = None
 
+        default_palette = _resolve_qualitative_palette(palette, len(groups))
         if color_map is None:
-            color_map = {g: self._PALETTE[i % len(self._PALETTE)]
-                         for i, g in enumerate(groups)}
+            color_map = {g: default_palette[i] for i, g in enumerate(groups)}
 
         # Auto bin width from median spacing
         if bin_width is None:
@@ -5402,7 +5882,7 @@ class Tracks(anywidget.AnyWidget):
             'stacked': stacked,
             'groups': [
                 {'id': str(i), 'name': str(g),
-                 'color': color_map.get(g, self._PALETTE[i % len(self._PALETTE)])}
+                 'color': color_map.get(g, default_palette[i])}
                 for i, g in enumerate(groups)
             ],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
@@ -5411,6 +5891,8 @@ class Tracks(anywidget.AnyWidget):
         self.track_data    = {**self.track_data, tid: hist_out}
         self.track_configs = [*self.track_configs, cfg]
         return self
+
+    _UCSC_STEP_DEFAULT = object()  # sentinel: distinguish unset from step=None
 
     def add_ucsc_track(
         self,
@@ -5423,18 +5905,19 @@ class Tracks(anywidget.AnyWidget):
         start: int | None = None,
         end: int | None = None,
         x: str = 'start',
-        step: str | None = 'post',
+        step: Any = _UCSC_STEP_DEFAULT,
+        color: Any = None,
         **kwargs: Any,
     ) -> 'Tracks':
-        """Fetch a UCSC track and add it as a line, histogram or fill track.
+        """Fetch a UCSC track and add it as a point, line, histogram or fill track.
 
         Thin wrapper around :func:`geneinfo.ucsc.get_ucsc_track` that
         forwards the resulting ``chrom, start, end, value`` DataFrame to
-        :meth:`add_line_track`, :meth:`add_histogram_track` or
-        :meth:`add_fill_track` depending on ``kind``. The adapter
-        auto-detects which source column holds the numeric signal and
-        renames it to ``'value'``, so the user never needs to know the
-        track's native schema.
+        :meth:`add_point_track`, :meth:`add_line_track`,
+        :meth:`add_histogram_track` or :meth:`add_fill_track` depending
+        on ``kind``. The adapter auto-detects which source column holds
+        the numeric signal and renames it to ``'value'``, so the user
+        never needs to know the track's native schema.
 
         If the auto-detected column is wrong for your purposes, fetch
         the track yourself and pass the DataFrame to the underlying
@@ -5453,8 +5936,9 @@ class Tracks(anywidget.AnyWidget):
             :func:`geneinfo.ucsc.search_ucsc_tracks`).
         name
             Track display label. Defaults to ``track_name``.
-        kind : {'line', 'histogram', 'fill'}
-            Which widget track to draw.
+        kind : {'point', 'line', 'histogram', 'fill'}
+            Which widget track to draw. ``'point'`` maps to
+            :meth:`add_point_track`.
         assembly
             Genome assembly. Inherits from ``Tracks(assembly)`` when
             omitted.
@@ -5465,13 +5949,22 @@ class Tracks(anywidget.AnyWidget):
         x : str, default ``'start'``
             Column to use as the x position. Pass ``'mid'`` to use the
             interval midpoint.
-        step : str or None, default ``'post'``
+        step : str or None, optional
             Step mode for ``kind='line'`` or ``kind='fill'`` (one of
-            ``'pre'``, ``'post'``, ``'mid'``, or ``None``). Ignored for
-            ``kind='histogram'``. Pass ``step=None`` to disable stepping.
+            ``'pre'``, ``'post'``, ``'mid'``, or ``None``). Defaults to
+            ``'post'`` when ``x='start'`` and ``None`` when ``x='mid'``
+            (there's no interval extent to step across when plotting at
+            midpoints). Ignored for ``kind='point'`` and
+            ``kind='histogram'``.
+        color : optional
+            Single colour applied to the track. For ``kind='point'`` and
+            ``kind='line'`` it is forwarded as ``color=``; for
+            ``kind='histogram'`` / ``kind='fill'`` it is translated into
+            the single-group ``color_map`` those methods expect.
         **kwargs
-            Forwarded to the underlying ``add_line_track`` /
-            ``add_histogram_track`` / ``add_fill_track`` call.
+            Forwarded to the underlying ``add_point_track`` /
+            ``add_line_track`` / ``add_histogram_track`` /
+            ``add_fill_track`` call.
 
         Returns
         -------
@@ -5488,7 +5981,7 @@ class Tracks(anywidget.AnyWidget):
         from geneinfo.ucsc import get_ucsc_track  # deferred import
 
         kind = kind.lower()
-        valid_kinds = {'line', 'histogram', 'fill'}
+        valid_kinds = {'point', 'line', 'histogram', 'fill'}
         if kind not in valid_kinds:
             raise ValueError(
                 f"add_ucsc_track: kind={kind!r} must be one of {sorted(valid_kinds)}"
@@ -5529,16 +6022,34 @@ class Tracks(anywidget.AnyWidget):
                 f"add_ucsc_track: x={x!r} not in track columns {list(df.columns)}"
             )
 
+        # Resolve step default: 'post' for x='start', None for x='mid'.
+        if step is Tracks._UCSC_STEP_DEFAULT:
+            step = None if x == 'mid' else 'post'
+
         label = name if name is not None else track_name
 
+        if kind == 'point':
+            if color is not None:
+                kwargs.setdefault('color', color)
+            return self.add_point_track(df, label, x=x, y='value', **kwargs)
         if kind == 'line':
             kwargs.setdefault('step', step)
+            if color is not None:
+                kwargs.setdefault('color', color)
             return self.add_line_track(df, label, x=x, y='value', **kwargs)
         if kind == 'histogram':
-            # histogram has no `step` parameter — ignore the default silently.
+            # histogram has no `step` or plain `color` parameter — map a
+            # scalar `color` onto the single-group color_map.
+            if color is not None:
+                kwargs.setdefault('color_map', {'all': color})
             return self.add_histogram_track(df, label, x=x, y='value', **kwargs)
         # kind == 'fill'
         kwargs.setdefault('step', step)
+        if color is not None:
+            # fill uses color_map for the multi-group path and
+            # color_pos/color_neg for the single-curve baseline path.
+            kwargs.setdefault('color_map', {'all': color})
+            kwargs.setdefault('color_pos', color)
         return self.add_fill_track(df, label, x=x, y='value', **kwargs)
 
     # ── Overlays ─────────────────────────────────────────────────────────────
@@ -5738,24 +6249,49 @@ class Tracks(anywidget.AnyWidget):
         }
         return self
 
-    def zoom_to(self, chrom: str, center: int, window: int = 1_000_000) -> 'Tracks':
+    def zoom_to(
+        self,
+        chrom: str,
+        center: int | None = None,
+        window: int | None = None,
+    ) -> 'Tracks':
         """Centre the viewport on a position with a fixed window width.
+
+        When called with only a chromosome — ``zoom_to('chrX')`` or
+        ``zoom_to(chrom='chrX')`` — the viewport shows the whole
+        chromosome. When ``center`` is given but ``window`` is omitted,
+        ``window`` defaults to ``1_000_000`` bp.
 
         Parameters
         ----------
         chrom : str
             Chromosome name.
-        center : int
-            Genomic position to centre on, in base pairs.
-        window : int, default ``1_000_000``
-            Total window width in base pairs. The viewport is set to
-            ``[center - window // 2, center + window // 2)`` then
-            clamped to the chromosome bounds by :meth:`set_viewport`.
+        center : int, optional
+            Genomic position to centre on, in base pairs. When omitted
+            the viewport covers the full chromosome.
+        window : int, optional
+            Total window width in base pairs. Defaults to
+            ``1_000_000`` when ``center`` is given, or to the full
+            chromosome length when ``center`` is ``None``. The viewport
+            is set to ``[center - window // 2, center + window // 2)``
+            then clamped to the chromosome bounds by
+            :meth:`set_viewport`.
 
         Returns
         -------
         Tracks
             ``self``, to support fluent chaining.
         """
+        csz = self.chrom_sizes.get(str(chrom))
+        if center is None:
+            if csz is None:
+                raise KeyError(
+                    f"zoom_to: chrom={chrom!r} not in chrom_sizes; pass "
+                    f"center= to specify an explicit window."
+                )
+            return self.set_viewport(chrom, 0, int(csz))
+
+        if window is None:
+            window = 1_000_000
         half = window // 2
         return self.set_viewport(chrom, center - half, center + half)
