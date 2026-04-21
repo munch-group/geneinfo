@@ -1847,14 +1847,39 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
       const hLTotalW  = hLWeights.reduce((a, b) => a + b, 0);
       const hLCumW    = [0];
       for (let i = 0; i < nG; i++) hLCumW.push(hLCumW[i] + hLWeights[i]);
+      // value_col overrides per-group tint; use the default track-label
+      // colour so the text doesn't appear to encode something it doesn't.
+      const defaultLbl = th.track_label || '#9090c0';
       for (let gi = 0; gi < nG; gi++) {
         const bandTop = cfg.height * hLCumW[gi] / hLTotalW;
         const bandBot = cfg.height * hLCumW[gi + 1] / hLTotalW;
         const gy = cssY + bandTop + (bandBot - bandTop) / 2;
-        const [r, g, b] = hexRGB(cfg.groups[gi].color);
-        octx.fillStyle = `rgba(${(r*255)|0},${(g*255)|0},${(b*255)|0},0.85)`;
+        if (cfg.labelsUseDefault) {
+          octx.fillStyle = defaultLbl;
+        } else {
+          const [r, g, b] = hexRGB(cfg.groups[gi].color);
+          octx.fillStyle = `rgba(${(r*255)|0},${(g*255)|0},${(b*255)|0},0.85)`;
+        }
         octx.font      = '8px monospace';
         octx.fillText(`${cfg.groups[gi].name} (${cfg.groups[gi].nInd})`, 6, gy);
+      }
+    }
+    // Discrete value-mode with no group_col: list the categories in the
+    // left bar, each tinted with its palette colour (mirrors how group
+    // labels already work for multi-group tracks).
+    if (cfg.type === 'heatmap' && Array.isArray(cfg.valueLabels)
+        && cfg.valueLabels.length > 0) {
+      const defaultLbl = th.track_label || '#9090c0';
+      octx.font = '8px monospace';
+      for (let i = 0; i < cfg.valueLabels.length; i++) {
+        const item = cfg.valueLabels[i];
+        if (item.color) {
+          const [r, g, b] = hexRGB(item.color);
+          octx.fillStyle = `rgba(${(r*255)|0},${(g*255)|0},${(b*255)|0},0.85)`;
+        } else {
+          octx.fillStyle = defaultLbl;
+        }
+        octx.fillText(item.name, 6, cssY + 18 + i * 10);
       }
     }
     // Group labels for quantitative tracks (scatter/line/fill/histogram)
@@ -2868,16 +2893,22 @@ class Tracks(anywidget.AnyWidget):
         """
         return _resolve_color_mapping(proposal['value'])
 
-    def __init__(self, chrom_sizes: dict[str, int], **kw):
+    def __init__(
+        self,
+        chroms: dict[str, int] | str,
+        **kw,
+    ):
         """Construct an empty viewer for a given set of chromosome sizes.
 
         Parameters
         ----------
-        chrom_sizes : dict of str to int
-            Mapping from chromosome name to length in base pairs. Keys
-            and values are coerced to ``str`` and ``int`` respectively.
-            The first key (in iteration order) becomes the initial
-            viewport.
+        chroms : dict of str to int, or str
+            Either an explicit ``{chrom: length}`` mapping (coerced to
+            ``str``/``int``), or an assembly identifier string
+            (``'hg38'``, ``'rheMac10'``, …) to look up chromosome sizes
+            via :func:`geneinfo.coords.chromosome_lengths`. The first
+            key of the resulting mapping (in iteration order) becomes
+            the initial viewport.
         **kw
             Extra keyword arguments forwarded to
             :class:`anywidget.AnyWidget`. The recognised extra is
@@ -2885,7 +2916,24 @@ class Tracks(anywidget.AnyWidget):
             :func:`set_default_theme` and is normalised through
             :func:`_resolve_color_mapping` so matplotlib-style colour
             specs (``'C0'``, ``'red'``, …) can be supplied.
+
+        Raises
+        ------
+        TypeError
+            If ``chroms`` is neither a dict nor a string.
         """
+        if isinstance(chroms, str):
+            # Deferred import avoids pulling coords (and its network
+            # dependencies) in for callers who pass an explicit dict.
+            from geneinfo.coords import chromosome_lengths
+            chrom_sizes = dict(chromosome_lengths(assembly=chroms))
+        elif isinstance(chroms, dict):
+            chrom_sizes = chroms
+        else:
+            raise TypeError(
+                f"Tracks(...) expected a chrom-size dict or assembly string, "
+                f"got {type(chroms).__name__}"
+            )
         # Respect an explicit ``theme=`` kwarg; otherwise apply the module-level
         # default (see ``set_default_theme``).
         if 'theme' in kw:
@@ -2898,11 +2946,10 @@ class Tracks(anywidget.AnyWidget):
         self.viewport = {'chrom': first, 'start': 0, 'end': self.chrom_sizes[first]}
         self._heatmap_sources: dict[str, dict] = {}
         self._heatmap_global:  dict[str, dict] = {}
-        # Names of value-mode heatmap tracks, in order added. Consumed by
-        # ``_ipython_display_`` to auto-emit a compact legend above the
-        # widget. Set ``auto_legend = False`` to suppress.
-        self._auto_legend_names: list[str] = []
-        self.auto_legend: bool = True
+        # Opt-in legend strip. Empty until the user calls
+        # :meth:`legend` — ``_ipython_display_`` reads this to know which
+        # value-mode heatmap tracks to summarise above the widget.
+        self._legend_spec: dict | None = None
 
     @anywidget.experimental.command
     def _cmd_heatmap_recompute(
@@ -3396,7 +3443,9 @@ class Tracks(anywidget.AnyWidget):
             (``'viridis'``) or ``Colormap`` instance triggers continuous
             mode; a ``{category: colour}`` dict or list of colours
             triggers discrete mode (up to 255 categories). Ignored when
-            ``value_col`` is ``None``.
+            ``value_col`` is ``None``. When ``value_col`` is given but
+            ``palette`` is omitted, a default is auto-picked: ``'viridis'``
+            for numeric columns, the built-in categorical cycle otherwise.
         vmin, vmax : float, optional
             Continuous-mode normalisation range; auto-inferred from
             ``df[value_col]`` when omitted. Ignored in discrete mode.
@@ -3441,9 +3490,19 @@ class Tracks(anywidget.AnyWidget):
         if value_col is not None and value_col not in df.columns:
             raise ValueError(f"value_col '{value_col}' not in df.columns")
         if value_col is not None and palette is None:
-            raise ValueError(
-                "value_col requires palette (colormap name, Colormap, dict, or list)"
-            )
+            # Auto-pick: numeric column → continuous default colormap;
+            # anything else → discrete default (the same cycling palette
+            # used for group tints in density mode, so value- and group-
+            # coloured heatmaps read as siblings).
+            col = df[value_col]
+            if pd.api.types.is_numeric_dtype(col) and not pd.api.types.is_bool_dtype(col):
+                palette = 'viridis'
+            else:
+                cats = list(col.dropna().unique())
+                palette = [
+                    self._PALETTE[i % len(self._PALETTE)]
+                    for i in range(len(cats))
+                ]
         lut_info: dict | None = None
         if value_col is not None:
             lut_info = _build_heatmap_lut(df[value_col], palette, vmin, vmax)
@@ -3534,10 +3593,19 @@ class Tracks(anywidget.AnyWidget):
             # LUT ships as 256 × 3 uint8 bytes; JS side decodes into an RGB8
             # texture keyed to byte index (0 reserved for "no data").
             cfg['lut'] = self._pack_u8(lut_info['lut_u8'].reshape(-1))
-            # Remember this track so ``_ipython_display_`` can auto-render
-            # a compact legend strip above the widget.
-            if name not in self._auto_legend_names:
-                self._auto_legend_names.append(name)
+            # value_col drives cell colour; group-band labels in the left
+            # bar must fall back to the default track-label colour so they
+            # aren't tinted by a now-irrelevant group palette.
+            cfg['labelsUseDefault'] = True
+            # Discrete value-mode without group_col: list category labels
+            # in the left bar, each tinted with its palette colour so the
+            # text doubles as an in-widget legend.
+            if mode == 'discrete' and group_col is None:
+                palette_ref = lut_info.get('palette_ref') or {}
+                cfg['valueLabels'] = [
+                    {'name': str(cat), 'color': palette_ref.get(cat) or '#9090c0'}
+                    for cat in lut_info['cat_to_idx'].keys()
+                ]
         self.track_data    = {**self.track_data, tid: hm_out}
         self.track_configs = [*self.track_configs, cfg]
         return self
@@ -3817,25 +3885,30 @@ class Tracks(anywidget.AnyWidget):
         figsize: tuple[float, float] | None = None,
         dpi: int | None = None,
         labels: dict | None = None,
-    ):
-        """Compose several value-mode keys on one compact, aligned row.
+    ) -> 'Tracks':
+        """Arm a legend strip to appear above the widget on display.
 
-        Lays the keys out left-to-right in the order given, sized to
-        their natural content (not the notebook cell width). By default
-        the returned object is an :class:`IPython.display.HTML` wrapper
-        that right-aligns the figure against the cell — override with
-        ``align='left'`` to get the raw figure back.
+        Records which value-mode heatmap tracks to summarise and how to
+        lay them out. The legend is *not* rendered until the widget
+        itself is displayed (i.e. when ``self`` is a cell's last
+        expression, or ``display(self)`` is called). Returns ``self`` so
+        the call chains naturally:
+
+        >>> v.add_heatmap_track(...).add_heatmap_track(...)
+        >>> v.legend('Score', 'Ancestry')   # arms, returns v
+        >>> v                               # renders widget + legend
+
+        Validation happens up-front: unknown names raise :class:`KeyError`
+        and density-mode tracks raise :class:`ValueError`.
 
         Parameters
         ----------
         *track_names : str
-            Names of value-mode heatmap tracks. Density-mode tracks are
-            rejected with :class:`ValueError`.
+            Names of value-mode heatmap tracks, in left-to-right order.
         orientation : {'horizontal', 'vertical'}, default ``'horizontal'``
             Colorbar orientation for continuous keys.
         align : {'right', 'center', 'left'}, default ``'right'``
-            Horizontal alignment of the composite figure within the
-            notebook cell. ``'left'`` returns the raw figure.
+            Horizontal alignment against the notebook cell.
         gap : float, default ``0.10``
             Inches between adjacent keys.
         figsize : (float, float), optional
@@ -3848,17 +3921,45 @@ class Tracks(anywidget.AnyWidget):
 
         Returns
         -------
-        IPython.display.HTML or matplotlib.figure.Figure
-            ``HTML``-wrapped figure for right/center alignment;
-            bare :class:`~matplotlib.figure.Figure` for ``align='left'``.
+        Tracks
+            ``self``, for fluent chaining.
         """
-        import matplotlib.pyplot as plt
-
         if not track_names:
             raise ValueError("legend() requires at least one track name")
         if align not in {'right', 'center', 'left'}:
             raise ValueError(f"align must be 'right'|'center'|'left', got {align!r}")
-        labels = labels or {}
+        # Resolve now so a bad name fails fast instead of at display time.
+        for name in track_names:
+            self._resolve_heatmap_src(name)
+        self._legend_spec = {
+            'track_names': tuple(track_names),
+            'orientation': orientation,
+            'align':       align,
+            'gap':         gap,
+            'figsize':     figsize,
+            'dpi':         dpi,
+            'labels':      dict(labels) if labels else {},
+        }
+        return self
+
+    def _render_legend(
+        self,
+        *,
+        track_names: tuple,
+        orientation: str,
+        align: str,
+        gap: float,
+        figsize: tuple[float, float] | None,
+        dpi: int | None,
+        labels: dict,
+    ):
+        """Build the composite legend figure from a stored spec.
+
+        Returns an :class:`IPython.display.HTML` wrapper for right / centre
+        alignment, or the raw :class:`~matplotlib.figure.Figure` for
+        ``align='left'``. Called from :meth:`_ipython_display_`.
+        """
+        import matplotlib.pyplot as plt
 
         # Resolve every source up-front so errors surface before we draw.
         entries = []
@@ -3933,20 +4034,18 @@ class Tracks(anywidget.AnyWidget):
         )
 
     def _ipython_display_(self, **kwargs: Any) -> None:
-        """Render the widget with an auto-legend above it when applicable.
+        """Render the widget, with a legend strip above it when armed.
 
         Jupyter calls this when a :class:`Tracks` instance is the last
-        expression in a cell. We emit a compact right-aligned legend for
-        every value-mode heatmap track, then publish the widget's own
-        mimebundle directly (bypassing this hook to avoid recursion).
-        Toggle with ``self.auto_legend = False`` to restore the plain
-        widget-only behaviour.
+        expression in a cell. If :meth:`legend` has been called
+        beforehand, the recorded keys render as a compact strip above
+        the widget; otherwise only the widget is shown.
         """
         from IPython.display import display, publish_display_data
 
-        if self.auto_legend and self._auto_legend_names:
+        if self._legend_spec is not None:
             try:
-                display(self.legend(*self._auto_legend_names))
+                display(self._render_legend(**self._legend_spec))
             except Exception:
                 # A broken legend should never prevent the widget from
                 # rendering — swallow and carry on.
