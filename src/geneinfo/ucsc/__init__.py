@@ -53,7 +53,16 @@ _VALUE_COLUMN_PREFERENCE = (
 )
 
 # Column-name normalizations applied to bed-like records.
-_BED_RENAME = {"chromStart": "start", "chromEnd": "end"}
+# Some UCSC schemas use bed conventions (chromStart/chromEnd), others use
+# genePred conventions (txStart/txEnd), and a few use bare tStart/tEnd.
+_BED_RENAME = {
+    "chromStart": "start",
+    "chromEnd": "end",
+    "txStart": "start",
+    "txEnd": "end",
+    "tStart": "start",
+    "tEnd": "end",
+}
 
 
 class UcscApiError(RuntimeError):
@@ -117,8 +126,25 @@ def _fetch_all_tracks(assembly: str) -> dict:
     return _TRACK_META_CACHE[assembly]
 
 
+def _is_container(meta: dict) -> bool:
+    """True iff this entry is a composite/view container (never a data-bearing leaf)."""
+    if not isinstance(meta, dict):
+        return False
+    return (
+        meta.get("compositeContainer") == "TRUE"
+        or meta.get("compositeViewContainer") == "TRUE"
+    )
+
+
 def _flatten_tracks(tracks: dict, parent: str | None = None) -> dict:
-    """Flatten nested ``subtracks`` into a single name -> metadata dict."""
+    """Flatten nested subtrack entries into a single name -> metadata dict.
+
+    UCSC's ``/list/tracks`` response uses ad-hoc nesting: a container entry
+    has ``compositeContainer='TRUE'`` (or ``compositeViewContainer='TRUE'``)
+    and holds its children under arbitrary keys, with each child being a
+    dict that itself looks like a track. There is also a legacy
+    ``subtracks`` key on some entries — we honour both.
+    """
     flat = {}
     for name, meta in tracks.items():
         if not isinstance(meta, dict):
@@ -127,9 +153,19 @@ def _flatten_tracks(tracks: dict, parent: str | None = None) -> dict:
         if parent is not None:
             entry.setdefault("_parent", parent)
         flat[name] = entry
+
+        # Legacy: explicit `subtracks` dict.
         subtracks = meta.get("subtracks")
         if isinstance(subtracks, dict):
             flat.update(_flatten_tracks(subtracks, parent=name))
+
+        # Ad-hoc nested children: any dict-valued entry that itself looks
+        # like a track (has a ``type`` or ``shortLabel``).
+        for k, v in meta.items():
+            if k in {"subtracks", "subGroups"}:
+                continue
+            if isinstance(v, dict) and ("type" in v or "shortLabel" in v):
+                flat.update(_flatten_tracks({k: v}, parent=name))
     return flat
 
 
@@ -139,6 +175,17 @@ def get_ucsc_track_meta(track_name: str, assembly: str) -> dict:
     if track_name not in tracks:
         raise KeyError(f"Track {track_name!r} not found in assembly {assembly!r}")
     return tracks[track_name]
+
+
+def list_ucsc_subtracks(track_name: str, assembly: str) -> pd.DataFrame:
+    """Return a DataFrame of leaf subtracks under a composite/view container.
+
+    Columns: ``name``, ``type``, ``shortLabel``. For a non-container track
+    this returns an empty DataFrame.
+    """
+    meta = get_ucsc_track_meta(track_name, assembly)
+    leaves = _walk_leaves(meta) if _is_container(meta) else []
+    return pd.DataFrame(leaves, columns=["name", "type", "shortLabel"])
 
 
 # --- listing / searching ----------------------------------------------------
@@ -316,7 +363,14 @@ def _adapt_interact(payload, envelope: dict, value_column: str | None, *, side: 
 
 
 def _track_type_family(track_type: str | None) -> str:
-    """Map a raw UCSC ``type`` string to one of: bed, wig, interact, binary, unknown."""
+    """Map a raw UCSC ``type`` string to one of: bed, wig, interact, binary, unknown.
+
+    Besides the explicit lookup tables, the function recognizes suffix/prefix
+    patterns that clearly indicate a family (e.g. ``bigDbSnp``, ``bigBarChart``,
+    ``bigPsl``, ``bigChain``, ``wigMaf``, ...) so that we don't emit
+    "unknown type" warnings for tracks the UCSC API actually returns as
+    bed-like rows.
+    """
     if not track_type:
         return "unknown"
     head = track_type.split()[0]
@@ -328,19 +382,99 @@ def _track_type_family(track_type: str | None) -> str:
         return "interact"
     if head in BINARY_OR_ALIGNMENT:
         return "binary"
+    # Heuristic fallbacks based on naming conventions.
+    lowered = head.lower()
+    if lowered.startswith("wig") or lowered.endswith("wig"):
+        return "wig"
+    if lowered.startswith("big") and lowered not in {"bigchain", "bigmaf"}:
+        # bigBed, bigGenePred, bigNarrowPeak, bigPsl, bigDbSnp, bigBarChart,
+        # bigLolly, bigRmsk, bigSnp, ... all serialize to bed-like rows.
+        return "bed"
     return "unknown"
 
 
+def _walk_leaves(meta: dict) -> list[tuple[str, str, str]]:
+    """Return ``[(name, type, shortLabel), ...]`` for every leaf under ``meta``.
+
+    Leaves are entries that are not themselves containers. Walks both the
+    legacy ``subtracks`` dict and ad-hoc nested track-shaped values.
+    """
+    leaves: list[tuple[str, str, str]] = []
+
+    def visit(name: str, entry: dict) -> None:
+        if _is_container(entry):
+            # Recurse into children; the container itself isn't a leaf.
+            subtracks = entry.get("subtracks")
+            if isinstance(subtracks, dict):
+                for k, v in subtracks.items():
+                    if isinstance(v, dict):
+                        visit(k, v)
+            for k, v in entry.items():
+                if k in {"subtracks", "subGroups"}:
+                    continue
+                if isinstance(v, dict) and ("type" in v or "shortLabel" in v):
+                    visit(k, v)
+        else:
+            leaves.append((
+                name,
+                str(entry.get("type", "")).split()[0] if entry.get("type") else "",
+                str(entry.get("shortLabel", "")),
+            ))
+
+    # Iterate the container's direct children, same discovery rules as visit().
+    subtracks = meta.get("subtracks")
+    if isinstance(subtracks, dict):
+        for k, v in subtracks.items():
+            if isinstance(v, dict):
+                visit(k, v)
+    for k, v in meta.items():
+        if k in {"subtracks", "subGroups"}:
+            continue
+        if isinstance(v, dict) and ("type" in v or "shortLabel" in v):
+            visit(k, v)
+    return leaves
+
+
+def _format_subtrack_table(leaves: list[tuple[str, str, str]], max_rows: int = 50) -> str:
+    if not leaves:
+        return ""
+    shown = leaves[:max_rows]
+    name_w = max(len(n) for n, _, _ in shown)
+    type_w = max((len(t) for _, t, _ in shown), default=0)
+    lines = [f"  {n.ljust(name_w)}  {t.ljust(type_w)}  {lbl}" for n, t, lbl in shown]
+    body = "\n".join(lines)
+    if len(leaves) > max_rows:
+        body += f"\n  ... and {len(leaves) - max_rows} more"
+    return body
+
+
 def _check_container(meta: dict, track_name: str, assembly: str) -> None:
-    """Raise a helpful error if the track is a composite/super-track container."""
-    if meta.get("compositeTrack") == "on" or meta.get("superTrack") in ("on", "on show"):
-        subtracks = meta.get("subtracks") or {}
-        names = list(subtracks)[:20] if isinstance(subtracks, dict) else []
-        hint = f" Example subtracks: {names}" if names else ""
-        raise UnsupportedTrackType(
-            f"Track {track_name!r} on {assembly!r} is a composite/super-track container; "
-            f"pick one of its subtracks instead.{hint}"
+    """Raise a helpful error if the track is a composite/view container.
+
+    Important: ``compositeTrack='on'`` and ``superTrack='on'`` are set on
+    *leaf* tracks that belong to a composite/super-track too — they are
+    NOT container markers. The authoritative markers are
+    ``compositeContainer='TRUE'`` and ``compositeViewContainer='TRUE'``.
+
+    The raised error enumerates every leaf subtrack (name, type, short
+    label) so the caller can pick the right one without a second lookup.
+    """
+    if not _is_container(meta):
+        return
+    leaves = _walk_leaves(meta)
+    table = _format_subtrack_table(leaves)
+    if table:
+        msg = (
+            f"Track {track_name!r} on {assembly!r} is a composite/view container; "
+            f"pick one of its subtracks instead. Available subtracks "
+            f"({len(leaves)} total):\n{table}"
         )
+    else:
+        msg = (
+            f"Track {track_name!r} on {assembly!r} is a composite/view container "
+            f"with no listed subtracks."
+        )
+    raise UnsupportedTrackType(msg)
 
 
 # --- public entry point -----------------------------------------------------
@@ -469,6 +603,7 @@ def get_ucsc_track(
 __all__ = [
     "get_ucsc_track",
     "get_ucsc_track_meta",
+    "list_ucsc_subtracks",
     "list_ucsc_tracks",
     "search_ucsc_tracks",
     "UcscApiError",
