@@ -134,6 +134,115 @@ def _resolve_color_mapping(m: Any) -> Any:
     return m
 
 
+def _build_heatmap_lut(
+    values: pd.Series,
+    palette: Any,
+    vmin: float | None,
+    vmax: float | None,
+) -> dict:
+    """Materialise a per-segment colouring spec into a ready-to-upload LUT.
+
+    The R8 heatmap texture carries a single byte per (individual, window)
+    cell. Byte 0 is reserved as a "no data" sentinel; values 1..255 index
+    into a companion RGB lookup table. Continuous mode maps a scalar
+    column to 1..255 via ``vmin/vmax`` normalisation; discrete mode maps
+    each unique category to an index in 1..K.
+
+    Parameters
+    ----------
+    values : pandas.Series
+        The column named by ``value_col``; used to infer ``vmin/vmax``
+        (continuous) or the category set (discrete).
+    palette : str | list | dict | matplotlib.colors.Colormap
+        Continuous: a named colormap (``'viridis'``) or a ``Colormap``
+        instance. Discrete: a dict ``{category: color}`` or a list of
+        colours (paired with sorted unique categories).
+    vmin, vmax : float, optional
+        Continuous-mode normalisation range. Auto-inferred from
+        ``values`` when either is ``None``.
+
+    Returns
+    -------
+    dict
+        Keys: ``mode`` (``'discrete' | 'continuous'``), ``lut_u8``
+        (``(N, 3) uint8``), ``cat_to_idx`` (discrete only;
+        ``{category: 1-based-index}``), ``vmin``, ``vmax``, and
+        ``palette_ref`` (the resolved ``Colormap`` for continuous, the
+        ``{cat: hex}`` dict for discrete — used by ``Tracks.colorbar``).
+    """
+    import matplotlib.cm as mcm
+
+    is_dict_palette = isinstance(palette, dict)
+    is_listlike_palette = isinstance(palette, (list, tuple))
+    is_cmap_name = isinstance(palette, str)
+    is_cmap_obj = isinstance(palette, mcolors.Colormap)
+
+    # Discrete path: dict or list/tuple of colours.
+    if is_dict_palette or is_listlike_palette:
+        if is_dict_palette:
+            cats = list(palette.keys())
+            colors = [palette[c] for c in cats]
+        else:
+            cats = sorted(pd.Series(values).dropna().unique().tolist())
+            if len(palette) < len(cats):
+                raise ValueError(
+                    f"palette has {len(palette)} colours but value_col has "
+                    f"{len(cats)} categories"
+                )
+            colors = list(palette[: len(cats)])
+        if len(cats) > 255:
+            raise ValueError(
+                f"discrete palette capped at 255 categories, got {len(cats)}"
+            )
+        rgb = np.array(
+            [mcolors.to_rgb(resolve_color(c)) for c in colors], dtype=np.float64,
+        )
+        rgb_u8 = np.clip(np.round(rgb * 255.0), 0, 255).astype(np.uint8)
+        # Always emit a 256-row LUT (index 0 = "no data", 1..K = categories,
+        # K+1..255 = unused zero-filled). This keeps the JS shader's
+        # ``(idx + 0.5) / 256.0`` lookup uniform across modes.
+        lut_u8 = np.zeros((256, 3), dtype=np.uint8)
+        lut_u8[1:1 + len(cats), :] = rgb_u8
+        cat_to_idx = {c: i + 1 for i, c in enumerate(cats)}
+        palette_ref = {c: mcolors.to_hex(rgb[i]) for i, c in enumerate(cats)}
+        return {
+            'mode':        'discrete',
+            'lut_u8':      lut_u8,
+            'cat_to_idx':  cat_to_idx,
+            'vmin':        None,
+            'vmax':        None,
+            'palette_ref': palette_ref,
+        }
+
+    # Continuous path: colormap name or Colormap instance.
+    if is_cmap_name or is_cmap_obj:
+        cmap = mcm.get_cmap(palette) if is_cmap_name else palette
+        numeric = pd.to_numeric(values, errors='coerce').dropna()
+        if numeric.empty:
+            raise ValueError("value_col has no numeric data for continuous palette")
+        v_lo = float(numeric.min()) if vmin is None else float(vmin)
+        v_hi = float(numeric.max()) if vmax is None else float(vmax)
+        if not np.isfinite(v_lo) or not np.isfinite(v_hi) or v_hi <= v_lo:
+            v_hi = v_lo + 1.0
+        # 255 usable slots (index 0 is "no data"); sample cmap at bin centres.
+        xs = (np.arange(255) + 0.5) / 255.0
+        rgba = cmap(xs)
+        lut_u8 = np.zeros((256, 3), dtype=np.uint8)
+        lut_u8[1:, :] = np.clip(np.round(rgba[:, :3] * 255.0), 0, 255).astype(np.uint8)
+        return {
+            'mode':        'continuous',
+            'lut_u8':      lut_u8,
+            'cat_to_idx':  None,
+            'vmin':        v_lo,
+            'vmax':        v_hi,
+            'palette_ref': cmap,
+        }
+
+    raise TypeError(
+        f"palette must be a colormap name, Colormap, dict, or list; got {type(palette).__name__}"
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Built-in themes
 # ─────────────────────────────────────────────────────────────────────────────
@@ -541,6 +650,29 @@ void main() {
   fragColor = vec4(mix(uBg, uFg, v), 1.0);
 }`;
 
+// Value-mode heatmap: R8 texel is an index (0 = no data, 1..255 = palette slot)
+// looked up in a 1-D RGB LUT. Fragment "averaging" here is a *nearest* pick at
+// the fragment centre — averaging across category indices would blend colour
+// identities, which is meaningless for discrete palettes and only weakly useful
+// for continuous ones. Clients can increase ``windows`` when they want finer
+// resolution; the binning already applies last-write-wins within a bin.
+const FS_TEX_LUT = `#version 300 es
+precision highp float;
+uniform sampler2D uTex;
+uniform sampler2D uLUT;
+uniform vec3  uBg;
+in vec2 vTex;
+out vec4 fragColor;
+void main() {
+  float raw = textureLod(uTex, vTex, 0.0).r;   // 0..1 (byte / 255)
+  int idx = int(raw * 255.0 + 0.5);
+  if (idx == 0) { fragColor = vec4(uBg, 1.0); return; }
+  // Sample the LUT at the texel centre of the palette slot.
+  float u = (float(idx) + 0.5) / 256.0;
+  vec3 c = textureLod(uLUT, vec2(u, 0.5), 0.0).rgb;
+  fragColor = vec4(c, 1.0);
+}`;
+
 // ─── Compile / link helpers ────────────────────────────────────────────────
 function compileShader(type, src) {
   const sh = gl.createShader(type);
@@ -562,9 +694,10 @@ function makeProgram(vs, fs) {
 }
 
 // ─── Programs ─────────────────────────────────────────────────────────────
-const rectProg = makeProgram(VS_RECT, FS_RECT);
-const densProg = makeProgram(VS_DENS, FS_DENS);
-const texProg  = makeProgram(VS_TEX,  FS_TEX);
+const rectProg    = makeProgram(VS_RECT, FS_RECT);
+const densProg    = makeProgram(VS_DENS, FS_DENS);
+const texProg     = makeProgram(VS_TEX,  FS_TEX);
+const texProgLUT  = makeProgram(VS_TEX,  FS_TEX_LUT);
 
 // rect program locations
 const rLoc = {
@@ -606,6 +739,15 @@ const tLoc = {
   uNWin: gl.getUniformLocation(texProg, 'uNWin'),
 };
 
+// texture-LUT program locations (value-mode heatmap)
+const tLocLUT = {
+  aPos: gl.getAttribLocation (texProgLUT, 'aPos'),
+  aTex: gl.getAttribLocation (texProgLUT, 'aTex'),
+  uTex: gl.getUniformLocation(texProgLUT, 'uTex'),
+  uLUT: gl.getUniformLocation(texProgLUT, 'uLUT'),
+  uBg:  gl.getUniformLocation(texProgLUT, 'uBg'),
+};
+
 // ─── Static unit quad buffer (shared) ─────────────────────────────────────
 const quadBuf = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
@@ -621,6 +763,7 @@ const hmQuadBuf = gl.createBuffer();
 const gpuSeg  = {};   // { buf, starts, maxLen, count }
 const gpuDens = {};   // [{ nBins, binWidth, buf, count }, ...]
 const gpuHM   = {};   // { tex, nInd, nWin }
+const gpuHMLUT = {};  // [tid] = { tex, size } — 1-D palette for value-mode heatmaps
 const gpuXY   = {};   // { buf, count }  — for scatter, line
 const gpuFill = {};   // { posBuf, posCount, negBuf, negCount }
 const gpuHist = {};   // [tid][ch][gid] = { base: rectGpu|null, levels: [{nBins, binWidth, ...rectGpu}] }
@@ -766,6 +909,22 @@ function buildHeatmapGPU(u8, nInd, nWin, xStart, xEnd) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   return { tex, nInd, nWin, xStart, xEnd };
+}
+
+// Build palette LUT texture for value-mode heatmap.
+// Input: Uint8Array of length size*3 (RGB triples, index 0 is bg/"no data").
+function buildHeatmapLUTGPU(rgb, size) {
+  if (!rgb || rgb.length === 0) return null;
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB8, size, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, rgb);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return { tex, size };
 }
 
 // Build XY buffer for scatter / line: normalize y to [0,1]
@@ -963,6 +1122,12 @@ function uploadTrackData() {
             info.xEnd   ?? (chromSizes[ch] || 1),
           );
         }
+      }
+      // Value-mode heatmap: upload 1-D palette LUT once per track.
+      if (cfg.mode && cfg.mode !== 'density' && cfg.lut) {
+        const lutBytes = b64U8(cfg.lut);
+        const size = (lutBytes.length / 3) | 0;
+        if (size > 0) gpuHMLUT[tid] = buildHeatmapLUTGPU(lutBytes, size);
       }
     } else if (cfg.type === 'gene') {
       geneData[tid] = d;
@@ -1214,10 +1379,11 @@ function drawFill(gpuData, vs, ve, tt, tb, colorPos, colorNeg, alpha) {
   }
 }
 
-// Draw heatmap texture for one group band
-function drawHeatmapBand(hmData, vs, ve, chromSz, tt, tb, color) {
+// Draw heatmap texture for one group band.
+// `lutData` is the optional value-mode palette texture; when present, `color`
+// (the group's density-mode tint) is ignored and `texProgLUT` renders via LUT.
+function drawHeatmapBand(hmData, vs, ve, chromSz, tt, tb, color, lutData) {
   if (!hmData) return;
-  const [r, g, b] = hexRGB(color);
   const dom0 = hmData.xStart ?? 0;
   const dom1 = hmData.xEnd   ?? chromSz;
   const span = (dom1 - dom0) || 1;
@@ -1233,15 +1399,36 @@ function drawHeatmapBand(hmData, vs, ve, chromSz, tt, tb, color) {
   ]);
   gl.bindBuffer(gl.ARRAY_BUFFER, hmQuadBuf);
   gl.bufferData(gl.ARRAY_BUFFER, q, gl.DYNAMIC_DRAW);
+  const [bgR, bgG, bgB] = hexRGB(th.bg || '#13131a');
+  const stride = 16;
+  if (lutData && lutData.tex) {
+    gl.useProgram(texProgLUT);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, hmData.tex);
+    gl.uniform1i(tLocLUT.uTex, 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, lutData.tex);
+    gl.uniform1i(tLocLUT.uLUT, 1);
+    gl.uniform3f(tLocLUT.uBg, bgR, bgG, bgB);
+    gl.enableVertexAttribArray(tLocLUT.aPos);
+    gl.vertexAttribPointer(tLocLUT.aPos, 2, gl.FLOAT, false, stride, 0);
+    gl.vertexAttribDivisor(tLocLUT.aPos, 0);
+    gl.enableVertexAttribArray(tLocLUT.aTex);
+    gl.vertexAttribPointer(tLocLUT.aTex, 2, gl.FLOAT, false, stride, 8);
+    gl.vertexAttribDivisor(tLocLUT.aTex, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    // Restore unit 0 as the active texture for subsequent draws.
+    gl.activeTexture(gl.TEXTURE0);
+    return;
+  }
+  const [r, g, b] = hexRGB(color);
   gl.useProgram(texProg);
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, hmData.tex);
   gl.uniform1i(tLoc.uTex, 0);
-  const [bgR, bgG, bgB] = hexRGB(th.bg || '#13131a');
   gl.uniform3f(tLoc.uBg, bgR, bgG, bgB);
   gl.uniform3f(tLoc.uFg, r, g, b);
   gl.uniform1f(tLoc.uNWin, hmData.nWin || 1);
-  const stride = 16;
   gl.enableVertexAttribArray(tLoc.aPos);
   gl.vertexAttribPointer(tLoc.aPos, 2, gl.FLOAT, false, stride, 0);
   gl.vertexAttribDivisor(tLoc.aPos, 0);
@@ -1863,13 +2050,14 @@ function render() {
       const hUsable  = cfgH;
       const hCumW    = [0];
       for (let i = 0; i < nG; i++) hCumW.push(hCumW[i] + hWeights[i]);
+      const lutData = (cfg.mode && cfg.mode !== 'density') ? gpuHMLUT[cfg.id] : null;
       for (let gi = 0; gi < nG; gi++) {
         const grp  = cfg.groups[gi];
         const bandTT = cssNDC(trackTop + PAD_V + hUsable * hCumW[gi] / hTotalW, totalH_css);
         const bandTB = cssNDC(trackTop + PAD_V + hUsable * hCumW[gi + 1] / hTotalW, totalH_css);
         drawHeatmapBand(
           gpuHM[cfg.id]?.[ch]?.[grp.id],
-          vs, ve, csz, bandTT, bandTB, grp.color
+          vs, ve, csz, bandTT, bandTB, grp.color, lutData
         );
       }
     } else if (cfg.type === 'gene') {
@@ -2805,6 +2993,12 @@ class Tracks(anywidget.AnyWidget):
         alpha = float(src.get('alpha', 0.5))
         step  = max(1, min(255, int(round(255 * alpha))))
 
+        mode       = src.get('mode', 'density')
+        value_col  = src.get('value_col')
+        vmin       = src.get('vmin')
+        vmax       = src.get('vmax')
+        cat_to_idx = src.get('cat_to_idx') or {}
+
         span = max(1, x_end - x_start)
         out: dict = {}
 
@@ -2821,6 +3015,29 @@ class Tracks(anywidget.AnyWidget):
                 starts_arr = gdf['start'].to_numpy()
                 ends_arr   = gdf['end'].to_numpy()
                 inds_arr   = gdf[ind_col].to_numpy()
+                # Pre-resolve palette-slot byte per segment when in value mode
+                # (0 = skip / no data, 1..255 = LUT slot).
+                if mode == 'discrete':
+                    vals_arr = gdf[value_col].to_numpy()
+                    slot_arr = np.fromiter(
+                        (cat_to_idx.get(v, 0) for v in vals_arr),
+                        count=len(vals_arr), dtype=np.uint16,
+                    )
+                elif mode == 'continuous':
+                    vals_arr = pd.to_numeric(gdf[value_col], errors='coerce').to_numpy()
+                    lo, hi = float(vmin), float(vmax)
+                    rng = hi - lo if hi > lo else 1.0
+                    norm = (vals_arr - lo) / rng
+                    norm = np.clip(norm, 0.0, 1.0)
+                    # Map [0, 1] → [1, 255]; NaN segments fall back to 0 (skip).
+                    slot_arr = np.where(
+                        np.isfinite(vals_arr),
+                        np.clip(np.round(norm * 254.0) + 1.0, 1.0, 255.0),
+                        0.0,
+                    ).astype(np.uint16)
+                else:
+                    slot_arr = None
+
                 for k in range(len(gdf)):
                     ii = ind_idx.get(inds_arr[k])
                     if ii is None: continue
@@ -2829,9 +3046,18 @@ class Tracks(anywidget.AnyWidget):
                     if e <= s: continue
                     b0 = int(max(0, (s - x_start) / span * windows))
                     b1 = int(min(windows - 1, (e - x_start) / span * windows)) + 1
-                    matrix[ii, b0:b1] = np.minimum(
-                        255, matrix[ii, b0:b1].astype(int) + step
-                    )
+                    if slot_arr is None:
+                        # Density: accumulate alpha, clamp at 255.
+                        matrix[ii, b0:b1] = np.minimum(
+                            255, matrix[ii, b0:b1].astype(int) + step
+                        )
+                    else:
+                        # Value mode: last write wins within overlapping
+                        # segments. Skip sentinel-0 slots entirely.
+                        slot = int(slot_arr[k])
+                        if slot == 0:
+                            continue
+                        matrix[ii, b0:b1] = slot
 
             out[gid] = {
                 'data':   self._pack_u8(matrix.ravel()),
@@ -3127,6 +3353,10 @@ class Tracks(anywidget.AnyWidget):
         group_col: str | None = None,
         sort_by: str | None = None,
         color_map: dict | None = None,
+        value_col: str | None = None,
+        palette: Any = None,
+        vmin: float | None = None,
+        vmax: float | None = None,
         height: int | None = None,
         windows: int = 1000,
         alpha: float = 0.5,
@@ -3150,7 +3380,21 @@ class Tracks(anywidget.AnyWidget):
             Column used to sort individuals within each group.
         color_map : dict, optional
             ``{group_value: '#rrggbb'}``. When omitted, colours cycle
-            through the built-in palette in group order.
+            through the built-in palette in group order. Only used in
+            density mode (when ``value_col`` is ``None``).
+        value_col : str, optional
+            Column whose per-segment values drive colouring. When
+            omitted, the track renders in density mode (overlapping
+            segments accumulate alpha, tinted per group).
+        palette : str, list, dict, or matplotlib.colors.Colormap, optional
+            Palette used when ``value_col`` is given. A colormap name
+            (``'viridis'``) or ``Colormap`` instance triggers continuous
+            mode; a ``{category: colour}`` dict or list of colours
+            triggers discrete mode (up to 255 categories). Ignored when
+            ``value_col`` is ``None``.
+        vmin, vmax : float, optional
+            Continuous-mode normalisation range; auto-inferred from
+            ``df[value_col]`` when omitted. Ignored in discrete mode.
         height : int, optional
             Track height in CSS pixels. Defaults to ``max(90, n_individuals)``,
             i.e. at least one pixel per row.
@@ -3158,9 +3402,9 @@ class Tracks(anywidget.AnyWidget):
             Number of pre-computed density bins covering the whole
             chromosome.
         alpha : float, default 0.5
-            Per-segment opacity (matplotlib-style). Each overlapping
-            segment adds ``alpha`` to the cell shading, clamped at
-            ``1.0``. Must lie in ``(0, 1]``.
+            Per-segment opacity (matplotlib-style). Density mode only —
+            each overlapping segment adds ``alpha`` to the cell shading,
+            clamped at ``1.0``. Must lie in ``(0, 1]``.
         tip_fmt : str, optional
             Python format string for tooltips. Available keys:
             ``{group}``, ``{individual}``, ``{nInd}``.
@@ -3176,13 +3420,29 @@ class Tracks(anywidget.AnyWidget):
         Raises
         ------
         ValueError
-            If ``alpha`` is not in ``(0, 1]``.
+            If ``alpha`` is not in ``(0, 1]``, if ``palette`` is supplied
+            without ``value_col``, if ``value_col`` is missing from
+            ``df``, or if a discrete palette has more than 255 categories.
         """
         if not (0.0 < float(alpha) <= 1.0):
             raise ValueError(f"alpha must be in (0, 1], got {alpha}")
         alpha = float(alpha)
         color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
+
+        # ── Resolve colour mode (density | discrete | continuous) ──────────
+        if palette is not None and value_col is None:
+            raise ValueError("palette requires value_col to be set")
+        if value_col is not None and value_col not in df.columns:
+            raise ValueError(f"value_col '{value_col}' not in df.columns")
+        if value_col is not None and palette is None:
+            raise ValueError(
+                "value_col requires palette (colormap name, Colormap, dict, or list)"
+            )
+        lut_info: dict | None = None
+        if value_col is not None:
+            lut_info = _build_heatmap_lut(df[value_col], palette, vmin, vmax)
+        mode = lut_info['mode'] if lut_info else 'density'
 
         if group_col and group_col in df.columns:
             groups = list(df[group_col].dropna().unique())
@@ -3219,6 +3479,8 @@ class Tracks(anywidget.AnyWidget):
             needed_cols.append(group_col)
         if sort_by and sort_by in df.columns and sort_by not in needed_cols:
             needed_cols.append(sort_by)
+        if value_col and value_col not in needed_cols:
+            needed_cols.append(value_col)
         self._heatmap_sources[tid] = {
             'df':             df[needed_cols].copy(),
             'groups':         groups,
@@ -3228,6 +3490,13 @@ class Tracks(anywidget.AnyWidget):
             'windows':        windows,
             'alpha':          alpha,
             'inds_by_group':  inds_by_group,
+            'mode':           mode,
+            'value_col':      value_col,
+            'vmin':           lut_info['vmin'] if lut_info else None,
+            'vmax':           lut_info['vmax'] if lut_info else None,
+            'cat_to_idx':     lut_info['cat_to_idx'] if lut_info else None,
+            'palette_ref':    lut_info['palette_ref'] if lut_info else None,
+            'name':           name,
         }
 
         # Build initial (whole-chromosome) binning via the helper.
@@ -3252,12 +3521,109 @@ class Tracks(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': 'heatmap', 'name': name, 'height': height,
             'groups': grp_meta,
+            'mode':  mode,
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
+        if lut_info is not None:
+            # LUT ships as 256 × 3 uint8 bytes; JS side decodes into an RGB8
+            # texture keyed to byte index (0 reserved for "no data").
+            cfg['lut'] = self._pack_u8(lut_info['lut_u8'].reshape(-1))
         self.track_data    = {**self.track_data, tid: hm_out}
         self.track_configs = [*self.track_configs, cfg]
         return self
+
+    def colorbar(
+        self,
+        track_name: str,
+        *,
+        ax: Any = None,
+        orientation: str = 'horizontal',
+        label: str | None = None,
+    ):
+        """Build a matplotlib colorbar or legend for a value-mode heatmap.
+
+        Renders outside the widget — drop into a cell alongside the
+        ``Tracks`` display to give the palette a legible scale. Density-
+        mode tracks have no palette to show and raise ``ValueError``.
+
+        Parameters
+        ----------
+        track_name : str
+            Name of a heatmap track added via :meth:`add_heatmap_track`.
+        ax : matplotlib.axes.Axes, optional
+            Target axes. When omitted, a small figure is created with
+            dimensions appropriate to ``orientation``.
+        orientation : {'horizontal', 'vertical'}, default ``'horizontal'``
+            Colorbar orientation (continuous mode only).
+        label : str, optional
+            Axis label. Defaults to the track's ``value_col``.
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The figure containing the colorbar / legend.
+
+        Raises
+        ------
+        KeyError
+            If no heatmap track is named ``track_name``.
+        ValueError
+            If the named track is in density mode (no palette).
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib.patches import Patch
+
+        # Locate the heatmap source by track name (cfg.name → tid).
+        tid = None
+        for cfg in self.track_configs:
+            if cfg.get('type') == 'heatmap' and cfg.get('name') == track_name:
+                tid = cfg['id']
+                break
+        if tid is None:
+            raise KeyError(f"no heatmap track named {track_name!r}")
+        src = self._heatmap_sources.get(tid)
+        if src is None or src.get('mode', 'density') == 'density':
+            raise ValueError(
+                f"track {track_name!r} is in density mode; no palette to show"
+            )
+
+        mode        = src['mode']
+        palette_ref = src.get('palette_ref')
+        axis_label  = label if label is not None else (src.get('value_col') or '')
+
+        if mode == 'continuous':
+            fig = ax.figure if ax is not None else plt.figure(
+                figsize=(4.0, 0.6) if orientation == 'horizontal' else (0.6, 4.0)
+            )
+            if ax is None:
+                ax = fig.add_subplot(111)
+            norm = mcolors.Normalize(vmin=src['vmin'], vmax=src['vmax'])
+            cb = fig.colorbar(
+                plt.cm.ScalarMappable(norm=norm, cmap=palette_ref),
+                cax=ax, orientation=orientation,
+            )
+            if axis_label:
+                cb.set_label(axis_label)
+            return fig
+
+        # Discrete legend: one Patch per category.
+        fig = ax.figure if ax is not None else plt.figure(figsize=(4.0, 0.6))
+        if ax is None:
+            ax = fig.add_subplot(111)
+        ax.set_axis_off()
+        handles = [
+            Patch(facecolor=color, edgecolor='none', label=str(cat))
+            for cat, color in palette_ref.items()
+        ]
+        ax.legend(
+            handles=handles,
+            loc='center',
+            ncol=min(len(handles), 6),
+            frameon=False,
+            title=axis_label or None,
+        )
+        return fig
 
     # ── add_gene_track ───────────────────────────────────────────────────────
     @staticmethod
