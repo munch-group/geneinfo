@@ -30,8 +30,22 @@ import pandas as pd
 import requests
 from rapidfuzz import process, fuzz
 
+from ..utils import shelve_it
+
 
 UCSC_API = "https://api.genome.ucsc.edu"
+
+# Fraction of ``maxItemsLimit`` at which we treat a single response as
+# "likely truncated" and recursively bisect the region. The UCSC API returns
+# exactly maxItemsLimit items when it hits the cap, but results can also be
+# truncated at values slightly below (e.g. due to server-side limits on
+# certain track types), so we leave a small margin.
+_TRUNCATION_RATIO = 0.95
+
+# Minimum region size we're willing to bisect further (bp). Protects against
+# infinite recursion on pathologically dense loci and aligns with the
+# smallest useful per-base resolution for most tracks.
+_MIN_BISECT_BP = 10_000
 
 # --- track-type dispatch tables ---------------------------------------------
 
@@ -115,15 +129,44 @@ def _request_json(path: str, params: dict, *, retries: int = 3, backoff: float =
 _TRACK_META_CACHE: dict[str, dict] = {}
 
 
-def _fetch_all_tracks(assembly: str) -> dict:
-    """Return the full per-track metadata dict for an assembly, cached in-process."""
-    if assembly in _TRACK_META_CACHE:
-        return _TRACK_META_CACHE[assembly]
+@shelve_it()
+def _fetch_ucsc_tracks_meta(assembly: str) -> dict:
+    """Fetch and cache (shelve) the per-track metadata dict for an assembly."""
     data = _request_json("/list/tracks", {"genome": assembly})
     if assembly not in data:
         raise UcscApiError(f"Assembly {assembly!r} not present in /list/tracks response")
-    _TRACK_META_CACHE[assembly] = data[assembly]
-    return _TRACK_META_CACHE[assembly]
+    return data[assembly]
+
+
+def _fetch_all_tracks(assembly: str) -> dict:
+    """Return the per-track metadata dict, hot in-process + shelve-cached on disk."""
+    if assembly in _TRACK_META_CACHE:
+        return _TRACK_META_CACHE[assembly]
+    meta = _fetch_ucsc_tracks_meta(assembly)
+    _TRACK_META_CACHE[assembly] = meta
+    return meta
+
+
+@shelve_it()
+def _fetch_ucsc_track_data(
+    assembly: str,
+    track_name: str,
+    chrom: str | None,
+    start: int | None,
+    end: int | None,
+) -> dict:
+    """Fetch and cache (shelve) the raw ``/getData/track`` envelope.
+
+    Arguments are explicit and stringifiable so ``shelve_it`` produces a
+    stable key per (assembly, track, region) tuple.
+    """
+    params: dict[str, str] = {"genome": assembly, "track": track_name}
+    if chrom is not None:
+        params["chrom"] = chrom
+        if start is not None and end is not None:
+            params["start"] = str(start)
+            params["end"] = str(end)
+    return _request_json("/getData/track", params)
 
 
 def _is_container(meta: dict) -> bool:
@@ -477,6 +520,109 @@ def _check_container(meta: dict, track_name: str, assembly: str) -> None:
     raise UnsupportedTrackType(msg)
 
 
+# --- batching helpers -------------------------------------------------------
+
+
+def _envelope_truncated(envelope: dict) -> bool:
+    """True if the UCSC response likely hit its item cap.
+
+    UCSC returns ``itemsReturned`` and ``maxItemsLimit`` fields in each
+    envelope. When ``itemsReturned`` is at or near the cap we assume the
+    response was truncated and must be subdivided.
+    """
+    items = envelope.get("itemsReturned")
+    cap = envelope.get("maxItemsLimit") or envelope.get("maxItemsOutput")
+    if items is None or cap is None:
+        return False
+    try:
+        return int(items) >= int(cap) * _TRUNCATION_RATIO
+    except (TypeError, ValueError):
+        return False
+
+
+def _fetch_region_batched(
+    assembly: str,
+    track_name: str,
+    chrom: str,
+    start: int,
+    end: int,
+) -> list[dict]:
+    """Fetch a single-chromosome region, subdividing if the response truncates.
+
+    Returns a list of raw UCSC envelopes covering ``[start, end)`` with no
+    gaps. Each envelope is individually shelved via
+    :func:`_fetch_ucsc_track_data`, so re-fetching the same (possibly
+    subdivided) region costs nothing.
+    """
+    envelope = _fetch_ucsc_track_data(assembly, track_name, chrom, start, end)
+
+    if not _envelope_truncated(envelope):
+        return [envelope]
+
+    # Can't subdivide further: keep the truncated envelope and warn.
+    if end - start <= _MIN_BISECT_BP:
+        warnings.warn(
+            f"Track {track_name!r}: region {chrom}:{start}-{end} hit UCSC's "
+            f"item cap and is already smaller than {_MIN_BISECT_BP} bp; "
+            f"results for this region are truncated.",
+            stacklevel=3,
+        )
+        return [envelope]
+
+    mid = (start + end) // 2
+    left = _fetch_region_batched(assembly, track_name, chrom, start, mid)
+    right = _fetch_region_batched(assembly, track_name, chrom, mid, end)
+    return left + right
+
+
+def _concat_envelope_payloads(
+    envelopes: list[dict], track_name: str,
+) -> tuple[list | dict, dict]:
+    """Merge the per-envelope payloads under ``track_name``.
+
+    Bed-like payloads (lists of records) are concatenated. Wig-like
+    payloads (dicts keyed by chrom) are merged chrom-by-chrom. Returns
+    ``(combined_payload, representative_envelope)`` — the envelope is used
+    by adapters for fields like ``chrom``/``start``/``end``.
+    """
+    list_payloads: list[list] = []
+    dict_payloads: list[dict] = []
+    for env in envelopes:
+        p = env.get(track_name, [])
+        if isinstance(p, list):
+            list_payloads.append(p)
+        elif isinstance(p, dict):
+            dict_payloads.append(p)
+
+    if dict_payloads and not list_payloads:
+        merged: dict[str, list] = {}
+        for p in dict_payloads:
+            for chrom, rows in p.items():
+                if not isinstance(rows, list):
+                    continue
+                merged.setdefault(chrom, []).extend(rows)
+        return merged, envelopes[0] if envelopes else {}
+
+    if list_payloads and not dict_payloads:
+        combined: list = []
+        for p in list_payloads:
+            combined.extend(p)
+        return combined, envelopes[0] if envelopes else {}
+
+    # Mixed or empty: fall back to the first envelope's shape.
+    if envelopes:
+        return envelopes[0].get(track_name, []), envelopes[0]
+    return [], {}
+
+
+def _assembly_chromosomes(assembly: str) -> list[str]:
+    """Return the list of chromosomes for an assembly in their native order."""
+    # Deferred import — keeps ``geneinfo.ucsc`` usable without triggering the
+    # coords module's network dependencies until we actually need chrom sizes.
+    from ..coords import chromosome_lengths
+    return [name for name, _length in chromosome_lengths(assembly=assembly)]
+
+
 # --- public entry point -----------------------------------------------------
 
 
@@ -491,8 +637,22 @@ def get_ucsc_track(
     value_column: str | None = None,
     interact_side: str = "source",
     force_type: str | None = None,
-) -> pd.DataFrame | dict:
+) -> pd.DataFrame | dict | list[dict]:
     """Fetch a UCSC track and return a normalized ``DataFrame``.
+
+    Fetches are automatically batched to stay below UCSC's
+    ``maxItemsLimit``:
+
+    - When ``chrom`` is omitted, one request is made per chromosome in the
+      assembly.
+    - When a single-chromosome request comes back truncated
+      (``itemsReturned >= maxItemsLimit * 0.95``), the region is bisected
+      recursively until every response is un-truncated, or until the
+      candidate region drops below
+      :data:`_MIN_BISECT_BP` bp (at which point a warning is emitted).
+
+    Each sub-request is individually shelve-cached, so re-running the same
+    query costs nothing beyond the adapter step.
 
     Parameters
     ----------
@@ -501,10 +661,13 @@ def get_ucsc_track(
     assembly
         Genome assembly, e.g. ``'hg38'``.
     chrom, start, end
-        Optional region restriction. ``chrom`` is auto-prefixed with ``'chr'``
-        when missing.
+        Optional region restriction. ``chrom`` is auto-prefixed with
+        ``'chr'`` when missing. When ``chrom`` is ``None`` the entire
+        assembly is fetched chromosome-by-chromosome.
     as_frame
-        When ``False`` return the raw JSON payload from UCSC (escape hatch).
+        When ``False`` return the raw JSON payloads from UCSC. If the
+        fetch was batched, a ``list`` of envelopes is returned; otherwise
+        a single envelope ``dict``.
     value_column
         Override the column selected as ``value``. By default the first
         numeric column matching :data:`_VALUE_COLUMN_PREFERENCE` wins, then
@@ -519,8 +682,8 @@ def get_ucsc_track(
     Returns
     -------
     pandas.DataFrame
-        Columns ``chrom, start, end, value`` first (when derivable), then any
-        remaining original columns. The index is a fresh ``RangeIndex``.
+        Columns ``chrom, start, end, value`` first (when derivable), then
+        any remaining original columns. The index is a fresh ``RangeIndex``.
 
     Raises
     ------
@@ -547,32 +710,77 @@ def get_ucsc_track(
             f"binary/alignment data that cannot be represented as chrom/start/end/value.{hint}"
         )
 
-    params: dict[str, str] = {"genome": assembly, "track": track_name}
-    if chrom is not None:
-        params["chrom"] = chrom
-        if start is not None and end is not None:
-            params["start"] = str(start)
-            params["end"] = str(end)
-
-    envelope = _request_json("/getData/track", params)
-    payload = envelope.get(track_name, [])
+    # Collect one or more envelopes, batched to stay under UCSC's item cap.
+    envelopes: list[dict] = []
+    if chrom is None:
+        # Genome-wide: iterate chromosomes. We cannot pass a bare
+        # start/end without chrom through the API, so those are ignored
+        # here (they only apply inside a single chromosome).
+        for c in _assembly_chromosomes(assembly):
+            try:
+                length = None
+                # We don't actually need the length — UCSC handles a
+                # missing ``end``, but having it lets us subdivide. Ask
+                # the coords module again only if the first envelope
+                # turns out to be truncated.
+                env0 = _fetch_ucsc_track_data(assembly, track_name, c, None, None)
+                if _envelope_truncated(env0):
+                    from ..coords import chromosome_lengths
+                    length = dict(chromosome_lengths(assembly=assembly)).get(c)
+                    if length is None:
+                        envelopes.append(env0)
+                        warnings.warn(
+                            f"Track {track_name!r} on {c}: response truncated "
+                            f"and chromosome length unavailable for "
+                            f"subdivision.",
+                            stacklevel=2,
+                        )
+                        continue
+                    envelopes.extend(
+                        _fetch_region_batched(assembly, track_name, c, 0, int(length))
+                    )
+                else:
+                    envelopes.append(env0)
+            except UcscApiError as exc:
+                warnings.warn(
+                    f"Track {track_name!r} on {c}: {exc}; skipping this chromosome.",
+                    stacklevel=2,
+                )
+    elif start is not None and end is not None:
+        envelopes.extend(
+            _fetch_region_batched(assembly, track_name, chrom, int(start), int(end))
+        )
+    else:
+        # Single chromosome, no explicit region: fetch and subdivide if needed.
+        env0 = _fetch_ucsc_track_data(assembly, track_name, chrom, None, None)
+        if _envelope_truncated(env0):
+            from ..coords import chromosome_lengths
+            length = dict(chromosome_lengths(assembly=assembly)).get(chrom)
+            if length is not None:
+                envelopes.extend(
+                    _fetch_region_batched(assembly, track_name, chrom, 0, int(length))
+                )
+            else:
+                envelopes.append(env0)
+        else:
+            envelopes.append(env0)
 
     if as_frame is False:
-        return envelope
+        return envelopes if len(envelopes) != 1 else envelopes[0]
+
+    payload, representative = _concat_envelope_payloads(envelopes, track_name)
 
     if family == "bed":
-        df = _adapt_bed_like(payload, envelope, value_column)
+        df = _adapt_bed_like(payload, representative, value_column)
     elif family == "wig":
-        df = _adapt_wig_like(payload, envelope, value_column)
+        df = _adapt_wig_like(payload, representative, value_column)
     elif family == "interact":
-        df = _adapt_interact(payload, envelope, value_column, side=interact_side)
+        df = _adapt_interact(payload, representative, value_column, side=interact_side)
     else:
-        # Unknown type: try bed, then wig as fallback. If both come back
-        # empty or unshapable, surface a clear error.
         try:
-            df = _adapt_bed_like(payload, envelope, value_column)
+            df = _adapt_bed_like(payload, representative, value_column)
         except Exception:
-            df = _adapt_wig_like(payload, envelope, value_column)
+            df = _adapt_wig_like(payload, representative, value_column)
         if df.empty and payload:
             raise UnsupportedTrackType(
                 f"Track {track_name!r} has type {track_type!r} which is not "
@@ -585,17 +793,6 @@ def get_ucsc_track(
                 f"attempted best-effort bed/wig parsing.",
                 stacklevel=2,
             )
-
-    # Pagination hint: UCSC caps at itemsReturned; warn if we hit the limit.
-    items_returned = envelope.get("itemsReturned")
-    max_items = envelope.get("maxItemsLimit") or envelope.get("maxItemsOutput")
-    if items_returned is not None and max_items is not None and items_returned >= max_items:
-        warnings.warn(
-            f"Track {track_name!r}: itemsReturned={items_returned} hit the "
-            f"UCSC limit ({max_items}); results are truncated. Narrow the "
-            f"region or page through start/end.",
-            stacklevel=2,
-        )
 
     return df.reset_index(drop=True)
 

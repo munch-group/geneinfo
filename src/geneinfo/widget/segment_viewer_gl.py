@@ -5412,6 +5412,135 @@ class Tracks(anywidget.AnyWidget):
         self.track_configs = [*self.track_configs, cfg]
         return self
 
+    def add_ucsc_track(
+        self,
+        track_name: str,
+        name: str | None = None,
+        *,
+        kind: str = 'line',
+        assembly: str | None = None,
+        chrom: str | None = None,
+        start: int | None = None,
+        end: int | None = None,
+        x: str = 'start',
+        step: str | None = 'post',
+        **kwargs: Any,
+    ) -> 'Tracks':
+        """Fetch a UCSC track and add it as a line, histogram or fill track.
+
+        Thin wrapper around :func:`geneinfo.ucsc.get_ucsc_track` that
+        forwards the resulting ``chrom, start, end, value`` DataFrame to
+        :meth:`add_line_track`, :meth:`add_histogram_track` or
+        :meth:`add_fill_track` depending on ``kind``. The adapter
+        auto-detects which source column holds the numeric signal and
+        renames it to ``'value'``, so the user never needs to know the
+        track's native schema.
+
+        If the auto-detected column is wrong for your purposes, fetch
+        the track yourself and pass the DataFrame to the underlying
+        ``add_*`` method::
+
+            from geneinfo.ucsc import get_ucsc_track
+            df = get_ucsc_track('trackName', 'hg38',
+                                chrom='chr1', start=..., end=...,
+                                value_column='pValue')
+            Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')
+
+        Parameters
+        ----------
+        track_name
+            UCSC track identifier (see
+            :func:`geneinfo.ucsc.search_ucsc_tracks`).
+        name
+            Track display label. Defaults to ``track_name``.
+        kind : {'line', 'histogram', 'fill'}
+            Which widget track to draw.
+        assembly
+            Genome assembly. Inherits from ``Tracks(assembly)`` when
+            omitted.
+        chrom, start, end
+            Optional region restriction passed to the UCSC API. When
+            omitted, the track is fetched genome-wide (or for the current
+            viewport's chromosome, if set).
+        x : str, default ``'start'``
+            Column to use as the x position. Pass ``'mid'`` to use the
+            interval midpoint.
+        step : str or None, default ``'post'``
+            Step mode for ``kind='line'`` or ``kind='fill'`` (one of
+            ``'pre'``, ``'post'``, ``'mid'``, or ``None``). Ignored for
+            ``kind='histogram'``. Pass ``step=None`` to disable stepping.
+        **kwargs
+            Forwarded to the underlying ``add_line_track`` /
+            ``add_histogram_track`` / ``add_fill_track`` call.
+
+        Returns
+        -------
+        Tracks
+            ``self``, for chaining.
+
+        Raises
+        ------
+        ValueError
+            If ``kind`` is not one of the supported values, if no
+            assembly is resolvable, or if the fetched track has no
+            numeric column the adapter could expose as ``value``.
+        """
+        from geneinfo.ucsc import get_ucsc_track  # deferred import
+
+        kind = kind.lower()
+        valid_kinds = {'line', 'histogram', 'fill'}
+        if kind not in valid_kinds:
+            raise ValueError(
+                f"add_ucsc_track: kind={kind!r} must be one of {sorted(valid_kinds)}"
+            )
+
+        resolved_assembly = assembly or self.assembly
+        if resolved_assembly is None:
+            raise ValueError(
+                "add_ucsc_track: no assembly provided and none set on Tracks(...)"
+            )
+
+        # Let the adapter auto-detect and rename the numeric column to
+        # 'value'; the user shouldn't need to know the track's schema.
+        df = get_ucsc_track(
+            track_name, assembly=resolved_assembly,
+            chrom=chrom, start=start, end=end,
+        )
+
+        if 'value' not in df.columns:
+            raise ValueError(
+                f"add_ucsc_track: track {track_name!r} has no numeric column "
+                f"the adapter could expose as 'value'; columns were "
+                f"{list(df.columns)}. Fetch the DataFrame via "
+                f"geneinfo.ucsc.get_ucsc_track(..., value_column='<col>') and "
+                f"pass it to add_line_track/add_histogram_track/add_fill_track "
+                f"directly."
+            )
+
+        if x == 'mid':
+            if 'start' not in df.columns or 'end' not in df.columns:
+                raise ValueError(
+                    f"add_ucsc_track: x='mid' requires 'start' and 'end' columns; "
+                    f"got {list(df.columns)}"
+                )
+            df = df.assign(mid=(df['start'] + df['end']) / 2)
+        elif x not in df.columns:
+            raise ValueError(
+                f"add_ucsc_track: x={x!r} not in track columns {list(df.columns)}"
+            )
+
+        label = name if name is not None else track_name
+
+        if kind == 'line':
+            kwargs.setdefault('step', step)
+            return self.add_line_track(df, label, x=x, y='value', **kwargs)
+        if kind == 'histogram':
+            # histogram has no `step` parameter — ignore the default silently.
+            return self.add_histogram_track(df, label, x=x, y='value', **kwargs)
+        # kind == 'fill'
+        kwargs.setdefault('step', step)
+        return self.add_fill_track(df, label, x=x, y='value', **kwargs)
+
     # ── Overlays ─────────────────────────────────────────────────────────────
     def add_vlines(
         self,
