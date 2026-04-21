@@ -1903,10 +1903,10 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
   }
 
   // ── User-specified vertical blocks (filled spans across all tracks) ──────
-  const vblocks = model.get('vblocks') || [];
-  if (vblocks.length) {
+  const spans = model.get('spans') || [];
+  if (spans.length) {
     octx.save();
-    for (const b of vblocks) {
+    for (const b of spans) {
       if (!b || b.chrom !== vp.chrom) continue;
       const bs = +b.start, be = +b.end;
       if (!(be > bs)) continue;
@@ -2677,7 +2677,7 @@ model.on('change:chrom_sizes', () => {
 model.on('change:track_configs', () => { updateHeatmapBtns(); scheduleRender(); });
 model.on('change:track_data', () => { uploadTrackData(); scheduleRender(); });
 model.on('change:vlines', () => { scheduleRender(); });
-model.on('change:vblocks', () => { scheduleRender(); });
+model.on('change:spans', () => { scheduleRender(); });
 
 model.on('change:viewport', () => {
   if (!isDragging) {
@@ -2850,7 +2850,7 @@ class Tracks(anywidget.AnyWidget):
     track_data    = traitlets.Dict({}).tag(sync=True)
     viewport      = traitlets.Dict({'chrom': '', 'start': 0, 'end': 0}).tag(sync=True)
     vlines        = traitlets.List([]).tag(sync=True)
-    vblocks       = traitlets.List([]).tag(sync=True)
+    spans         = traitlets.List([]).tag(sync=True)
     zoom_speed    = traitlets.Float(1.02).tag(sync=True)
     pan_speed     = traitlets.Float(1.0).tag(sync=True)
     theme         = traitlets.Dict({
@@ -2926,9 +2926,11 @@ class Tracks(anywidget.AnyWidget):
             # Deferred import avoids pulling coords (and its network
             # dependencies) in for callers who pass an explicit dict.
             from geneinfo.coords import chromosome_lengths
-            chrom_sizes = dict(chromosome_lengths(assembly=chroms))
+            chrom_sizes   = dict(chromosome_lengths(assembly=chroms))
+            self.assembly: str | None = chroms
         elif isinstance(chroms, dict):
-            chrom_sizes = chroms
+            chrom_sizes   = chroms
+            self.assembly = None
         else:
             raise TypeError(
                 f"Tracks(...) expected a chrom-size dict or assembly string, "
@@ -3613,14 +3615,19 @@ class Tracks(anywidget.AnyWidget):
     # ── value-mode key helpers (colorbar / legend) ───────────────────────────
     # Default sizes are intentionally small (~30% of legacy) so keys sit as a
     # compact caption next to the widget rather than stretching full-width.
-    _KEY_FONT_PT    = 7
+    # Tick labels match the chromosome axis (9 px monospace on the canvas);
+    # the axis / title label matches the bold left-panel track titles
+    # (10 px monospace bold).
+    _KEY_TICK_PT    = 9
+    _KEY_LABEL_PT   = 10
     _KEY_PAD_IN     = 0.03   # inches of internal padding around key content
     _KEY_CONT_LEN   = 1.25   # inches — long axis of a continuous colorbar
-    # Continuous short-axis must leave room for the bar itself + tick labels
-    # (~0.10 in) + axis label (~0.10 in). 0.25 in is tight but legible at 7 pt.
-    _KEY_CONT_THICK = 0.25   # inches — short axis of a continuous colorbar
-    _KEY_SWATCH_IN  = 0.07   # inches — side of a discrete category swatch
-    _KEY_LABEL_EM   = 0.05   # inches per character, rough text-width estimate
+    # Bar thickness is 2/3 of the old 0.25 in = 0.167 in. The full figure
+    # short-axis has to additionally accommodate tick + axis labels; it
+    # gets computed per-render by the estimators below.
+    _KEY_CONT_THICK = 0.167  # inches — bar thickness (short axis of bar only)
+    _KEY_SWATCH_IN  = 0.047  # inches — side of a discrete category swatch (2/3 of prior 0.07)
+    _KEY_LABEL_EM   = 0.065  # inches per character at 9 pt tick font
     _KEY_GAP_IN     = 0.08   # inches between swatch and its label
 
     def _resolve_heatmap_src(self, track_name: str) -> dict:
@@ -3661,9 +3668,13 @@ class Tracks(anywidget.AnyWidget):
         Used by :meth:`legend` to size the composite figure to content.
         """
         pad = 2.0 * cls._KEY_PAD_IN
+        # Bold 10 pt label characters are wider than 9 pt tick text; give
+        # them ~0.085 in each so long axis labels don't clip.
+        bold_em = 0.085
         if src['mode'] == 'continuous':
             if orientation == 'horizontal':
-                return cls._KEY_CONT_LEN + pad
+                title_w = len(label) * bold_em if label else 0.0
+                return max(cls._KEY_CONT_LEN, title_w) + pad
             # Vertical bar: width driven by tick labels (~4 chars) + bar thickness.
             return cls._KEY_CONT_THICK + 4 * cls._KEY_LABEL_EM + pad
         # Discrete: single horizontal row — sum of per-item slots
@@ -3682,15 +3693,18 @@ class Tracks(anywidget.AnyWidget):
     def _estimate_key_height_in(cls, src: dict, label: str, orientation: str) -> float:
         """Natural height (inches) a key needs, matching the width estimate."""
         pad = 2.0 * cls._KEY_PAD_IN
-        title_h = (cls._KEY_FONT_PT / 72.0) + 0.03 if label else 0.0
+        tick_h  = cls._KEY_TICK_PT  / 72.0
+        title_h = (cls._KEY_LABEL_PT / 72.0) + 0.05 if label else 0.0
         if src['mode'] == 'continuous':
             if orientation == 'horizontal':
-                # Bar thickness + tick labels + optional axis label.
-                return cls._KEY_CONT_THICK + (cls._KEY_FONT_PT / 72.0) + title_h + pad
+                # Bar thickness + tick labels below the bar + optional axis
+                # label. Extra ``+0.04`` breathing room for matplotlib's tick
+                # padding so constrained_layout doesn't clip.
+                return cls._KEY_CONT_THICK + tick_h + 0.04 + title_h + pad
             return cls._KEY_CONT_LEN + title_h + pad
         # Discrete: one row — swatch height (or text height, whichever is
         # larger) plus optional title above.
-        row_h = max(cls._KEY_SWATCH_IN, cls._KEY_FONT_PT / 72.0) + 0.04
+        row_h = max(cls._KEY_SWATCH_IN, tick_h) + 0.04
         return row_h + title_h + pad
 
     def _draw_continuous_key(
@@ -3716,13 +3730,14 @@ class Tracks(anywidget.AnyWidget):
         cb.outline.set_edgecolor(fg)
         cb.outline.set_linewidth(0.5)
         cb.ax.tick_params(
-            colors=fg, labelsize=self._KEY_FONT_PT, width=0.4, length=2.0, pad=1.5,
+            colors=fg, labelsize=self._KEY_TICK_PT, width=0.4, length=2.0, pad=1.5,
         )
         # Round-number ticks; fewer ticks on tiny bars to prevent crowding.
         cb.locator = MaxNLocator(nbins=3, steps=[1, 2, 2.5, 5, 10])
         cb.update_ticks()
         if label:
-            cb.set_label(label, color=fg, fontsize=self._KEY_FONT_PT, labelpad=2.0)
+            cb.set_label(label, color=fg, fontsize=self._KEY_LABEL_PT,
+                         fontweight='bold', fontfamily='monospace', labelpad=2.0)
 
     def _draw_discrete_key(
         self,
@@ -3764,7 +3779,8 @@ class Tracks(anywidget.AnyWidget):
             ax.text(
                 0.0, 1.0, label,
                 ha='left', va='top',
-                color=fg, fontsize=self._KEY_FONT_PT,
+                color=fg, fontsize=self._KEY_LABEL_PT,
+                fontweight='bold', fontfamily='monospace',
                 transform=ax.transAxes,
             )
 
@@ -3788,7 +3804,7 @@ class Tracks(anywidget.AnyWidget):
                 x_cursor + swatch_w_frac + gap_frac,
                 row_mid_y, str(cat),
                 ha='left', va='center',
-                color=fg, fontsize=self._KEY_FONT_PT,
+                color=fg, fontsize=self._KEY_TICK_PT, fontfamily='monospace',
                 transform=ax.transAxes,
             )
             x_cursor += (item_w_in / ax_w_in) + inter_frac
@@ -3847,18 +3863,13 @@ class Tracks(anywidget.AnyWidget):
 
         if ax is None:
             if figsize is None:
-                if mode == 'continuous':
-                    if orientation == 'vertical':
-                        figsize = (self._KEY_CONT_THICK, self._KEY_CONT_LEN)
-                    else:
-                        figsize = (self._KEY_CONT_LEN, self._KEY_CONT_THICK)
-                else:
-                    # Discrete: one row per category; size to content so
-                    # labels don't stack on top of each other.
-                    figsize = (
-                        self._estimate_key_width_in(src, axis_label, orientation),
-                        self._estimate_key_height_in(src, axis_label, orientation),
-                    )
+                # Use the same estimator as the legend composite so the
+                # figure always carries enough room for tick labels + axis
+                # label + padding. Continuous / discrete share the path.
+                figsize = (
+                    self._estimate_key_width_in(src, axis_label, orientation),
+                    self._estimate_key_height_in(src, axis_label, orientation),
+                )
             fig = plt.figure(figsize=figsize, dpi=dpi, constrained_layout=True)
             ax  = fig.add_subplot(111)
             owned = True
@@ -4021,15 +4032,23 @@ class Tracks(anywidget.AnyWidget):
         import base64, io
         from IPython.display import HTML
 
+        # Render at 2× DPI so the browser can downscale to 50 % without
+        # blurring — keeps text crisp on HiDPI displays as well.
+        render_dpi = (fig.dpi or 100) * 2
         buf = io.BytesIO()
-        fig.savefig(buf, format='png', dpi=fig.dpi, bbox_inches='tight',
+        fig.savefig(buf, format='png', dpi=render_dpi, bbox_inches='tight',
                     facecolor=fig.get_facecolor())
         buf.seek(0)
         b64 = base64.b64encode(buf.read()).decode()
+        fw_in, _ = fig.get_size_inches()
+        # Display at half the natural size (in CSS px at the figure's
+        # nominal DPI, not the oversampled render DPI).
+        display_w_px = fw_in * (fig.dpi or 100) * 0.5
         justify = 'flex-end' if align == 'right' else 'center'
         return HTML(
             f'<div style="display:flex;justify-content:{justify};width:100%;">'
-            f'<img src="data:image/png;base64,{b64}" />'
+            f'<img src="data:image/png;base64,{b64}" '
+            f'style="width:{display_w_px:.0f}px;height:auto;" />'
             f'</div>'
         )
 
@@ -4137,7 +4156,10 @@ class Tracks(anywidget.AnyWidget):
             ``genes_data`` is fetched automatically via
             :func:`geneinfo.coords.gene_coords_region` for every
             chromosome in :func:`geneinfo.coords.chromosome_lengths`.
-            Mutually exclusive with ``genes_data``.
+            Mutually exclusive with ``genes_data``. If the assembly was
+            already supplied to :class:`Tracks` itself, it is inherited
+            from there and passing it again here raises
+            :class:`ValueError`.
         name : str, default ``'Genes'``
             Track display label.
         color : str, optional
@@ -4200,6 +4222,16 @@ class Tracks(anywidget.AnyWidget):
             If neither or both of ``genes_data`` and ``assembly`` are
             given, or if ``highlight`` carries an unknown property key.
         """
+        # Inherit the assembly from the parent Tracks if set there, but
+        # reject a duplicate kwarg so the source of truth is unambiguous.
+        if assembly is not None and self.assembly is not None:
+            raise ValueError(
+                "assembly was already set on Tracks(...); don't pass it again "
+                "to add_gene_track."
+            )
+        if assembly is None and self.assembly is not None and genes_data is None:
+            assembly = self.assembly
+
         if (genes_data is None) == (assembly is None):
             raise ValueError(
                 "add_gene_track requires exactly one of `genes_data` or "
@@ -5457,9 +5489,9 @@ class Tracks(anywidget.AnyWidget):
         self.vlines = []
         return self
 
-    def add_vblocks(
+    def add_spans(
         self,
-        spans,
+        ranges,
         chrom: str | None = None,
         *,
         color: str = '#ffcc44',
@@ -5469,17 +5501,17 @@ class Tracks(anywidget.AnyWidget):
         dash: list | None = None,
         replace: bool = False,
     ) -> 'Tracks':
-        """Add shaded vertical blocks spanning all tracks.
+        """Add shaded vertical spans across all tracks.
 
         Parameters
         ----------
-        spans : tuple | Iterable[tuple] | dict[str, Iterable[tuple]]
+        ranges : tuple | Iterable[tuple] | dict[str, Iterable[tuple]]
             ``(start, end)`` pairs in base pairs. If a dict, keys are
             chromosome names and values are iterables of pairs on that
             chromosome; the ``chrom`` argument is ignored in that case.
         chrom : str, optional
             Chromosome for the spans. Defaults to the current viewport
-            chromosome. Ignored when ``spans`` is a dict.
+            chromosome. Ignored when ``ranges`` is a dict.
         color : str, default ``'#ffcc44'``
             Fill colour.
         alpha : float, default ``0.1``
@@ -5492,7 +5524,7 @@ class Tracks(anywidget.AnyWidget):
         dash : list of int, optional
             Dash pattern for the outline, e.g. ``[4, 3]``.
         replace : bool, default ``False``
-            If True, replace existing vblocks. Otherwise append.
+            If True, replace existing spans. Otherwise append.
 
         Returns
         -------
@@ -5512,11 +5544,11 @@ class Tracks(anywidget.AnyWidget):
                     out.append((int(pair[0]), int(pair[1])))
             return out
 
-        if isinstance(spans, dict):
-            items = [(str(c), _pairs(spans[c])) for c in spans]
+        if isinstance(ranges, dict):
+            items = [(str(c), _pairs(ranges[c])) for c in ranges]
         else:
             c = chrom if chrom is not None else self.viewport.get('chrom', '')
-            items = [(str(c), _pairs(spans))]
+            items = [(str(c), _pairs(ranges))]
 
         a = float(max(0.0, min(1.0, alpha)))
         new_entries = []
@@ -5535,18 +5567,18 @@ class Tracks(anywidget.AnyWidget):
                     'dash':      list(dash) if dash else [],
                 })
 
-        self.vblocks = new_entries if replace else [*self.vblocks, *new_entries]
+        self.spans = new_entries if replace else [*self.spans, *new_entries]
         return self
 
-    def clear_vblocks(self) -> 'Tracks':
-        """Remove all vertical blocks.
+    def clear_spans(self) -> 'Tracks':
+        """Remove all vertical spans.
 
         Returns
         -------
         Tracks
             ``self``, to support fluent chaining.
         """
-        self.vblocks = []
+        self.spans = []
         return self
 
     # ── Navigation ───────────────────────────────────────────────────────────
