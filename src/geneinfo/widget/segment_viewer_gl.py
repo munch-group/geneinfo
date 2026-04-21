@@ -2898,6 +2898,11 @@ class Tracks(anywidget.AnyWidget):
         self.viewport = {'chrom': first, 'start': 0, 'end': self.chrom_sizes[first]}
         self._heatmap_sources: dict[str, dict] = {}
         self._heatmap_global:  dict[str, dict] = {}
+        # Names of value-mode heatmap tracks, in order added. Consumed by
+        # ``_ipython_display_`` to auto-emit a compact legend above the
+        # widget. Set ``auto_legend = False`` to suppress.
+        self._auto_legend_names: list[str] = []
+        self.auto_legend: bool = True
 
     @anywidget.experimental.command
     def _cmd_heatmap_recompute(
@@ -3529,52 +3534,33 @@ class Tracks(anywidget.AnyWidget):
             # LUT ships as 256 × 3 uint8 bytes; JS side decodes into an RGB8
             # texture keyed to byte index (0 reserved for "no data").
             cfg['lut'] = self._pack_u8(lut_info['lut_u8'].reshape(-1))
+            # Remember this track so ``_ipython_display_`` can auto-render
+            # a compact legend strip above the widget.
+            if name not in self._auto_legend_names:
+                self._auto_legend_names.append(name)
         self.track_data    = {**self.track_data, tid: hm_out}
         self.track_configs = [*self.track_configs, cfg]
         return self
 
-    def colorbar(
-        self,
-        track_name: str,
-        *,
-        ax: Any = None,
-        orientation: str = 'horizontal',
-        label: str | None = None,
-    ):
-        """Build a matplotlib colorbar or legend for a value-mode heatmap.
+    # ── value-mode key helpers (colorbar / legend) ───────────────────────────
+    # Default sizes are intentionally small (~30% of legacy) so keys sit as a
+    # compact caption next to the widget rather than stretching full-width.
+    _KEY_FONT_PT    = 7
+    _KEY_PAD_IN     = 0.03   # inches of internal padding around key content
+    _KEY_CONT_LEN   = 1.25   # inches — long axis of a continuous colorbar
+    # Continuous short-axis must leave room for the bar itself + tick labels
+    # (~0.10 in) + axis label (~0.10 in). 0.25 in is tight but legible at 7 pt.
+    _KEY_CONT_THICK = 0.25   # inches — short axis of a continuous colorbar
+    _KEY_SWATCH_IN  = 0.07   # inches — side of a discrete category swatch
+    _KEY_LABEL_EM   = 0.05   # inches per character, rough text-width estimate
+    _KEY_GAP_IN     = 0.08   # inches between swatch and its label
 
-        Renders outside the widget — drop into a cell alongside the
-        ``Tracks`` display to give the palette a legible scale. Density-
-        mode tracks have no palette to show and raise ``ValueError``.
+    def _resolve_heatmap_src(self, track_name: str) -> dict:
+        """Look up a value-mode heatmap source by track name.
 
-        Parameters
-        ----------
-        track_name : str
-            Name of a heatmap track added via :meth:`add_heatmap_track`.
-        ax : matplotlib.axes.Axes, optional
-            Target axes. When omitted, a small figure is created with
-            dimensions appropriate to ``orientation``.
-        orientation : {'horizontal', 'vertical'}, default ``'horizontal'``
-            Colorbar orientation (continuous mode only).
-        label : str, optional
-            Axis label. Defaults to the track's ``value_col``.
-
-        Returns
-        -------
-        matplotlib.figure.Figure
-            The figure containing the colorbar / legend.
-
-        Raises
-        ------
-        KeyError
-            If no heatmap track is named ``track_name``.
-        ValueError
-            If the named track is in density mode (no palette).
+        Raises ``KeyError`` when the name is unknown and ``ValueError``
+        when the track exists but is in density mode (no palette).
         """
-        import matplotlib.pyplot as plt
-        from matplotlib.patches import Patch
-
-        # Locate the heatmap source by track name (cfg.name → tid).
         tid = None
         for cfg in self.track_configs:
             if cfg.get('type') == 'heatmap' and cfg.get('name') == track_name:
@@ -3587,43 +3573,395 @@ class Tracks(anywidget.AnyWidget):
             raise ValueError(
                 f"track {track_name!r} is in density mode; no palette to show"
             )
+        return src
 
-        mode        = src['mode']
-        palette_ref = src.get('palette_ref')
-        axis_label  = label if label is not None else (src.get('value_col') or '')
+    @staticmethod
+    def _key_fg_color() -> str:
+        """Foreground colour that reads on the active matplotlib theme.
+
+        ``utils.black_white`` returns the inverse of what its name
+        suggests (black on dark, light on light), so pick directly
+        here to keep the call sites unambiguous.
+        """
+        from geneinfo.utils import in_dark_theme
+        return 'white' if in_dark_theme() else 'black'
+
+    @classmethod
+    def _estimate_key_width_in(cls, src: dict, label: str, orientation: str) -> float:
+        """Natural width (inches) a key needs to render without clipping.
+
+        Used by :meth:`legend` to size the composite figure to content.
+        """
+        pad = 2.0 * cls._KEY_PAD_IN
+        if src['mode'] == 'continuous':
+            if orientation == 'horizontal':
+                return cls._KEY_CONT_LEN + pad
+            # Vertical bar: width driven by tick labels (~4 chars) + bar thickness.
+            return cls._KEY_CONT_THICK + 4 * cls._KEY_LABEL_EM + pad
+        # Discrete: single horizontal row — sum of per-item slots
+        # (swatch + gap + label) with inter-item gaps between them.
+        cats = list((src.get('palette_ref') or {}).keys())
+        inter = cls._KEY_GAP_IN * 1.3
+        per_item = [
+            cls._KEY_SWATCH_IN + cls._KEY_GAP_IN + len(str(c)) * cls._KEY_LABEL_EM
+            for c in cats
+        ]
+        row_w = sum(per_item) + max(0, len(cats) - 1) * inter
+        title_w = len(label) * cls._KEY_LABEL_EM if label else 0.0
+        return max(row_w, title_w) + pad
+
+    @classmethod
+    def _estimate_key_height_in(cls, src: dict, label: str, orientation: str) -> float:
+        """Natural height (inches) a key needs, matching the width estimate."""
+        pad = 2.0 * cls._KEY_PAD_IN
+        title_h = (cls._KEY_FONT_PT / 72.0) + 0.03 if label else 0.0
+        if src['mode'] == 'continuous':
+            if orientation == 'horizontal':
+                # Bar thickness + tick labels + optional axis label.
+                return cls._KEY_CONT_THICK + (cls._KEY_FONT_PT / 72.0) + title_h + pad
+            return cls._KEY_CONT_LEN + title_h + pad
+        # Discrete: one row — swatch height (or text height, whichever is
+        # larger) plus optional title above.
+        row_h = max(cls._KEY_SWATCH_IN, cls._KEY_FONT_PT / 72.0) + 0.04
+        return row_h + title_h + pad
+
+    def _draw_continuous_key(
+        self,
+        ax: Any,
+        src: dict,
+        label: str | None,
+        orientation: str,
+    ) -> None:
+        """Render a compact continuous colorbar into a pre-sized ``ax``.
+
+        Theme-aware: spine/tick/label colours follow the active
+        matplotlib background.
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib.ticker import MaxNLocator
+
+        fg     = self._key_fg_color()
+        norm   = mcolors.Normalize(vmin=src['vmin'], vmax=src['vmax'])
+        cmap   = src.get('palette_ref')
+        mappable = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
+        cb = ax.figure.colorbar(mappable, cax=ax, orientation=orientation)
+        cb.outline.set_edgecolor(fg)
+        cb.outline.set_linewidth(0.5)
+        cb.ax.tick_params(
+            colors=fg, labelsize=self._KEY_FONT_PT, width=0.4, length=2.0, pad=1.5,
+        )
+        # Round-number ticks; fewer ticks on tiny bars to prevent crowding.
+        cb.locator = MaxNLocator(nbins=3, steps=[1, 2, 2.5, 5, 10])
+        cb.update_ticks()
+        if label:
+            cb.set_label(label, color=fg, fontsize=self._KEY_FONT_PT, labelpad=2.0)
+
+    def _draw_discrete_key(
+        self,
+        ax: Any,
+        src: dict,
+        label: str | None,
+    ) -> None:
+        """Render a compact discrete legend on a single horizontal row.
+
+        Items lay out left-to-right: each is a coloured swatch followed
+        by its category label. Title (if given) sits above the row,
+        left-aligned.
+        """
+        from matplotlib.patches import Rectangle
+
+        fg   = self._key_fg_color()
+        cats = list((src.get('palette_ref') or {}).items())
+        ax.set_axis_off()
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+
+        # Figure out axes width in inches so we can lay out items with
+        # physically-meaningful widths rather than guessing axes-fractions.
+        fw_in, fh_in = ax.figure.get_size_inches()
+        pos = ax.get_position()
+        ax_w_in = max(1e-6, fw_in * pos.width)
+
+        # Per-item slot = swatch + label-text + trailing gap. All in inches.
+        swatch_w_in = self._KEY_SWATCH_IN
+        gap_in      = self._KEY_GAP_IN
+        inter_in    = self._KEY_GAP_IN * 1.3  # gap between items
+        item_widths_in = [
+            swatch_w_in + gap_in + len(str(cat)) * self._KEY_LABEL_EM
+            for cat, _ in cats
+        ]
+
+        title_frac = 0.30 if label else 0.0
+        if label:
+            ax.text(
+                0.0, 1.0, label,
+                ha='left', va='top',
+                color=fg, fontsize=self._KEY_FONT_PT,
+                transform=ax.transAxes,
+            )
+
+        # Vertical centre of the row (below the title).
+        row_top    = 1.0 - title_frac
+        row_mid_y  = row_top * 0.5
+        swatch_h_frac = min(row_top * 0.75, 0.85)
+        swatch_y  = row_mid_y - swatch_h_frac * 0.5
+        swatch_w_frac = swatch_w_in / ax_w_in
+        gap_frac      = gap_in / ax_w_in
+        inter_frac    = inter_in / ax_w_in
+
+        x_cursor = 0.0
+        for (cat, colour), item_w_in in zip(cats, item_widths_in):
+            ax.add_patch(Rectangle(
+                (x_cursor, swatch_y), swatch_w_frac, swatch_h_frac,
+                facecolor=colour, edgecolor=fg, linewidth=0.4,
+                transform=ax.transAxes, clip_on=False,
+            ))
+            ax.text(
+                x_cursor + swatch_w_frac + gap_frac,
+                row_mid_y, str(cat),
+                ha='left', va='center',
+                color=fg, fontsize=self._KEY_FONT_PT,
+                transform=ax.transAxes,
+            )
+            x_cursor += (item_w_in / ax_w_in) + inter_frac
+
+    def colorbar(
+        self,
+        track_name: str,
+        *,
+        ax: Any = None,
+        orientation: str = 'horizontal',
+        label: str | None = None,
+        figsize: tuple[float, float] | None = None,
+        dpi: int | None = None,
+    ):
+        """Build a compact matplotlib key for a value-mode heatmap.
+
+        Continuous tracks render as a small colorbar; discrete tracks
+        as a stacked swatch/label legend. Density-mode tracks have no
+        palette and raise :class:`ValueError`.
+
+        Parameters
+        ----------
+        track_name : str
+            Name of a heatmap track added via :meth:`add_heatmap_track`.
+        ax : matplotlib.axes.Axes, optional
+            Target axes. When omitted, a small figure is created at
+            ``figsize`` (small by default — ~30% of the legacy size).
+        orientation : {'horizontal', 'vertical'}, default ``'horizontal'``
+            Colorbar orientation (continuous mode only).
+        label : str, optional
+            Title / axis label. Defaults to the track's ``value_col``.
+        figsize : (float, float), optional
+            Figure size in inches. Defaults to
+            ``(1.25, 0.22)`` for horizontal continuous / discrete,
+            ``(0.22, 1.25)`` for vertical continuous.
+        dpi : int, optional
+            Figure DPI; matplotlib default when omitted.
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The figure containing the key.
+
+        Raises
+        ------
+        KeyError
+            If no heatmap track is named ``track_name``.
+        ValueError
+            If the named track is in density mode (no palette).
+        """
+        import matplotlib.pyplot as plt
+
+        src = self._resolve_heatmap_src(track_name)
+        mode = src['mode']
+        axis_label = label if label is not None else (src.get('value_col') or '')
+
+        if ax is None:
+            if figsize is None:
+                if mode == 'continuous':
+                    if orientation == 'vertical':
+                        figsize = (self._KEY_CONT_THICK, self._KEY_CONT_LEN)
+                    else:
+                        figsize = (self._KEY_CONT_LEN, self._KEY_CONT_THICK)
+                else:
+                    # Discrete: one row per category; size to content so
+                    # labels don't stack on top of each other.
+                    figsize = (
+                        self._estimate_key_width_in(src, axis_label, orientation),
+                        self._estimate_key_height_in(src, axis_label, orientation),
+                    )
+            fig = plt.figure(figsize=figsize, dpi=dpi, constrained_layout=True)
+            ax  = fig.add_subplot(111)
+            owned = True
+        else:
+            fig = ax.figure
+            owned = False
 
         if mode == 'continuous':
-            fig = ax.figure if ax is not None else plt.figure(
-                figsize=(4.0, 0.6) if orientation == 'horizontal' else (0.6, 4.0)
-            )
-            if ax is None:
-                ax = fig.add_subplot(111)
-            norm = mcolors.Normalize(vmin=src['vmin'], vmax=src['vmax'])
-            cb = fig.colorbar(
-                plt.cm.ScalarMappable(norm=norm, cmap=palette_ref),
-                cax=ax, orientation=orientation,
-            )
-            if axis_label:
-                cb.set_label(axis_label)
+            self._draw_continuous_key(ax, src, axis_label or None, orientation)
+        else:
+            self._draw_discrete_key(ax, src, axis_label or None)
+
+        # Stop the inline backend from re-rendering on cell re-execution.
+        if owned:
+            plt.close(fig)
+        return fig
+
+    def legend(
+        self,
+        *track_names: str,
+        orientation: str = 'horizontal',
+        align: str = 'right',
+        gap: float = 0.10,
+        figsize: tuple[float, float] | None = None,
+        dpi: int | None = None,
+        labels: dict | None = None,
+    ):
+        """Compose several value-mode keys on one compact, aligned row.
+
+        Lays the keys out left-to-right in the order given, sized to
+        their natural content (not the notebook cell width). By default
+        the returned object is an :class:`IPython.display.HTML` wrapper
+        that right-aligns the figure against the cell — override with
+        ``align='left'`` to get the raw figure back.
+
+        Parameters
+        ----------
+        *track_names : str
+            Names of value-mode heatmap tracks. Density-mode tracks are
+            rejected with :class:`ValueError`.
+        orientation : {'horizontal', 'vertical'}, default ``'horizontal'``
+            Colorbar orientation for continuous keys.
+        align : {'right', 'center', 'left'}, default ``'right'``
+            Horizontal alignment of the composite figure within the
+            notebook cell. ``'left'`` returns the raw figure.
+        gap : float, default ``0.10``
+            Inches between adjacent keys.
+        figsize : (float, float), optional
+            Figure size in inches. Auto-sized to content when omitted.
+        dpi : int, optional
+            Figure DPI.
+        labels : dict, optional
+            Per-track title override, e.g. ``{'Score': 'selection'}``.
+            Missing entries fall back to the track's ``value_col``.
+
+        Returns
+        -------
+        IPython.display.HTML or matplotlib.figure.Figure
+            ``HTML``-wrapped figure for right/center alignment;
+            bare :class:`~matplotlib.figure.Figure` for ``align='left'``.
+        """
+        import matplotlib.pyplot as plt
+
+        if not track_names:
+            raise ValueError("legend() requires at least one track name")
+        if align not in {'right', 'center', 'left'}:
+            raise ValueError(f"align must be 'right'|'center'|'left', got {align!r}")
+        labels = labels or {}
+
+        # Resolve every source up-front so errors surface before we draw.
+        entries = []
+        for name in track_names:
+            src = self._resolve_heatmap_src(name)
+            lbl = labels.get(name, src.get('value_col') or '')
+            entries.append((name, src, lbl))
+
+        widths  = [self._estimate_key_width_in(s, lbl, orientation)
+                   for _, s, lbl in entries]
+        heights = [self._estimate_key_height_in(s, lbl, orientation)
+                   for _, s, lbl in entries]
+        total_w = sum(widths) + gap * (len(entries) - 1)
+        total_h = max(heights)
+
+        if figsize is None:
+            figsize = (total_w, total_h)
+
+        fig = plt.figure(figsize=figsize, dpi=dpi, constrained_layout=False)
+        # Hand-lay out each key in figure-relative coordinates so the
+        # widths stay proportional to their natural content regardless of
+        # the caller's figsize.
+        fw_in, fh_in = fig.get_size_inches()
+        x_cursor = 0.0
+        for (name, src, lbl), w_in in zip(entries, widths):
+            left   = x_cursor / fw_in
+            width  = w_in / fw_in
+            bottom = self._KEY_PAD_IN / fh_in
+            height = 1.0 - 2.0 * self._KEY_PAD_IN / fh_in
+            # Continuous key needs an axes sized to the bar itself, so
+            # shrink the drawn axes inside its allotted slot rather than
+            # filling it — constrained_layout is disabled here.
+            if src['mode'] == 'continuous':
+                if orientation == 'horizontal':
+                    bar_w = self._KEY_CONT_LEN  / fw_in
+                    bar_h = self._KEY_CONT_THICK / fh_in
+                else:
+                    bar_w = self._KEY_CONT_THICK / fw_in
+                    bar_h = self._KEY_CONT_LEN   / fh_in
+                # Centre the bar within its slot, leaving room for labels.
+                ax_left   = left + max(0.0, (width - bar_w) * 0.5)
+                ax_bottom = bottom + max(0.0, (height - bar_h) * 0.5)
+                ax = fig.add_axes([ax_left, ax_bottom, bar_w, bar_h])
+                self._draw_continuous_key(ax, src, lbl or None, orientation)
+            else:
+                ax = fig.add_axes([left, bottom, width, height])
+                self._draw_discrete_key(ax, src, lbl or None)
+            x_cursor += w_in + gap
+
+        plt.close(fig)
+
+        if align == 'left':
             return fig
 
-        # Discrete legend: one Patch per category.
-        fig = ax.figure if ax is not None else plt.figure(figsize=(4.0, 0.6))
-        if ax is None:
-            ax = fig.add_subplot(111)
-        ax.set_axis_off()
-        handles = [
-            Patch(facecolor=color, edgecolor='none', label=str(cat))
-            for cat, color in palette_ref.items()
-        ]
-        ax.legend(
-            handles=handles,
-            loc='center',
-            ncol=min(len(handles), 6),
-            frameon=False,
-            title=axis_label or None,
+        # Alignment against the notebook cell: render the figure to PNG
+        # and wrap in an HTML flex container. IPython.display.HTML is the
+        # idiomatic return type when a tool wants to influence cell-level
+        # layout without reaching for global CSS.
+        import base64, io
+        from IPython.display import HTML
+
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', dpi=fig.dpi, bbox_inches='tight',
+                    facecolor=fig.get_facecolor())
+        buf.seek(0)
+        b64 = base64.b64encode(buf.read()).decode()
+        justify = 'flex-end' if align == 'right' else 'center'
+        return HTML(
+            f'<div style="display:flex;justify-content:{justify};width:100%;">'
+            f'<img src="data:image/png;base64,{b64}" />'
+            f'</div>'
         )
-        return fig
+
+    def _ipython_display_(self, **kwargs: Any) -> None:
+        """Render the widget with an auto-legend above it when applicable.
+
+        Jupyter calls this when a :class:`Tracks` instance is the last
+        expression in a cell. We emit a compact right-aligned legend for
+        every value-mode heatmap track, then publish the widget's own
+        mimebundle directly (bypassing this hook to avoid recursion).
+        Toggle with ``self.auto_legend = False`` to restore the plain
+        widget-only behaviour.
+        """
+        from IPython.display import display, publish_display_data
+
+        if self.auto_legend and self._auto_legend_names:
+            try:
+                display(self.legend(*self._auto_legend_names))
+            except Exception:
+                # A broken legend should never prevent the widget from
+                # rendering — swallow and carry on.
+                pass
+        # Publish the widget's mimebundle without routing through
+        # ``display(self)``, which would re-enter ``_ipython_display_``
+        # because IPython's formatter honours it before mimebundle.
+        bundle = self._repr_mimebundle_(include=kwargs.get('include'),
+                                        exclude=kwargs.get('exclude'))
+        if isinstance(bundle, tuple):
+            data, metadata = bundle
+        else:
+            data, metadata = bundle, {}
+        if data:
+            publish_display_data(data=data, metadata=metadata)
 
     # ── add_gene_track ───────────────────────────────────────────────────────
     @staticmethod
