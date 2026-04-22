@@ -722,7 +722,7 @@ el.innerHTML = `
     <div class="sv-sep"></div>
     <span class="sv-lod-badge sv-lod">▬ segments</span>
   </div>
-  <div class="sv-wrap">
+  <div class="sv-wrap" tabindex="0">
     <canvas class="sv-glcanvas"></canvas>
     <canvas class="sv-overlay"></canvas>
     <div class="sv-tooltip"></div>
@@ -913,70 +913,98 @@ function makeProgram(vs, fs) {
 }
 
 // ─── Programs ─────────────────────────────────────────────────────────────
-const rectProg    = makeProgram(VS_RECT, FS_RECT);
-const densProg    = makeProgram(VS_DENS, FS_DENS);
-const texProg     = makeProgram(VS_TEX,  FS_TEX);
-const texProgLUT  = makeProgram(VS_TEX,  FS_TEX_LUT);
+// Kept as `let` (not `const`) so the context-loss/restore path can rebuild
+// them; on restore the GL context is a fresh one and every program,
+// location, and buffer must be re-created.
+let rectProg, densProg, texProg, texProgLUT;
+let rLoc, dLoc, tLoc, tLocLUT;
+let quadBuf, hmQuadBuf;
 
-// rect program locations
-const rLoc = {
-  aCorner: gl.getAttribLocation (rectProg, 'aCorner'),
-  iStart:  gl.getAttribLocation (rectProg, 'iStart'),
-  iEnd:    gl.getAttribLocation (rectProg, 'iEnd'),
-  iYLo:    gl.getAttribLocation (rectProg, 'iYLo'),
-  iYHi:    gl.getAttribLocation (rectProg, 'iYHi'),
-  iColor:  gl.getAttribLocation (rectProg, 'iColor'),
-  uVS:     gl.getUniformLocation(rectProg, 'uVS'),
-  uVE:     gl.getUniformLocation(rectProg, 'uVE'),
-  uTT:     gl.getUniformLocation(rectProg, 'uTT'),
-  uTB:     gl.getUniformLocation(rectProg, 'uTB'),
-  uXL:     gl.getUniformLocation(rectProg, 'uXL'),
-  uMinDx:  gl.getUniformLocation(rectProg, 'uMinDx'),
-};
+function initGlPrograms() {
+  rectProg   = makeProgram(VS_RECT, FS_RECT);
+  densProg   = makeProgram(VS_DENS, FS_DENS);
+  texProg    = makeProgram(VS_TEX,  FS_TEX);
+  texProgLUT = makeProgram(VS_TEX,  FS_TEX_LUT);
 
-// density/line/scatter program locations
-const dLoc = {
-  aX:         gl.getAttribLocation (densProg, 'aX'),
-  aH:         gl.getAttribLocation (densProg, 'aH'),
-  uVS:        gl.getUniformLocation(densProg, 'uVS'),
-  uVE:        gl.getUniformLocation(densProg, 'uVE'),
-  uTT:        gl.getUniformLocation(densProg, 'uTT'),
-  uTB:        gl.getUniformLocation(densProg, 'uTB'),
-  uColor:     gl.getUniformLocation(densProg, 'uColor'),
-  uAlpha:     gl.getUniformLocation(densProg, 'uAlpha'),
-  uPointSize: gl.getUniformLocation(densProg, 'uPointSize'),
-  uXL:        gl.getUniformLocation(densProg, 'uXL'),
-};
+  rLoc = {
+    aCorner: gl.getAttribLocation (rectProg, 'aCorner'),
+    iStart:  gl.getAttribLocation (rectProg, 'iStart'),
+    iEnd:    gl.getAttribLocation (rectProg, 'iEnd'),
+    iYLo:    gl.getAttribLocation (rectProg, 'iYLo'),
+    iYHi:    gl.getAttribLocation (rectProg, 'iYHi'),
+    iColor:  gl.getAttribLocation (rectProg, 'iColor'),
+    uVS:     gl.getUniformLocation(rectProg, 'uVS'),
+    uVE:     gl.getUniformLocation(rectProg, 'uVE'),
+    uTT:     gl.getUniformLocation(rectProg, 'uTT'),
+    uTB:     gl.getUniformLocation(rectProg, 'uTB'),
+    uXL:     gl.getUniformLocation(rectProg, 'uXL'),
+    uMinDx:  gl.getUniformLocation(rectProg, 'uMinDx'),
+  };
+  dLoc = {
+    aX:         gl.getAttribLocation (densProg, 'aX'),
+    aH:         gl.getAttribLocation (densProg, 'aH'),
+    uVS:        gl.getUniformLocation(densProg, 'uVS'),
+    uVE:        gl.getUniformLocation(densProg, 'uVE'),
+    uTT:        gl.getUniformLocation(densProg, 'uTT'),
+    uTB:        gl.getUniformLocation(densProg, 'uTB'),
+    uColor:     gl.getUniformLocation(densProg, 'uColor'),
+    uAlpha:     gl.getUniformLocation(densProg, 'uAlpha'),
+    uPointSize: gl.getUniformLocation(densProg, 'uPointSize'),
+    uXL:        gl.getUniformLocation(densProg, 'uXL'),
+  };
+  tLoc = {
+    aPos:  gl.getAttribLocation (texProg, 'aPos'),
+    aTex:  gl.getAttribLocation (texProg, 'aTex'),
+    uTex:  gl.getUniformLocation(texProg, 'uTex'),
+    uBg:   gl.getUniformLocation(texProg, 'uBg'),
+    uFg:   gl.getUniformLocation(texProg, 'uFg'),
+    uNWin: gl.getUniformLocation(texProg, 'uNWin'),
+  };
+  tLocLUT = {
+    aPos: gl.getAttribLocation (texProgLUT, 'aPos'),
+    aTex: gl.getAttribLocation (texProgLUT, 'aTex'),
+    uTex: gl.getUniformLocation(texProgLUT, 'uTex'),
+    uLUT: gl.getUniformLocation(texProgLUT, 'uLUT'),
+    uBg:  gl.getUniformLocation(texProgLUT, 'uBg'),
+  };
 
-// texture program locations
-const tLoc = {
-  aPos:  gl.getAttribLocation (texProg, 'aPos'),
-  aTex:  gl.getAttribLocation (texProg, 'aTex'),
-  uTex:  gl.getUniformLocation(texProg, 'uTex'),
-  uBg:   gl.getUniformLocation(texProg, 'uBg'),
-  uFg:   gl.getUniformLocation(texProg, 'uFg'),
-  uNWin: gl.getUniformLocation(texProg, 'uNWin'),
-};
+  quadBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    0,0, 1,0, 1,1,
+    0,0, 1,1, 0,1,
+  ]), gl.STATIC_DRAW);
 
-// texture-LUT program locations (value-mode heatmap)
-const tLocLUT = {
-  aPos: gl.getAttribLocation (texProgLUT, 'aPos'),
-  aTex: gl.getAttribLocation (texProgLUT, 'aTex'),
-  uTex: gl.getUniformLocation(texProgLUT, 'uTex'),
-  uLUT: gl.getUniformLocation(texProgLUT, 'uLUT'),
-  uBg:  gl.getUniformLocation(texProgLUT, 'uBg'),
-};
+  // Scratch buffer for heatmap quads (reused each draw).
+  hmQuadBuf = gl.createBuffer();
+}
+initGlPrograms();
 
-// ─── Static unit quad buffer (shared) ─────────────────────────────────────
-const quadBuf = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-  0,0, 1,0, 1,1,
-  0,0, 1,1, 0,1,
-]), gl.STATIC_DRAW);
-
-// Scratch buffer for heatmap quads (reused each draw)
-const hmQuadBuf = gl.createBuffer();
+// WebGL context-loss recovery: on loss, cancel the frame loop and drop all
+// per-tid GPU handles (the ones from the old context are invalid). On
+// restore, rebuild programs and re-upload current track_data from the
+// model so the viewer recovers without a full remount.
+let _glLost = false;
+glCanvas.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  _glLost = true;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  // Old handles are invalid — forget them rather than try to `gl.delete*`
+  // on a lost context (which would no-op anyway).
+  for (const k of Object.keys(gpuSeg))   delete gpuSeg[k];
+  for (const k of Object.keys(gpuDens))  delete gpuDens[k];
+  for (const k of Object.keys(gpuHM))    delete gpuHM[k];
+  for (const k of Object.keys(gpuHMLUT)) delete gpuHMLUT[k];
+  for (const k of Object.keys(gpuXY))    delete gpuXY[k];
+  for (const k of Object.keys(gpuFill))  delete gpuFill[k];
+  for (const k of Object.keys(gpuHist))  delete gpuHist[k];
+}, false);
+glCanvas.addEventListener('webglcontextrestored', () => {
+  _glLost = false;
+  initGlPrograms();
+  uploadTrackData();
+  scheduleRender();
+}, false);
 
 // ─── GPU data stores: [tid][chrom][gid] ───────────────────────────────────
 const gpuSeg  = {};   // { buf, starts, maxLen, count }
@@ -989,6 +1017,78 @@ const gpuHist = {};   // [tid][ch][gid] = { base: rectGpu|null, levels: [{nBins,
 const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
 const rawFill = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,lo,hi,...]
 const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
+
+// ─── GPU-resource disposal helpers ────────────────────────────────────────
+// Every slot shape owns GPU handles (WebGL buffers / textures) that the
+// browser will not reclaim automatically. These helpers walk the known
+// shapes and call the matching `gl.delete*` so re-uploads on the same tid
+// and removed tracks do not leak VRAM.
+function _delBuf(b)  { if (b) gl.deleteBuffer(b); }
+function _delTex(t)  { if (t) gl.deleteTexture(t); }
+
+function _disposeSeg(slot)  { if (slot) _delBuf(slot.buf); }
+function _disposeDens(list) { if (!list) return; for (const lvl of list) _delBuf(lvl && lvl.buf); }
+function _disposeHM(slot)   { if (slot) _delTex(slot.tex); }
+function _disposeHMLUT(slot){ if (slot) _delTex(slot.tex); }
+function _disposeXY(slot) {
+  if (!slot) return;
+  if (slot.base) _delBuf(slot.base.buf);
+  if (slot.levels) for (const lvl of slot.levels) if (lvl && lvl.gpu) _delBuf(lvl.gpu.buf);
+}
+function _disposeFill(slot) {
+  if (!slot) return;
+  _delBuf(slot.posBuf);
+  _delBuf(slot.negBuf);
+}
+function _disposeHist(slot) {
+  if (!slot) return;
+  if (slot.base) _delBuf(slot.base.buf);
+  if (slot.levels) for (const lvl of slot.levels) _delBuf(lvl && lvl.buf);
+}
+
+// Dispose one (tid, ch) entry across a given store — the channel bucket is a
+// {gid: slot} dict. Called from uploadTrackData right before it reassigns
+// `store[tid][ch] = {}`, so stale GPU handles do not leak on re-upload.
+function disposeSlot(store, tid, ch, disposer) {
+  const bucket = store[tid] && store[tid][ch];
+  if (!bucket) return;
+  for (const gid of Object.keys(bucket)) disposer(bucket[gid]);
+}
+
+// Dispose every GPU resource owned by a single track id (across all chroms
+// and groups). Used when a track is removed or cleared from Python.
+function disposeTid(tid) {
+  if (gpuSeg[tid])  { for (const ch of Object.keys(gpuSeg[tid]))  disposeSlot(gpuSeg,  tid, ch, _disposeSeg);  delete gpuSeg[tid]; }
+  if (gpuDens[tid]) { for (const ch of Object.keys(gpuDens[tid])) disposeSlot(gpuDens, tid, ch, _disposeDens); delete gpuDens[tid]; }
+  if (gpuHM[tid])   { for (const ch of Object.keys(gpuHM[tid]))   disposeSlot(gpuHM,   tid, ch, _disposeHM);   delete gpuHM[tid]; }
+  if (gpuHMLUT[tid]){ _disposeHMLUT(gpuHMLUT[tid]); delete gpuHMLUT[tid]; }
+  if (gpuXY[tid])   { for (const ch of Object.keys(gpuXY[tid]))   disposeSlot(gpuXY,   tid, ch, _disposeXY);   delete gpuXY[tid]; }
+  if (gpuFill[tid]) { for (const ch of Object.keys(gpuFill[tid])) disposeSlot(gpuFill, tid, ch, _disposeFill); delete gpuFill[tid]; }
+  if (gpuHist[tid]) { for (const ch of Object.keys(gpuHist[tid])) disposeSlot(gpuHist, tid, ch, _disposeHist); delete gpuHist[tid]; }
+  delete rawXY[tid];
+  delete rawFill[tid];
+  delete rawHist[tid];
+  delete geneData[tid];
+}
+
+// Dispose every GPU resource across every store. Called on widget teardown
+// and on WebGL context loss so the restore path rebuilds cleanly.
+function disposeAllGpu() {
+  for (const tid of Object.keys(gpuSeg))  for (const ch of Object.keys(gpuSeg[tid]))  disposeSlot(gpuSeg,  tid, ch, _disposeSeg);
+  for (const tid of Object.keys(gpuDens)) for (const ch of Object.keys(gpuDens[tid])) disposeSlot(gpuDens, tid, ch, _disposeDens);
+  for (const tid of Object.keys(gpuHM))   for (const ch of Object.keys(gpuHM[tid]))   disposeSlot(gpuHM,   tid, ch, _disposeHM);
+  for (const tid of Object.keys(gpuHMLUT)) _disposeHMLUT(gpuHMLUT[tid]);
+  for (const tid of Object.keys(gpuXY))   for (const ch of Object.keys(gpuXY[tid]))   disposeSlot(gpuXY,   tid, ch, _disposeXY);
+  for (const tid of Object.keys(gpuFill)) for (const ch of Object.keys(gpuFill[tid])) disposeSlot(gpuFill, tid, ch, _disposeFill);
+  for (const tid of Object.keys(gpuHist)) for (const ch of Object.keys(gpuHist[tid])) disposeSlot(gpuHist, tid, ch, _disposeHist);
+  for (const k of Object.keys(gpuSeg))   delete gpuSeg[k];
+  for (const k of Object.keys(gpuDens))  delete gpuDens[k];
+  for (const k of Object.keys(gpuHM))    delete gpuHM[k];
+  for (const k of Object.keys(gpuHMLUT)) delete gpuHMLUT[k];
+  for (const k of Object.keys(gpuXY))    delete gpuXY[k];
+  for (const k of Object.keys(gpuFill))  delete gpuFill[k];
+  for (const k of Object.keys(gpuHist))  delete gpuHist[k];
+}
 
 // Per-chromosome pan/zoom clamp range. Defaults to the whole chromosome;
 // tightens to a recomputed heatmap's [xStart, xEnd] while any heatmap track
@@ -1303,6 +1403,8 @@ function uploadTrackData() {
       if (!gpuSeg[tid])  gpuSeg[tid]  = {};
       if (!gpuDens[tid]) gpuDens[tid] = {};
       for (const ch of Object.keys(raw)) {
+        disposeSlot(gpuSeg,  tid, ch, _disposeSeg);
+        disposeSlot(gpuDens, tid, ch, _disposeDens);
         gpuSeg[tid][ch]  = {};
         gpuDens[tid][ch] = {};
         const csz = chromSizes[ch] || 1;
@@ -1332,6 +1434,7 @@ function uploadTrackData() {
     } else if (cfg.type === 'heatmap') {
       if (!gpuHM[tid]) gpuHM[tid] = {};
       for (const ch of Object.keys(d)) {
+        disposeSlot(gpuHM, tid, ch, _disposeHM);
         gpuHM[tid][ch] = {};
         for (const [gid, info] of Object.entries(d[ch])) {
           const u8 = b64U8(info.data);
@@ -1346,7 +1449,10 @@ function uploadTrackData() {
       if (cfg.mode && cfg.mode !== 'density' && cfg.lut) {
         const lutBytes = b64U8(cfg.lut);
         const size = (lutBytes.length / 3) | 0;
-        if (size > 0) gpuHMLUT[tid] = buildHeatmapLUTGPU(lutBytes, size);
+        if (size > 0) {
+          _disposeHMLUT(gpuHMLUT[tid]);
+          gpuHMLUT[tid] = buildHeatmapLUTGPU(lutBytes, size);
+        }
       }
     } else if (cfg.type === 'gene') {
       geneData[tid] = d;
@@ -1356,6 +1462,7 @@ function uploadTrackData() {
       const yMin = cfg.yMin ?? 0;
       const yMax = cfg.yMax ?? 1;
       for (const ch of Object.keys(d)) {
+        disposeSlot(gpuXY, tid, ch, _disposeXY);
         gpuXY[tid][ch] = {};
         rawXY[tid][ch] = {};
         for (const [gid, payload] of Object.entries(d[ch])) {
@@ -1416,6 +1523,7 @@ function uploadTrackData() {
       const yMax = cfg.yMax ?? 1;
       const baseline = cfg.baseline ?? 0;
       for (const ch of Object.keys(d)) {
+        disposeSlot(gpuFill, tid, ch, _disposeFill);
         gpuFill[tid][ch] = {};
         rawFill[tid][ch] = {};
         for (const [gid, b64] of Object.entries(d[ch])) {
@@ -1432,6 +1540,7 @@ function uploadTrackData() {
       const binWidth = cfg.binWidth ?? 1;
       const stacked  = !!cfg.stacked;
       for (const ch of Object.keys(d)) {
+        disposeSlot(gpuHist, tid, ch, _disposeHist);
         gpuHist[tid][ch] = {};
         rawHist[tid][ch] = {};
         const csz = chromSizes[ch] || 1;
@@ -2328,12 +2437,13 @@ function trackH(cfg) {
 }
 
 function scheduleRender() {
-  if (rafId) return;
+  if (rafId || _glLost) return;
   rafId = requestAnimationFrame(render);
 }
 
 function render() {
   rafId = null;
+  if (_glLost) return;
   const W_css = wrap.offsetWidth || 800;
   const cfgs  = model.get('track_configs');
   if (!cfgs || !cfgs.length) return;
@@ -2518,6 +2628,11 @@ const clamp = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 glCanvas.addEventListener('mousedown', e => {
   isDragging = true; dragX0 = e.clientX; dragVp0 = { ...vp };
   glCanvas.classList.add('dragging');
+  tooltip.style.display = 'none';
+  // Scope drag listeners to the drag's lifetime only; they go away on
+  // mouseup so normal hover never pays the cost of a window-level handler.
+  window.addEventListener('mousemove', onDragMove);
+  window.addEventListener('mouseup', onUp);
 });
 
 // ── Tooltip helpers ─────────────────────────────────────────────────────────
@@ -2751,33 +2866,40 @@ function tipForTrack(pos, chrom, cfg, localY) {
   }
 }
 
+// Tooltip-only handler — stays on glCanvas so it fires only while the
+// cursor is actually over the plot, not everywhere in the document.
 const onMove = e => {
-  if (!isDragging) {
-    const mx = e.offsetX - LABEL_W;
-    if (mx < 0 || e.target !== glCanvas) { tooltip.style.display = 'none'; return; }
-    const W = glCanvas.offsetWidth - LABEL_W;
-    const pos = Math.round(vp.start + (mx / W) * (vp.end - vp.start));
-    const lines = [`${vp.chrom}:${pos.toLocaleString()}`];
-    const cfgs = model.get('track_configs');
-    if (cfgs) {
-      const hit = trackAtY(e.offsetY);
-      let cssY = SCALEBAR_H;
-      for (const cfg of cfgs) {
-        const localY = (hit && hit.cfg.id === cfg.id) ? hit.localY : -1;
-        const tip = tipForTrack(pos, vp.chrom, cfg, localY);
-        const label = cfg.tipLabel ?? '';
-        if (tip) {
-          lines.push(label ? `${label} ${tip}` : tip);
-        } else if (label && cfg.tipFmt !== false) {
-          lines.push(label);
-        }
-        cssY += trackH(cfg);
+  if (isDragging) return;
+  const mx = e.offsetX - LABEL_W;
+  if (mx < 0) { tooltip.style.display = 'none'; return; }
+  const W = glCanvas.offsetWidth - LABEL_W;
+  const pos = Math.round(vp.start + (mx / W) * (vp.end - vp.start));
+  const lines = [`${vp.chrom}:${pos.toLocaleString()}`];
+  const cfgs = model.get('track_configs');
+  if (cfgs) {
+    const hit = trackAtY(e.offsetY);
+    let cssY = SCALEBAR_H;
+    for (const cfg of cfgs) {
+      const localY = (hit && hit.cfg.id === cfg.id) ? hit.localY : -1;
+      const tip = tipForTrack(pos, vp.chrom, cfg, localY);
+      const label = cfg.tipLabel ?? '';
+      if (tip) {
+        lines.push(label ? `${label} ${tip}` : tip);
+      } else if (label && cfg.tipFmt !== false) {
+        lines.push(label);
       }
+      cssY += trackH(cfg);
     }
-    tooltip.textContent = lines.join('\n');
-    tooltip.style.cssText = `display:block;left:${e.offsetX + 14}px;top:${e.offsetY - 6}px`;
-    return;
   }
+  tooltip.textContent = lines.join('\n');
+  tooltip.style.cssText = `display:block;left:${e.offsetX + 14}px;top:${e.offsetY - 6}px`;
+};
+
+// Drag-pan handler — attached to window only for the duration of a drag so
+// the pointer can leave the canvas without stopping the pan (matching
+// standard drag-UX). Added on mousedown and removed on mouseup.
+const onDragMove = e => {
+  if (!isDragging) return;
   const W     = glCanvas.offsetWidth - LABEL_W;
   const bpPx  = (dragVp0.end - dragVp0.start) / W;
   const ps    = model.get('pan_speed') || 1.0;
@@ -2793,11 +2915,12 @@ const onUp = () => {
   if (!isDragging) return;
   isDragging = false;
   glCanvas.classList.remove('dragging');
+  window.removeEventListener('mousemove', onDragMove);
+  window.removeEventListener('mouseup', onUp);
   syncVp(); updatePosBox();
 };
 
-window.addEventListener('mousemove', onMove);
-window.addEventListener('mouseup',   onUp);
+glCanvas.addEventListener('mousemove', onMove);
 glCanvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
 
 glCanvas.addEventListener('wheel', e => {
@@ -2831,8 +2954,13 @@ glCanvas.addEventListener('dblclick', e => {
   scheduleRender(); syncVp(); updatePosBox();
 });
 
+const HANDLED_KEYS = new Set(['ArrowLeft', 'ArrowRight', '+', '=', '-']);
 const onKey = e => {
-  if (!el.matches(':hover, :focus-within')) return;
+  // Don't steal keystrokes from text fields nested anywhere in the widget.
+  const tgt = e.target;
+  if (tgt && (tgt.tagName === 'INPUT' || tgt.tagName === 'TEXTAREA' ||
+              tgt.isContentEditable)) return;
+  if (!HANDLED_KEYS.has(e.key)) return;
   let { start: ns, end: ne } = vp;
   const range = ne - ns;
   const lo    = panLo(vp.chrom), hi = panHi(vp.chrom);
@@ -2848,12 +2976,13 @@ const onKey = e => {
     const nr = Math.min(span, range * 1.5), mid = (ns + ne) / 2;
     ns = clamp(mid - nr/2, lo, hi - nr); ne = ns + nr;
   }
+  e.preventDefault();
   if (ns !== vp.start || ne !== vp.end) {
     vp = { chrom: vp.chrom, start: ns, end: ne };
     scheduleRender(); syncVp(); updatePosBox();
   }
 };
-window.addEventListener('keydown', onKey);
+wrap.addEventListener('keydown', onKey);
 
 chromSel.addEventListener('change', () => {
   const ch = chromSel.value;
@@ -3020,7 +3149,23 @@ model.on('change:theme', () => { applyTheme(); scheduleRender(); });
 model.on('change:chrom_sizes', () => {
   chromSizes = model.get('chrom_sizes'); buildChromSel(); scheduleRender();
 });
-model.on('change:track_configs', () => { updateHeatmapBtns(); scheduleRender(); });
+// Track the previous tid set so removals can be detected and their GPU
+// resources disposed (Python's remove_track / clear_tracks rewrites
+// track_configs; the change listener diffs against `_prevTids` and frees
+// every store for tids that disappeared).
+let _prevTids = new Set((model.get('track_configs') || []).map(c => c.id));
+function _reconcileTids() {
+  const cur = new Set((model.get('track_configs') || []).map(c => c.id));
+  for (const tid of _prevTids) {
+    if (!cur.has(tid)) disposeTid(tid);
+  }
+  _prevTids = cur;
+}
+model.on('change:track_configs', () => {
+  _reconcileTids();
+  updateHeatmapBtns();
+  scheduleRender();
+});
 model.on('change:track_data', () => { uploadTrackData(); scheduleRender(); });
 model.on('change:vlines', () => { scheduleRender(); });
 model.on('change:spans', () => { scheduleRender(); });
@@ -3047,11 +3192,21 @@ scheduleRender();
 
 return () => {
   ro.disconnect();
-  window.removeEventListener('mousemove', onMove);
+  glCanvas.removeEventListener('mousemove', onMove);
+  // onDragMove/onUp are only on window while a drag is in progress; the
+  // explicit removes are a belt-and-braces no-op if we tear down mid-drag.
+  window.removeEventListener('mousemove', onDragMove);
   window.removeEventListener('mouseup',   onUp);
-  window.removeEventListener('keydown',   onKey);
+  wrap.removeEventListener('keydown',     onKey);
   clearTimeout(wheelTimer);
   if (rafId) cancelAnimationFrame(rafId);
+  disposeAllGpu();
+  if (rectProg)   gl.deleteProgram(rectProg);
+  if (densProg)   gl.deleteProgram(densProg);
+  if (texProg)    gl.deleteProgram(texProg);
+  if (texProgLUT) gl.deleteProgram(texProgLUT);
+  if (quadBuf)    gl.deleteBuffer(quadBuf);
+  if (hmQuadBuf)  gl.deleteBuffer(hmQuadBuf);
 };
 
 } // end render()
