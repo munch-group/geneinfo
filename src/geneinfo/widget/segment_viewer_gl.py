@@ -23,7 +23,7 @@ API
 ---
     viewer = Tracks(chrom_sizes)
     viewer.add_segment_track(df, 'Segments', group_by='pop', individual_col='ind')
-    viewer.add_heatmap_track(df, 'Haplotypes', individual_col='sample', group_col='pop')
+    viewer.add_heatmap_track(df, 'Haplotypes', individual_col='sample', group_by='pop')
     viewer.add_gene_track(genes_df, exons_df, name='Genes')
     viewer.add_point_track(df, 'Fst', x='pos', y='fst', group_by='pop')
     viewer.add_line_track(df, 'Rate', x='pos', y='rate')
@@ -3111,10 +3111,12 @@ class Tracks(anywidget.AnyWidget):
         the pan-clamp ranges.
     track_configs : list of dict
         One config per track. Maintained by the ``add_*_track``
-        methods; do not mutate directly.
+        methods and :meth:`remove_track` / :meth:`clear_tracks`; do
+        not mutate directly.
     track_data : dict
         Track-id-keyed payloads consumed by the JS uploader. Maintained
-        by the ``add_*_track`` methods; do not mutate directly.
+        by the ``add_*_track`` methods and :meth:`remove_track` /
+        :meth:`clear_tracks`; do not mutate directly.
     viewport : dict
         ``{'chrom': str, 'start': int, 'end': int}``. Use
         :meth:`set_viewport` or :meth:`zoom_to` to change it from
@@ -3248,6 +3250,8 @@ class Tracks(anywidget.AnyWidget):
         self.viewport = {'chrom': first, 'start': 0, 'end': self.chrom_sizes[first]}
         self._heatmap_sources: dict[str, dict] = {}
         self._heatmap_global:  dict[str, dict] = {}
+        # Monotonic so remove_track doesn't let a new track reuse a freed id.
+        self._next_tid_index: int = 0
         # Opt-in legend strip. Empty until the user calls
         # :meth:`legend` — ``_ipython_display_`` reads this to know which
         # value-mode heatmap tracks to summarise above the widget.
@@ -3471,10 +3475,13 @@ class Tracks(anywidget.AnyWidget):
         Returns
         -------
         str
-            ``'t0'``, ``'t1'``, … one per call, derived from the
-            current length of ``track_configs``.
+            ``'t0'``, ``'t1'``, … one per call. The counter is
+            monotonic so removing a track never lets a subsequent
+            :meth:`_tid` call collide with a surviving track's id.
         """
-        return f't{len(self.track_configs)}'
+        tid = f't{self._next_tid_index}'
+        self._next_tid_index += 1
+        return tid
 
     @staticmethod
     def _pack_f32(arr: np.ndarray) -> str:
@@ -3509,6 +3516,76 @@ class Tracks(anywidget.AnyWidget):
             the traitlets sync layer to the JS-side ``b64U8`` decoder.
         """
         return base64.b64encode(arr.astype(np.uint8).tobytes()).decode()
+
+    # ── Track removal ────────────────────────────────────────────────────────
+    def remove_track(self, name_or_index: str | int) -> 'Tracks':
+        """Remove a single track by display name or by index.
+
+        Parameters
+        ----------
+        name_or_index : str or int
+            When a string, matches the track's display ``name``. When
+            an integer, treated as a positional index into
+            :attr:`track_configs` (negative indices count from the
+            end, like a Python list).
+
+        Returns
+        -------
+        Tracks
+            ``self``, for fluent chaining.
+
+        Raises
+        ------
+        KeyError
+            If no track matches.
+        """
+        configs = list(self.track_configs)
+        if isinstance(name_or_index, bool):
+            # bool is an int subclass; reject it to catch accidental truthiness.
+            raise KeyError(f"remove_track: invalid key {name_or_index!r}")
+        if isinstance(name_or_index, int):
+            n = len(configs)
+            idx = name_or_index + n if name_or_index < 0 else name_or_index
+            if not (0 <= idx < n):
+                raise KeyError(
+                    f"remove_track: index {name_or_index} out of range for "
+                    f"{n} track(s)"
+                )
+        else:
+            matches = [i for i, c in enumerate(configs)
+                       if c.get('name') == name_or_index]
+            if not matches:
+                raise KeyError(
+                    f"remove_track: no track named {name_or_index!r}"
+                )
+            if len(matches) > 1:
+                raise KeyError(
+                    f"remove_track: {len(matches)} tracks named "
+                    f"{name_or_index!r}; remove by index instead"
+                )
+            idx = matches[0]
+        tid = configs[idx].get('id')
+        del configs[idx]
+        new_data = {k: v for k, v in self.track_data.items() if k != tid}
+        self._heatmap_sources.pop(tid, None)
+        self._heatmap_global.pop(tid, None)
+        self.track_configs = configs
+        self.track_data    = new_data
+        return self
+
+    def clear_tracks(self) -> 'Tracks':
+        """Remove every track from the viewer.
+
+        Returns
+        -------
+        Tracks
+            ``self``, for fluent chaining.
+        """
+        self._heatmap_sources.clear()
+        self._heatmap_global.clear()
+        self.track_configs = []
+        self.track_data    = {}
+        return self
 
     # ── add_segment_track ────────────────────────────────────────────────────
     def add_segment_track(
@@ -3706,8 +3783,8 @@ class Tracks(anywidget.AnyWidget):
         df: pd.DataFrame,
         name: str,
         *,
-        individual_col: str = 'sample',
-        group_col: str | None = None,
+        individual_col: str | None = None,
+        group_by: str | None = None,
         sort_by: str | None = None,
         color_map: dict | None = None,
         value_col: str | None = None,
@@ -3719,6 +3796,7 @@ class Tracks(anywidget.AnyWidget):
         alpha: float = 0.5,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
+        group_col: str | None = None,
     ) -> 'Tracks':
         """Add a heatmap track — one row per individual, GPU texture rendering.
 
@@ -3729,9 +3807,11 @@ class Tracks(anywidget.AnyWidget):
             and at least the column named by ``individual_col``.
         name : str
             Track display label shown in the left panel.
-        individual_col : str, default ``'sample'``
-            Column identifying each haplotype / sample row.
-        group_col : str, optional
+        individual_col : str, optional
+            Column identifying each haplotype / sample row. Required for
+            density mode; optional when a ``value_col`` is supplied and
+            each (chrom, start, end) already identifies a unique row.
+        group_by : str, optional
             Column for grouping individuals into coloured bands.
         sort_by : str, optional
             Column used to sort individuals within each group.
@@ -3783,6 +3863,15 @@ class Tracks(anywidget.AnyWidget):
             without ``value_col``, if ``value_col`` is missing from
             ``df``, or if a discrete palette has more than 255 categories.
         """
+        if group_col is not None:
+            warnings.warn(
+                "add_heatmap_track(group_col=...) is deprecated; "
+                "use group_by=... instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            if group_by is None:
+                group_by = group_col
         if not (0.0 < float(alpha) <= 1.0):
             raise ValueError(f"alpha must be in (0, 1], got {alpha}")
         alpha = float(alpha)
@@ -3812,12 +3901,22 @@ class Tracks(anywidget.AnyWidget):
         if value_col is not None:
             lut_info = _build_heatmap_lut(df[value_col], palette, vmin, vmax)
         mode = lut_info['mode'] if lut_info else 'density'
+        if individual_col is None:
+            raise ValueError(
+                "add_heatmap_track: individual_col is required "
+                "(one row per sample/haplotype)."
+            )
+        if individual_col not in df.columns:
+            raise ValueError(
+                f"add_heatmap_track: individual_col={individual_col!r} "
+                f"not in df.columns"
+            )
 
-        if group_col and group_col in df.columns:
-            groups = list(df[group_col].dropna().unique())
+        if group_by and group_by in df.columns:
+            groups = list(df[group_by].dropna().unique())
         else:
             groups = ['all']
-            group_col = None
+            group_by = None
 
         if isinstance(color_map, str):
             color_map = {g: color_map for g in groups}
@@ -3829,7 +3928,7 @@ class Tracks(anywidget.AnyWidget):
         inds_by_group: dict[str, list] = {}
         grp_meta: list = []
         for gi, group in enumerate(groups):
-            gdf = df[df[group_col] == group] if group_col else df
+            gdf = df[df[group_by] == group] if group_by else df
             inds = list(gdf[individual_col].unique())
             if sort_by and sort_by in gdf.columns:
                 order = gdf.groupby(individual_col)[sort_by].first().sort_values().index
@@ -3844,8 +3943,8 @@ class Tracks(anywidget.AnyWidget):
 
         # Retain source data so we can rebin on demand.
         needed_cols = ['chrom', 'start', 'end', individual_col]
-        if group_col and group_col not in needed_cols:
-            needed_cols.append(group_col)
+        if group_by and group_by not in needed_cols:
+            needed_cols.append(group_by)
         if sort_by and sort_by in df.columns and sort_by not in needed_cols:
             needed_cols.append(sort_by)
         if value_col and value_col not in needed_cols:
@@ -3853,7 +3952,7 @@ class Tracks(anywidget.AnyWidget):
         self._heatmap_sources[tid] = {
             'df':             df[needed_cols].copy(),
             'groups':         groups,
-            'group_col':      group_col,
+            'group_col':      group_by,
             'individual_col': individual_col,
             'sort_by':        sort_by,
             'windows':        windows,
@@ -3902,10 +4001,10 @@ class Tracks(anywidget.AnyWidget):
             # bar must fall back to the default track-label colour so they
             # aren't tinted by a now-irrelevant group palette.
             cfg['labelsUseDefault'] = True
-            # Discrete value-mode without group_col: list category labels
+            # Discrete value-mode without group_by: list category labels
             # in the left bar, each tinted with its palette colour so the
             # text doubles as an in-widget legend.
-            if mode == 'discrete' and group_col is None:
+            if mode == 'discrete' and group_by is None:
                 palette_ref = lut_info.get('palette_ref') or {}
                 cfg['valueLabels'] = [
                     {'name': str(cat), 'color': palette_ref.get(cat) or '#9090c0'}
@@ -5586,7 +5685,7 @@ class Tracks(anywidget.AnyWidget):
         height: int = 60,
         y_range: tuple[float, float] | None = None,
         bin_width: float | None = None,
-        stack: bool = True,
+        stack: bool = False,
         density_windows: tuple | int = (256, 1024, 4096),
         aggregate: str = 'mean',
         tip_fmt: str | None = None,
@@ -5618,11 +5717,12 @@ class Tracks(anywidget.AnyWidget):
         bin_width : float, optional
             Width of each bar in base pairs at the finest zoom level.
             Auto-computed from the median spacing of ``x`` when omitted.
-        stack : bool, default True
+        stack : bool, default False
             If True, group contributions at each x-bin stack on top of
             each other (positive values above ``0``, negative below).
-            Group order determines stacking order. Set to False to
-            overlap bars from different groups instead.
+            Group order determines stacking order. When False (default),
+            bars from different groups overlap, matching
+            :meth:`add_segment_track`'s convention.
         density_windows : tuple of int or int, default ``(256, 1024, 4096)``
             Bin counts for the multi-resolution LOD, matching the
             segment-track convention. When zoomed out, the renderer
@@ -5906,7 +6006,7 @@ class Tracks(anywidget.AnyWidget):
 
     def add_ucsc_track(
         self,
-        track_name: str,
+        ucsc_track: str | None = None,
         name: str | None = None,
         *,
         kind: str = 'line',
@@ -5941,11 +6041,13 @@ class Tracks(anywidget.AnyWidget):
 
         Parameters
         ----------
-        track_name
+        ucsc_track
             UCSC track identifier (see
-            :func:`geneinfo.ucsc.search_ucsc_tracks`).
+            :func:`geneinfo.ucsc.search_ucsc_tracks`). The legacy
+            keyword ``track_name=`` is accepted for one release with a
+            deprecation warning.
         name
-            Track display label. Defaults to ``track_name``.
+            Track display label. Defaults to ``ucsc_track``.
         kind : {'point', 'line', 'histogram', 'fill'}
             Which widget track to draw. ``'point'`` maps to
             :meth:`add_point_track`.
@@ -5990,6 +6092,21 @@ class Tracks(anywidget.AnyWidget):
         """
         from geneinfo.ucsc import get_ucsc_track  # deferred import
 
+        if 'track_name' in kwargs:
+            warnings.warn(
+                "add_ucsc_track(track_name=...) is deprecated; "
+                "use the first positional argument (ucsc_track) instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            legacy = kwargs.pop('track_name')
+            if ucsc_track is None:
+                ucsc_track = legacy
+        if ucsc_track is None:
+            raise TypeError(
+                "add_ucsc_track() missing required argument: 'ucsc_track'"
+            )
+
         kind = kind.lower()
         valid_kinds = {'point', 'line', 'histogram', 'fill'}
         if kind not in valid_kinds:
@@ -6006,13 +6123,13 @@ class Tracks(anywidget.AnyWidget):
         # Let the adapter auto-detect and rename the numeric column to
         # 'value'; the user shouldn't need to know the track's schema.
         df = get_ucsc_track(
-            track_name, assembly=resolved_assembly,
+            ucsc_track, assembly=resolved_assembly,
             chrom=chrom, start=start, end=end,
         )
 
         if 'value' not in df.columns:
             raise ValueError(
-                f"add_ucsc_track: track {track_name!r} has no numeric column "
+                f"add_ucsc_track: track {ucsc_track!r} has no numeric column "
                 f"the adapter could expose as 'value'; columns were "
                 f"{list(df.columns)}. Fetch the DataFrame via "
                 f"geneinfo.ucsc.get_ucsc_track(..., value_column='<col>') and "
@@ -6036,7 +6153,7 @@ class Tracks(anywidget.AnyWidget):
         if step is Tracks._UCSC_STEP_DEFAULT:
             step = None if x == 'mid' else 'post'
 
-        label = name if name is not None else track_name
+        label = name if name is not None else ucsc_track
 
         if kind == 'point':
             if color is not None:
