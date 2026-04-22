@@ -271,7 +271,7 @@ def _synthesise_value_groups(
     return df, new_col
 
 
-def _resolve_color_mapping(m: Any) -> Any:
+def _resolve_color_mapping(m: Any, _seen: set[int] | None = None) -> Any:
     """Resolve colours in a dict or list, returning a new container.
 
     Parameters
@@ -290,21 +290,67 @@ def _resolve_color_mapping(m: Any) -> Any:
     """
     if m is None:
         return None
-    if isinstance(m, dict):
-        out = {}
-        for k, v in m.items():
-            if isinstance(v, (dict, list)):
-                out[k] = _resolve_color_mapping(v)
-            elif isinstance(v, str):
-                out[k] = resolve_color(v)
-            else:
-                out[k] = v
-        return out
-    if isinstance(m, list):
-        return [resolve_color(v) if isinstance(v, str) else v for v in m]
+    if isinstance(m, (dict, list)):
+        seen = _seen if _seen is not None else set()
+        if id(m) in seen:
+            # Cycle — return a shallow copy to break recursion.
+            return dict(m) if isinstance(m, dict) else list(m)
+        seen.add(id(m))
+        if isinstance(m, dict):
+            out: dict = {}
+            for k, v in m.items():
+                if isinstance(v, (dict, list)):
+                    out[k] = _resolve_color_mapping(v, seen)
+                elif isinstance(v, str):
+                    out[k] = resolve_color(v)
+                else:
+                    out[k] = v
+            return out
+        return [
+            _resolve_color_mapping(v, seen) if isinstance(v, (dict, list))
+            else (resolve_color(v) if isinstance(v, str) else v)
+            for v in m
+        ]
     if isinstance(m, str):
         return resolve_color(m)
     return m
+
+
+def _vline_positions(value: Any, caller: str) -> list:
+    """Normalise ``positions`` into a list of numeric positions.
+
+    Accepts a single int/float or an iterable of int/float. Strings
+    are rejected explicitly (they are iterable in Python but the
+    per-character decomposition is never what the caller means).
+    """
+    if isinstance(value, str):
+        raise TypeError(
+            f"{caller}: positions must be a number or an iterable of "
+            f"numbers (got str)."
+        )
+    if isinstance(value, bool):
+        # bool is an int subclass; disallow to catch accidental truthiness.
+        raise TypeError(
+            f"{caller}: positions must be a number or an iterable of "
+            f"numbers (got bool)."
+        )
+    if isinstance(value, (int, float)):
+        return [value]
+    try:
+        out: list = []
+        for p in value:
+            if isinstance(p, bool) or not isinstance(p, (int, float)):
+                raise TypeError(
+                    f"{caller}: position {p!r} is not a number."
+                )
+            out.append(p)
+        return out
+    except TypeError:
+        raise
+    except Exception as e:
+        raise TypeError(
+            f"{caller}: positions must be iterable; got {type(value).__name__}"
+        ) from e
 
 
 def _build_heatmap_lut(
@@ -3155,45 +3201,84 @@ class Tracks(anywidget.AnyWidget):
     spans         = traitlets.List([]).tag(sync=True)
     zoom_speed    = traitlets.Float(1.02).tag(sync=True)
     pan_speed     = traitlets.Float(1.0).tag(sync=True)
-    theme         = traitlets.Dict({
-        'bg':           '#13131a',
-        'fg':           '#d0d0e8',
-        'panel':        '#1c1c26',
-        'border':       '#252530',
-        'input_bg':     '#0d0d14',
-        'input_fg':     '#c0c0dc',
-        'input_border': '#33334a',
-        'focus_border': '#4466ee',
-        'axis_text':    '#666688',
-        'track_label':  '#9090c0',
-        'gene_exon':    '#4488cc',
-        'gene_spine':   '#666688',
-        'gene_label':   '#9090c0',
-        'sidebar_w':    96,
-    }).tag(sync=True)
+    theme         = traitlets.Dict(dict(DARK_THEME)).tag(sync=True)
 
     _PALETTE = [
         '#4488cc', '#ee5566', '#33aa77', '#ddaa22',
         '#66bbcc', '#cc44aa', '#88aa44', '#aa6644',
     ]
 
+    @traitlets.validate('viewport')
+    def _validate_viewport(self, proposal: dict[str, Any]) -> dict[str, Any]:
+        """Enforce viewport shape and chrom/start/end invariants.
+
+        An empty viewport (``{'chrom': '', 'start': 0, 'end': 0}``) is
+        always accepted so ``__init__`` can construct the widget before
+        ``chrom_sizes`` is populated.
+        """
+        value = proposal['value']
+        if not isinstance(value, dict):
+            raise traitlets.TraitError(
+                f"viewport must be a dict, got {type(value).__name__}"
+            )
+        chrom = value.get('chrom', '')
+        start = value.get('start', 0)
+        end   = value.get('end', 0)
+        if chrom == '' and start == 0 and end == 0:
+            return {'chrom': '', 'start': 0, 'end': 0}
+        try:
+            start = int(start)
+            end   = int(end)
+        except (TypeError, ValueError) as e:
+            raise traitlets.TraitError(
+                f"viewport: start/end must be integer-like (got "
+                f"{value.get('start')!r}, {value.get('end')!r})"
+            ) from e
+        chrom = str(chrom)
+        sizes = self.chrom_sizes or {}
+        if chrom not in sizes:
+            raise traitlets.TraitError(
+                f"viewport: chrom={chrom!r} not in chrom_sizes"
+            )
+        csz = int(sizes[chrom])
+        if start < 0:
+            raise traitlets.TraitError(
+                f"viewport: start={start} must be >= 0"
+            )
+        if end > csz:
+            raise traitlets.TraitError(
+                f"viewport: end={end} exceeds chrom length {csz}"
+            )
+        if start > end:
+            raise traitlets.TraitError(
+                f"viewport: start={start} must be <= end={end}"
+            )
+        return {'chrom': chrom, 'start': start, 'end': end}
+
     @traitlets.validate('theme')
     def _validate_theme(self, proposal: dict[str, Any]) -> dict[str, Any]:
         """Normalise theme values whenever the trait is assigned.
 
-        Parameters
-        ----------
-        proposal : dict
-            The traitlets proposal object whose ``'value'`` key carries
-            the user-supplied theme dict.
-
-        Returns
-        -------
-        dict of str to Any
-            A new theme dict with every string colour spec resolved to a
-            CSS-compatible hex through :func:`_resolve_color_mapping`.
+        A partial override merges onto the current theme so a user can
+        say ``viewer.theme = {'bg': 'black'}`` without losing every
+        other key. Unknown keys (not in :data:`DARK_THEME`) raise
+        :class:`traitlets.TraitError` as a typo guard.
         """
-        return _resolve_color_mapping(proposal['value'])
+        incoming = proposal['value']
+        if not isinstance(incoming, dict):
+            raise traitlets.TraitError(
+                f"theme must be a dict, got {type(incoming).__name__}"
+            )
+        allowed = set(DARK_THEME.keys())
+        unknown = set(incoming.keys()) - allowed
+        if unknown:
+            raise traitlets.TraitError(
+                f"theme: unknown key(s) {sorted(unknown)!r}; "
+                f"known keys are {sorted(allowed)!r}"
+            )
+        resolved = _resolve_color_mapping(incoming) or {}
+        current = dict(self.theme) if self.theme else dict(DARK_THEME)
+        return {**current, **resolved}
 
     def __init__(
         self,
@@ -4467,10 +4552,13 @@ class Tracks(anywidget.AnyWidget):
         if self._legend_spec is not None:
             try:
                 display(self._render_legend(**self._legend_spec))
-            except Exception:
+            except Exception as e:
                 # A broken legend should never prevent the widget from
-                # rendering — swallow and carry on.
-                pass
+                # rendering — surface the failure as a warning instead.
+                warnings.warn(
+                    f"legend render failed: {e}",
+                    stacklevel=2,
+                )
         # Publish the widget's mimebundle without routing through
         # ``display(self)``, which would re-enter ``_ipython_display_``
         # because IPython's formatter honours it before mimebundle.
@@ -6222,13 +6310,17 @@ class Tracks(anywidget.AnyWidget):
         """
         resolved = _resolve_color_mapping(color)
 
+        if isinstance(positions, str):
+            raise TypeError(
+                "add_vlines: positions must be a number or an iterable of "
+                "numbers (got str)."
+            )
         if isinstance(positions, dict):
-            items = [(str(c), positions[c]) for c in positions]
+            items = [(str(c), _vline_positions(positions[c], 'add_vlines'))
+                     for c in positions]
         else:
             c = chrom if chrom is not None else self.viewport.get('chrom', '')
-            if isinstance(positions, (int, float)):
-                positions = [positions]
-            items = [(str(c), positions)]
+            items = [(str(c), _vline_positions(positions, 'add_vlines'))]
 
         new_entries = []
         for c, pos_iter in items:
@@ -6301,10 +6393,22 @@ class Tracks(anywidget.AnyWidget):
         fill  = _resolve_color_mapping(color)
         edge  = _resolve_color_mapping(edgecolor) if edgecolor else ''
 
+        if isinstance(ranges, str):
+            raise TypeError(
+                "add_spans: ranges must be a (start, end) pair or an iterable "
+                "of such pairs (got str)."
+            )
+
         def _pairs(it):
+            if isinstance(it, str):
+                raise TypeError(
+                    "add_spans: ranges must be a (start, end) pair or an "
+                    "iterable of such pairs (got str)."
+                )
             out = []
             if (isinstance(it, (tuple, list)) and len(it) == 2
-                    and all(isinstance(x, (int, float)) for x in it)):
+                    and all(isinstance(x, (int, float)) and not isinstance(x, bool)
+                            for x in it)):
                 out.append((int(it[0]), int(it[1])))
             else:
                 for pair in it:
@@ -6367,13 +6471,23 @@ class Tracks(anywidget.AnyWidget):
         -------
         Tracks
             ``self``, to support fluent chaining.
+
+        Raises
+        ------
+        KeyError
+            If ``chrom`` is not in :attr:`chrom_sizes`.
         """
-        csz = self.chrom_sizes.get(str(chrom), end)
-        self.viewport = {
-            'chrom': str(chrom),
-            'start': int(max(0, start)),
-            'end':   int(min(csz, end)),
-        }
+        chrom = str(chrom)
+        if chrom not in self.chrom_sizes:
+            raise KeyError(
+                f"set_viewport: chrom={chrom!r} not in chrom_sizes"
+            )
+        csz = int(self.chrom_sizes[chrom])
+        s = int(max(0, start))
+        e = int(min(csz, end))
+        if s > e:
+            s = e
+        self.viewport = {'chrom': chrom, 'start': s, 'end': e}
         return self
 
     def zoom_to(
@@ -6409,14 +6523,14 @@ class Tracks(anywidget.AnyWidget):
         Tracks
             ``self``, to support fluent chaining.
         """
-        csz = self.chrom_sizes.get(str(chrom))
+        chrom = str(chrom)
+        if chrom not in self.chrom_sizes:
+            raise KeyError(
+                f"zoom_to: chrom={chrom!r} not in chrom_sizes"
+            )
+        csz = int(self.chrom_sizes[chrom])
         if center is None:
-            if csz is None:
-                raise KeyError(
-                    f"zoom_to: chrom={chrom!r} not in chrom_sizes; pass "
-                    f"center= to specify an explicit window."
-                )
-            return self.set_viewport(chrom, 0, int(csz))
+            return self.set_viewport(chrom, 0, csz)
 
         if window is None:
             window = 1_000_000
