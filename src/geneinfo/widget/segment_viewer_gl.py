@@ -2165,17 +2165,27 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
 
     // Y-axis ticks for quantitative tracks. For scatter/line, the active
     // LOD level may carry its own Y range (cfg.lodYRange) — fetch the
-    // currently picked level and use its range if it has one.
+    // currently picked level and use its range if it has one. We walk
+    // every group's slot and widen the range to the union so the axis
+    // encompasses all groups at the active zoom.
     if (['scatter', 'line', 'fill', 'histogram'].includes(cfg.type)) {
       let yMinAct = cfg.yMin;
       let yMaxAct = cfg.yMax;
       if ((cfg.type === 'scatter' || cfg.type === 'line') && cfg.lodYRange) {
         const axisPxPerBp = (W_css - LABEL_W) / (ve - vs);
-        const slot = gpuXY[cfg.id]?.[ch]?.[cfg.groups?.[0]?.id];
-        const pick = pickXYLevelInfo(slot, axisPxPerBp);
-        if (pick && pick.yMin != null && pick.yMax != null) {
-          yMinAct = pick.yMin;
-          yMaxAct = pick.yMax;
+        const chName = vp.chrom;
+        let lo = Infinity, hi = -Infinity;
+        for (const g of (cfg.groups || [])) {
+          const slot = gpuXY[cfg.id]?.[chName]?.[g.id];
+          const pick = pickXYLevelInfo(slot, axisPxPerBp);
+          if (pick && pick.yMin != null && pick.yMax != null) {
+            if (pick.yMin < lo) lo = pick.yMin;
+            if (pick.yMax > hi) hi = pick.yMax;
+          }
+        }
+        if (isFinite(lo) && isFinite(hi)) {
+          yMinAct = lo;
+          yMaxAct = hi;
         }
       }
       drawYAxis(cfg, cssY, yMinAct, yMaxAct);

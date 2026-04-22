@@ -45,10 +45,12 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping
-from typing import Optional
-
+from typing import Optional, List
+import matplotlib
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+
+from ..genelist import GeneList, GeneListCollection
 
 __all__ = ["upset", "compute_intersections"]
 __version__ = "0.6.0"
@@ -156,7 +158,7 @@ def compute_intersections(
 
 
 def upset(
-    sets: Mapping[str, "set | list"],
+    sets: Mapping[str, "set | list"]|List[GeneList],
     *,
     # ── data ──────────────────────────────────────────────────────────────────
     min_size: int = 1,
@@ -377,8 +379,8 @@ def upset(
     --------
     Basic usage::
 
-        fig = upset({"A": {"x","y"}, "B": {"y","z"}, "C": {"z","x"}})
-        plt.show()
+        upset({"A": {"x","y"}, "B": {"y","z"}, "C": {"z","x"}})
+        
 
     Wrap all intersections across multiple rows, 12 columns per row::
 
@@ -387,7 +389,7 @@ def upset(
 
     Inclusive mode with per-set colour::
 
-        fig = upset(
+        upset(
             my_sets,
             mode="inclusive",
             color=True,
@@ -399,16 +401,19 @@ def upset(
     Dark theme::
 
         with plt.style.context("dark_background"):
-            fig = upset(my_sets)
+            upset(my_sets)
 
     Highlight a specific intersection::
 
-        fig = upset(
+        upset(
             my_sets,
             highlight=[frozenset(["Cancer drivers", "DNA repair"])],
         )
     """
-    sets = {k: set(v) for k, v in sets.items()}
+    if isinstance(sets, dict):
+        sets = {k: set(v) for k, v in sets.items()}
+    else:
+        sets = {x.name(): set(x) for x in sets}
     names = list(sets.keys())
     n_sets = len(names)
 
@@ -547,171 +552,172 @@ def upset(
 
     label_frac = (size_bar_cols * col_width) / figsize[0]
 
-    # ── figure ────────────────────────────────────────────────────────────────
-    fig = plt.figure(figsize=figsize, facecolor="none")
-    fig.patch.set_alpha(0.0)
+    with matplotlib.rc_context({'interactive': False}):
+        # ── figure ────────────────────────────────────────────────────────────────
+        fig = plt.figure(figsize=figsize, facecolor="none")
+        fig.patch.set_alpha(0.0)
 
-    # GridSpec: 2 rows per chunk (gene panel + matrix panel)
-    height_ratios = []
-    for cd in chunk_data:
-        height_ratios.append(_gene_panel_h(cd["max_rows"]))
-        height_ratios.append(matrix_h)
+        # GridSpec: 2 rows per chunk (gene panel + matrix panel)
+        height_ratios = []
+        for cd in chunk_data:
+            height_ratios.append(_gene_panel_h(cd["max_rows"]))
+            height_ratios.append(matrix_h)
 
-    gs = gridspec.GridSpec(
-        2 * n_chunks, 1,
-        figure=fig,
-        height_ratios=height_ratios,
-        hspace=0.0,
-        top=0.94 if title else 0.99,
-        bottom=0.01,
-        left=label_frac,
-        right=0.995,
-    )
+        gs = gridspec.GridSpec(
+            2 * n_chunks, 1,
+            figure=fig,
+            height_ratios=height_ratios,
+            hspace=0.0,
+            top=0.94 if title else 0.99,
+            bottom=0.01,
+            left=label_frac,
+            right=0.995,
+        )
 
-    max_total = max(len(sets[nm]) for nm in names) or 1
-    bar_right = -0.35
-    bar_left  = -size_bar_cols + 0.20
+        max_total = max(len(sets[nm]) for nm in names) or 1
+        bar_right = -0.35
+        bar_left  = -size_bar_cols + 0.20
 
-    # ── draw each chunk ───────────────────────────────────────────────────────
-    for ri, cd in enumerate(chunk_data):
-        chunk        = cd["intersections"]
-        display      = cd["display"]
-        truncated    = cd["truncated"]
-        col_is_wide  = cd["col_is_wide"]
-        col_widths   = cd["col_widths"]
-        col_starts   = cd["col_starts"]
-        total_x      = cd["total_x"]
-        max_rows     = cd["max_rows"]
-        n_cols_chunk = len(chunk)
+        # ── draw each chunk ───────────────────────────────────────────────────────
+        for ri, cd in enumerate(chunk_data):
+            chunk        = cd["intersections"]
+            display      = cd["display"]
+            truncated    = cd["truncated"]
+            col_is_wide  = cd["col_is_wide"]
+            col_widths   = cd["col_widths"]
+            col_starts   = cd["col_starts"]
+            total_x      = cd["total_x"]
+            max_rows     = cd["max_rows"]
+            n_cols_chunk = len(chunk)
 
-        ax_gene = fig.add_subplot(gs[2 * ri])
-        ax_mat  = fig.add_subplot(gs[2 * ri + 1])
+            ax_gene = fig.add_subplot(gs[2 * ri])
+            ax_mat  = fig.add_subplot(gs[2 * ri + 1])
 
-        for ax in (ax_gene, ax_mat):
-            ax.set_facecolor("none")
-            ax.patch.set_visible(False)
+            for ax in (ax_gene, ax_mat):
+                ax.set_facecolor("none")
+                ax.patch.set_visible(False)
 
-        # ── gene panel ────────────────────────────────────────────────────────
-        total_rows = max_rows + count_rows
-        # use max_total_x so all rows share the same x scale → dots align
-        ax_gene.set_xlim(-size_bar_cols, max_total_x)
-        ax_gene.set_ylim(0, total_rows)
-        ax_gene.axis("off")
+            # ── gene panel ────────────────────────────────────────────────────────
+            total_rows = max_rows + count_rows
+            # use max_total_x so all rows share the same x scale → dots align
+            ax_gene.set_xlim(-size_bar_cols, max_total_x)
+            ax_gene.set_ylim(0, total_rows)
+            ax_gene.axis("off")
 
-        # highlight
-        for ci, (in_sets, _) in enumerate(chunk):
-            if in_sets in highlight_set:
-                x0 = col_starts[ci]
-                ax_gene.axvspan(x0, x0 + col_widths[ci],
+            # highlight
+            for ci, (in_sets, _) in enumerate(chunk):
+                if in_sets in highlight_set:
+                    x0 = col_starts[ci]
+                    ax_gene.axvspan(x0, x0 + col_widths[ci],
+                                    color=highlight_color, linewidth=0, zorder=0)
+
+            # column dividers
+            divider_xs = set()
+            for ci in range(n_cols_chunk):
+                divider_xs.add(col_starts[ci])
+            divider_xs.add(total_x)
+            for xd in sorted(divider_xs):
+                ax_gene.axvline(xd, color=_col_div_color,
+                                linewidth=col_divider_lw, zorder=0)
+
+            ax_gene.axhline(0, color=_baseline_color, linewidth=baseline_lw, zorder=3)
+
+            for ci, (in_sets, _) in enumerate(chunk):
+                genes = display[ci]
+                trunc = truncated[ci]
+                wide  = col_is_wide[ci]
+                x0    = col_starts[ci]
+                cw    = col_widths[ci]
+                cx    = x0 + cw / 2.0
+
+                if wide:
+                    left_genes, right_genes = _two_col_layout(genes, trunc)
+                    n_rows_col = max(len(left_genes), len(right_genes))
+                    for ri2, gene in enumerate(left_genes):
+                        is_trunc = gene == "..."
+                        ax_gene.text(x0 + gene_pad, ri2 + 0.5,
+                                    truncate_suffix if is_trunc else gene,
+                                    ha="left", va="center",
+                                    fontsize=gene_fontsize, fontfamily=gene_fontfamily,
+                                    fontweight=gene_fontweight,
+                                    color=_count_color if is_trunc else _gene_color,
+                                    clip_on=True)
+                    for ri2, gene in enumerate(right_genes):
+                        is_trunc = gene == "..."
+                        ax_gene.text(x0 + cw - gene_pad, ri2 + 0.5,
+                                    truncate_suffix if is_trunc else gene,
+                                    ha="right", va="center",
+                                    fontsize=gene_fontsize, fontfamily=gene_fontfamily,
+                                    fontweight=gene_fontweight,
+                                    color=_count_color if is_trunc else _gene_color,
+                                    clip_on=True)
+                else:
+                    n_rows_col = len(genes) + int(trunc)
+                    for ri2, gene in enumerate(genes):
+                        ax_gene.text(cx, ri2 + 0.5, gene,
+                                    ha="center", va="center",
+                                    fontsize=gene_fontsize, fontfamily=gene_fontfamily,
+                                    fontweight=gene_fontweight,
+                                    color=_gene_color, clip_on=True)
+                    if trunc:
+                        ax_gene.text(cx, len(genes) + 0.5, truncate_suffix,
+                                    ha="center", va="center",
+                                    fontsize=gene_fontsize, color=_count_color, clip_on=True)
+
+                if show_count:
+                    n_total = len(chunk[ci][1])
+                    ax_gene.text(cx, n_rows_col + 0.55, str(n_total),
+                                ha="center", va="bottom",
+                                fontsize=_count_fs, color=_count_color, clip_on=True)
+
+            # ── matrix panel ──────────────────────────────────────────────────────
+            ax_mat.set_xlim(-size_bar_cols, max_total_x)
+            ax_mat.set_ylim(n_sets - 0.5, -0.5)
+            ax_mat.axis("off")
+
+            # highlight
+            for ci, (in_sets, _) in enumerate(chunk):
+                if in_sets in highlight_set:
+                    x0 = col_starts[ci]
+                    ax_mat.axvspan(x0, x0 + col_widths[ci],
                                 color=highlight_color, linewidth=0, zorder=0)
 
-        # column dividers
-        divider_xs = set()
-        for ci in range(n_cols_chunk):
-            divider_xs.add(col_starts[ci])
-        divider_xs.add(total_x)
-        for xd in sorted(divider_xs):
-            ax_gene.axvline(xd, color=_col_div_color,
-                            linewidth=col_divider_lw, zorder=0)
+            # row grid lines
+            for i in range(n_sets - 1):
+                ax_mat.axhline(i + 0.5, color=_row_grid_color, linewidth=row_grid_lw,
+                            xmin=0, xmax=1, zorder=1)
 
-        ax_gene.axhline(0, color=_baseline_color, linewidth=baseline_lw, zorder=3)
+            # set labels + size bars (repeated on every row)
+            for i, name in enumerate(names):
+                total   = len(sets[name])
+                set_col = _set_colors[i] if color else _size_bar_color
+                if show_size_bars:
+                    bar_w = (total / max_total) * (bar_right - bar_left)
+                    ax_mat.barh(i, bar_w, left=bar_left, height=0.28,
+                                color=set_col, alpha=size_bar_alpha,
+                                linewidth=0, zorder=2)
+                label = f"{name} ({total})" if show_set_sizes else name
+                ax_mat.text(bar_right - 0.10, i, label,
+                            ha="right", va="center",
+                            fontsize=_label_fs, fontweight=label_fontweight,
+                            fontfamily=label_fontfamily,
+                            color=set_col if color else _label_color,
+                            clip_on=False)
 
-        for ci, (in_sets, _) in enumerate(chunk):
-            genes = display[ci]
-            trunc = truncated[ci]
-            wide  = col_is_wide[ci]
-            x0    = col_starts[ci]
-            cw    = col_widths[ci]
-            cx    = x0 + cw / 2.0
+            # dots
+            for ci, (in_sets, _) in enumerate(chunk):
+                cx     = col_starts[ci] + col_widths[ci] / 2.0
+                filled = {i for i, nm in enumerate(names) if nm in in_sets}
+                for i in range(n_sets):
+                    c = (_set_colors[i] if color else _dot_filled) if i in filled else _dot_empty
+                    ax_mat.plot(cx, i, "o", ms=dot_size, color=c,
+                                zorder=3, markeredgewidth=0)
 
-            if wide:
-                left_genes, right_genes = _two_col_layout(genes, trunc)
-                n_rows_col = max(len(left_genes), len(right_genes))
-                for ri2, gene in enumerate(left_genes):
-                    is_trunc = gene == "..."
-                    ax_gene.text(x0 + gene_pad, ri2 + 0.5,
-                                 truncate_suffix if is_trunc else gene,
-                                 ha="left", va="center",
-                                 fontsize=gene_fontsize, fontfamily=gene_fontfamily,
-                                 fontweight=gene_fontweight,
-                                 color=_count_color if is_trunc else _gene_color,
-                                 clip_on=True)
-                for ri2, gene in enumerate(right_genes):
-                    is_trunc = gene == "..."
-                    ax_gene.text(x0 + cw - gene_pad, ri2 + 0.5,
-                                 truncate_suffix if is_trunc else gene,
-                                 ha="right", va="center",
-                                 fontsize=gene_fontsize, fontfamily=gene_fontfamily,
-                                 fontweight=gene_fontweight,
-                                 color=_count_color if is_trunc else _gene_color,
-                                 clip_on=True)
-            else:
-                n_rows_col = len(genes) + int(trunc)
-                for ri2, gene in enumerate(genes):
-                    ax_gene.text(cx, ri2 + 0.5, gene,
-                                 ha="center", va="center",
-                                 fontsize=gene_fontsize, fontfamily=gene_fontfamily,
-                                 fontweight=gene_fontweight,
-                                 color=_gene_color, clip_on=True)
-                if trunc:
-                    ax_gene.text(cx, len(genes) + 0.5, truncate_suffix,
-                                 ha="center", va="center",
-                                 fontsize=gene_fontsize, color=_count_color, clip_on=True)
+            # column dividers in matrix
+            for xd in sorted(divider_xs):
+                ax_mat.axvline(xd, color=_col_div_color, linewidth=col_divider_lw, zorder=0)
 
-            if show_count:
-                n_total = len(chunk[ci][1])
-                ax_gene.text(cx, n_rows_col + 0.55, str(n_total),
-                             ha="center", va="bottom",
-                             fontsize=_count_fs, color=_count_color, clip_on=True)
-
-        # ── matrix panel ──────────────────────────────────────────────────────
-        ax_mat.set_xlim(-size_bar_cols, max_total_x)
-        ax_mat.set_ylim(n_sets - 0.5, -0.5)
-        ax_mat.axis("off")
-
-        # highlight
-        for ci, (in_sets, _) in enumerate(chunk):
-            if in_sets in highlight_set:
-                x0 = col_starts[ci]
-                ax_mat.axvspan(x0, x0 + col_widths[ci],
-                               color=highlight_color, linewidth=0, zorder=0)
-
-        # row grid lines
-        for i in range(n_sets - 1):
-            ax_mat.axhline(i + 0.5, color=_row_grid_color, linewidth=row_grid_lw,
-                           xmin=0, xmax=1, zorder=1)
-
-        # set labels + size bars (repeated on every row)
-        for i, name in enumerate(names):
-            total   = len(sets[name])
-            set_col = _set_colors[i] if color else _size_bar_color
-            if show_size_bars:
-                bar_w = (total / max_total) * (bar_right - bar_left)
-                ax_mat.barh(i, bar_w, left=bar_left, height=0.28,
-                            color=set_col, alpha=size_bar_alpha,
-                            linewidth=0, zorder=2)
-            label = f"{name} ({total})" if show_set_sizes else name
-            ax_mat.text(bar_right - 0.10, i, label,
-                        ha="right", va="center",
-                        fontsize=_label_fs, fontweight=label_fontweight,
-                        fontfamily=label_fontfamily,
-                        color=set_col if color else _label_color,
-                        clip_on=False)
-
-        # dots
-        for ci, (in_sets, _) in enumerate(chunk):
-            cx     = col_starts[ci] + col_widths[ci] / 2.0
-            filled = {i for i, nm in enumerate(names) if nm in in_sets}
-            for i in range(n_sets):
-                c = (_set_colors[i] if color else _dot_filled) if i in filled else _dot_empty
-                ax_mat.plot(cx, i, "o", ms=dot_size, color=c,
-                            zorder=3, markeredgewidth=0)
-
-        # column dividers in matrix
-        for xd in sorted(divider_xs):
-            ax_mat.axvline(xd, color=_col_div_color, linewidth=col_divider_lw, zorder=0)
-
-    if title:
-        fig.suptitle(title, fontsize=_title_fs, fontweight=title_fontweight, ha="center")
+        if title:
+            fig.suptitle(title, fontsize=_title_fs, fontweight=title_fontweight, ha="center")
 
     return fig
