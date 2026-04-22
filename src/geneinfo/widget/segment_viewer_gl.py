@@ -633,6 +633,41 @@ _CSS = """
 }
 .sv-toolbar input { width: 210px; }
 .sv-toolbar select:focus, .sv-toolbar input:focus { border-color: var(--sv-focus-border); }
+.sv-input-error, .sv-toolbar input.sv-input-error {
+    border-color: #e04a5c;
+    box-shadow: 0 0 0 1px rgba(224, 74, 92, 0.35) inset;
+}
+.sv-error {
+    padding: 14px 16px;
+    margin: 10px;
+    background: var(--sv-input-bg);
+    border: 1px solid #e04a5c;
+    border-left-width: 4px;
+    border-radius: 4px;
+    color: var(--sv-fg);
+    font-size: 12px;
+    line-height: 1.4;
+}
+.sv-error-title {
+    font-weight: bold;
+    color: #e04a5c;
+    margin-bottom: 6px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+}
+.sv-error ul {
+    margin: 4px 0 0 0;
+    padding-left: 20px;
+}
+.sv-error li {
+    margin: 2px 0;
+}
+.sv-error code {
+    font-family: inherit;
+    background: var(--sv-panel);
+    padding: 1px 4px;
+    border-radius: 2px;
+}
 .sv-btn {
     padding: 2px 9px;
     border: 1px solid var(--sv-input-border);
@@ -646,6 +681,19 @@ _CSS = """
     transition: background 0.1s, border-color 0.1s;
 }
 .sv-btn:hover { background: var(--sv-panel); border-color: var(--sv-focus-border); }
+.sv-btn[disabled], .sv-btn.sv-busy {
+    opacity: 0.55;
+    cursor: progress;
+    pointer-events: none;
+}
+.sv-spin {
+    display: inline-block;
+    animation: sv-spin-anim 0.9s linear infinite;
+}
+@keyframes sv-spin-anim {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
 .sv-sep { flex: 1; }
 .sv-lod-badge {
     font-size: 9px;
@@ -779,7 +827,17 @@ applyTheme();
 // ══════════════════════════════════════════════════════════════════════════════
 const gl = glCanvas.getContext('webgl2', { antialias: false, alpha: false });
 if (!gl) {
-  wrap.innerHTML = '<div style="padding:20px;color:#f66">WebGL2 not available in this environment.</div>';
+  wrap.innerHTML = `
+    <div class="sv-error" role="alert">
+      <div class="sv-error-title">WebGL2 is not available in this environment</div>
+      The viewer needs a WebGL2-capable browser context to render tracks.
+      <ul>
+        <li>Enable hardware acceleration in your browser settings.</li>
+        <li>Check that your GPU driver is up to date — old drivers sometimes block WebGL2.</li>
+        <li>If you're in a headless or remote environment, a software renderer may be disabled; try a local kernel.</li>
+        <li>Visit <code>chrome://gpu</code> / <code>about:support</code> to confirm WebGL2 status.</li>
+      </ul>
+    </div>`;
   return;
 }
 const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -2167,6 +2225,53 @@ function drawYAxis(cfg, trackY, yMinOverride, yMaxOverride) {
   }
 }
 
+// Return true when the given track has no data rendered for the current
+// chromosome. Used by drawOverlay to paint a centred "no data in view"
+// label so empty bands never look like a bug.
+function _trackIsEmptyInView(cfg, chrom) {
+  const tid = cfg.id;
+  function bucketEmpty(store, predicate) {
+    const byCh = store[tid];
+    if (!byCh) return true;
+    const byGid = byCh[chrom];
+    if (!byGid || Object.keys(byGid).length === 0) return true;
+    for (const gid of Object.keys(byGid)) {
+      if (predicate(byGid[gid])) return false;
+    }
+    return true;
+  }
+  switch (cfg.type) {
+    case 'segment':
+      // A segment track shows data when either the raw segs OR the density
+      // LOD has at least one non-empty slot for this chrom.
+      return bucketEmpty(gpuSeg, s => s && s.count > 0)
+          && bucketEmpty(gpuDens, lvls => Array.isArray(lvls) && lvls.length > 0);
+    case 'heatmap':
+      return bucketEmpty(gpuHM, s => s && s.tex);
+    case 'scatter':
+    case 'line':
+      return bucketEmpty(gpuXY, slot =>
+        slot && (slot.base || (slot.levels && slot.levels.length > 0))
+      );
+    case 'fill':
+      return bucketEmpty(gpuFill, s => s && (s.posCount > 0 || s.negCount > 0));
+    case 'histogram':
+      return bucketEmpty(gpuHist, slot =>
+        slot && (slot.base || (slot.levels && slot.levels.length > 0))
+      );
+    case 'gene': {
+      const g = geneData[tid];
+      if (!g) return true;
+      const entry = g[chrom];
+      if (!entry) return true;
+      const genes = entry.genes || entry;
+      return !(genes && genes.length > 0);
+    }
+    default:
+      return false;
+  }
+}
+
 function drawOverlay(cfgs, vs, ve, W_css, H_css) {
   octx.clearRect(0, 0, ov.width, ov.height);
   octx.save();
@@ -2344,6 +2449,22 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
         }
       }
       drawYAxis(cfg, cssY, yMinAct, yMaxAct);
+    }
+
+    // ── "no data in view" placeholder for an empty track band ─────────────
+    if (_trackIsEmptyInView(cfg, vp.chrom)) {
+      octx.save();
+      octx.globalAlpha  = 0.55;
+      octx.fillStyle    = th.axis_text || '#888899';
+      octx.font         = 'italic 10px monospace';
+      octx.textAlign    = 'center';
+      octx.textBaseline = 'middle';
+      octx.fillText(
+        'no data in view',
+        LABEL_W + (W_css - LABEL_W) / 2,
+        cssY + ch / 2,
+      );
+      octx.restore();
     }
 
     cssY += ch;
@@ -2990,21 +3111,47 @@ chromSel.addEventListener('change', () => {
   scheduleRender(); syncVp(); updatePosBox();
 });
 
+function _flagPosError(msg) {
+  posInput.classList.add('sv-input-error');
+  posInput.title = msg;
+}
+function _clearPosError() {
+  if (!posInput.classList.contains('sv-input-error')) return;
+  posInput.classList.remove('sv-input-error');
+  posInput.title = '';
+}
+posInput.addEventListener('input', _clearPosError);
+posInput.addEventListener('blur',  _clearPosError);
+
 posInput.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
-  const m = posInput.value.replace(/,/g, '').match(/^(?:([\w.]+):)?(\d+)[–\-](\d+)$/);
-  if (!m) return;
+  const raw = posInput.value.trim();
+  if (!raw) { _clearPosError(); return; }
+  const m = raw.replace(/,/g, '').match(/^(?:([\w.]+):)?(\d+)[–\-](\d+)$/);
+  if (!m) {
+    _flagPosError('expected format: chrom:start-end, e.g. chr1:1,000-2,000');
+    return;
+  }
   const ch = m[1] || vp.chrom;
   const s = +m[2], en = +m[3];
-  if (en > s && chromSizes[ch] != null) {
-    const lo = panLo(ch), hi = panHi(ch);
-    const ns = clamp(s,  lo, hi);
-    const ne = clamp(en, lo, hi);
-    if (ne > ns) {
-      vp = { chrom: ch, start: ns, end: ne };
-      chromSel.value = ch; scheduleRender(); syncVp();
-    }
+  if (chromSizes[ch] == null) {
+    _flagPosError(`unknown chromosome: ${ch}`);
+    return;
   }
+  if (en <= s) {
+    _flagPosError(`end (${en}) must be greater than start (${s})`);
+    return;
+  }
+  const lo = panLo(ch), hi = panHi(ch);
+  const ns = clamp(s,  lo, hi);
+  const ne = clamp(en, lo, hi);
+  if (ne <= ns) {
+    _flagPosError(`region out of range for ${ch}`);
+    return;
+  }
+  _clearPosError();
+  vp = { chrom: ch, start: ns, end: ne };
+  chromSel.value = ch; scheduleRender(); syncVp();
 });
 
 const doZoom = f => {
@@ -3076,17 +3223,35 @@ function invokeCmd(name, msg) {
   model.send({ id: randId(), kind: 'anywidget-command', name, msg });
 }
 
+const _HM_REC_GLYPH = hmRecBtn.textContent;
+let _hmBusyCount = 0;
+function _hmBusyEnter() {
+  if (_hmBusyCount++ === 0) {
+    hmRecBtn.classList.add('sv-busy');
+    hmRecBtn.setAttribute('disabled', '');
+    hmRecBtn.innerHTML = '<span class="sv-spin">⟳</span>';
+  }
+}
+function _hmBusyClear() {
+  if (_hmBusyCount === 0) return;
+  _hmBusyCount = 0;
+  hmRecBtn.classList.remove('sv-busy');
+  hmRecBtn.removeAttribute('disabled');
+  hmRecBtn.textContent = _HM_REC_GLYPH;
+}
 hmRecBtn.addEventListener('click', () => {
+  if (hmRecBtn.hasAttribute('disabled')) return;
   const cfgs = model.get('track_configs') || [];
-  for (const c of cfgs) {
-    if (c.type === 'heatmap') {
-      invokeCmd('_cmd_heatmap_recompute', {
-        tid:  c.id,
-        chrom: vp.chrom,
-        xStart: Math.floor(vp.start),
-        xEnd:   Math.ceil(vp.end),
-      });
-    }
+  const pending = cfgs.filter(c => c.type === 'heatmap');
+  if (pending.length === 0) return;
+  for (const c of pending) {
+    _hmBusyEnter();
+    invokeCmd('_cmd_heatmap_recompute', {
+      tid:  c.id,
+      chrom: vp.chrom,
+      xStart: Math.floor(vp.start),
+      xEnd:   Math.ceil(vp.end),
+    });
   }
 });
 hmGlobBtn.addEventListener('click', () => {
@@ -3112,10 +3277,15 @@ snapBtn.addEventListener('click', async () => {
   octx2.drawImage(glCanvas, 0, 0);
   octx2.drawImage(ov,       0, 0);
 
-  const flash = (ok) => {
-    const prev = snapBtn.textContent;
-    snapBtn.textContent = ok ? '✓' : '!';
-    setTimeout(() => { snapBtn.textContent = prev; }, 900);
+  const flash = (glyph, tip) => {
+    const prevText = snapBtn.textContent;
+    const prevTip  = snapBtn.title;
+    snapBtn.textContent = glyph;
+    if (tip) snapBtn.title = tip;
+    setTimeout(() => {
+      snapBtn.textContent = prevText;
+      snapBtn.title       = prevTip;
+    }, 1100);
   };
 
   try {
@@ -3123,12 +3293,14 @@ snapBtn.addEventListener('click', async () => {
     const blob = await new Promise(res => out.toBlob(res, 'image/png'));
     if (!blob) throw new Error('toBlob failed');
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-    flash(true);
+    flash('✓', 'Copied view to clipboard');
   } catch (err) {
     console.warn('[Tracks] clipboard copy failed, falling back to download:', err);
-    // Fallback: trigger a download so the user still gets the image.
+    // Fallback: trigger a download so the user still gets the image. We
+    // use a distinct glyph (⇓) so the user can tell a file was saved
+    // rather than the image reaching the clipboard.
     out.toBlob(blob => {
-      if (!blob) return flash(false);
+      if (!blob) return flash('!', 'Snapshot failed');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -3137,7 +3309,7 @@ snapBtn.addEventListener('click', async () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      flash(true);
+      flash('⇓', 'Downloaded (clipboard unavailable)');
     }, 'image/png');
   }
 });
@@ -3166,7 +3338,11 @@ model.on('change:track_configs', () => {
   updateHeatmapBtns();
   scheduleRender();
 });
-model.on('change:track_data', () => { uploadTrackData(); scheduleRender(); });
+model.on('change:track_data', () => {
+  uploadTrackData();
+  _hmBusyClear();
+  scheduleRender();
+});
 model.on('change:vlines', () => { scheduleRender(); });
 model.on('change:spans', () => { scheduleRender(); });
 
