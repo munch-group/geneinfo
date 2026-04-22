@@ -63,7 +63,8 @@ website:
           contents:
             - pages/gene_plots.ipynb
             - pages/chrom_ideograms.ipynb              
-            - pages/venn.ipynb              
+            - pages/venn.ipynb
+            - pages/upset.ipynb       
             - pages/string_nets.ipynb
             - pages/go_graphs.ipynb  
             - pages/tracks_widget.ipynb                 
@@ -127,6 +128,7 @@ quartodoc:
         - GenomeIdeogram
         - ChromIdeogram
         - venn
+        - upset
     - title: Tracks widget
       desc: |
         Widget for zooming/panning large chromosome tracks with gene annotation.
