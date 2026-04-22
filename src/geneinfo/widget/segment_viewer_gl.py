@@ -681,6 +681,19 @@ _CSS = """
     transition: background 0.1s, border-color 0.1s;
 }
 .sv-btn:hover { background: var(--sv-panel); border-color: var(--sv-focus-border); }
+.sv-btn:focus-visible, .sv-toolbar select:focus-visible,
+.sv-toolbar input:focus-visible, .sv-glcanvas:focus-visible,
+.sv-wrap:focus-visible {
+    outline: 2px solid var(--sv-focus-border);
+    outline-offset: 1px;
+}
+.sv-sep-v {
+    width: 1px;
+    align-self: stretch;
+    margin: 2px 4px;
+    background: var(--sv-input-border);
+    opacity: 0.5;
+}
 .sv-btn[disabled], .sv-btn.sv-busy {
     opacity: 0.55;
     cursor: progress;
@@ -726,6 +739,51 @@ _CSS = """
     border: 1px solid var(--sv-input-border);
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
+.sv-help-pop {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    z-index: 30;
+    padding: 10px 14px 12px;
+    max-width: 360px;
+    background: var(--sv-input-bg);
+    color: var(--sv-fg);
+    border: 1px solid var(--sv-input-border);
+    border-radius: 5px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    font-size: 11px;
+    line-height: 1.4;
+}
+.sv-help-pop[hidden] { display: none; }
+.sv-help-title {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: var(--sv-fg);
+}
+.sv-help-sec-title {
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--sv-axis-text);
+    margin: 6px 0 2px;
+}
+.sv-help-pop ul {
+    margin: 0;
+    padding-left: 18px;
+}
+.sv-help-pop li { margin: 1px 0; }
+.sv-help-pop b  { color: var(--sv-fg); }
+.sv-help-footer {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--sv-axis-text);
+}
+.sv-help-pop a {
+    color: var(--sv-focus-border);
+    text-decoration: underline;
+}
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -752,28 +810,80 @@ const cssNDC = (cssY, H) => 1.0 - 2.0 * cssY / H;
 // ══════════════════════════════════════════════════════════════════════════════
 el.className = 'sv-root';
 el.innerHTML = `
-  <div class="sv-toolbar">
-    <span class="sv-label-sm">chr</span>
-    <select class="sv-chrom"></select>
-    <input  class="sv-pos" placeholder="chr1:0–248956422" />
-    <button class="sv-btn sv-zi" title="Zoom in (+)">＋</button>
-    <button class="sv-btn sv-zo" title="Zoom out (−)">－</button>
-    <button class="sv-btn sv-pff" title="Pan 90% of the view left">&laquo;</button>
-    <button class="sv-btn sv-phf" title="Pan half a view left">&lsaquo;</button>
-    <button class="sv-btn sv-phr" title="Pan half a view right">&rsaquo;</button>
-    <button class="sv-btn sv-pfr" title="Pan 90% of the view right">&raquo;</button>
-    <button class="sv-btn sv-rs" title="Reset view">⌂</button>
-    <button class="sv-btn sv-hmr" title="Recompute heatmap(s) for current view" style="display:none">⟲</button>
-    <button class="sv-btn sv-hmg" title="Restore global heatmap view" style="display:none">◱</button>
-    <button class="sv-btn sv-gl"  title="Show all gene labels (when &lt;100 visible)" style="display:none">A</button>
-    <button class="sv-btn sv-snap" title="Copy current view to clipboard">⧉</button>
+  <div class="sv-toolbar" role="toolbar" aria-label="Genome viewer controls">
+    <span class="sv-label-sm" id="sv-chrom-lbl">chr</span>
+    <select class="sv-chrom" aria-labelledby="sv-chrom-lbl" aria-label="Chromosome"></select>
+    <input  class="sv-pos" placeholder="chr1:0–248956422"
+            aria-label="Region (chrom:start-end)" />
+    <span class="sv-sep-v" role="separator" aria-hidden="true"></span>
+    <button class="sv-btn sv-zi"  title="Zoom in (+)"
+            aria-label="Zoom in">＋</button>
+    <button class="sv-btn sv-zo"  title="Zoom out (−)"
+            aria-label="Zoom out">－</button>
+    <span class="sv-sep-v" role="separator" aria-hidden="true"></span>
+    <button class="sv-btn sv-pff" title="Pan 90% of the view left"
+            aria-label="Pan 90 percent left">&laquo;</button>
+    <button class="sv-btn sv-phf" title="Pan half a view left"
+            aria-label="Pan half view left">&lsaquo;</button>
+    <button class="sv-btn sv-phr" title="Pan half a view right"
+            aria-label="Pan half view right">&rsaquo;</button>
+    <button class="sv-btn sv-pfr" title="Pan 90% of the view right"
+            aria-label="Pan 90 percent right">&raquo;</button>
+    <span class="sv-sep-v" role="separator" aria-hidden="true"></span>
+    <button class="sv-btn sv-rs"   title="Reset view"
+            aria-label="Reset view">⌂</button>
+    <button class="sv-btn sv-hmr"  title="Recompute heatmap(s) for current view"
+            aria-label="Recompute heatmap(s) for current view"
+            style="display:none">⟲</button>
+    <button class="sv-btn sv-hmg"  title="Restore global heatmap view"
+            aria-label="Restore global heatmap view"
+            style="display:none">◱</button>
+    <button class="sv-btn sv-gl"   title="Show all gene labels (when &lt;100 visible)"
+            aria-label="Show all gene labels"
+            style="display:none">A</button>
+    <button class="sv-btn sv-snap" title="Copy current view to clipboard"
+            aria-label="Snapshot: copy view to clipboard">⧉</button>
+    <span class="sv-sep-v" role="separator" aria-hidden="true"></span>
+    <button class="sv-btn sv-help" title="Show keyboard and mouse help"
+            aria-label="Show viewer help"
+            aria-haspopup="dialog" aria-expanded="false">?</button>
     <div class="sv-sep"></div>
-    <span class="sv-lod-badge sv-lod">▬ segments</span>
+    <span class="sv-lod-badge sv-lod" aria-live="polite">▬ segments</span>
   </div>
   <div class="sv-wrap" tabindex="0">
-    <canvas class="sv-glcanvas"></canvas>
-    <canvas class="sv-overlay"></canvas>
-    <div class="sv-tooltip"></div>
+    <canvas class="sv-glcanvas" tabindex="0" role="img"
+            aria-label="Genome tracks. Arrow keys pan, plus and minus zoom."></canvas>
+    <canvas class="sv-overlay" aria-hidden="true"></canvas>
+    <div class="sv-tooltip" aria-hidden="true"></div>
+    <div class="sv-help-pop" role="dialog" aria-label="Viewer help"
+         aria-hidden="true" hidden>
+      <div class="sv-help-title">Segment viewer — controls</div>
+      <div class="sv-help-sec-title">Mouse</div>
+      <ul>
+        <li><b>Drag</b> — pan along the chromosome</li>
+        <li><b>Wheel</b> — zoom anchored on the cursor position</li>
+        <li><b>Double-click</b> — zoom in on the clicked position</li>
+        <li><b>Hover</b> — show per-track tooltip</li>
+      </ul>
+      <div class="sv-help-sec-title">Keyboard</div>
+      <ul>
+        <li><b>← / →</b> — pan by 15% of the current view</li>
+        <li><b>+ / =</b> — zoom in (1.5×)</li>
+        <li><b>−</b> — zoom out (1.5×)</li>
+      </ul>
+      <div class="sv-help-sec-title">Toolbar</div>
+      <ul>
+        <li><b>＋ −</b> zoom; <b>« ‹ › »</b> pan; <b>⌂</b> reset view</li>
+        <li><b>⟲ ◱</b> heatmap rebin / restore (when heatmap tracks present)</li>
+        <li><b>A</b> force-show all gene labels (when &lt;100 visible)</li>
+        <li><b>⧉</b> snapshot to clipboard (⇓ = fell back to download)</li>
+      </ul>
+      <div class="sv-help-footer">
+        More at
+        <a href="https://munch-group.org/geneinfo" target="_blank"
+           rel="noopener noreferrer">munch-group.org/geneinfo</a>
+      </div>
+    </div>
   </div>
 `;
 
@@ -790,6 +900,8 @@ const hmRecBtn  = el.querySelector('.sv-hmr');
 const hmGlobBtn = el.querySelector('.sv-hmg');
 const geneLblBtn= el.querySelector('.sv-gl');
 const snapBtn   = el.querySelector('.sv-snap');
+const helpBtn   = el.querySelector('.sv-help');
+const helpPop   = el.querySelector('.sv-help-pop');
 const lodBadge  = el.querySelector('.sv-lod');
 const wrap      = el.querySelector('.sv-wrap');
 const glCanvas  = el.querySelector('.sv-glcanvas');
@@ -3314,6 +3426,29 @@ snapBtn.addEventListener('click', async () => {
   }
 });
 
+// ── Help popover ─────────────────────────────────────────────────────────────
+function setHelpOpen(open) {
+  helpBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  helpPop.setAttribute('aria-hidden',   open ? 'false' : 'true');
+  if (open) helpPop.removeAttribute('hidden');
+  else      helpPop.setAttribute('hidden', '');
+}
+setHelpOpen(false);
+helpBtn.addEventListener('click', () => {
+  const open = helpPop.hasAttribute('hidden');
+  setHelpOpen(open);
+});
+helpPop.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { setHelpOpen(false); helpBtn.focus(); }
+});
+// Click outside closes the popover.
+const _onDocDown = e => {
+  if (helpPop.hasAttribute('hidden')) return;
+  if (helpPop.contains(e.target) || helpBtn.contains(e.target)) return;
+  setHelpOpen(false);
+};
+document.addEventListener('mousedown', _onDocDown);
+
 // ══════════════════════════════════════════════════════════════════════════════
 // MODEL CHANGE LISTENERS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -3374,6 +3509,7 @@ return () => {
   window.removeEventListener('mousemove', onDragMove);
   window.removeEventListener('mouseup',   onUp);
   wrap.removeEventListener('keydown',     onKey);
+  document.removeEventListener('mousedown', _onDocDown);
   clearTimeout(wheelTimer);
   if (rafId) cancelAnimationFrame(rafId);
   disposeAllGpu();
