@@ -353,6 +353,108 @@ def _vline_positions(value: Any, caller: str) -> list:
         ) from e
 
 
+def _step_expand(
+    xs_in: np.ndarray, ys_in: np.ndarray, step: str | None,
+) -> np.ndarray:
+    """Expand an (xs, ys) pair into a stride-2 staircase buffer.
+
+    Emits a stride-2 ``float32`` array ``[x0, y0, x1, y1, ...]`` ready
+    for :func:`Tracks._pack_f32`. When ``step`` is ``None`` or the
+    input has fewer than 2 points the xs/ys are returned interleaved
+    unchanged; otherwise each step mode inserts the appropriate extra
+    vertex between consecutive samples.
+
+    Parameters
+    ----------
+    xs_in, ys_in : numpy.ndarray
+        Equal-length 1-D arrays of x and y samples.
+    step : {'pre', 'post', 'mid', None}
+        Staircase mode. ``None`` returns the raw interleave.
+
+    Returns
+    -------
+    numpy.ndarray
+        A ``float32`` buffer of interleaved ``(x, y)`` pairs.
+    """
+    nn = len(xs_in)
+    arr_flat = np.empty(nn * 2, dtype=np.float32)
+    arr_flat[0::2] = np.asarray(xs_in, dtype=np.float32)
+    arr_flat[1::2] = np.asarray(ys_in, dtype=np.float32)
+    if not step or nn < 2:
+        return arr_flat
+    xs = arr_flat[0::2]; ys = arr_flat[1::2]
+    if step == 'post':
+        mm = 2 * nn - 1
+        sx = np.empty(mm, dtype=np.float32)
+        sy = np.empty(mm, dtype=np.float32)
+        sx[0::2] = xs;  sx[1::2] = xs[1:]
+        sy[0::2] = ys;  sy[1::2] = ys[:-1]
+    elif step == 'pre':
+        mm = 2 * nn - 1
+        sx = np.empty(mm, dtype=np.float32)
+        sy = np.empty(mm, dtype=np.float32)
+        sx[0::2] = xs;  sx[1::2] = xs[:-1]
+        sy[0::2] = ys;  sy[1::2] = ys[1:]
+    elif step == 'mid':
+        mids = (xs[:-1] + xs[1:]) / 2
+        mm = 2 * nn
+        sx = np.empty(mm, dtype=np.float32)
+        sy = np.empty(mm, dtype=np.float32)
+        sx[0::2] = np.concatenate([[xs[0]], mids])
+        sx[1::2] = np.concatenate([mids, [xs[-1]]])
+        sy[0::2] = ys;  sy[1::2] = ys
+    else:
+        raise ValueError(
+            f"step must be 'pre', 'post', or 'mid', got {step!r}"
+        )
+    out = np.empty(mm * 2, dtype=np.float32)
+    out[0::2] = sx; out[1::2] = sy
+    return out
+
+
+def _aggregate_bin(
+    xs: np.ndarray, ys: np.ndarray, nbin: int, span: float, aggregate: str,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Aggregate (xs, ys) samples into ``nbin`` equally-spaced bins.
+
+    Used by both the xy and histogram LOD builders.
+
+    Parameters
+    ----------
+    xs, ys : numpy.ndarray
+        Sample positions and values.
+    nbin : int
+        Number of bins covering ``[0, span)``.
+    span : float
+        Domain width (typically the chromosome length in bp).
+    aggregate : {'mean', 'sum', 'max'}
+        How to combine multiple samples falling in the same bin.
+
+    Returns
+    -------
+    counts, values : numpy.ndarray
+        Per-bin sample count and per-bin aggregated value. Bins that
+        receive no samples carry ``0.0``.
+    """
+    counts = np.zeros(nbin, dtype=np.float64)
+    if xs.size == 0 or span <= 0:
+        return counts, np.zeros(nbin, dtype=np.float64)
+    bins = np.clip((xs / span * nbin).astype(int), 0, nbin - 1)
+    np.add.at(counts, bins, 1)
+    sums = np.zeros(nbin, dtype=np.float64)
+    np.add.at(sums, bins, ys)
+    if aggregate == 'sum':
+        values = sums
+    elif aggregate == 'max':
+        lvl_init = np.full(nbin, -np.inf, dtype=np.float64)
+        np.maximum.at(lvl_init, bins, ys)
+        values = np.where(np.isfinite(lvl_init), lvl_init, 0.0)
+    else:  # 'mean'
+        with np.errstate(divide='ignore', invalid='ignore'):
+            values = np.where(counts > 0, sums / counts, 0.0)
+    return counts, values
+
+
 def _build_heatmap_lut(
     values: pd.Series,
     palette: Any,
@@ -2678,7 +2780,7 @@ function render() {
   rafId = null;
   if (_glLost) return;
   const W_css = wrap.offsetWidth || 800;
-  const cfgs  = model.get('track_configs');
+  const cfgs  = _trackConfigs;
   if (!cfgs || !cfgs.length) return;
 
   const totalH_css = SCALEBAR_H + cfgs.reduce((s, c) => s + trackH(c), 0);
@@ -2833,6 +2935,12 @@ let chromSizes = model.get('chrom_sizes');
 let vp         = { ...model.get('viewport') };
 let geneData   = {};
 
+// Hot-path caches — refreshed via model.on('change:...') so wheel/drag/
+// tooltip/render don't pay a model.get round-trip per event or per frame.
+let _panSpeed     = +model.get('pan_speed')  || 1.0;
+let _zoomSpeed    = +model.get('zoom_speed') || 1.02;
+let _trackConfigs = model.get('track_configs') || [];
+
 function buildChromSel() {
   chromSel.innerHTML = '';
   for (const ch of Object.keys(chromSizes)) {
@@ -2870,7 +2978,7 @@ glCanvas.addEventListener('mousedown', e => {
 
 // ── Tooltip helpers ─────────────────────────────────────────────────────────
 function trackAtY(offsetY) {
-  const cfgs = model.get('track_configs');
+  const cfgs = _trackConfigs;
   if (!cfgs) return null;
   let cssY = SCALEBAR_H;
   for (const cfg of cfgs) {
@@ -3108,7 +3216,7 @@ const onMove = e => {
   const W = glCanvas.offsetWidth - LABEL_W;
   const pos = Math.round(vp.start + (mx / W) * (vp.end - vp.start));
   const lines = [`${vp.chrom}:${pos.toLocaleString()}`];
-  const cfgs = model.get('track_configs');
+  const cfgs = _trackConfigs;
   if (cfgs) {
     const hit = trackAtY(e.offsetY);
     let cssY = SCALEBAR_H;
@@ -3135,8 +3243,7 @@ const onDragMove = e => {
   if (!isDragging) return;
   const W     = glCanvas.offsetWidth - LABEL_W;
   const bpPx  = (dragVp0.end - dragVp0.start) / W;
-  const ps    = model.get('pan_speed') || 1.0;
-  const shift = -(e.clientX - dragX0) * bpPx * ps;
+  const shift = -(e.clientX - dragX0) * bpPx * _panSpeed;
   const range = dragVp0.end - dragVp0.start;
   const lo    = panLo(dragVp0.chrom), hi = panHi(dragVp0.chrom);
   const ns    = clamp(dragVp0.start + shift, lo, hi - range);
@@ -3163,8 +3270,7 @@ glCanvas.addEventListener('wheel', e => {
   const frac   = mx / W;
   const range  = vp.end - vp.start;
   const anchor = vp.start + frac * range;
-  const zs     = model.get('zoom_speed') || 1.02;
-  const factor = e.deltaY > 0 ? zs : 1 / zs;
+  const factor = e.deltaY > 0 ? _zoomSpeed : 1 / _zoomSpeed;
   const lo     = panLo(vp.chrom), hi = panHi(vp.chrom);
   const span   = hi - lo;
   const nr     = clamp(range * factor, 500, span);
@@ -3469,10 +3575,13 @@ function _reconcileTids() {
   _prevTids = cur;
 }
 model.on('change:track_configs', () => {
+  _trackConfigs = model.get('track_configs') || [];
   _reconcileTids();
   updateHeatmapBtns();
   scheduleRender();
 });
+model.on('change:pan_speed',  () => { _panSpeed  = +model.get('pan_speed')  || 1.0; });
+model.on('change:zoom_speed', () => { _zoomSpeed = +model.get('zoom_speed') || 1.02; });
 model.on('change:track_data', () => {
   uploadTrackData();
   _hmBusyClear();
@@ -4069,6 +4178,66 @@ class Tracks(anywidget.AnyWidget):
         """
         return base64.b64encode(arr.astype(np.uint8).tobytes()).decode()
 
+    # ── Shared build helpers ─────────────────────────────────────────────────
+    def _prep_groups(
+        self,
+        df: pd.DataFrame,
+        group_by: str | None,
+        color_map: dict | str | None,
+        palette: Any,
+    ) -> tuple[list, str | None, dict, list[str]]:
+        """Resolve the groups / colour mapping common to every ``add_*``.
+
+        Centralises four pieces of boilerplate that ``add_segment_track``,
+        ``add_histogram_track`` and the xy adder all repeat:
+
+        * splitting ``df`` into its unique group values (or the sentinel
+          ``['all']`` single-group when ``group_by`` is not provided);
+        * resolving ``color_map`` strings through
+          :func:`_resolve_color_mapping`;
+        * resolving ``palette`` into ``n`` distinct hexes via
+          :func:`_resolve_qualitative_palette`;
+        * materialising a default group-indexed colour map when the
+          caller didn't pass one.
+
+        Returns
+        -------
+        tuple
+            ``(groups, group_by, color_map, default_palette)`` where
+            ``group_by`` may be reset to ``None`` when the column was
+            missing and ``color_map`` is always a dict keyed by group
+            value.
+        """
+        color_map = _resolve_color_mapping(color_map)
+        if group_by and group_by in df.columns:
+            groups = sorted(df[group_by].dropna().unique(), key=str)
+        else:
+            groups = ['all']
+            group_by = None
+        default_palette = _resolve_qualitative_palette(palette, len(groups))
+        if isinstance(color_map, str):
+            color_map = {g: color_map for g in groups}
+        if color_map is None:
+            color_map = {g: default_palette[i] for i, g in enumerate(groups)}
+        return groups, group_by, color_map, default_palette
+
+    def _commit_track(
+        self,
+        tid: str,
+        data: Any,
+        cfg: dict,
+    ) -> 'Tracks':
+        """Install the track into the synchronised traits.
+
+        Every ``add_*`` ends with the same two assignments; centralising
+        them avoids an easy-to-forget step (e.g. appending to
+        ``track_configs`` without updating ``track_data``) that would
+        leave the widget in a half-broken state.
+        """
+        self.track_data    = {**self.track_data, tid: data}
+        self.track_configs = [*self.track_configs, cfg]
+        return self
+
     # ── Track removal ────────────────────────────────────────────────────────
     def remove_track(self, name_or_index: str | int) -> 'Tracks':
         """Remove a single track by display name or by index.
@@ -4201,21 +4370,12 @@ class Tracks(anywidget.AnyWidget):
         Tracks
             ``self``, to support fluent chaining.
         """
-        color_map = _resolve_color_mapping(color_map)
         if isinstance(density_windows, int):
             density_windows = (density_windows,)
         tid = self._tid()
-        if group_by and group_by in df.columns:
-            groups = sorted(df[group_by].dropna().unique(), key=str)
-        else:
-            groups = ['all']
-            group_by = None
-
-        default_palette = _resolve_qualitative_palette(palette, len(groups))
-        if isinstance(color_map, str):
-            color_map = {g: color_map for g in groups}
-        if color_map is None:
-            color_map = {g: default_palette[i] for i, g in enumerate(groups)}
+        groups, group_by, color_map, default_palette = self._prep_groups(
+            df, group_by, color_map, palette
+        )
 
         # Build global per-group individual maps (consistent across chromosomes)
         use_ind = individual_col and individual_col in df.columns
@@ -4280,37 +4440,58 @@ class Tracks(anywidget.AnyWidget):
 
             # Second pass — serialise counts as either plain per-group arrays
             # (non-stacked) or stride-3 (x_bin_left_norm, yLo, yHi) arrays in
-            # normalised [0,1] space (stacked).  In the stacked case we use a
-            # shared column-sum maximum so groups scale consistently.
-            for gi, group in enumerate(groups):
-                gid = str(gi)
-                if seg_out[chrom].get(gid) == '':
-                    dens_out[chrom][gid] = ''
-                    continue
-                levels: dict[str, str] = {}
+            # normalised [0,1] space (stacked). In the stacked case the
+            # shared column-sum max (computed once per level) and a single
+            # running cum_prev replace the prior O(G²) per-group redo — both
+            # the whole-column sum and every group's partial sum are walked
+            # in one pass over groups.
+            if stacked:
+                # Precompute per-level (col_sum, col_max) once; per-group
+                # stacking then reuses them.
+                level_precomp: dict[int, tuple[np.ndarray, float]] = {}
                 for n in density_windows:
-                    counts = counts_per_level[n][gid]
-                    if stacked:
-                        # column sum across all groups at each bin
-                        col_sum = np.zeros(n, dtype=np.float64)
-                        for gj in range(len(groups)):
-                            col_sum += counts_per_level[n][str(gj)].astype(np.float64)
-                        maxVal = float(col_sum.max()) or 1.0
-                        cum_prev = np.zeros(n, dtype=np.float64)
-                        for gj in range(gi):
-                            cum_prev += counts_per_level[n][str(gj)].astype(np.float64)
+                    col_sum = np.zeros(n, dtype=np.float64)
+                    for gj in range(len(groups)):
+                        col_sum += counts_per_level[n][str(gj)].astype(np.float64)
+                    level_precomp[n] = (col_sum, float(col_sum.max()) or 1.0)
+
+                cum_prev_per_level: dict[int, np.ndarray] = {
+                    n: np.zeros(n, dtype=np.float64) for n in density_windows
+                }
+                for gi, group in enumerate(groups):
+                    gid = str(gi)
+                    if seg_out[chrom].get(gid) == '':
+                        dens_out[chrom][gid] = ''
+                        # Empty groups still need to advance cum_prev (their
+                        # counts are zero anyway), so skip the update work.
+                        continue
+                    levels: dict[str, str] = {}
+                    for n in density_windows:
+                        counts = counts_per_level[n][gid].astype(np.float64)
+                        maxVal = level_precomp[n][1]
+                        cum_prev = cum_prev_per_level[n]
                         yLo = cum_prev / maxVal
-                        yHi = (cum_prev + counts.astype(np.float64)) / maxVal
-                        # stride-3: xBinLeft (as bin index 0..n-1), yLo, yHi.
-                        # JS will convert xBinLeft to chromosome coords via nBins.
+                        yHi = (cum_prev + counts) / maxVal
+                        cum_prev_per_level[n] = cum_prev + counts
+                        # stride-3: xBinLeft (bin index 0..n-1), yLo, yHi.
+                        # JS converts xBinLeft to chromosome coords via nBins.
                         arr = np.empty(n * 3, dtype=np.float32)
                         arr[0::3] = np.arange(n, dtype=np.float32)
                         arr[1::3] = yLo.astype(np.float32)
                         arr[2::3] = yHi.astype(np.float32)
                         levels[str(n)] = self._pack_f32(arr)
-                    else:
-                        levels[str(n)] = self._pack_f32(counts)
-                dens_out[chrom][gid] = levels
+                    dens_out[chrom][gid] = levels
+            else:
+                for gi, group in enumerate(groups):
+                    gid = str(gi)
+                    if seg_out[chrom].get(gid) == '':
+                        dens_out[chrom][gid] = ''
+                        continue
+                    levels = {
+                        str(n): self._pack_f32(counts_per_level[n][gid])
+                        for n in density_windows
+                    }
+                    dens_out[chrom][gid] = levels
 
         cfg = {
             'id': tid, 'type': 'segment', 'name': name, 'height': height,
@@ -4325,9 +4506,7 @@ class Tracks(anywidget.AnyWidget):
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
 
-        self.track_data    = {**self.track_data, tid: {'segs': seg_out, 'dens': dens_out}}
-        self.track_configs = [*self.track_configs, cfg]
-        return self
+        return self._commit_track(tid, {'segs': seg_out, 'dens': dens_out}, cfg)
 
     # ── add_heatmap_track ────────────────────────────────────────────────────
     def add_heatmap_track(
@@ -4562,9 +4741,7 @@ class Tracks(anywidget.AnyWidget):
                     {'name': str(cat), 'color': palette_ref.get(cat) or '#9090c0'}
                     for cat in lut_info['cat_to_idx'].keys()
                 ]
-        self.track_data    = {**self.track_data, tid: hm_out}
-        self.track_configs = [*self.track_configs, cfg]
-        return self
+        return self._commit_track(tid, hm_out, cfg)
 
     # ── value-mode key helpers (colorbar / legend) ───────────────────────────
     # Default sizes are intentionally small (~30% of legacy) so keys sit as a
@@ -5240,87 +5417,18 @@ class Tracks(anywidget.AnyWidget):
         def active_keys(gname: str) -> list[str]:
             return [k for k in self._HIGHLIGHT_KEYS
                     if gname in hl_sets.get(k, ())]
-        tid   = self._tid()
-        gdata: dict = {}
+        tid = self._tid()
 
         if isinstance(genes_data, dict) and not isinstance(genes_data, pd.DataFrame):
-            # genes_by_chrom dict: {chrom: [(name, chrom, start, end, strand, transcripts), ...]}
-            for chrom, gene_list in genes_data.items():
-                chrom = str(chrom)
-                recs: list = []
-                for entry in gene_list:
-                    gname, _, gs, ge, strand, transcripts = entry
-                    strand = str(strand) if strand in ('+', '-') else '+'
-                    hl = active_keys(str(gname))
-                    if collapse:
-                        exons = self._collapse_exons(transcripts)
-                        rec = {
-                            's': int(gs), 'e': int(ge),
-                            'n': str(gname), 'strand': strand, 'exons': exons,
-                        }
-                        if hl: rec['hl'] = hl
-                        recs.append(rec)
-                    else:
-                        for ti, tex in enumerate(transcripts):
-                            exons = [[int(s), int(e)] for s, e in tex]
-                            # transcript extent may be narrower than gene extent
-                            ts = min((s for s, _ in exons), default=int(gs))
-                            te = max((e for _, e in exons), default=int(ge))
-                            suffix = f' t{ti+1}' if len(transcripts) > 1 else ''
-                            rec = {
-                                's': int(ts), 'e': int(te),
-                                'n': f'{gname}{suffix}', 'strand': strand,
-                                'exons': exons,
-                            }
-                            if hl: rec['hl'] = hl
-                            recs.append(rec)
-                gdata[chrom] = recs
+            gdata = self._gene_records_from_dict(
+                genes_data, collapse=collapse, active_keys=active_keys,
+            )
         else:
-            # DataFrame form (legacy API)
-            genes_df = genes_data
-            for chrom_val, cdf in genes_df.groupby('chrom'):
-                chrom = str(chrom_val)
-                recs = []
-                for _, row in cdf.iterrows():
-                    gname  = str(row.get('name',   ''))
-                    strand = str(row.get('strand', '+'))
-                    exons: list = []
-                    if exons_df is not None:
-                        ecol = 'gene_name' if 'gene_name' in exons_df.columns else 'name'
-                        mask = (
-                            (exons_df['chrom'] == chrom_val) &
-                            (exons_df[ecol]   == row.get('name', ''))
-                        )
-                        exons = [
-                            [int(r['start']), int(r['end'])]
-                            for _, r in exons_df[mask].iterrows()
-                        ]
-                    rec = {
-                        's': int(row['start']), 'e': int(row['end']),
-                        'n': gname, 'strand': strand, 'exons': exons,
-                    }
-                    hl = active_keys(gname)
-                    if hl: rec['hl'] = hl
-                    recs.append(rec)
-                gdata[chrom] = recs
+            gdata = self._gene_records_from_df(
+                genes_data, exons_df=exons_df, active_keys=active_keys,
+            )
 
-        # Apply label_padding uniformly by extending each record's packing
-        # extent on the side where the gene name reads from — the left for
-        # ``+``-strand genes, the right for ``-``-strand. The true gene bounds
-        # are preserved as ``gs``/``ge`` so the renderer still draws spine,
-        # exons and arrows over the real gene footprint. Because ``s``/``e``
-        # drive row packing, label midpoint, viewport culling and inter-label
-        # collision detection, inflating them is equivalent to prepending an
-        # invisible exon: the same code path handles padding=0 and >0.
-        if label_padding:
-            for recs in gdata.values():
-                for rec in recs:
-                    rec['gs'] = rec['s']
-                    rec['ge'] = rec['e']
-                    if rec.get('strand') == '+':
-                        rec['s'] = rec['s'] - label_padding
-                    else:
-                        rec['e'] = rec['e'] + label_padding
+        self._apply_label_padding(gdata, label_padding)
 
         # Pack all genes (both strands) into the minimum number of non-overlapping
         # rows with a greedy interval lane-packing. Strand is preserved on each
@@ -5366,9 +5474,7 @@ class Tracks(anywidget.AnyWidget):
         }
         if highlight_fill_color is not None:
             cfg['highlightColor'] = highlight_fill_color  # legacy alias
-        self.track_data    = {**self.track_data, tid: gdata_out}
-        self.track_configs = [*self.track_configs, cfg]
-        return self
+        return self._commit_track(tid, gdata_out, cfg)
 
     @staticmethod
     def _assign_lanes(recs: list[dict[str, Any]], offset: int = 0) -> int:
@@ -5418,6 +5524,110 @@ class Tracks(anywidget.AnyWidget):
             r['row'] = offset + placed_row
 
         return len(lane_end)
+
+    def _gene_records_from_dict(
+        self,
+        genes_by_chrom: dict,
+        *,
+        collapse: bool,
+        active_keys,
+    ) -> dict:
+        """Build ``{chrom: [record, ...]}`` from the dict API form.
+
+        Each input entry is a ``(name, chrom, start, end, strand,
+        transcripts)`` tuple (as returned by
+        :mod:`geneinfo.coords.gene_coords_region`).
+        """
+        gdata: dict = {}
+        for chrom, gene_list in genes_by_chrom.items():
+            chrom = str(chrom)
+            recs: list = []
+            for entry in gene_list:
+                gname, _, gs, ge, strand, transcripts = entry
+                strand = str(strand) if strand in ('+', '-') else '+'
+                hl = active_keys(str(gname))
+                if collapse:
+                    exons = self._collapse_exons(transcripts)
+                    rec = {
+                        's': int(gs), 'e': int(ge),
+                        'n': str(gname), 'strand': strand, 'exons': exons,
+                    }
+                    if hl: rec['hl'] = hl
+                    recs.append(rec)
+                else:
+                    for ti, tex in enumerate(transcripts):
+                        exons = [[int(s), int(e)] for s, e in tex]
+                        # transcript extent may be narrower than gene extent
+                        ts = min((s for s, _ in exons), default=int(gs))
+                        te = max((e for _, e in exons), default=int(ge))
+                        suffix = f' t{ti+1}' if len(transcripts) > 1 else ''
+                        rec = {
+                            's': int(ts), 'e': int(te),
+                            'n': f'{gname}{suffix}', 'strand': strand,
+                            'exons': exons,
+                        }
+                        if hl: rec['hl'] = hl
+                        recs.append(rec)
+            gdata[chrom] = recs
+        return gdata
+
+    @staticmethod
+    def _gene_records_from_df(
+        genes_df: pd.DataFrame,
+        *,
+        exons_df: pd.DataFrame | None,
+        active_keys,
+    ) -> dict:
+        """Build ``{chrom: [record, ...]}`` from the DataFrame API form."""
+        gdata: dict = {}
+        for chrom_val, cdf in genes_df.groupby('chrom'):
+            chrom = str(chrom_val)
+            recs: list = []
+            for _, row in cdf.iterrows():
+                gname  = str(row.get('name',   ''))
+                strand = str(row.get('strand', '+'))
+                exons: list = []
+                if exons_df is not None:
+                    ecol = 'gene_name' if 'gene_name' in exons_df.columns else 'name'
+                    mask = (
+                        (exons_df['chrom'] == chrom_val) &
+                        (exons_df[ecol]   == row.get('name', ''))
+                    )
+                    exons = [
+                        [int(r['start']), int(r['end'])]
+                        for _, r in exons_df[mask].iterrows()
+                    ]
+                rec = {
+                    's': int(row['start']), 'e': int(row['end']),
+                    'n': gname, 'strand': strand, 'exons': exons,
+                }
+                hl = active_keys(gname)
+                if hl: rec['hl'] = hl
+                recs.append(rec)
+            gdata[chrom] = recs
+        return gdata
+
+    @staticmethod
+    def _apply_label_padding(gdata: dict, label_padding: int) -> None:
+        """Inflate each record's packing extent on the label-facing side.
+
+        The true gene bounds are preserved as ``gs`` / ``ge`` so the
+        renderer still draws spine, exons, and arrows over the real
+        gene footprint. Because ``s`` / ``e`` drive row packing, label
+        midpoint, viewport culling and inter-label collision, inflating
+        them acts like an invisible exon — and the same code path
+        handles ``label_padding == 0``.
+        """
+        if not label_padding:
+            return
+        for recs in gdata.values():
+            for rec in recs:
+                rec['gs'] = rec['s']
+                rec['ge'] = rec['e']
+                if rec.get('strand') == '+':
+                    rec['s'] = rec['s'] - label_padding
+                else:
+                    rec['e'] = rec['e'] + label_padding
 
     # ── add_point_track ──────────────────────────────────────────────────────
     def add_point_track(
@@ -5876,54 +6086,11 @@ class Tracks(anywidget.AnyWidget):
                     xy_out[chrom][gid] = {'base': '', 'lods': {}, 'binWidth': {}}
                     continue
                 gdf = gdf.sort_values(x)
-                n = len(gdf)
                 xs_arr = gdf[x].to_numpy(dtype=np.float64)
                 ys_arr = gdf[y].to_numpy(dtype=np.float64)
 
-                def _step_expand(xs_in, ys_in):
-                    """Apply the track's step mode to paired x/y arrays.
-
-                    Returns a stride-2 float32 buffer ready for _pack_f32.
-                    Falls back to the straight xs/ys interleave when step
-                    is None or the input has fewer than 2 points.
-                    """
-                    nn = len(xs_in)
-                    arr_flat = np.empty(nn * 2, dtype=np.float32)
-                    arr_flat[0::2] = np.asarray(xs_in, dtype=np.float32)
-                    arr_flat[1::2] = np.asarray(ys_in, dtype=np.float32)
-                    if not step or nn < 2:
-                        return arr_flat
-                    xs = arr_flat[0::2]; ys = arr_flat[1::2]
-                    if step == 'post':
-                        mm = 2 * nn - 1
-                        sx = np.empty(mm, dtype=np.float32)
-                        sy = np.empty(mm, dtype=np.float32)
-                        sx[0::2] = xs;  sx[1::2] = xs[1:]
-                        sy[0::2] = ys;  sy[1::2] = ys[:-1]
-                    elif step == 'pre':
-                        mm = 2 * nn - 1
-                        sx = np.empty(mm, dtype=np.float32)
-                        sy = np.empty(mm, dtype=np.float32)
-                        sx[0::2] = xs;  sx[1::2] = xs[:-1]
-                        sy[0::2] = ys;  sy[1::2] = ys[1:]
-                    elif step == 'mid':
-                        mids = (xs[:-1] + xs[1:]) / 2
-                        mm = 2 * nn
-                        sx = np.empty(mm, dtype=np.float32)
-                        sy = np.empty(mm, dtype=np.float32)
-                        sx[0::2] = np.concatenate([[xs[0]], mids])
-                        sx[1::2] = np.concatenate([mids, [xs[-1]]])
-                        sy[0::2] = ys;  sy[1::2] = ys
-                    else:
-                        raise ValueError(
-                            f"step must be 'pre', 'post', or 'mid', got {step!r}"
-                        )
-                    out = np.empty(mm * 2, dtype=np.float32)
-                    out[0::2] = sx; out[1::2] = sy
-                    return out
-
                 # ── base buffer (stride-2, with optional step expansion) ──
-                base_b64 = self._pack_f32(_step_expand(xs_arr, ys_arr))
+                base_b64 = self._pack_f32(_step_expand(xs_arr, ys_arr, step))
 
                 # ── LOD levels: stride-2 (bin_centre, aggregate_y) for
                 # non-empty bins only. Aggregate from the pre-step samples
@@ -5935,36 +6102,18 @@ class Tracks(anywidget.AnyWidget):
                 level_csz = csz if csz else (float(xs_arr.max()) + 1.0)
                 if level_csz > 0:
                     for nbin in density_windows:
-                        bins = np.clip(
-                            (xs_arr / level_csz * nbin).astype(int), 0, nbin - 1
+                        counts, lvl = _aggregate_bin(
+                            xs_arr, ys_arr, nbin, level_csz, aggregate
                         )
-                        counts = np.zeros(nbin, dtype=np.float64)
-                        np.add.at(counts, bins, 1)
-                        if aggregate == 'sum':
-                            sums = np.zeros(nbin, dtype=np.float64)
-                            np.add.at(sums, bins, ys_arr)
-                            lvl = sums
-                        elif aggregate == 'max':
-                            lvl_init = np.full(nbin, -np.inf, dtype=np.float64)
-                            np.maximum.at(lvl_init, bins, ys_arr)
-                            lvl = np.where(np.isfinite(lvl_init), lvl_init, 0.0)
-                        else:  # 'mean'
-                            sums = np.zeros(nbin, dtype=np.float64)
-                            np.add.at(sums, bins, ys_arr)
-                            with np.errstate(divide='ignore', invalid='ignore'):
-                                lvl = np.where(counts > 0, sums / counts, 0.0)
-
                         mask = counts > 0
-                        nnz = int(mask.sum())
-                        if nnz == 0:
+                        if not mask.any():
                             continue
                         bw = level_csz / nbin
                         xs_out = (np.flatnonzero(mask).astype(np.float64) + 0.5) * bw
                         ys_out = lvl[mask]
-                        # Apply the same step expansion that the base uses
-                        # so a stepped line keeps its staircase shape at
-                        # every LOD level.
-                        lods[str(nbin)] = self._pack_f32(_step_expand(xs_out, ys_out))
+                        lods[str(nbin)] = self._pack_f32(
+                            _step_expand(xs_out, ys_out, step)
+                        )
                         bin_widths[str(nbin)] = float(bw)
 
                         # Widen this level's extrema to cover every group/chrom
@@ -6012,9 +6161,7 @@ class Tracks(anywidget.AnyWidget):
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
-        self.track_data    = {**self.track_data, tid: xy_out}
-        self.track_configs = [*self.track_configs, cfg]
-        return self
+        return self._commit_track(tid, xy_out, cfg)
 
     # ── add_fill_track ───────────────────────────────────────────────────────
     def add_fill_track(
@@ -6222,9 +6369,7 @@ class Tracks(anywidget.AnyWidget):
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
-        self.track_data    = {**self.track_data, tid: fill_out}
-        self.track_configs = [*self.track_configs, cfg]
-        return self
+        return self._commit_track(tid, fill_out, cfg)
 
     # ── add_histogram_track ──────────────────────────────────────────────────
     def add_histogram_track(
@@ -6306,7 +6451,6 @@ class Tracks(anywidget.AnyWidget):
             If ``aggregate`` is not one of ``'mean'``, ``'sum'``,
             ``'max'``.
         """
-        color_map = _resolve_color_mapping(color_map)
         if isinstance(density_windows, int):
             density_windows = (density_windows,)
         density_windows = tuple(int(n) for n in density_windows if int(n) > 0)
@@ -6315,15 +6459,9 @@ class Tracks(anywidget.AnyWidget):
                 f"aggregate must be 'mean', 'sum', or 'max'; got {aggregate!r}"
             )
         tid = self._tid()
-        if group_by and group_by in df.columns:
-            groups = sorted(df[group_by].dropna().unique(), key=str)
-        else:
-            groups = ['all']
-            group_by = None
-
-        default_palette = _resolve_qualitative_palette(palette, len(groups))
-        if color_map is None:
-            color_map = {g: default_palette[i] for i, g in enumerate(groups)}
+        groups, group_by, color_map, default_palette = self._prep_groups(
+            df, group_by, color_map, palette
+        )
 
         # Auto bin width from median spacing
         if bin_width is None:
@@ -6378,42 +6516,124 @@ class Tracks(anywidget.AnyWidget):
                 )
 
                 # ── Original-resolution stacked bars ───────────────────────
-                # For each x, maintain running pos/neg cursors that advance
-                # as each group adds its value (positive above 0, negative
-                # below 0).
-                x_cursor: dict[float, dict[str, float]] = {}
+                # Vectorised: for each (x, group) cell, separate the
+                # positive and negative contributions, then take per-x
+                # running cumsums across groups to derive each bar's
+                # [lo, hi] interval. Groups with no sample at a given x
+                # contribute a zero-width slice (lo == hi) at the running
+                # cursor, so they drop out of the final GPU buffer.
+                xs_per_group: dict[str, np.ndarray] = {}
+                ys_per_group: dict[str, np.ndarray] = {}
                 base_per_group: dict[str, np.ndarray] = {}
-                xs_per_group:   dict[str, np.ndarray] = {}
-                ys_per_group:   dict[str, np.ndarray] = {}
+                # Build {gid: (xs_sorted, ys_sorted)} once, and a per-chrom
+                # DataFrame we can reshape to a wide (x × group) value matrix.
                 for gi, group in enumerate(groups):
                     gid = str(gi)
                     gdf = cdf[cdf[group_by] == group] if group_by else cdf
                     if gdf.empty:
-                        base_per_group[gid] = np.zeros(0, dtype=np.float32)
-                        xs_per_group[gid]   = np.zeros(0, dtype=np.float64)
-                        ys_per_group[gid]   = np.zeros(0, dtype=np.float64)
+                        xs_per_group[gid] = np.zeros(0, dtype=np.float64)
+                        ys_per_group[gid] = np.zeros(0, dtype=np.float64)
                         continue
                     gdf = gdf.sort_values(x)
-                    xs_arr = gdf[x].to_numpy(dtype=np.float64)
-                    ys_arr = gdf[y].to_numpy(dtype=np.float64)
-                    n = len(xs_arr)
-                    arr = np.empty(n * 3, dtype=np.float32)
-                    for k in range(n):
-                        xv = float(xs_arr[k])
-                        yv = float(ys_arr[k])
-                        cur = x_cursor.setdefault(xv, {'pos': 0.0, 'neg': 0.0})
-                        if yv >= 0:
-                            lo = cur['pos']; hi = cur['pos'] + yv
-                            cur['pos'] = hi
-                        else:
-                            hi = cur['neg']; lo = cur['neg'] + yv
-                            cur['neg'] = lo
-                        arr[k * 3]     = xv
-                        arr[k * 3 + 1] = lo
-                        arr[k * 3 + 2] = hi
-                    base_per_group[gid] = arr
-                    xs_per_group[gid]   = xs_arr
-                    ys_per_group[gid]   = ys_arr
+                    xs_per_group[gid] = gdf[x].to_numpy(dtype=np.float64)
+                    ys_per_group[gid] = gdf[y].to_numpy(dtype=np.float64)
+
+                non_empty_gids = [
+                    str(gi) for gi in range(len(groups))
+                    if xs_per_group[str(gi)].size
+                ]
+                if not non_empty_gids:
+                    for gi in range(len(groups)):
+                        base_per_group[str(gi)] = np.zeros(0, dtype=np.float32)
+                else:
+                    # Cross-group cursor: per-unique-x total signed
+                    # contribution of every *earlier* group. Computed once
+                    # via a single groupby on the wide pivot of group totals.
+                    frames = []
+                    for gid in non_empty_gids:
+                        frames.append(pd.DataFrame({
+                            'x':   xs_per_group[gid],
+                            'y':   ys_per_group[gid],
+                            'gid': gid,
+                        }))
+                    long = pd.concat(frames, ignore_index=True)
+                    wide = (long.groupby(['x', 'gid'])['y'].sum()
+                                 .unstack('gid', fill_value=0.0)
+                                 .reindex(columns=non_empty_gids, fill_value=0.0))
+                    xs_unique = wide.index.to_numpy(dtype=np.float64)
+                    totals   = wide.to_numpy(dtype=np.float64)     # (n_x, G)
+                    pos_tot  = np.where(totals >= 0, totals, 0.0)
+                    neg_tot  = np.where(totals <  0, totals, 0.0)
+                    pos_before = np.cumsum(pos_tot, axis=1) - pos_tot
+                    neg_before = np.cumsum(neg_tot, axis=1) - neg_tot
+
+                    for j, gid in enumerate(non_empty_gids):
+                        xs_g = xs_per_group[gid]
+                        ys_g = ys_per_group[gid]
+                        idx = np.searchsorted(xs_unique, xs_g)
+                        pos_base = pos_before[idx, j]
+                        neg_base = neg_before[idx, j]
+                        # Within-group, advance the cursor per row so
+                        # duplicate-x rows stack sub-bars above each other
+                        # rather than collapsing to a single slice.
+                        pos_y = np.where(ys_g >= 0, ys_g, 0.0)
+                        neg_y = np.where(ys_g <  0, ys_g, 0.0)
+                        pos_run = np.zeros_like(ys_g)
+                        neg_run = np.zeros_like(ys_g)
+                        if ys_g.size:
+                            # cumsum over rows, then reset the running sum
+                            # at each new x-value so only rows *within* the
+                            # same x contribute to the running cursor.
+                            # (np.where + diff gives us reset markers cheaply.)
+                            pos_cum = np.cumsum(pos_y)
+                            neg_cum = np.cumsum(neg_y)
+                            # Running sum before each row within its x-group:
+                            # cum[i] - y[i] gives "sum of all earlier rows"
+                            # across the whole array; subtracting the last
+                            # cum value from a *prior* x-group pins the
+                            # reset to each new x.
+                            # Detect x-group boundaries and compute the cum
+                            # value just before each new x starts.
+                            new_x_mask = np.empty(ys_g.size, dtype=bool)
+                            new_x_mask[0] = True
+                            if ys_g.size > 1:
+                                new_x_mask[1:] = xs_g[1:] != xs_g[:-1]
+                            boundary_pos = np.where(
+                                new_x_mask, pos_cum - pos_y, 0.0
+                            )
+                            boundary_neg = np.where(
+                                new_x_mask, neg_cum - neg_y, 0.0
+                            )
+                            # Propagate the latest boundary forward to every
+                            # subsequent row within the same x-group.
+                            boundary_pos = np.maximum.accumulate(
+                                np.where(new_x_mask, boundary_pos, -np.inf)
+                            )
+                            boundary_neg = -np.maximum.accumulate(
+                                np.where(new_x_mask, -boundary_neg, -np.inf)
+                            )
+                            pos_run = pos_cum - pos_y - boundary_pos
+                            neg_run = neg_cum - neg_y - boundary_neg
+
+                        pos_hi = pos_base + pos_run + pos_y
+                        pos_lo = pos_base + pos_run
+                        neg_hi = neg_base + neg_run
+                        neg_lo = neg_base + neg_run + neg_y
+                        lo = np.where(ys_g >= 0, pos_lo, neg_lo)
+                        hi = np.where(ys_g >= 0, pos_hi, neg_hi)
+
+                        n = xs_g.size
+                        arr = np.empty(n * 3, dtype=np.float32)
+                        arr[0::3] = xs_g.astype(np.float32)
+                        arr[1::3] = lo.astype(np.float32)
+                        arr[2::3] = hi.astype(np.float32)
+                        base_per_group[gid] = arr
+                    # Empty groups: keep a zero-length array so the downstream
+                    # serialisation path is uniform.
+                    for gi in range(len(groups)):
+                        gid = str(gi)
+                        if gid not in base_per_group:
+                            base_per_group[gid] = np.zeros(0, dtype=np.float32)
 
                 # ── LOD aggregations ──────────────────────────────────────
                 # For each level n, aggregate each group's values into n
@@ -6431,33 +6651,9 @@ class Tracks(anywidget.AnyWidget):
                             gid = str(gi)
                             xs_g = xs_per_group[gid]
                             ys_g = ys_per_group[gid]
-                            lvl = np.zeros(nbin, dtype=np.float64)
-                            if xs_g.size:
-                                bins = np.clip(
-                                    (xs_g / csz * nbin).astype(int),
-                                    0, nbin - 1,
-                                )
-                                sums = np.zeros(nbin, dtype=np.float64)
-                                np.add.at(sums, bins, ys_g)
-                                if aggregate == 'sum':
-                                    lvl = sums
-                                elif aggregate == 'max':
-                                    lvl_init = np.full(
-                                        nbin, -np.inf, dtype=np.float64
-                                    )
-                                    np.maximum.at(lvl_init, bins, ys_g)
-                                    lvl = np.where(
-                                        np.isfinite(lvl_init), lvl_init, 0.0
-                                    )
-                                else:  # 'mean'
-                                    counts = np.zeros(nbin, dtype=np.float64)
-                                    np.add.at(counts, bins, 1)
-                                    with np.errstate(
-                                        divide='ignore', invalid='ignore'
-                                    ):
-                                        lvl = np.where(
-                                            counts > 0, sums / counts, 0.0
-                                        )
+                            _, lvl = _aggregate_bin(
+                                xs_g, ys_g, nbin, csz, aggregate
+                            )
                             agg[str(gi)] = lvl
 
                         # Re-stack per-bin in group order.
@@ -6513,30 +6709,11 @@ class Tracks(anywidget.AnyWidget):
                     # fall inside that bin (along the chromosome).
                     lods: dict[str, str] = {}
                     if csz > 0:
-                        for n in density_windows:
-                            bins = np.clip(
-                                (xs_arr / csz * n).astype(int), 0, n - 1
+                        for nbin in density_windows:
+                            _, lvl = _aggregate_bin(
+                                xs_arr, ys_arr, nbin, csz, aggregate
                             )
-                            sums = np.zeros(n, dtype=np.float64)
-                            np.add.at(sums, bins, ys_arr)
-                            if aggregate == 'sum':
-                                lvl = sums
-                            elif aggregate == 'max':
-                                lvl = np.full(n, np.nan, dtype=np.float64)
-                                # np.maximum.at handles duplicate indices.
-                                lvl_init = np.full(n, -np.inf, dtype=np.float64)
-                                np.maximum.at(lvl_init, bins, ys_arr)
-                                # Bins that received no data: leave as 0.
-                                lvl = np.where(np.isfinite(lvl_init),
-                                               lvl_init, 0.0)
-                            else:  # 'mean'
-                                counts = np.zeros(n, dtype=np.float64)
-                                np.add.at(counts, bins, 1)
-                                with np.errstate(divide='ignore',
-                                                 invalid='ignore'):
-                                    lvl = np.where(counts > 0,
-                                                   sums / counts, 0.0)
-                            lods[str(n)] = self._pack_f32(
+                            lods[str(nbin)] = self._pack_f32(
                                 lvl.astype(np.float32)
                             )
                     hist_out[chrom][gid] = {'base': base_b64, 'lods': lods}
@@ -6553,9 +6730,7 @@ class Tracks(anywidget.AnyWidget):
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
-        self.track_data    = {**self.track_data, tid: hist_out}
-        self.track_configs = [*self.track_configs, cfg]
-        return self
+        return self._commit_track(tid, hist_out, cfg)
 
     _UCSC_STEP_DEFAULT = object()  # sentinel: distinguish unset from step=None
 
