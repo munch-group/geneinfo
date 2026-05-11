@@ -593,10 +593,10 @@ DARK_THEME: dict[str, Any] = {
 }
 
 LIGHT_THEME: dict[str, Any] = {
-    'bg':           '#FAF9F6',
+    'bg':           '#ffffff',
     'fg':           '#1a1a2e',
-    'panel':        '#FAF9F6',
-    'border':       '#FAF9F6',
+    'panel':        '#ffffff',
+    'border':       '#ffffff',
     'input_bg':     '#ffffff',
     'input_fg':     '#1a1a2e',
     'input_border': '#c0c0cc',
@@ -1164,6 +1164,65 @@ void main() {
   fragColor = vec4(c, 1.0);
 }`;
 
+// Arc track: instanced quadratic Bezier as a thick triangle strip.
+// Per-instance: (p1, p2) genomic endpoints + RGB colour.
+// Per-vertex: aT in [0,1] parameter along the curve, aSide ∈ {-1,+1} for
+// the stroke's left/right offset. The strip is emitted by JS as
+// (t=0,side=-1), (t=0,side=+1), (t=dt,side=-1), (t=dt,side=+1), ...
+// A full strip has (N+1)*2 vertices for N segments.
+const VS_ARC = `#version 300 es
+precision highp float;
+in float aT;
+in float aSide;
+in float iP1, iP2;
+in vec3  iColor;
+uniform float uVS, uVE, uXL;   // genomic viewport -> NDC-x
+uniform float uTT, uTB;        // track top / bottom in NDC
+uniform float uApexFrac;       // apex position within band, 0=top 1=bottom
+uniform float uHalfPxX, uHalfPxY; // half stroke width in NDC along x/y
+flat out vec3 vColor;
+// Map a genomic position to NDC-x using the same formula as every other
+// program; no clamping here because arcs can run partly off-screen and the
+// scissor rect masks them instead.
+float gxToNDC(float gx) {
+  float t = (gx - uVS) / (uVE - uVS);
+  return mix(uXL, 1.0, t);
+}
+void main() {
+  float p1x = gxToNDC(iP1);
+  float p2x = gxToNDC(iP2);
+  float cx  = gxToNDC(0.5 * (iP1 + iP2));
+  // Baseline sits at track bottom (uTB); apex offset toward uTT.
+  // Clamp apex so it stays inside the usable band.
+  float apexY = mix(uTB, uTT, clamp(uApexFrac, 0.0, 1.0));
+  vec2 P1 = vec2(p1x,   uTB);
+  vec2 C  = vec2(cx,  2.0 * apexY - uTB);  // quadratic Bezier control point
+                                           // placed so the curve apex lies
+                                           // exactly on apexY at t=0.5.
+  vec2 P2 = vec2(p2x,   uTB);
+  float t  = aT;
+  float u  = 1.0 - t;
+  vec2 pos = u*u*P1 + 2.0*u*t*C + t*t*P2;
+  // dB/dt for a quadratic Bezier: 2*(1-t)*(C-P1) + 2*t*(P2-C).
+  vec2 tng = 2.0*u*(C - P1) + 2.0*t*(P2 - C);
+  // Perpendicular in NDC. Normalise using an anisotropic metric so the
+  // stroke looks uniform in pixels even though NDC x and y scale
+  // differently when the plot is wider than tall.
+  vec2 nrm = vec2(-tng.y, tng.x);
+  float len = max(length(nrm), 1e-6);
+  nrm /= len;
+  vec2 off = vec2(nrm.x * uHalfPxX, nrm.y * uHalfPxY) * aSide;
+  gl_Position = vec4(pos + off, 0.0, 1.0);
+  vColor = iColor;
+}`;
+
+const FS_ARC = `#version 300 es
+precision mediump float;
+flat in vec3 vColor;
+uniform float uAlpha;
+out vec4 fragColor;
+void main() { fragColor = vec4(vColor, uAlpha); }`;
+
 // ─── Compile / link helpers ────────────────────────────────────────────────
 function compileShader(type, src) {
   const sh = gl.createShader(type);
@@ -1188,15 +1247,19 @@ function makeProgram(vs, fs) {
 // Kept as `let` (not `const`) so the context-loss/restore path can rebuild
 // them; on restore the GL context is a fresh one and every program,
 // location, and buffer must be re-created.
-let rectProg, densProg, texProg, texProgLUT;
-let rLoc, dLoc, tLoc, tLocLUT;
-let quadBuf, hmQuadBuf;
+let rectProg, densProg, texProg, texProgLUT, arcProg;
+let rLoc, dLoc, tLoc, tLocLUT, aLoc;
+let quadBuf, hmQuadBuf, arcStripBuf;
+// Arc tessellation: N segments = N+1 sample points along t∈[0,1], each
+// emitted twice (side ∈ {-1,+1}) for a thick triangle strip.
+const ARC_SEGMENTS = 32;
 
 function initGlPrograms() {
   rectProg   = makeProgram(VS_RECT, FS_RECT);
   densProg   = makeProgram(VS_DENS, FS_DENS);
   texProg    = makeProgram(VS_TEX,  FS_TEX);
   texProgLUT = makeProgram(VS_TEX,  FS_TEX_LUT);
+  arcProg    = makeProgram(VS_ARC,  FS_ARC);
 
   rLoc = {
     aCorner: gl.getAttribLocation (rectProg, 'aCorner'),
@@ -1239,6 +1302,33 @@ function initGlPrograms() {
     uLUT: gl.getUniformLocation(texProgLUT, 'uLUT'),
     uBg:  gl.getUniformLocation(texProgLUT, 'uBg'),
   };
+  aLoc = {
+    aT:        gl.getAttribLocation (arcProg, 'aT'),
+    aSide:     gl.getAttribLocation (arcProg, 'aSide'),
+    iP1:       gl.getAttribLocation (arcProg, 'iP1'),
+    iP2:       gl.getAttribLocation (arcProg, 'iP2'),
+    iColor:    gl.getAttribLocation (arcProg, 'iColor'),
+    uVS:       gl.getUniformLocation(arcProg, 'uVS'),
+    uVE:       gl.getUniformLocation(arcProg, 'uVE'),
+    uXL:       gl.getUniformLocation(arcProg, 'uXL'),
+    uTT:       gl.getUniformLocation(arcProg, 'uTT'),
+    uTB:       gl.getUniformLocation(arcProg, 'uTB'),
+    uApexFrac: gl.getUniformLocation(arcProg, 'uApexFrac'),
+    uHalfPxX:  gl.getUniformLocation(arcProg, 'uHalfPxX'),
+    uHalfPxY:  gl.getUniformLocation(arcProg, 'uHalfPxY'),
+    uAlpha:    gl.getUniformLocation(arcProg, 'uAlpha'),
+  };
+
+  // Arc triangle strip: 2*(ARC_SEGMENTS+1) vertices, each (t, side).
+  const stripVerts = new Float32Array((ARC_SEGMENTS + 1) * 2 * 2);
+  for (let i = 0; i <= ARC_SEGMENTS; i++) {
+    const t = i / ARC_SEGMENTS;
+    stripVerts[i * 4]     = t; stripVerts[i * 4 + 1] = -1;
+    stripVerts[i * 4 + 2] = t; stripVerts[i * 4 + 3] = +1;
+  }
+  arcStripBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, arcStripBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, stripVerts, gl.STATIC_DRAW);
 
   quadBuf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
@@ -1270,6 +1360,7 @@ glCanvas.addEventListener('webglcontextlost', (e) => {
   for (const k of Object.keys(gpuXY))    delete gpuXY[k];
   for (const k of Object.keys(gpuFill))  delete gpuFill[k];
   for (const k of Object.keys(gpuHist))  delete gpuHist[k];
+  for (const k of Object.keys(gpuArc))   delete gpuArc[k];
 }, false);
 glCanvas.addEventListener('webglcontextrestored', () => {
   _glLost = false;
@@ -1286,9 +1377,11 @@ const gpuHMLUT = {};  // [tid] = { tex, size } — 1-D palette for value-mode he
 const gpuXY   = {};   // { buf, count }  — for scatter, line
 const gpuFill = {};   // { posBuf, posCount, negBuf, negCount }
 const gpuHist = {};   // [tid][ch][gid] = { base: rectGpu|null, levels: [{nBins, binWidth, ...rectGpu}] }
+const gpuArc  = {};   // [tid][ch][gid] = { buf, starts, maxLen, count }
 const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
 const rawFill = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,lo,hi,...]
 const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
+const rawArc  = {};   // tooltip: [tid][chrom][gid] = Float32Array [p1,p2,...]
 
 // ─── GPU-resource disposal helpers ────────────────────────────────────────
 // Every slot shape owns GPU handles (WebGL buffers / textures) that the
@@ -1317,6 +1410,7 @@ function _disposeHist(slot) {
   if (slot.base) _delBuf(slot.base.buf);
   if (slot.levels) for (const lvl of slot.levels) _delBuf(lvl && lvl.buf);
 }
+function _disposeArc(slot)  { if (slot) _delBuf(slot.buf); }
 
 // Dispose one (tid, ch) entry across a given store — the channel bucket is a
 // {gid: slot} dict. Called from uploadTrackData right before it reassigns
@@ -1337,9 +1431,11 @@ function disposeTid(tid) {
   if (gpuXY[tid])   { for (const ch of Object.keys(gpuXY[tid]))   disposeSlot(gpuXY,   tid, ch, _disposeXY);   delete gpuXY[tid]; }
   if (gpuFill[tid]) { for (const ch of Object.keys(gpuFill[tid])) disposeSlot(gpuFill, tid, ch, _disposeFill); delete gpuFill[tid]; }
   if (gpuHist[tid]) { for (const ch of Object.keys(gpuHist[tid])) disposeSlot(gpuHist, tid, ch, _disposeHist); delete gpuHist[tid]; }
+  if (gpuArc[tid])  { for (const ch of Object.keys(gpuArc[tid]))  disposeSlot(gpuArc,  tid, ch, _disposeArc);  delete gpuArc[tid]; }
   delete rawXY[tid];
   delete rawFill[tid];
   delete rawHist[tid];
+  delete rawArc[tid];
   delete geneData[tid];
 }
 
@@ -1353,6 +1449,7 @@ function disposeAllGpu() {
   for (const tid of Object.keys(gpuXY))   for (const ch of Object.keys(gpuXY[tid]))   disposeSlot(gpuXY,   tid, ch, _disposeXY);
   for (const tid of Object.keys(gpuFill)) for (const ch of Object.keys(gpuFill[tid])) disposeSlot(gpuFill, tid, ch, _disposeFill);
   for (const tid of Object.keys(gpuHist)) for (const ch of Object.keys(gpuHist[tid])) disposeSlot(gpuHist, tid, ch, _disposeHist);
+  for (const tid of Object.keys(gpuArc))  for (const ch of Object.keys(gpuArc[tid]))  disposeSlot(gpuArc,  tid, ch, _disposeArc);
   for (const k of Object.keys(gpuSeg))   delete gpuSeg[k];
   for (const k of Object.keys(gpuDens))  delete gpuDens[k];
   for (const k of Object.keys(gpuHM))    delete gpuHM[k];
@@ -1360,6 +1457,7 @@ function disposeAllGpu() {
   for (const k of Object.keys(gpuXY))    delete gpuXY[k];
   for (const k of Object.keys(gpuFill))  delete gpuFill[k];
   for (const k of Object.keys(gpuHist))  delete gpuHist[k];
+  for (const k of Object.keys(gpuArc))   delete gpuArc[k];
 }
 
 // Per-chromosome pan/zoom clamp range. Defaults to the whole chromosome;
@@ -1427,6 +1525,31 @@ function buildSegGPU(segs, yLo, yHi, color, nInd) {
     inst[o]   = s; inst[o+1] = e;
     inst[o+2] = iy0; inst[o+3] = iy1;
     inst[o+4] = r; inst[o+5] = g; inst[o+6] = b;
+  }
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
+  return { buf, starts, maxLen, count: n };
+}
+
+// Build instanced arc buffer: 5 floats/instance [p1, p2, r, g, b]
+// arcs: Float32Array — [p1, p2, ...] (stride 2, already sorted by p1 in Python)
+const ARC_INST_STRIDE = 20;  // 5 * float32
+function buildArcGPU(arcs, color) {
+  const n = (arcs.length / 2) | 0;
+  if (n === 0) return null;
+  const [r, g, b] = hexRGB(color);
+  const inst   = new Float32Array(n * 5);
+  const starts = new Float32Array(n);
+  let maxLen = 0;
+  for (let i = 0; i < n; i++) {
+    const p1 = arcs[i * 2];
+    const p2 = arcs[i * 2 + 1];
+    starts[i] = p1;
+    maxLen = Math.max(maxLen, p2 - p1);
+    const o = i * 5;
+    inst[o]   = p1; inst[o + 1] = p2;
+    inst[o+2] = r;  inst[o + 3] = g; inst[o + 4] = b;
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -1861,6 +1984,25 @@ function uploadTrackData() {
           gpuHist[tid][ch][gid] = { base: baseGpu, levels };
         }
       }
+    } else if (cfg.type === 'arc') {
+      if (!gpuArc[tid]) gpuArc[tid] = {};
+      if (!rawArc[tid]) rawArc[tid] = {};
+      for (const ch of Object.keys(d)) {
+        disposeSlot(gpuArc, tid, ch, _disposeArc);
+        gpuArc[tid][ch] = {};
+        rawArc[tid][ch] = {};
+        for (const [gid, b64] of Object.entries(d[ch])) {
+          const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
+          if (b64 === '' || b64 == null) {
+            rawArc[tid][ch][gid] = new Float32Array(0);
+            gpuArc[tid][ch][gid] = null;
+            continue;
+          }
+          const arr = b64F32(b64);
+          rawArc[tid][ch][gid] = arr;
+          gpuArc[tid][ch][gid] = buildArcGPU(arr, color);
+        }
+      }
     }
   }
 
@@ -1958,6 +2100,53 @@ function drawRects(gpuData, vs, ve, tt, tb, minDx) {
   gl.vertexAttribPointer(rLoc.iColor, 3, gl.FLOAT, false, S, byteOff + 16);
   gl.vertexAttribDivisor(rLoc.iColor, 1);
   gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, count);
+}
+
+// Draw instanced quadratic-Bezier arcs as thick triangle strips. Each
+// instance uses the shared (t, side) strip buffer and its own (p1, p2,
+// colour) from gpuData.buf. Viewport culling mirrors drawRects: bisect
+// the sorted `starts` array, then widen by `maxLen` on the low side so
+// arcs that start before `vs` but still cross the viewport stay in.
+function drawArcs(gpuData, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY) {
+  if (!gpuData || gpuData.count === 0) return;
+  const lo = Math.max(0, bisect(gpuData.starts, vs - gpuData.maxLen) - 1);
+  const hi = Math.min(gpuData.count, bisect(gpuData.starts, ve) + 1);
+  const count = hi - lo;
+  if (count <= 0) return;
+  const byteOff = lo * ARC_INST_STRIDE;
+  gl.useProgram(arcProg);
+  gl.uniform1f(aLoc.uVS, vs);
+  gl.uniform1f(aLoc.uVE, ve);
+  gl.uniform1f(aLoc.uXL, curXL);
+  gl.uniform1f(aLoc.uTT, tt);
+  gl.uniform1f(aLoc.uTB, tb);
+  gl.uniform1f(aLoc.uApexFrac, apexFrac);
+  gl.uniform1f(aLoc.uHalfPxX, halfPxX);
+  gl.uniform1f(aLoc.uHalfPxY, halfPxY);
+  gl.uniform1f(aLoc.uAlpha, alpha);
+  gl.bindBuffer(gl.ARRAY_BUFFER, arcStripBuf);
+  gl.enableVertexAttribArray(aLoc.aT);
+  gl.vertexAttribPointer(aLoc.aT, 1, gl.FLOAT, false, 8, 0);
+  gl.vertexAttribDivisor(aLoc.aT, 0);
+  gl.enableVertexAttribArray(aLoc.aSide);
+  gl.vertexAttribPointer(aLoc.aSide, 1, gl.FLOAT, false, 8, 4);
+  gl.vertexAttribDivisor(aLoc.aSide, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gpuData.buf);
+  const S = ARC_INST_STRIDE;
+  gl.enableVertexAttribArray(aLoc.iP1);
+  gl.vertexAttribPointer(aLoc.iP1, 1, gl.FLOAT, false, S, byteOff + 0);
+  gl.vertexAttribDivisor(aLoc.iP1, 1);
+  gl.enableVertexAttribArray(aLoc.iP2);
+  gl.vertexAttribPointer(aLoc.iP2, 1, gl.FLOAT, false, S, byteOff + 4);
+  gl.vertexAttribDivisor(aLoc.iP2, 1);
+  gl.enableVertexAttribArray(aLoc.iColor);
+  gl.vertexAttribPointer(aLoc.iColor, 3, gl.FLOAT, false, S, byteOff + 8);
+  gl.vertexAttribDivisor(aLoc.iColor, 1);
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, (ARC_SEGMENTS + 1) * 2, count);
+  // Reset instance divisors on the per-vertex attrs so subsequent non-
+  // instanced draws using the same locations don't inherit divisor=1.
+  gl.vertexAttribDivisor(aLoc.aT, 0);
+  gl.vertexAttribDivisor(aLoc.aSide, 0);
 }
 
 // Shared setup for densProg-based draws (density, line, scatter, fill)
@@ -2919,6 +3108,21 @@ function render() {
         }
         drawRects(pick, vs, ve, tt, tb, bpPx / dpr);
       }
+    } else if (cfg.type === 'arc') {
+      // Usable band in CSS px = cfgH - 2*PAD_V. Apex sits at
+      // `arcHeight` CSS px above the baseline (track bottom).
+      const usable = Math.max(1, cfgH - 2 * PAD_V);
+      const apexPx = Math.min(Math.max(cfg.arcHeight ?? usable, 1), usable);
+      const apexFrac = 1.0 - (apexPx / usable);  // 0 = top (full height), 1 = baseline
+      const lw = cfg.lineWidth ?? 1.5;
+      const alpha = cfg.alpha ?? 0.9;
+      const halfPxX = lw * 0.5 * (2.0 / W_css);
+      const halfPxY = lw * 0.5 * (2.0 / totalH_css);
+      for (const grp of cfg.groups) {
+        const slot = gpuArc[cfg.id]?.[ch]?.[grp.id];
+        if (!slot) continue;
+        drawArcs(slot, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY);
+      }
     }
 
     gl.disable(gl.SCISSOR_TEST);
@@ -3114,6 +3318,44 @@ function tipDataSegment(pos, chrom, cfg, localY) {
   return nG === 1 ? { group: cfg.groups[0].name } : null;
 }
 
+// Arc hit-test: an arc [p1, p2] with symmetric quadratic Bezier in x has
+// x(t) linear, so t(pos) = (pos - p1)/(p2 - p1) closes the curve exactly.
+// The curve's CSS-y at pos is (baseline - 4*t*(1-t)*apexPx) within the
+// track band. We accept a hit when pos ∈ [p1, p2] and the cursor is
+// within TIP_ARC_TOL CSS px of the curve there.
+const TIP_ARC_TOL = 4;
+function tipDataArc(pos, chrom, cfg, localY) {
+  if (localY < 0) return null;
+  const usable = Math.max(1, cfg.height - 2 * PAD_V);
+  const apexPx = Math.min(Math.max(cfg.arcHeight ?? usable, 1), usable);
+  const baselineY = cfg.height - PAD_V;  // CSS y of baseline within track
+  const hits = [];
+  for (const grp of cfg.groups) {
+    const arr = rawArc?.[cfg.id]?.[chrom]?.[grp.id];
+    if (!arr || arr.length < 2) continue;
+    const n = (arr.length / 2) | 0;
+    // Arcs are stored sorted by p1. Candidates: every record whose p1 ≤ pos.
+    // Scanning them all is O(n); for large n we could bisect on p1 then walk
+    // back from there, but arcs with p1 > pos can still span pos so a
+    // straight scan is simpler and fast enough for typical track sizes.
+    for (let i = 0; i < n; i++) {
+      const p1 = arr[i * 2];
+      if (p1 > pos) break;              // past the cursor; remaining start later
+      const p2 = arr[i * 2 + 1];
+      if (p2 < pos) continue;
+      const span = p2 - p1;
+      if (span <= 0) continue;
+      const t = (pos - p1) / span;
+      const dist = 4 * t * (1 - t) * apexPx;
+      const curveY = baselineY - dist;
+      if (Math.abs(localY - curveY) <= TIP_ARC_TOL) {
+        hits.push({ group: grp.name, pos1: p1, pos2: p2, span });
+      }
+    }
+  }
+  return hits.length ? hits : null;
+}
+
 function tipDataHeatmap(pos, chrom, cfg, localY) {
   if (localY < 0) return null;
   const nG = cfg.groups.length;
@@ -3144,6 +3386,13 @@ function defaultFmtFill(items, nGroups) { return items.map(d => (nGroups > 1 ? `
 function defaultFmtHist(items, nGroups) { return items.map(d => (nGroups > 1 ? `${d.group}: ` : '') + d.value.toPrecision(4)).join(', '); }
 function defaultFmtSegment(d) { return d.group; }
 function defaultFmtHeatmap(d) { return `${d.group} [${d.individual}/${d.nInd}]`; }
+function defaultFmtArc(items, nGroups) {
+  return items.map(d => {
+    const span = d.span.toLocaleString();
+    const head = nGroups > 1 ? `${d.group}: ` : '';
+    return `${head}${d.pos1.toLocaleString()}–${d.pos2.toLocaleString()} (${span} bp)`;
+  }).join(', ');
+}
 
 function tipForTrack(pos, chrom, cfg, localY) {
   if (cfg.tipFmt === false) return null;
@@ -3202,6 +3451,16 @@ function tipForTrack(pos, chrom, cfg, localY) {
       if (!data) return null;
       if (cfg.tipFmt) return fmtTip(cfg.tipFmt, data) ?? `keys: ${keys}`;
       return defaultFmtHeatmap(data);
+
+    case 'arc':
+      data = tipDataArc(pos, chrom, cfg, localY);
+      keys = 'group, pos1, pos2, span';
+      if (!data) return null;
+      if (cfg.tipFmt) {
+        const parts = data.map(d => fmtTip(cfg.tipFmt, d)).filter(s => s !== null);
+        return parts.length ? parts.join(', ') : `keys: ${keys}`;
+      }
+      return defaultFmtArc(data, cfg.groups.length);
 
     default: return null;
   }
@@ -4507,6 +4766,132 @@ class Tracks(anywidget.AnyWidget):
         }
 
         return self._commit_track(tid, {'segs': seg_out, 'dens': dens_out}, cfg)
+
+    # ── add_arc_track ────────────────────────────────────────────────────────
+    def add_arc_track(
+        self,
+        df: pd.DataFrame,
+        name: str,
+        *,
+        pos1: str = 'pos1',
+        pos2: str = 'pos2',
+        group_by: str | None = None,
+        color_map: dict | None = None,
+        palette: Any = None,
+        height: int = 60,
+        arc_height: int | None = None,
+        alpha: float = 0.9,
+        line_width: float = 1.5,
+        tip_fmt: str | None = None,
+        tip_label: str | None = None,
+    ) -> 'Tracks':
+        """Add an arc track connecting pairs of positions on the same chromosome.
+
+        Each record is drawn as a quadratic-Bezier curve from ``pos1`` to
+        ``pos2`` with a fixed apex height above the track baseline, clamped
+        so the apex never leaves the track band. Useful for splice
+        junctions, Hi-C interactions, structural-variant links, and
+        similar pairwise-coordinate data.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Long-format frame with columns ``chrom``, ``pos1``, ``pos2``
+            (names configurable via ``pos1`` / ``pos2``) and the optional
+            ``group_by`` column.
+        name : str
+            Track display label shown in the left panel.
+        pos1, pos2 : str
+            Column names for the two endpoints. Order within a row
+            doesn't matter — the track normalises to ``(min, max)``.
+        group_by : str, optional
+            Column whose unique values become separately-coloured arc
+            groups. When omitted, all arcs share a single colour.
+        color_map : dict, optional
+            ``{group_value: '#rrggbb'}``. Omitted means the palette
+            cycle supplies one colour per group.
+        palette : str, list, or matplotlib.colors.Colormap, optional
+            Qualitative palette; used only when ``color_map`` isn't
+            given.
+        height : int, default 60
+            Track height in CSS pixels.
+        arc_height : int, optional
+            Apex height above the baseline in CSS pixels. Defaults to
+            ``height - 2 * PAD_V`` (the full usable band). JS clamps
+            this to the current track band so apex stays in view.
+        alpha : float, default 0.9
+            Line opacity (0..1).
+        line_width : float, default 1.5
+            Stroke width in CSS pixels.
+        tip_fmt : str, optional
+            Python format string for tooltips. Available keys:
+            ``{group}``, ``{pos1}``, ``{pos2}``, ``{span}``.
+        tip_label : str, optional
+            Heading shown above the tooltip body. Defaults to
+            ``f'{name}:'``.
+
+        Returns
+        -------
+        Tracks
+            ``self``, to support fluent chaining.
+        """
+        for required in ('chrom', pos1, pos2):
+            if required not in df.columns:
+                raise KeyError(
+                    f"add_arc_track: DataFrame is missing required column "
+                    f"{required!r}"
+                )
+
+        tid = self._tid()
+        groups, group_by, color_map, default_palette = self._prep_groups(
+            df, group_by, color_map, palette
+        )
+
+        arcs_out: dict = {}
+        group_counts: dict[str, int] = {str(i): 0 for i in range(len(groups))}
+
+        for chrom_val, cdf in df.groupby('chrom'):
+            chrom = str(chrom_val)
+            arcs_out[chrom] = {}
+            for gi, group in enumerate(groups):
+                gid = str(gi)
+                gdf = cdf[cdf[group_by] == group] if group_by else cdf
+                if gdf.empty:
+                    arcs_out[chrom][gid] = ''
+                    continue
+                p1 = gdf[pos1].to_numpy(dtype=np.float64)
+                p2 = gdf[pos2].to_numpy(dtype=np.float64)
+                lo = np.minimum(p1, p2)
+                hi = np.maximum(p1, p2)
+                # Sort by left endpoint so JS can bisect the `starts` array
+                # for viewport culling, matching the segment-track pattern.
+                order = np.argsort(lo, kind='mergesort')
+                lo = lo[order]
+                hi = hi[order]
+                arr = np.empty(len(lo) * 2, dtype=np.float32)
+                arr[0::2] = lo
+                arr[1::2] = hi
+                arcs_out[chrom][gid] = self._pack_f32(arr)
+                group_counts[gid] += len(lo)
+
+        if arc_height is None:
+            arc_height = max(8, height - 6)  # 6 = 2 * PAD_V
+        cfg = {
+            'id': tid, 'type': 'arc', 'name': name, 'height': int(height),
+            'arcHeight': int(arc_height),
+            'alpha': float(max(0.0, min(1.0, alpha))),
+            'lineWidth': float(max(0.5, line_width)),
+            'groups': [
+                {'id': str(i), 'name': str(g),
+                 'nPairs': group_counts.get(str(i), 0),
+                 'color': color_map.get(g, default_palette[i])}
+                for i, g in enumerate(groups)
+            ],
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
+        }
+
+        return self._commit_track(tid, arcs_out, cfg)
 
     # ── add_heatmap_track ────────────────────────────────────────────────────
     def add_heatmap_track(
@@ -7135,28 +7520,42 @@ class Tracks(anywidget.AnyWidget):
     def zoom_to(
         self,
         chrom: str,
+        start: int | None = None,
+        end: int | None = None,
+        *,
         center: int | None = None,
         window: int | None = None,
     ) -> 'Tracks':
-        """Centre the viewport on a position with a fixed window width.
+        """Zoom the viewport to a chromosome, range, or centred window.
 
-        When called with only a chromosome — ``zoom_to('chrX')`` or
-        ``zoom_to(chrom='chrX')`` — the viewport shows the whole
-        chromosome. When ``center`` is given but ``window`` is omitted,
-        ``window`` defaults to ``1_000_000`` bp.
+        Supports three calling styles:
+
+        * ``zoom_to('chrX')`` — show the whole chromosome.
+        * ``zoom_to('chrX', start=100_000, end=200_000)`` — show the
+          given half-open range ``[start, end)``. ``start`` and
+          ``end`` may also be passed positionally.
+        * ``zoom_to('chrX', center=150_000, window=1_000_000)`` —
+          centre on ``center`` with the given window width. ``window``
+          defaults to ``1_000_000`` bp when omitted.
+
+        The ``start``/``end`` and ``center``/``window`` styles are
+        mutually exclusive.
 
         Parameters
         ----------
         chrom : str
             Chromosome name.
+        start : int, optional
+            Inclusive start position in base pairs. When given, ``end``
+            must also be given (and ``center``/``window`` must not).
+        end : int, optional
+            Exclusive end position in base pairs.
         center : int, optional
-            Genomic position to centre on, in base pairs. When omitted
-            the viewport covers the full chromosome.
+            Genomic position to centre on, in base pairs. Keyword-only.
         window : int, optional
-            Total window width in base pairs. Defaults to
-            ``1_000_000`` when ``center`` is given, or to the full
-            chromosome length when ``center`` is ``None``. The viewport
-            is set to ``[center - window // 2, center + window // 2)``
+            Total window width in base pairs. Keyword-only. Defaults
+            to ``1_000_000`` when ``center`` is given. The viewport is
+            set to ``[center - window // 2, center + window // 2)``
             then clamped to the chromosome bounds by
             :meth:`set_viewport`.
 
@@ -7171,6 +7570,22 @@ class Tracks(anywidget.AnyWidget):
                 f"zoom_to: chrom={chrom!r} not in chrom_sizes"
             )
         csz = int(self.chrom_sizes[chrom])
+
+        range_given = start is not None or end is not None
+        center_given = center is not None or window is not None
+        if range_given and center_given:
+            raise TypeError(
+                "zoom_to: pass either start/end or center/window, "
+                "not both"
+            )
+
+        if range_given:
+            if start is None or end is None:
+                raise TypeError(
+                    "zoom_to: start and end must be given together"
+                )
+            return self.set_viewport(chrom, int(start), int(end))
+
         if center is None:
             return self.set_viewport(chrom, 0, csz)
 
