@@ -79,10 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-4897d45d2f75ed4f519693be625836c5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3e7735b7b22659e5fa437aca0bb49075.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -342,7 +339,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="4732d086" class="cell" data-execution_count="1">
+<div id="4732d086" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.widget <span class="im">import</span> Tracks</span>
@@ -434,9 +431,9 @@ table {
 </div>
 </div>
 <p>Some synthetic data:</p>
-<div id="0d421184" class="cell" data-execution_count="4">
+<div id="0d421184" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>qdf.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -522,10 +519,10 @@ table {
 </div>
 </div>
 </div>
-<div id="9f3a9d67" class="cell" data-execution_count="5">
+<div id="9f3a9d67" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>viewer1 <span class="op">=</span> (</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .add_scatter_track(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .add_point_track(</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Scatter'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'fst'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>, </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    )</span>
@@ -549,15 +546,15 @@ table {
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>, height <span class="op">=</span> <span class="dv">100</span>)</span>
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>viewer1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"963caddad21e44229a6fc665a5a7e3b6","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"893b6c2156504e19bf4bba67a535aed1","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
 <section id="highlighting" class="level2">
 <h2 class="anchored" data-anchor-id="highlighting">Highlighting</h2>
-<div id="8f3fab2a" class="cell" data-execution_count="6">
+<div id="8f3fab2a" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>viewer2 <span class="op">=</span> (</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
@@ -568,13 +565,13 @@ table {
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># zoom to region interest for demonstration purposes</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>viewer2.zoom_to(<span class="st">'chr1'</span>, center<span class="op">=</span><span class="dv">70000000</span>, window<span class="op">=</span><span class="dv">1200000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"0b8e5c203688462683dedd870d72dabc","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"7c5a60063c0741cf8bccb86d24c2e68a","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
-<div id="1983c587" class="cell" data-execution_count="8">
+<div id="1983c587" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>viewer3 <span class="op">=</span> (</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
@@ -598,25 +595,19 @@ table {
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># zoom to region interest for demonstration purposes</span></span>
 <span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>viewer3.zoom_to(<span class="st">'chr1'</span>, center<span class="op">=</span><span class="dv">70300000</span>, window<span class="op">=</span><span class="dv">600000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ad4fc2d64d3840eeafdca2a85083ad77","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"f5eacf70db874a5d9040506c384da1d0","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="tracks_widget_files/figure-html/32fa260a-1-image.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="image.png"><img src="tracks_widget_files/figure-html/32fa260a-1-image.png" class="img-fluid figure-img" alt="image.png"></a></p>
-<figcaption>image.png</figcaption>
-</figure>
 </div>
 </section>
 <section id="segments" class="level2">
 <h2 class="anchored" data-anchor-id="segments">Segments</h2>
 <p>Synthetic segment data:</p>
-<div id="0309623c" class="cell" data-execution_count="10">
+<div id="0309623c" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>segs.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
 
@@ -636,8 +627,8 @@ table {
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>chr1</td>
-<td>9264851</td>
-<td>9642214</td>
+<td>1522823</td>
+<td>2424922</td>
 <td>EUR_ind1</td>
 <td>EUR</td>
 <td>Neanderthal</td>
@@ -645,8 +636,8 @@ table {
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>chr1</td>
-<td>14200255</td>
-<td>15198134</td>
+<td>2409012</td>
+<td>2802471</td>
 <td>EUR_ind1</td>
 <td>EUR</td>
 <td>Neanderthal</td>
@@ -654,8 +645,8 @@ table {
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>chr1</td>
-<td>15108496</td>
-<td>15182094</td>
+<td>2982655</td>
+<td>3359492</td>
 <td>EUR_ind1</td>
 <td>EUR</td>
 <td>Neanderthal</td>
@@ -663,8 +654,8 @@ table {
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
 <td>chr1</td>
-<td>15970719</td>
-<td>16967259</td>
+<td>4850987</td>
+<td>5286045</td>
 <td>EUR_ind1</td>
 <td>EUR</td>
 <td>Neanderthal</td>
@@ -672,8 +663,8 @@ table {
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
 <td>chr1</td>
-<td>22242645</td>
-<td>22531349</td>
+<td>12839933</td>
+<td>12973217</td>
 <td>EUR_ind1</td>
 <td>EUR</td>
 <td>Neanderthal</td>
@@ -684,7 +675,7 @@ table {
 </div>
 </div>
 </div>
-<div id="cafb5b2a" class="cell" data-execution_count="11">
+<div id="cafb5b2a" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>viewer4 <span class="op">=</span> (</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .add_segment_track(</span>
@@ -700,7 +691,7 @@ table {
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    .add_heatmap_track(</span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        segs, <span class="st">'Individuals'</span>,</span>
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            group_col<span class="op">=</span><span class="st">'reg'</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            group_by<span class="op">=</span><span class="st">'reg'</span>,</span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">90</span>,   <span class="co"># will be expanded to accommodate on px per segment row</span></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        windows<span class="op">=</span><span class="dv">2500</span>, <span class="co"># max is 8192 or 16384 depending on GPU</span></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
@@ -708,9 +699,9 @@ table {
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>, height <span class="op">=</span> <span class="dv">100</span>)</span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>viewer4</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"249b7171b76c4b26a009bea5d6c926d2","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"99bfbc6601a94919a66cc207fb490e64","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
@@ -720,10 +711,10 @@ table {
 <p>Each track contributes to the cursor tooltip unless <code>tip_fmt=False</code>. Use <code>tip_fmt</code> to control what each track contributes to the tooltip. Format placeholders use Python-style <code>{key}</code> or <code>{key:.Nf}</code> syntax.</p>
 <p>Available keys per track type: - <strong>Gene</strong>: <code>name</code>, <code>strand</code>, <code>start</code>, <code>end</code> - <strong>Scatter / Line</strong>: <code>group</code>, <code>value</code>, <code>x</code> - <strong>Fill</strong>: <code>group</code>, <code>lo</code>, <code>hi</code>, <code>x</code> - <strong>Histogram</strong>: <code>group</code>, <code>value</code>, <code>x</code> - <strong>Segment</strong>: <code>group</code> - <strong>Heatmap</strong>: <code>group</code>, <code>individual</code>, <code>nInd</code></p>
 <p>If a format string references an invalid key, the tooltip shows the available keys as a hint.</p>
-<div id="a6889c1b" class="cell">
+<div id="a6889c1b" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>viewer5 <span class="op">=</span> (</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .add_scatter_track(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .add_point_track(</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Scatter'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'fst'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>,</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="st">"</span><span class="sc">{value:.4f}</span><span class="st"> is the value for </span><span class="sc">{group}</span><span class="st">"</span>,</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    )</span>
@@ -737,6 +728,11 @@ table {
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>viewer5</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"06174149e746418caaa7c63b4a1aed84","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
 </div>
 </section>
 <section id="theme" class="level2">
@@ -1170,38 +1166,6 @@ table {
   </div>
 </nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
-(function() {
-  let previousOnload = window.onload;
-  window.onload = () => {
-    if (previousOnload) {
-      previousOnload();
-    }
-    lightboxQuarto.on('slide_before_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      const href = trigger.getAttribute('href');
-      if (href !== null) {
-        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-        if (imgEl !== null) {
-          const srcAttr = imgEl.getAttribute("src");
-          if (srcAttr && srcAttr.startsWith("data:")) {
-            slideConfig.href = srcAttr;
-          }
-        }
-      } 
-    });
-  
-    lightboxQuarto.on('slide_after_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(slideNode);
-      }
-    });
-  
-  };
-  
-})();
-          </script>
 
 
 
