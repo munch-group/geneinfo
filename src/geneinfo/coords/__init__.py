@@ -3,11 +3,10 @@ import sys
 import os
 import pandas as pd
 from typing import Any, TypeVar, List, Tuple, Dict, Union
-import requests
 from pathlib import Path
 from collections.abc import Sequence, MutableSequence
 
-from ..utils import shelve_it, chrom_sort_key
+from ..utils import shelve_it, chrom_sort_key, ucsc_api_get
 
 cache_dir = Path(os.path.dirname(__file__)).parent / 'data'
 
@@ -54,8 +53,8 @@ def chromosome_lengths(assembly:str) -> List[Tuple[str, int]]:
             ('chrY', 62460029),
         ]
 
-    api_url = f'https://api.genome.ucsc.edu/list/chromosomes?genome={assembly};track=gold'
-    response = requests.get(api_url)
+    api_path = f'/list/chromosomes?genome={assembly};track=gold'
+    response = ucsc_api_get(api_path)
     if not response.ok:
         response.raise_for_status()
     records = []
@@ -110,8 +109,8 @@ def centromere_coords(assembly:str) -> List[Tuple[str, int, int]]:
             ('chrY', 10565750, 10883085),
         ]
 
-    api_url = f'https://api.genome.ucsc.edu/getData/track?genome={assembly};track=centromeres'
-    response = requests.get(api_url)
+    api_path = f'/getData/track?genome={assembly};track=centromeres'
+    response = ucsc_api_get(api_path)
     if not response.ok:
         return []
     data = defaultdict(list)
@@ -158,7 +157,7 @@ def centromere_coords(assembly:str) -> List[Tuple[str, int, int]]:
 #         - list of list of exons (start, end) for a transcript
 #     """    
 #     assert assembly is not None
-#     api_url = f'https://api.genome.ucsc.edu/getData/track?genome={assembly};track=ncbiRefSeq;chrom={chrom}'
+#     api_url = f'https://api.genome-euro.ucsc.edu/getData/track?genome={assembly};track=ncbiRefSeq;chrom={chrom}'
 #     if start is not None and end is not None:
 #         api_url += f';start={start};end={end}'
     
@@ -214,11 +213,11 @@ def gene_coords_region(chrom=None, start=None, end=None, assembly=None, include_
         - list of list of exons (start, end) for a transcript
     """    
     assert assembly is not None
-    api_url = f'https://api.genome.ucsc.edu/getData/track?genome={assembly};track=ncbiRefSeq;chrom={chrom}'
+    api_path = f'/getData/track?genome={assembly};track=ncbiRefSeq;chrom={chrom}'
     if start is not None and end is not None:
-        api_url += f';start={start};end={end}'
-    
-    response = requests.get(api_url)
+        api_path += f';start={start};end={end}'
+
+    response = ucsc_api_get(api_path)
     if not response.ok:
         response.raise_for_status()
 
@@ -393,7 +392,7 @@ def gene_labels(names:Sequence, assembly:str) -> List[Tuple[str, int, str]]:
 #         - gene strand
 #         - list of exons (start, end)
 #     """
-#     api_url = f'https://api.genome.ucsc.edu/getData/track'
+#     api_url = f'https://api.genome-euro.ucsc.edu/getData/track'
 #     params = {'track': db,
 #               'genome': assembly,
 #               'chrom': chrom,

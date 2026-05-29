@@ -27,6 +27,33 @@ from scipy.stats import fisher_exact
 from .intervals import *
 
 
+# UCSC REST API mirrors, tried in order by ``ucsc_api_get``. The European
+# mirror has lower latency from the EU, but its ``api.`` host periodically
+# serves a TLS certificate whose SANs omit ``api.genome-euro.ucsc.edu``; when
+# that happens we transparently fall back to the US host.
+UCSC_API_HOSTS = (
+    "https://api.genome-euro.ucsc.edu",
+    "https://api.genome.ucsc.edu",
+)
+
+
+def ucsc_api_get(path: str, **kwargs) -> requests.Response:
+    """GET ``path`` from the UCSC REST API, trying mirrors in order.
+
+    ``path`` is everything after the host (e.g. ``"/list/chromosomes"``,
+    optionally with a query string). Falls back to the next mirror on a
+    connection or SSL error so a broken certificate or an unreachable mirror
+    doesn't take the whole library offline.
+    """
+    last_exc = None
+    for host in UCSC_API_HOSTS:
+        try:
+            return requests.get(host + path, **kwargs)
+        except requests.exceptions.ConnectionError as exc:  # SSLError subclasses this
+            last_exc = exc
+    raise last_exc
+
+
 chrom_lengths = {'hg19': {'chr1': 249250621, 'chr2': 243199373, 'chr3': 198022430, 'chr4': 191154276, 
                             'chr5': 180915260, 'chr6': 171115067, 'chr7': 159138663, 'chr8': 146364022, 
                             'chr9': 141213431, 'chr10': 135534747, 'chr11': 135006516, 'chr12': 133851895,

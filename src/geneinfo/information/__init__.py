@@ -22,7 +22,7 @@ from ..genelist import GeneList
 from ..coords import gene_coords_region
 #from ..information import *
 
-from ..utils import shelve_it
+from ..utils import shelve_it, ucsc_api_get
 cache_dir = Path(os.path.dirname(__file__)).parent / 'data'
 
 
@@ -43,8 +43,7 @@ def list_assemblies() -> None:
     """
     Lists available genome assemblies from UCSC genome browser.
     """
-    api_url = f'https://api.genome.ucsc.edu/list/ucscGenomes'
-    response = requests.get(api_url)
+    response = ucsc_api_get('/list/ucscGenomes')
     if not response.ok:
         response.raise_for_status()
     records = []
@@ -484,7 +483,7 @@ def gene_info_region(chrom:str, window_start:int, window_end:int,
 
     
 def fetch_tracks(assembly):
-    resp = requests.get(f"https://api.genome.ucsc.edu/list/tracks?genome={assembly}")
+    resp = ucsc_api_get(f"/list/tracks?genome={assembly}")
     resp.raise_for_status()
     tracks = resp.json()[assembly]
     tups = [(name, data['longLabel']) for name, data in tracks.items()]
@@ -531,7 +530,7 @@ def search_ucsc_tracks(*queries, assembly=None, label_wrap=80):
             print(name.ljust(ljust) + '\n'.join(textwrap.wrap(label, width=label_wrap, subsequent_indent=' '*ljust)))
 
 def get_ucsc_track(track_name, assembly, chrom=None, start=None, end=None):
-    url = "https://api.genome.ucsc.edu/getData/track"
+    api_path = "/getData/track"
     params = {"genome": assembly, "track": track_name}
     if chrom is not None:
         assert chrom.startswith('chr')
@@ -539,7 +538,7 @@ def get_ucsc_track(track_name, assembly, chrom=None, start=None, end=None):
         if start is not None and end is not None:
             params['start'] = str(start)
             params['end'] = str(end)            
-    response = requests.get(url, params=params)
+    response = ucsc_api_get(api_path, params=params)
     if response.ok:
     #    response.raise_for_status()
         try:

@@ -30,10 +30,8 @@ import pandas as pd
 import requests
 from rapidfuzz import process, fuzz
 
-from ..utils import shelve_it
+from ..utils import shelve_it, ucsc_api_get
 
-
-UCSC_API = "https://api.genome.ucsc.edu"
 
 # Fraction of ``maxItemsLimit`` at which we treat a single response as
 # "likely truncated" and recursively bisect the region. The UCSC API returns
@@ -91,34 +89,33 @@ class UnsupportedTrackType(NotImplementedError):
 
 
 def _request_json(path: str, params: dict, *, retries: int = 3, backoff: float = 1.5) -> dict:
-    """GET ``{UCSC_API}{path}`` with ``params`` and decode JSON.
+    """GET ``path`` from the UCSC REST API with ``params`` and decode JSON.
 
     Retries on 5xx with exponential backoff. Raises :class:`UcscApiError` on
     persistent failure or on an explicit ``{"error": ...}`` envelope.
     """
-    url = f"{UCSC_API}{path}"
     last_exc = None
     for attempt in range(retries):
         try:
-            resp = requests.get(url, params=params, timeout=60)
+            resp = ucsc_api_get(path, params=params, timeout=60)
         except requests.RequestException as exc:
             last_exc = exc
         else:
             if resp.status_code < 500:
                 if not resp.ok:
                     raise UcscApiError(
-                        f"UCSC API {resp.status_code} for {url} params={params}: {resp.text[:500]}"
+                        f"UCSC API {resp.status_code} for {resp.url}: {resp.text[:500]}"
                     )
                 try:
                     data = resp.json()
                 except ValueError as exc:
                     raise UcscApiError(
-                        f"UCSC API returned non-JSON for {url} params={params}: {exc}"
+                        f"UCSC API returned non-JSON for {resp.url}: {exc}"
                     ) from exc
                 if isinstance(data, dict) and "error" in data and len(data) <= 2:
-                    raise UcscApiError(f"UCSC API error for {url} params={params}: {data['error']}")
+                    raise UcscApiError(f"UCSC API error for {resp.url}: {data['error']}")
                 return data
-            last_exc = UcscApiError(f"UCSC API {resp.status_code} for {url}: {resp.text[:500]}")
+            last_exc = UcscApiError(f"UCSC API {resp.status_code} for {resp.url}: {resp.text[:500]}")
         time.sleep(backoff ** attempt)
     raise UcscApiError(f"UCSC API call failed after {retries} attempts: {last_exc}")
 
