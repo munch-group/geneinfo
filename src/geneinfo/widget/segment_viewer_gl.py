@@ -35,6 +35,7 @@ API
 
 from __future__ import annotations
 import base64
+import re
 import warnings
 from typing import Any
 import anywidget
@@ -453,6 +454,117 @@ def _aggregate_bin(
         with np.errstate(divide='ignore', invalid='ignore'):
             values = np.where(counts > 0, sums / counts, 0.0)
     return counts, values
+
+
+# ── Finest-bin specs ─────────────────────────────────────────────────────────
+# The ``windows`` / ``density_windows`` knobs accept either a bin *count*
+# (``int``) or a physical bin *size* in base pairs (``str`` such as ``'10kb'``).
+# A bp size is resolved to a count per chromosome — and, for heatmaps, per view
+# on rebin — so it yields constant bp resolution that reaches full fineness at
+# the largest zoom.
+_BP_UNITS = {'bp': 1.0, 'kb': 1e3, 'mb': 1e6, 'gb': 1e9}
+
+# Caps on a *bp-derived* finest bin count (explicit int counts are never
+# capped — that is the caller's deliberate choice). Heatmap bins become columns
+# of a GPU texture (texImage2D width), so they must respect the WebGL2
+# MAX_TEXTURE_SIZE floor guaranteed across GPUs; LOD aggregate arrays are plain
+# payload and tolerate far more, but are still capped so a tiny bp size can't
+# explode the serialised output.
+_MAX_HEATMAP_BINS = 8192
+_MAX_LOD_BINS = 65536
+
+
+def _parse_bp_size(spec: str) -> float:
+    """Parse a base-pair size string to a float number of base pairs.
+
+    Accepts an optional unit suffix (case-insensitive): ``bp``, ``kb``,
+    ``Mb``, ``Gb``; a bare number is interpreted as base pairs. Decimal and
+    scientific notation are allowed. Examples: ``'500'`` → 500, ``'10kb'`` →
+    10000, ``'1.5Mb'`` → 1_500_000, ``'2e6'`` → 2_000_000.
+
+    Raises
+    ------
+    ValueError
+        If the string cannot be parsed, the unit is unknown, or the size is
+        not positive.
+    """
+    m = re.fullmatch(
+        r'\s*([0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\s*([a-zA-Z]*)\s*', spec
+    )
+    if not m:
+        raise ValueError(f"could not parse bp size {spec!r}")
+    unit = (m.group(2) or 'bp').lower()
+    if unit not in _BP_UNITS:
+        raise ValueError(
+            f"unknown bp unit in {spec!r}; use one of "
+            f"{', '.join(sorted(_BP_UNITS))}"
+        )
+    bp = float(m.group(1)) * _BP_UNITS[unit]
+    if bp <= 0:
+        raise ValueError(f"bp size must be positive, got {spec!r}")
+    return bp
+
+
+def _bin_spec(spec: Any) -> tuple[str, float]:
+    """Normalise one finest-bin spec to ``('count', n)`` or ``('bp', size)``.
+
+    An ``int`` is a fixed bin count; a ``str`` is a physical bp size (see
+    :func:`_parse_bp_size`). This is the disambiguation rule for the unified
+    ``windows`` / ``density_windows`` knobs.
+    """
+    if isinstance(spec, bool):
+        raise ValueError("bin spec cannot be a bool")
+    if isinstance(spec, str):
+        return ('bp', _parse_bp_size(spec))
+    if isinstance(spec, (int, np.integer)) or (
+        isinstance(spec, (float, np.floating)) and float(spec).is_integer()
+    ):
+        n = int(spec)
+        if n < 1:
+            raise ValueError(f"bin count must be >= 1, got {n}")
+        return ('count', float(n))
+    raise ValueError(
+        f"bin spec must be an int (count) or str (bp size), got {spec!r}"
+    )
+
+
+def _normalise_bin_specs(windows: Any) -> list[tuple[str, float]]:
+    """Normalise the ``windows`` / ``density_windows`` argument to specs.
+
+    Accepts a single ``int``/``str`` or an iterable of them and returns a list
+    of ``(kind, value)`` pairs (see :func:`_bin_spec`). An empty iterable
+    returns ``[]`` — the convention for "no LOD levels".
+    """
+    if isinstance(windows, (int, np.integer, float, np.floating, str)):
+        windows = (windows,)
+    return [_bin_spec(w) for w in windows]
+
+
+def _resolve_bin_count(kind: str, value: float, span: float, max_bins: int) -> int:
+    """Resolve one finest-bin spec to a concrete bin count over ``span`` bp.
+
+    ``'count'`` specs are returned unchanged (never capped). ``'bp'`` specs
+    become ``ceil(span / value)`` clamped to ``[1, max_bins]`` — so a fine bp
+    size degrades gracefully at wide spans (e.g. a whole chromosome) and only
+    reaches full resolution once the visible span is narrow enough.
+    """
+    if kind == 'count':
+        return int(value)
+    n = int(np.ceil(max(1.0, float(span)) / value))
+    return max(1, min(n, max_bins))
+
+
+def _resolve_bin_counts(
+    specs: list[tuple[str, float]], span: float, max_bins: int,
+) -> list[int]:
+    """Resolve and de-duplicate a list of finest-bin specs for ``span`` bp.
+
+    Returns the distinct resolved counts in ascending (coarsest → finest)
+    order, matching the LOD ordering the renderer expects.
+    """
+    return sorted({
+        _resolve_bin_count(kind, value, span, max_bins) for kind, value in specs
+    })
 
 
 def _build_heatmap_lut(
@@ -1622,7 +1734,11 @@ function buildHeatmapGPU(u8, nInd, nWin, xStart, xEnd) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  return { tex, nInd, nWin, xStart, xEnd };
+  // Keep the raw R8 bytes on the CPU so the tooltip can tell whether a given
+  // (row, window) cell actually carries a segment (byte != 0) without reading
+  // back from the GPU. Same row-major layout as the texture: byte at
+  // row*nWin + col.
+  return { tex, data: u8, nInd, nWin, xStart, xEnd };
 }
 
 // Build palette LUT texture for value-mode heatmap.
@@ -3371,6 +3487,16 @@ function tipDataHeatmap(pos, chrom, cfg, localY) {
       const grp = cfg.groups[gi];
       const indFrac = (frac - bandTop) / (bandBot - bandTop);
       const indIdx = Math.min(Math.floor(indFrac * (grp.nInd || 1)), (grp.nInd || 1) - 1);
+      // Only a hit if a segment is actually drawn at this (individual, window)
+      // cell. The R8 texel is 0 wherever no segment covers the cell — which
+      // renders as background in every mode — so byte 0 (or a position outside
+      // the heatmap's binned domain) means the cursor is over blank space.
+      const slot = gpuHM?.[cfg.id]?.[chrom]?.[grp.id];
+      if (!slot || !slot.data) return null;
+      const span = (slot.xEnd - slot.xStart) || 1;
+      const win  = Math.floor((pos - slot.xStart) / span * slot.nWin);
+      if (win < 0 || win >= slot.nWin) return null;
+      if (!slot.data[indIdx * slot.nWin + win]) return null;
       return { group: grp.name, individual: indIdx + 1, nInd: grp.nInd };
     }
   }
@@ -3393,6 +3519,11 @@ function defaultFmtArc(items, nGroups) {
     return `${head}${d.pos1.toLocaleString()}–${d.pos2.toLocaleString()} (${span} bp)`;
   }).join(', ');
 }
+
+// Sentinel returned by tipForTrack when the cursor is over a track but on
+// blank space and the track wants to contribute *nothing* — not even its
+// label header. Distinct from null, which still surfaces the bare label.
+const TIP_NONE = {};
 
 function tipForTrack(pos, chrom, cfg, localY) {
   if (cfg.tipFmt === false) return null;
@@ -3448,7 +3579,10 @@ function tipForTrack(pos, chrom, cfg, localY) {
     case 'heatmap':
       data = tipDataHeatmap(pos, chrom, cfg, localY);
       keys = 'group, individual, nInd';
-      if (!data) return null;
+      // No data under the cursor: if the cursor is over this heatmap track
+      // (localY >= 0) it's blank space, so contribute nothing at all; if it's
+      // over a different track, fall through to the bare-label header.
+      if (!data) return localY >= 0 ? TIP_NONE : null;
       if (cfg.tipFmt) return fmtTip(cfg.tipFmt, data) ?? `keys: ${keys}`;
       return defaultFmtHeatmap(data);
 
@@ -3483,7 +3617,9 @@ const onMove = e => {
       const localY = (hit && hit.cfg.id === cfg.id) ? hit.localY : -1;
       const tip = tipForTrack(pos, vp.chrom, cfg, localY);
       const label = cfg.tipLabel ?? '';
-      if (tip) {
+      if (tip === TIP_NONE) {
+        // Hovered, but over blank space — contribute no line (not even label).
+      } else if (tip) {
         lines.push(label ? `${label} ${tip}` : tip);
       } else if (label && cfg.tipFmt !== false) {
         lines.push(label);
@@ -4363,8 +4499,13 @@ class Tracks(anywidget.AnyWidget):
         src = self._heatmap_sources.get(tid)
         if src is None:
             return
+        # Resolve the finest-bin spec against the *visible* span so a bp size
+        # holds a constant bp-per-bin resolution as the user zooms in.
+        n_win = _resolve_bin_count(
+            *src['windows_spec'], max(1, x_end - x_start), _MAX_HEATMAP_BINS
+        )
         new_entry = self._bin_heatmap_region(
-            tid, chrom, x_start, x_end, src['windows']
+            tid, chrom, x_start, x_end, n_win
         )
         if not new_entry:
             return
@@ -4578,7 +4719,7 @@ class Tracks(anywidget.AnyWidget):
         color_map: dict | None = None,
         palette: Any = None,
         height: int | None = None,
-        density_windows: tuple | int = (256, 1024, 4096),
+        density_windows: tuple | int | str = (256, 1024, 4096),
         stack: bool = False,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
@@ -4608,9 +4749,16 @@ class Tracks(anywidget.AnyWidget):
             (matches the other plot tracks' default of 60, with an
             automatic bump when ``individual_col`` produces more rows
             than that).
-        density_windows : tuple of int or int, default ``(256, 1024, 4096)``
-            Bin counts for the multi-resolution density LOD. A single
-            ``int`` is treated as one level.
+        density_windows : int, str, or tuple thereof, default ``(256, 1024, 4096)``
+            Resolution levels for the multi-resolution density LOD. Each
+            entry is either a bin *count* (``int``) or a physical bin *size*
+            in base pairs (``str`` such as ``'5kb'``, ``'1.5Mb'``, ``'500'``;
+            units ``bp``/``kb``/``Mb``/``Gb``, bare number means bp). bp
+            sizes are converted to per-chromosome counts (``ceil(chrom_size /
+            size)``), so the same string gives the same physical bin width on
+            every chromosome. Counts are used as-is; bp-derived counts are
+            capped at 65536. A single value is treated as one level; entries
+            may be mixed, e.g. ``(256, 1024, '5kb')``.
         stack : bool, default False
             If True, groups' density contributions stack on top of each
             other in the zoomed-out density view (rather than
@@ -4629,8 +4777,9 @@ class Tracks(anywidget.AnyWidget):
         Tracks
             ``self``, to support fluent chaining.
         """
-        if isinstance(density_windows, int):
-            density_windows = (density_windows,)
+        # Finest-bin specs: each entry is an int count or a bp-size string,
+        # resolved to a concrete count per chromosome inside the loop below.
+        bin_specs = _normalise_bin_specs(density_windows)
         tid = self._tid()
         groups, group_by, color_map, default_palette = self._prep_groups(
             df, group_by, color_map, palette
@@ -4664,14 +4813,18 @@ class Tracks(anywidget.AnyWidget):
             seg_out[chrom]  = {}
             dens_out[chrom] = {}
 
+            # Resolve bp-size specs against this chromosome's length so a bp
+            # size yields the same physical bin width on every chromosome.
+            level_counts = _resolve_bin_counts(bin_specs, csz, _MAX_LOD_BINS)
+
             # First pass — segment rects and raw per-group per-level count arrays.
-            counts_per_level: dict[int, dict[str, np.ndarray]] = {n: {} for n in density_windows}
+            counts_per_level: dict[int, dict[str, np.ndarray]] = {n: {} for n in level_counts}
             for gi, group in enumerate(groups):
                 gid = str(gi)
                 gdf = cdf[cdf[group_by] == group] if group_by else cdf
                 if gdf.empty:
                     seg_out[chrom][gid] = ''
-                    for n in density_windows:
+                    for n in level_counts:
                         counts_per_level[n][gid] = np.zeros(n, dtype=np.float32)
                     continue
 
@@ -4691,7 +4844,7 @@ class Tracks(anywidget.AnyWidget):
                 seg_out[chrom][gid] = self._pack_f32(arr)
 
                 starts = gdf['start'].to_numpy()
-                for n in density_windows:
+                for n in level_counts:
                     bins = np.clip((starts / csz * n).astype(int), 0, n - 1)
                     counts = np.zeros(n, dtype=np.float32)
                     np.add.at(counts, bins, 1)
@@ -4708,14 +4861,14 @@ class Tracks(anywidget.AnyWidget):
                 # Precompute per-level (col_sum, col_max) once; per-group
                 # stacking then reuses them.
                 level_precomp: dict[int, tuple[np.ndarray, float]] = {}
-                for n in density_windows:
+                for n in level_counts:
                     col_sum = np.zeros(n, dtype=np.float64)
                     for gj in range(len(groups)):
                         col_sum += counts_per_level[n][str(gj)].astype(np.float64)
                     level_precomp[n] = (col_sum, float(col_sum.max()) or 1.0)
 
                 cum_prev_per_level: dict[int, np.ndarray] = {
-                    n: np.zeros(n, dtype=np.float64) for n in density_windows
+                    n: np.zeros(n, dtype=np.float64) for n in level_counts
                 }
                 for gi, group in enumerate(groups):
                     gid = str(gi)
@@ -4725,7 +4878,7 @@ class Tracks(anywidget.AnyWidget):
                         # counts are zero anyway), so skip the update work.
                         continue
                     levels: dict[str, str] = {}
-                    for n in density_windows:
+                    for n in level_counts:
                         counts = counts_per_level[n][gid].astype(np.float64)
                         maxVal = level_precomp[n][1]
                         cum_prev = cum_prev_per_level[n]
@@ -4748,7 +4901,7 @@ class Tracks(anywidget.AnyWidget):
                         continue
                     levels = {
                         str(n): self._pack_f32(counts_per_level[n][gid])
-                        for n in density_windows
+                        for n in level_counts
                     }
                     dens_out[chrom][gid] = levels
 
@@ -4908,7 +5061,7 @@ class Tracks(anywidget.AnyWidget):
         vmin: float | None = None,
         vmax: float | None = None,
         height: int | None = None,
-        windows: int = 1000,
+        windows: int | str = 1000,
         alpha: float = 0.5,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
@@ -4953,9 +5106,16 @@ class Tracks(anywidget.AnyWidget):
         height : int, optional
             Track height in CSS pixels. Defaults to ``max(90, n_individuals)``,
             i.e. at least one pixel per row.
-        windows : int, default 1000
-            Number of pre-computed density bins covering the whole
-            chromosome.
+        windows : int or str, default 1000
+            Finest x-resolution of the binning. An ``int`` is a fixed bin
+            *count* covering the binned span. A ``str`` is a physical bin
+            *size* in base pairs (``'10kb'``, ``'1.5Mb'``, ``'500'`` — units
+            ``bp``/``kb``/``Mb``/``Gb``, bare number means bp); the bin count
+            is then derived from the span as ``ceil(span / size)``. Because
+            the heatmap rebins to the visible window (the ⟲ button), a bp
+            size yields a constant bp-per-bin resolution that reaches its full
+            fineness once you zoom in — at whole-chromosome zoom it is capped
+            at 8192 bins (a GPU texture-width limit).
         alpha : float, default 0.5
             Per-segment opacity (matplotlib-style). Density mode only —
             each overlapping segment adds ``alpha`` to the cell shading,
@@ -4991,6 +5151,9 @@ class Tracks(anywidget.AnyWidget):
         if not (0.0 < float(alpha) <= 1.0):
             raise ValueError(f"alpha must be in (0, 1], got {alpha}")
         alpha = float(alpha)
+        # Finest binning resolution: int count or bp-size string. Stored as a
+        # parsed spec so rebinning can re-resolve it against the visible span.
+        windows_spec = _bin_spec(windows)
         color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
 
@@ -5071,7 +5234,7 @@ class Tracks(anywidget.AnyWidget):
             'group_col':      group_by,
             'individual_col': individual_col,
             'sort_by':        sort_by,
-            'windows':        windows,
+            'windows_spec':   windows_spec,
             'alpha':          alpha,
             'inds_by_group':  inds_by_group,
             'mode':           mode,
@@ -5090,7 +5253,8 @@ class Tracks(anywidget.AnyWidget):
             csz   = self.chrom_sizes.get(chrom)
             if csz is None:
                 csz = int(df.loc[df['chrom'].astype(str) == chrom, 'end'].max())
-            hm_out[chrom] = self._bin_heatmap_region(tid, chrom, 0, csz, windows)
+            n_win = _resolve_bin_count(*windows_spec, csz, _MAX_HEATMAP_BINS)
+            hm_out[chrom] = self._bin_heatmap_region(tid, chrom, 0, csz, n_win)
 
         # Cache global snapshot for cheap reset.
         self._heatmap_global[tid] = {
@@ -6038,7 +6202,7 @@ class Tracks(anywidget.AnyWidget):
         s: float | None = None,
         size: float | None = None,
         marker: str | None = None,
-        density_windows: tuple | int = (256, 1024, 4096),
+        density_windows: tuple | int | str = (256, 1024, 4096),
         aggregate: str = 'mean',
         y_range_per_lod: bool = True,
         tip_fmt: str | None = None,
@@ -6187,7 +6351,7 @@ class Tracks(anywidget.AnyWidget):
         linewidth: float | None = None,
         ls: str | None = None,
         linestyle: str | None = None,
-        density_windows: tuple | int = (256, 1024, 4096),
+        density_windows: tuple | int | str = (256, 1024, 4096),
         aggregate: str = 'mean',
         y_range_per_lod: bool = True,
         tip_fmt: str | None = None,
@@ -6299,7 +6463,7 @@ class Tracks(anywidget.AnyWidget):
         ls: str | None = None,
         linestyle: str | None = None,
         palette: Any = None,
-        density_windows: tuple | int = (256, 1024, 4096),
+        density_windows: tuple | int | str = (256, 1024, 4096),
         aggregate: str = 'mean',
         y_range_per_lod: bool = True,
     ) -> 'Tracks':
@@ -6442,11 +6606,9 @@ class Tracks(anywidget.AnyWidget):
             yMin -= pad
             yMax += pad
 
-        # Normalise density_windows: accept int, tuple, or list.
-        if isinstance(density_windows, int):
-            density_windows = (density_windows,)
-        else:
-            density_windows = tuple(int(n) for n in density_windows if int(n) > 0)
+        # Finest-bin specs: int counts and/or bp-size strings, resolved to
+        # concrete counts per chromosome inside the loop below.
+        bin_specs = _normalise_bin_specs(density_windows)
         if aggregate not in ('mean', 'sum', 'max'):
             raise ValueError(
                 f"aggregate must be 'mean', 'sum', or 'max', got {aggregate!r}"
@@ -6455,9 +6617,10 @@ class Tracks(anywidget.AnyWidget):
         # Track per-level (yMin, yMax) extrema across all (chrom, group) pairs
         # so the axis can rescale when the renderer switches LOD levels.
         # Aggregates (especially 'sum') can land well outside the raw range.
-        lod_y_range: dict[str, list[float]] = {
-            str(n): [float('inf'), float('-inf')] for n in density_windows
-        }
+        # Populated lazily because bp specs can resolve to different counts on
+        # chromosomes of different lengths.
+        lod_y_range: dict[str, list[float]] = {}
+        all_level_counts: set[int] = set()
 
         xy_out: dict = {}
         for chrom_val, cdf in df.groupby('chrom'):
@@ -6486,7 +6649,11 @@ class Tracks(anywidget.AnyWidget):
                 bin_widths: dict[str, float] = {}
                 level_csz = csz if csz else (float(xs_arr.max()) + 1.0)
                 if level_csz > 0:
-                    for nbin in density_windows:
+                    level_counts = _resolve_bin_counts(
+                        bin_specs, level_csz, _MAX_LOD_BINS
+                    )
+                    all_level_counts.update(level_counts)
+                    for nbin in level_counts:
                         counts, lvl = _aggregate_bin(
                             xs_arr, ys_arr, nbin, level_csz, aggregate
                         )
@@ -6505,7 +6672,9 @@ class Tracks(anywidget.AnyWidget):
                         # that contributes to it.
                         ymn = float(ys_out.min())
                         ymx = float(ys_out.max())
-                        slot = lod_y_range[str(nbin)]
+                        slot = lod_y_range.setdefault(
+                            str(nbin), [float('inf'), float('-inf')]
+                        )
                         if ymn < slot[0]: slot[0] = ymn
                         if ymx > slot[1]: slot[1] = ymx
 
@@ -6535,7 +6704,7 @@ class Tracks(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': track_type, 'name': name, 'height': height,
             'yMin': yMin, 'yMax': yMax, 'pointSize': point_size,
-            'densityWindows': list(density_windows),
+            'densityWindows': sorted(all_level_counts),
             'groups': [
                 {'id': str(i), 'name': str(g),
                  'color': color_map.get(g, default_palette[i])}
@@ -6771,7 +6940,7 @@ class Tracks(anywidget.AnyWidget):
         y_range: tuple[float, float] | None = None,
         bin_width: float | None = None,
         stack: bool = False,
-        density_windows: tuple | int = (256, 1024, 4096),
+        density_windows: tuple | int | str = (256, 1024, 4096),
         aggregate: str = 'mean',
         tip_fmt: str | None = None,
         tip_label: str | None = None,
@@ -6808,9 +6977,14 @@ class Tracks(anywidget.AnyWidget):
             Group order determines stacking order. When False (default),
             bars from different groups overlap, matching
             :meth:`add_segment_track`'s convention.
-        density_windows : tuple of int or int, default ``(256, 1024, 4096)``
-            Bin counts for the multi-resolution LOD, matching the
-            segment-track convention. When zoomed out, the renderer
+        density_windows : int, str, or tuple thereof, default ``(256, 1024, 4096)``
+            Resolution levels for the multi-resolution LOD, matching the
+            segment-track convention. Each entry is a bin *count* (``int``)
+            or a physical bin *size* in base pairs (``str`` such as ``'5kb'``;
+            units ``bp``/``kb``/``Mb``/``Gb``, bare number means bp); bp sizes
+            become per-chromosome counts (``ceil(chrom_size / size)``, capped
+            at 65536). Entries may be mixed, e.g. ``(256, 1024, '5kb')``.
+            When zoomed out, the renderer
             picks the finest level whose bin maps to at least ~2 CSS
             pixels, keeping the visible bar count bounded by
             chromosome size. Pass an empty tuple to disable LOD (always
@@ -6836,9 +7010,9 @@ class Tracks(anywidget.AnyWidget):
             If ``aggregate`` is not one of ``'mean'``, ``'sum'``,
             ``'max'``.
         """
-        if isinstance(density_windows, int):
-            density_windows = (density_windows,)
-        density_windows = tuple(int(n) for n in density_windows if int(n) > 0)
+        # Finest-bin specs: int counts and/or bp-size strings, resolved to
+        # concrete counts per chromosome where each branch knows its length.
+        bin_specs = _normalise_bin_specs(density_windows)
         if aggregate not in ('mean', 'sum', 'max'):
             raise ValueError(
                 f"aggregate must be 'mean', 'sum', or 'max'; got {aggregate!r}"
@@ -6899,6 +7073,7 @@ class Tracks(anywidget.AnyWidget):
                 csz = self.chrom_sizes.get(
                     chrom, int(cdf[x].max()) + int(bin_width)
                 )
+                level_counts = _resolve_bin_counts(bin_specs, csz, _MAX_LOD_BINS)
 
                 # ── Original-resolution stacked bars ───────────────────────
                 # Vectorised: for each (x, group) cell, separate the
@@ -7029,7 +7204,7 @@ class Tracks(anywidget.AnyWidget):
                     str(gi): {} for gi in range(len(groups))
                 }
                 if csz > 0:
-                    for nbin in density_windows:
+                    for nbin in level_counts:
                         # Per-group, per-bin aggregate value at this level.
                         agg: dict[str, np.ndarray] = {}
                         for gi in range(len(groups)):
@@ -7075,6 +7250,7 @@ class Tracks(anywidget.AnyWidget):
                     }
             else:
                 csz = self.chrom_sizes.get(chrom, int(cdf[x].max()) + int(bin_width))
+                level_counts = _resolve_bin_counts(bin_specs, csz, _MAX_LOD_BINS)
                 for gi, group in enumerate(groups):
                     gid = str(gi)
                     gdf = cdf[cdf[group_by] == group] if group_by else cdf
@@ -7094,7 +7270,7 @@ class Tracks(anywidget.AnyWidget):
                     # fall inside that bin (along the chromosome).
                     lods: dict[str, str] = {}
                     if csz > 0:
-                        for nbin in density_windows:
+                        for nbin in level_counts:
                             _, lvl = _aggregate_bin(
                                 xs_arr, ys_arr, nbin, csz, aggregate
                             )

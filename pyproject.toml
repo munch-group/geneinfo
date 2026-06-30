@@ -71,7 +71,7 @@ pytables = "*"
 quarto = "*"
 quartodoc = "0.11.*"
 geneinfo = "*"
-vscodenb = ">=0.1.75,<0.2"
+vscodenb = ">=0.1.83,<0.2"
 pyarrow = ">=23.0.1,<24"
 nbdime = "*"
 griffe = ">=2.0.2,<3"
@@ -87,7 +87,7 @@ default = {solve-group = "default"}
 cmd = "python ./scripts/rename.py && gh repo set-default https://github.com/munch-group/{{new_name}}"
 
 [tool.pixi.tasks.install-dev]
-cmd = "pip install --no-build-isolation --force-reinstall --no-deps ."
+cmd = "pip install --no-build-isolation --force-reinstall --no-deps -e ."
 description = "Install phasic in development mode with FFI support"
 
 [tool.pixi.tasks.notebook]
