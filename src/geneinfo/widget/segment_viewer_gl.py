@@ -473,6 +473,14 @@ _BP_UNITS = {'bp': 1.0, 'kb': 1e3, 'mb': 1e6, 'gb': 1e9}
 _MAX_HEATMAP_BINS = 8192
 _MAX_LOD_BINS = 65536
 
+# Ceiling on add_segment_track's *auto* height. With both group_by and
+# individual_col the layout stacks one row per (group, individual), so the row
+# count — and thus the 1px-per-row auto height — can balloon (e.g. 300 samples
+# x 7 ancestries = 2100 rows). Cap the default so the track never renders
+# absurdly tall; callers who want the full-resolution haplotype view pass an
+# explicit height.
+_MAX_SEGMENT_AUTO_HEIGHT = 400
+
 
 def _parse_bp_size(spec: str) -> float:
     """Parse a base-pair size string to a float number of base pairs.
@@ -565,6 +573,23 @@ def _resolve_bin_counts(
     return sorted({
         _resolve_bin_count(kind, value, span, max_bins) for kind, value in specs
     })
+
+
+def _resolve_finest_count(
+    specs: list[tuple[str, float]], span: float, max_bins: int,
+) -> int:
+    """Resolve a list of specs to the single finest (largest) count for ``span``.
+
+    Used by the heatmap, which renders one resolution at a time (it rebins on
+    zoom) rather than keeping a stack of LOD levels. Whichever spec yields the
+    most bins for the current span wins — i.e. the finest one — which is also
+    well-defined for tuples mixing counts and bp sizes (their relative
+    fineness depends on the span).
+    """
+    return max(
+        (_resolve_bin_count(kind, value, span, max_bins) for kind, value in specs),
+        default=1,
+    )
 
 
 def _build_heatmap_lut(
@@ -1290,7 +1315,7 @@ in float iP1, iP2;
 in vec3  iColor;
 uniform float uVS, uVE, uXL;   // genomic viewport -> NDC-x
 uniform float uTT, uTB;        // track top / bottom in NDC
-uniform float uApexFrac;       // apex position within band, 0=top 1=bottom
+uniform float uApexFrac;       // apex position within band, 0=baseline 1=top
 uniform float uHalfPxX, uHalfPxY; // half stroke width in NDC along x/y
 flat out vec3 vColor;
 // Map a genomic position to NDC-x using the same formula as every other
@@ -3040,7 +3065,9 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
       const a  = (v.alpha == null) ? 1.0
                  : Math.max(0, Math.min(1, +v.alpha));
       octx.globalAlpha = a;
-      octx.strokeStyle = v.color || '#ff4444';
+      // No explicit colour: follow the theme's text colour so guides read on
+      // both light and dark backgrounds.
+      octx.strokeStyle = v.color || th.fg || '#f2f2f8';
       octx.lineWidth   = lw;
       const dashArr = Array.isArray(v.dash) && v.dash.length
         ? v.dash.map(n => +n) : [];
@@ -3229,7 +3256,10 @@ function render() {
       // `arcHeight` CSS px above the baseline (track bottom).
       const usable = Math.max(1, cfgH - 2 * PAD_V);
       const apexPx = Math.min(Math.max(cfg.arcHeight ?? usable, 1), usable);
-      const apexFrac = 1.0 - (apexPx / usable);  // 0 = top (full height), 1 = baseline
+      // Apex sits `apexPx` CSS px above the baseline. The shader mixes the
+      // baseline (uTB) toward the band top (uTT) by this fraction, so it is
+      // simply apexPx / usable — 0 = flat at baseline, 1 = full-band apex.
+      const apexFrac = apexPx / usable;
       const lw = cfg.lineWidth ?? 1.5;
       const alpha = cfg.alpha ?? 0.9;
       const halfPxX = lw * 0.5 * (2.0 / W_css);
@@ -4501,8 +4531,8 @@ class Tracks(anywidget.AnyWidget):
             return
         # Resolve the finest-bin spec against the *visible* span so a bp size
         # holds a constant bp-per-bin resolution as the user zooms in.
-        n_win = _resolve_bin_count(
-            *src['windows_spec'], max(1, x_end - x_start), _MAX_HEATMAP_BINS
+        n_win = _resolve_finest_count(
+            src['windows_specs'], max(1, x_end - x_start), _MAX_HEATMAP_BINS
         )
         new_entry = self._bin_heatmap_region(
             tid, chrom, x_start, x_end, n_win
@@ -4746,9 +4776,11 @@ class Tracks(anywidget.AnyWidget):
             through the built-in palette in group order.
         height : int, optional
             Track height in CSS pixels. Defaults to ``max(60, nrows)``
-            (matches the other plot tracks' default of 60, with an
-            automatic bump when ``individual_col`` produces more rows
-            than that).
+            (matches the other plot tracks' default of 60, with an automatic
+            bump when ``individual_col`` produces more rows), capped at 400 so
+            a large ``group_by`` x ``individual_col`` grid doesn't render an
+            absurdly tall track. Pass an explicit ``height`` for the
+            full-resolution haplotype view (one visible pixel per row).
         density_windows : int, str, or tuple thereof, default ``(256, 1024, 4096)``
             Resolution levels for the multi-resolution density LOD. Each
             entry is either a bin *count* (``int``) or a physical bin *size*
@@ -4798,7 +4830,9 @@ class Tracks(anywidget.AnyWidget):
 
         if height is None:
             total_rows = sum(grp_nind.values()) if use_ind else len(groups)
-            height = max(60, total_rows)
+            # Cap the auto height: with group_by + individual_col the row count
+            # is (groups x individuals) and would otherwise make a huge track.
+            height = min(max(60, total_rows), _MAX_SEGMENT_AUTO_HEIGHT)
 
         # Stacking is only meaningful in the density overlay with >1 group and
         # no per-individual layout.
@@ -4931,7 +4965,7 @@ class Tracks(anywidget.AnyWidget):
         group_by: str | None = None,
         color_map: dict | None = None,
         palette: Any = None,
-        height: int = 60,
+        height: int | None = None,
         arc_height: int | None = None,
         alpha: float = 0.9,
         line_width: float = 1.5,
@@ -4966,12 +5000,17 @@ class Tracks(anywidget.AnyWidget):
         palette : str, list, or matplotlib.colors.Colormap, optional
             Qualitative palette; used only when ``color_map`` isn't
             given.
-        height : int, default 60
-            Track height in CSS pixels.
+        height : int, optional
+            Total track height in CSS pixels. When omitted it is derived
+            from ``arc_height`` (``arc_height + 6``) so the band fits the
+            arcs; if both are omitted the track defaults to 60.
         arc_height : int, optional
-            Apex height above the baseline in CSS pixels. Defaults to
-            ``height - 2 * PAD_V`` (the full usable band). JS clamps
-            this to the current track band so apex stays in view.
+            Apex height above the baseline in CSS pixels — how tall the arcs
+            are drawn. When omitted it fills the usable band
+            (``height - 6``, where 6 = ``2 * PAD_V``). If both ``height`` and
+            ``arc_height`` are given and the apex would overflow the band,
+            ``arc_height`` is clamped to ``height - 6`` (with a warning) so
+            the arcs never leave the track.
         alpha : float, default 0.9
             Line opacity (0..1).
         line_width : float, default 1.5
@@ -5027,8 +5066,29 @@ class Tracks(anywidget.AnyWidget):
                 arcs_out[chrom][gid] = self._pack_f32(arr)
                 group_counts[gid] += len(lo)
 
-        if arc_height is None:
-            arc_height = max(8, height - 6)  # 6 = 2 * PAD_V
+        # Resolve height / arc_height so the two are always consistent:
+        #   * height    = total track band in CSS px
+        #   * arc_height = apex CSS px above the baseline (the usable band is
+        #                  height - PAD, where PAD = 2 * PAD_V in the renderer)
+        # Whichever is omitted is derived from the other; if both are given and
+        # the apex would overflow the band it is clamped (with a warning) so the
+        # on-screen result matches the requested numbers predictably.
+        PAD = 6  # 2 * PAD_V, matches the JS renderer's usable-band inset
+        if height is None and arc_height is None:
+            height, arc_height = 60, 54
+        elif height is None:
+            arc_height = int(arc_height)
+            height = arc_height + PAD          # size the band to fit the apex
+        elif arc_height is None:
+            arc_height = max(8, height - PAD)   # fill the band
+        elif arc_height > height - PAD:
+            warnings.warn(
+                f"add_arc_track: arc_height={arc_height} exceeds the usable band "
+                f"(height - {PAD} = {height - PAD}); clamping arc_height to "
+                f"{height - PAD}.",
+                stacklevel=2,
+            )
+            arc_height = height - PAD
         cfg = {
             'id': tid, 'type': 'arc', 'name': name, 'height': int(height),
             'arcHeight': int(arc_height),
@@ -5062,6 +5122,7 @@ class Tracks(anywidget.AnyWidget):
         vmax: float | None = None,
         height: int | None = None,
         windows: int | str = 1000,
+        density_windows: tuple | int | str | None = None,
         alpha: float = 0.5,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
@@ -5116,6 +5177,12 @@ class Tracks(anywidget.AnyWidget):
             size yields a constant bp-per-bin resolution that reaches its full
             fineness once you zoom in — at whole-chromosome zoom it is capped
             at 8192 bins (a GPU texture-width limit).
+        density_windows : int, str, or tuple thereof, optional
+            Alias for ``windows`` so the resolution knob has the same name on
+            every track type. Accepts the same int-count / bp-size values, and
+            also a tuple (the heatmap renders a single resolution, so it uses
+            the *finest* entry for the current span). Takes precedence over
+            ``windows`` when given.
         alpha : float, default 0.5
             Per-segment opacity (matplotlib-style). Density mode only —
             each overlapping segment adds ``alpha`` to the cell shading,
@@ -5151,9 +5218,18 @@ class Tracks(anywidget.AnyWidget):
         if not (0.0 < float(alpha) <= 1.0):
             raise ValueError(f"alpha must be in (0, 1], got {alpha}")
         alpha = float(alpha)
-        # Finest binning resolution: int count or bp-size string. Stored as a
-        # parsed spec so rebinning can re-resolve it against the visible span.
-        windows_spec = _bin_spec(windows)
+        # Finest binning resolution: int count(s) or bp-size string(s).
+        # ``density_windows`` is the unified alias used by the other track
+        # types; when given it overrides ``windows``. Stored as parsed specs so
+        # rebinning can re-resolve them against the visible span.
+        windows_specs = _normalise_bin_specs(
+            density_windows if density_windows is not None else windows
+        )
+        if not windows_specs:
+            raise ValueError(
+                "add_heatmap_track: need at least one binning resolution "
+                "(windows / density_windows must be non-empty)"
+            )
         color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
 
@@ -5234,7 +5310,7 @@ class Tracks(anywidget.AnyWidget):
             'group_col':      group_by,
             'individual_col': individual_col,
             'sort_by':        sort_by,
-            'windows_spec':   windows_spec,
+            'windows_specs':  windows_specs,
             'alpha':          alpha,
             'inds_by_group':  inds_by_group,
             'mode':           mode,
@@ -5253,7 +5329,7 @@ class Tracks(anywidget.AnyWidget):
             csz   = self.chrom_sizes.get(chrom)
             if csz is None:
                 csz = int(df.loc[df['chrom'].astype(str) == chrom, 'end'].max())
-            n_win = _resolve_bin_count(*windows_spec, csz, _MAX_HEATMAP_BINS)
+            n_win = _resolve_finest_count(windows_specs, csz, _MAX_HEATMAP_BINS)
             hm_out[chrom] = self._bin_heatmap_region(tid, chrom, 0, csz, n_win)
 
         # Cache global snapshot for cheap reset.
@@ -5721,9 +5797,10 @@ class Tracks(anywidget.AnyWidget):
         buf.seek(0)
         b64 = base64.b64encode(buf.read()).decode()
         fw_in, _ = fig.get_size_inches()
-        # Display at half the natural size (in CSS px at the figure's
-        # nominal DPI, not the oversampled render DPI).
-        display_w_px = fw_in * (fig.dpi or 100) * 0.5
+        # Display at 2/3 of the figure's natural size (in CSS px at its nominal
+        # DPI, not the oversampled render DPI). The 2× render still supersamples
+        # the PNG 3:1 at this display width, so the strip stays crisp.
+        display_w_px = fw_in * (fig.dpi or 100) * (2 / 3)
         justify = 'flex-end' if align == 'right' else 'center'
         return HTML(
             f'<div style="display:flex;justify-content:{justify};width:100%;">'
@@ -6966,8 +7043,13 @@ class Tracks(anywidget.AnyWidget):
         height : int, default 60
             Track height in CSS pixels.
         y_range : tuple of (float, float), optional
-            ``(y_min, y_max)``. Auto-computed from data with 5% padding
-            when omitted; always includes the baseline ``0``.
+            ``(y_min, y_max)``. When omitted it is auto-computed (5% padding,
+            baseline ``0`` always included) from the tallest bar that can
+            actually be drawn at *any* zoom — i.e. across the raw bars and
+            every LOD level. This matters for ``aggregate='sum'``, whose
+            wide-bin totals far exceed individual values: a raw-only range
+            would clip the zoomed-out bars. For ``'mean'``/``'max'`` the
+            aggregates stay within the raw range, so the result is unchanged.
         bin_width : float, optional
             Width of each bar in base pairs at the finest zoom level.
             Auto-computed from the median spacing of ``x`` when omitted.
@@ -7033,36 +7115,21 @@ class Tracks(anywidget.AnyWidget):
 
         stacked = bool(stack) and len(groups) > 1
 
-        # Compute y-range.  When stacking, the effective maximum is the
-        # column-wise sum of positive group contributions (and minimum is the
-        # sum of negative contributions), not the largest single bar.
-        if y_range is not None:
-            yMin, yMax = y_range
-        elif stacked:
-            # Per-(chrom, x) column totals split into +/-.
-            pos_sum = np.zeros(1, dtype=np.float64)
-            neg_sum = np.zeros(1, dtype=np.float64)
-            for chrom_val, cdf in df.groupby('chrom'):
-                # sum of y per x, separately for positive and negative contributions
-                pos_by_x = cdf.loc[cdf[y] > 0].groupby(x)[y].sum()
-                neg_by_x = cdf.loc[cdf[y] < 0].groupby(x)[y].sum()
-                if not pos_by_x.empty:
-                    pos_sum = np.append(pos_sum, float(pos_by_x.max()))
-                if not neg_by_x.empty:
-                    neg_sum = np.append(neg_sum, float(neg_by_x.min()))
-            yMin = float(min(0.0, neg_sum.min()))
-            yMax = float(max(0.0, pos_sum.max()))
-            pad = (yMax - yMin) * 0.05 or 0.5
-            yMax += pad
-        else:
-            # Always include the baseline (0) in the visible range so bars
-            # have a stable foot to grow from.
-            yMin = min(0.0, float(df[y].min()))
-            yMax = max(0.0, float(df[y].max()))
-            pad = (yMax - yMin) * 0.05 or 0.5
-            yMax += pad
-            if yMin < 0:
-                yMin -= pad
+        # Y-axis limits: unless an explicit ``y_range`` is given, derive them
+        # from the *actual* bar extents seen across the base bars and every LOD
+        # level (accumulated by ``_note_ext`` during the build below), always
+        # including the baseline (0). A level's aggregate can leave the raw y
+        # range — most sharply with ``aggregate='sum'``, whose wide-bin totals
+        # dwarf any single value — so a raw-column-only range would clip the
+        # zoomed-out LOD bars. For 'mean'/'max' this reduces to the raw range.
+        yext_lo, yext_hi = 0.0, 0.0
+
+        def _note_ext(*arrs):
+            nonlocal yext_lo, yext_hi
+            for a in arrs:
+                if a.size:
+                    yext_lo = min(yext_lo, float(a.min()))
+                    yext_hi = max(yext_hi, float(a.max()))
 
         hist_out: dict = {}
         for chrom_val, cdf in df.groupby('chrom'):
@@ -7181,6 +7248,7 @@ class Tracks(anywidget.AnyWidget):
                         neg_lo = neg_base + neg_run + neg_y
                         lo = np.where(ys_g >= 0, pos_lo, neg_lo)
                         hi = np.where(ys_g >= 0, pos_hi, neg_hi)
+                        _note_ext(lo, hi)
 
                         n = xs_g.size
                         arr = np.empty(n * 3, dtype=np.float32)
@@ -7232,6 +7300,7 @@ class Tracks(anywidget.AnyWidget):
                                                   pos_cursor + v, pos_cursor)
                             neg_cursor = np.where(v < 0,
                                                   neg_cursor + v, neg_cursor)
+                            _note_ext(lo, hi)
                             arr = np.empty(nbin * 3, dtype=np.float32)
                             arr[0::3] = x_centres.astype(np.float32)
                             arr[1::3] = lo.astype(np.float32)
@@ -7260,6 +7329,7 @@ class Tracks(anywidget.AnyWidget):
                     gdf = gdf.sort_values(x)
                     xs_arr = gdf[x].to_numpy(dtype=np.float64)
                     ys_arr = gdf[y].to_numpy(dtype=np.float64)
+                    _note_ext(ys_arr)
                     base_arr = np.empty(len(gdf) * 2, dtype=np.float32)
                     base_arr[0::2] = xs_arr.astype(np.float32)
                     base_arr[1::2] = ys_arr.astype(np.float32)
@@ -7274,10 +7344,22 @@ class Tracks(anywidget.AnyWidget):
                             _, lvl = _aggregate_bin(
                                 xs_arr, ys_arr, nbin, csz, aggregate
                             )
+                            _note_ext(lvl)
                             lods[str(nbin)] = self._pack_f32(
                                 lvl.astype(np.float32)
                             )
                     hist_out[chrom][gid] = {'base': base_b64, 'lods': lods}
+
+        # Finalise the auto y-range from the accumulated bar extents (padded,
+        # baseline always in view). An explicit y_range wins outright.
+        if y_range is not None:
+            yMin, yMax = y_range
+        else:
+            yMin, yMax = yext_lo, yext_hi   # both straddle 0 (init at 0.0)
+            pad = (yMax - yMin) * 0.05 or 0.5
+            yMax += pad
+            if yMin < 0:
+                yMin -= pad
 
         cfg = {
             'id': tid, 'type': 'histogram', 'name': name, 'height': height,
@@ -7476,9 +7558,9 @@ class Tracks(anywidget.AnyWidget):
         positions,
         chrom: str | None = None,
         *,
-        color: str = '#ff4444',
+        color: str | None = None,
         linewidth: float = 1.0,
-        alpha: float = 1.0,
+        alpha: float = 0.3,
         dash: list | None = None,
         replace: bool = False,
     ) -> 'Tracks':
@@ -7493,13 +7575,15 @@ class Tracks(anywidget.AnyWidget):
         chrom : str, optional
             Chromosome for the positions. Defaults to the current
             viewport chromosome. Ignored when ``positions`` is a dict.
-        color : str, default ``'#ff4444'``
+        color : str, optional
             Matplotlib-style colour spec; resolved through
             :func:`_resolve_color_mapping` so names like ``'C0'`` or
-            ``'red'`` work.
+            ``'red'`` work. When omitted (``None``), the guides follow the
+            active theme's text colour — white on a dark theme, black on a
+            light one — so they stay legible on either background.
         linewidth : float, default ``1.0``
             Line width in CSS pixels.
-        alpha : float, default ``1.0``
+        alpha : float, default ``0.3``
             Opacity in ``[0, 1]``. Values outside the range are clamped.
         dash : list of int, optional
             Canvas dash pattern, e.g. ``[4, 3]``. ``None`` = solid.
@@ -7511,7 +7595,9 @@ class Tracks(anywidget.AnyWidget):
         Tracks
             ``self``, to support fluent chaining.
         """
-        resolved = _resolve_color_mapping(color)
+        # ``None`` defers to the renderer, which uses the active theme's text
+        # colour (``fg``) so the guides read on both light and dark backgrounds.
+        resolved = _resolve_color_mapping(color) if color is not None else ''
 
         if isinstance(positions, str):
             raise TypeError(
