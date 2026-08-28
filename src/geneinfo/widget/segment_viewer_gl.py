@@ -354,6 +354,127 @@ def _vline_positions(value: Any, caller: str) -> list:
         ) from e
 
 
+def _overlay_frame_rows(
+    df: pd.DataFrame,
+    chrom: Any,
+    value_cols: list[str],
+    caller: str,
+    chrom_sizes: dict,
+    viewport_chrom: str,
+) -> list[tuple[str, pd.DataFrame]]:
+    """Split an overlay DataFrame into ``(chromosome, rows)`` pairs.
+
+    Shared by :meth:`Tracks.add_vlines` and :meth:`Tracks.add_spans` for their
+    DataFrame form. Rows carrying a missing value in any of ``value_cols`` are
+    dropped, matching how the track methods treat incomplete rows.
+
+    ``chrom`` is resolved in this order:
+
+    1. ``None`` — use the ``'chrom'`` column if the frame has one, otherwise
+       place every row on ``viewport_chrom``. This makes a bare
+       ``add_vlines(df)`` work for both a multi-chromosome frame and a plain
+       list of positions on the chromosome in view.
+    2. A column name — one chromosome per row.
+    3. A known chromosome name (a key of ``chrom_sizes``) — every row is
+       placed there, so ``add_vlines(df, 'chr7')`` reads naturally.
+
+    A column of that name wins over a chromosome of the same name; a value
+    matching neither is an error rather than a silent fallback.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The overlay frame.
+    chrom : str or None
+        Column name, chromosome name, or ``None``. See above.
+    value_cols : list of str
+        Columns that must be present and non-null (e.g. ``['start', 'end']``).
+    caller : str
+        Public method name, used in error messages.
+    chrom_sizes : dict
+        The viewer's ``{chromosome: length}`` mapping.
+    viewport_chrom : str
+        Fallback chromosome when the frame carries none.
+
+    Returns
+    -------
+    list of (str, pandas.DataFrame)
+        One entry per chromosome present, in first-seen order.
+
+    Raises
+    ------
+    KeyError
+        If a named column is absent from ``df``.
+    """
+    missing = [c for c in value_cols if c not in df.columns]
+    if missing:
+        raise KeyError(
+            f"{caller}: column(s) {missing} not in the DataFrame; "
+            f"available columns are {list(df.columns)}"
+        )
+    non_numeric = [
+        c for c in value_cols if not pd.api.types.is_numeric_dtype(df[c])
+    ]
+    if non_numeric:
+        raise TypeError(
+            f"{caller}: column(s) {non_numeric} must hold base-pair numbers, "
+            f"got dtype(s) {[str(df[c].dtype) for c in non_numeric]}"
+        )
+
+    if chrom is None:
+        chrom_col = 'chrom' if 'chrom' in df.columns else None
+    elif chrom in df.columns:
+        chrom_col = chrom
+    elif chrom in chrom_sizes:
+        chrom_col = None
+        viewport_chrom = str(chrom)
+    else:
+        raise KeyError(
+            f"{caller}: chrom={chrom!r} is neither a column of the DataFrame "
+            f"({list(df.columns)}) nor a known chromosome"
+        )
+
+    sub_df = df.dropna(subset=value_cols)
+    if chrom_col is None:
+        return [(str(viewport_chrom), sub_df)] if len(sub_df) else []
+    return [
+        (str(key), rows)
+        for key, rows in sub_df.dropna(subset=[chrom_col]).groupby(
+            chrom_col, sort=False
+        )
+    ]
+
+
+def _overlay_group_colors(
+    df: pd.DataFrame,
+    group_by: str,
+    color_map: dict | None,
+    palette: Any,
+    caller: str,
+) -> dict:
+    """Map each distinct value of ``group_by`` to a colour.
+
+    The overlay counterpart of the grouping the track methods do: groups are
+    ordered by their string form so a given frame always yields the same
+    colours, then filled from ``palette`` with ``color_map`` overriding
+    individual entries.
+
+    Raises
+    ------
+    KeyError
+        If ``group_by`` is not a column of ``df``.
+    """
+    if group_by not in df.columns:
+        raise KeyError(
+            f"{caller}: group_by={group_by!r} not in the DataFrame; "
+            f"available columns are {list(df.columns)}"
+        )
+    groups = sorted(df[group_by].dropna().unique(), key=str)
+    default_palette = _resolve_qualitative_palette(palette, len(groups))
+    explicit = _resolve_color_mapping(color_map) if color_map else {}
+    return {g: explicit.get(g, default_palette[i]) for i, g in enumerate(groups)}
+
+
 def _step_expand(
     xs_in: np.ndarray, ys_in: np.ndarray, step: str | None,
 ) -> np.ndarray:
@@ -413,6 +534,79 @@ def _step_expand(
     return out
 
 
+def _step_expand3(
+    xs_in: np.ndarray,
+    los_in: np.ndarray,
+    his_in: np.ndarray,
+    step: str | None,
+) -> np.ndarray:
+    """Expand an (xs, los, his) triple into a stride-3 staircase buffer.
+
+    The band analogue of :func:`_step_expand`: emits a ``float32`` array
+    ``[x0, lo0, hi0, x1, lo1, hi1, ...]`` ready for
+    :func:`Tracks._pack_f32`. Both boundaries are stepped together so the
+    filled band keeps its staircase outline. When ``step`` is ``None`` or
+    the input has fewer than 2 points the inputs are interleaved
+    unchanged.
+
+    Parameters
+    ----------
+    xs_in, los_in, his_in : numpy.ndarray
+        Equal-length 1-D arrays of x positions and the lower / upper band
+        boundaries.
+    step : {'pre', 'post', 'mid', None}
+        Staircase mode. ``None`` returns the raw interleave.
+
+    Returns
+    -------
+    numpy.ndarray
+        A ``float32`` buffer of interleaved ``(x, lo, hi)`` triples.
+
+    Raises
+    ------
+    ValueError
+        If ``step`` is not one of ``'pre'``, ``'post'``, ``'mid'``, ``None``.
+    """
+    nn = len(xs_in)
+    arr = np.empty(nn * 3, dtype=np.float32)
+    arr[0::3] = np.asarray(xs_in,  dtype=np.float32)
+    arr[1::3] = np.asarray(los_in, dtype=np.float32)
+    arr[2::3] = np.asarray(his_in, dtype=np.float32)
+    if not step or nn < 2:
+        return arr
+    xs = arr[0::3]; los = arr[1::3]; his = arr[2::3]
+    if step in ('post', 'pre'):
+        mm = 2 * nn - 1
+        sx  = np.empty(mm, dtype=np.float32)
+        slo = np.empty(mm, dtype=np.float32)
+        shi = np.empty(mm, dtype=np.float32)
+        if step == 'post':
+            sx[0::2]  = xs;   sx[1::2]  = xs[1:]
+            slo[0::2] = los;  slo[1::2] = los[:-1]
+            shi[0::2] = his;  shi[1::2] = his[:-1]
+        else:
+            sx[0::2]  = xs;   sx[1::2]  = xs[:-1]
+            slo[0::2] = los;  slo[1::2] = los[1:]
+            shi[0::2] = his;  shi[1::2] = his[1:]
+    elif step == 'mid':
+        mids = (xs[:-1] + xs[1:]) / 2
+        mm = 2 * nn
+        sx  = np.empty(mm, dtype=np.float32)
+        slo = np.empty(mm, dtype=np.float32)
+        shi = np.empty(mm, dtype=np.float32)
+        sx[0::2] = np.concatenate([[xs[0]], mids])
+        sx[1::2] = np.concatenate([mids, [xs[-1]]])
+        slo[0::2] = los;  slo[1::2] = los
+        shi[0::2] = his;  shi[1::2] = his
+    else:
+        raise ValueError(
+            f"step must be 'pre', 'post', or 'mid', got {step!r}"
+        )
+    out = np.empty(mm * 3, dtype=np.float32)
+    out[0::3] = sx; out[1::3] = slo; out[2::3] = shi
+    return out
+
+
 def _aggregate_bin(
     xs: np.ndarray, ys: np.ndarray, nbin: int, span: float, aggregate: str,
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -428,7 +622,7 @@ def _aggregate_bin(
         Number of bins covering ``[0, span)``.
     span : float
         Domain width (typically the chromosome length in bp).
-    aggregate : {'mean', 'sum', 'max'}
+    aggregate : {'mean', 'sum', 'max', 'min'}
         How to combine multiple samples falling in the same bin.
 
     Returns
@@ -450,14 +644,123 @@ def _aggregate_bin(
         lvl_init = np.full(nbin, -np.inf, dtype=np.float64)
         np.maximum.at(lvl_init, bins, ys)
         values = np.where(np.isfinite(lvl_init), lvl_init, 0.0)
+    elif aggregate == 'min':
+        lvl_init = np.full(nbin, np.inf, dtype=np.float64)
+        np.minimum.at(lvl_init, bins, ys)
+        values = np.where(np.isfinite(lvl_init), lvl_init, 0.0)
     else:  # 'mean'
         with np.errstate(divide='ignore', invalid='ignore'):
             values = np.where(counts > 0, sums / counts, 0.0)
     return counts, values
 
 
+def _aggregate_bin_band(
+    xs: np.ndarray,
+    los: np.ndarray,
+    his: np.ndarray,
+    nbin: int,
+    span: float,
+    aggregate: str,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Aggregate a (lo, hi) band into ``nbin`` equally-spaced bins.
+
+    The band analogue of :func:`_aggregate_bin`. ``'envelope'`` takes the
+    per-bin ``min`` of ``los`` and ``max`` of ``his``, so a coarse level is
+    always a superset of the band it summarises — narrow spikes survive
+    zooming out instead of being averaged away. ``'mean'`` averages each
+    boundary independently, which tracks the band's centre of mass but can
+    hide extremes.
+
+    Parameters
+    ----------
+    xs, los, his : numpy.ndarray
+        Sample positions and the lower / upper band boundaries.
+    nbin : int
+        Number of bins covering ``[0, span)``.
+    span : float
+        Domain width (typically the chromosome length in bp).
+    aggregate : {'envelope', 'mean'}
+        How to combine samples falling in the same bin.
+
+    Returns
+    -------
+    counts, lo_values, hi_values : numpy.ndarray
+        Per-bin sample count and per-bin aggregated boundaries. Bins that
+        receive no samples carry ``0.0`` and must be masked out by
+        ``counts > 0``.
+    """
+    lo_agg, hi_agg = ('min', 'max') if aggregate == 'envelope' else ('mean', 'mean')
+    counts, lo_values = _aggregate_bin(xs, los, nbin, span, lo_agg)
+    _,      hi_values = _aggregate_bin(xs, his, nbin, span, hi_agg)
+    return counts, lo_values, hi_values
+
+
+# ── Renamed keyword arguments ────────────────────────────────────────────────
+def _resolve_renamed_kwarg(
+    method: str,
+    new_name: str,
+    new_value: Any,
+    new_default: Any,
+    **legacy: Any,
+) -> Any:
+    """Resolve a renamed keyword argument against its deprecated aliases.
+
+    Every legacy alias is declared in the signature with a ``None`` default,
+    so ``None`` means "not supplied". Passing one emits a
+    ``DeprecationWarning`` and its value is used; passing an alias *and* the
+    new name is an error rather than a silent precedence rule. "The caller
+    supplied the new name" is inferred by comparing against ``new_default``,
+    so the one case that slips through — an alias combined with the new name
+    set to exactly its default — resolves to the alias, which is harmless.
+
+    Parameters
+    ----------
+    method : str
+        Public method name, used in the warning and error messages.
+    new_name : str
+        The current name of the argument.
+    new_value : Any
+        Whatever the caller passed under ``new_name`` (or its default).
+    new_default : Any
+        The declared default of ``new_name``, used to detect that the caller
+        supplied it alongside a legacy alias.
+    **legacy : Any
+        ``old_name=old_value`` for each deprecated alias.
+
+    Returns
+    -------
+    Any
+        The value to use for ``new_name``.
+
+    Raises
+    ------
+    TypeError
+        If more than one legacy alias is supplied, or if a legacy alias is
+        combined with an explicit ``new_name``.
+    """
+    given = [(name, value) for name, value in legacy.items() if value is not None]
+    if not given:
+        return new_value
+    spelled = ' / '.join(f'{name}=...' for name, _ in given)
+    warnings.warn(
+        f"{method}({spelled}) is deprecated; use {new_name}=... instead.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+    if len(given) > 1:
+        raise TypeError(
+            f"{method}() got {spelled}; pass only {new_name}=..."
+        )
+    if new_value != new_default:
+        raise TypeError(
+            f"{method}() got {spelled} together with "
+            f"{new_name}=...; pass only {new_name}=..."
+        )
+    return given[0][1]
+
+
 # ── Finest-bin specs ─────────────────────────────────────────────────────────
-# The ``windows`` / ``density_windows`` knobs accept either a bin *count*
+# The ``zoom_windows`` knob accepts either a bin *count*
 # (``int``) or a physical bin *size* in base pairs (``str`` such as ``'10kb'``).
 # A bp size is resolved to a count per chromosome — and, for heatmaps, per view
 # on rebin — so it yields constant bp resolution that reaches full fineness at
@@ -518,10 +821,13 @@ def _bin_spec(spec: Any) -> tuple[str, float]:
 
     An ``int`` is a fixed bin count; a ``str`` is a physical bp size (see
     :func:`_parse_bp_size`). This is the disambiguation rule for the unified
-    ``windows`` / ``density_windows`` knobs.
+    ``zoom_windows`` knob.
     """
     if isinstance(spec, bool):
-        raise ValueError("bin spec cannot be a bool")
+        raise ValueError(
+            "bin spec cannot be a bool; pass zoom_windows=False (on its own) "
+            "to disable the zoom levels entirely"
+        )
     if isinstance(spec, str):
         return ('bp', _parse_bp_size(spec))
     if isinstance(spec, (int, np.integer)) or (
@@ -537,12 +843,20 @@ def _bin_spec(spec: Any) -> tuple[str, float]:
 
 
 def _normalise_bin_specs(windows: Any) -> list[tuple[str, float]]:
-    """Normalise the ``windows`` / ``density_windows`` argument to specs.
+    """Normalise the ``zoom_windows`` argument to a list of specs.
 
     Accepts a single ``int``/``str`` or an iterable of them and returns a list
     of ``(kind, value)`` pairs (see :func:`_bin_spec`). An empty iterable
-    returns ``[]`` — the convention for "no LOD levels".
+    returns ``[]`` — the convention for "no LOD levels" — and ``False`` is
+    accepted as a more readable spelling of that empty tuple.
+
+    ``True`` is *not* accepted: "on" would still have to say at which
+    resolutions, so it has no unambiguous meaning. Bools are likewise still
+    rejected as individual entries (``(256, False)`` is an error) — only the
+    whole argument may be ``False``.
     """
+    if windows is False:
+        return []
     if isinstance(windows, (int, np.integer, float, np.floating, str)):
         windows = (windows,)
     return [_bin_spec(w) for w in windows]
@@ -1282,7 +1596,7 @@ void main() {
 // looked up in a 1-D RGB LUT. Fragment "averaging" here is a *nearest* pick at
 // the fragment centre — averaging across category indices would blend colour
 // identities, which is meaningless for discrete palettes and only weakly useful
-// for continuous ones. Clients can increase ``windows`` when they want finer
+// for continuous ones. Clients can increase ``zoom_windows`` when they want finer
 // resolution; the binning already applies last-write-wins within a bin.
 const FS_TEX_LUT = `#version 300 es
 precision highp float;
@@ -1512,7 +1826,7 @@ const gpuDens = {};   // [{ nBins, binWidth, buf, count }, ...]
 const gpuHM   = {};   // { tex, nInd, nWin }
 const gpuHMLUT = {};  // [tid] = { tex, size } — 1-D palette for value-mode heatmaps
 const gpuXY   = {};   // { buf, count }  — for scatter, line
-const gpuFill = {};   // { posBuf, posCount, negBuf, negCount }
+const gpuFill = {};   // [tid][ch][gid] = { base: fillGpu|null, baseYMin, baseYMax, levels: [{n, binWidth, gpu, yMin, yMax}] }
 const gpuHist = {};   // [tid][ch][gid] = { base: rectGpu|null, levels: [{nBins, binWidth, ...rectGpu}] }
 const gpuArc  = {};   // [tid][ch][gid] = { buf, starts, maxLen, count }
 const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
@@ -1539,8 +1853,9 @@ function _disposeXY(slot) {
 }
 function _disposeFill(slot) {
   if (!slot) return;
-  _delBuf(slot.posBuf);
-  _delBuf(slot.negBuf);
+  const freeFill = (g) => { if (g) { _delBuf(g.posBuf); _delBuf(g.negBuf); } };
+  freeFill(slot.base);
+  if (slot.levels) for (const lvl of slot.levels) if (lvl) freeFill(lvl.gpu);
 }
 function _disposeHist(slot) {
   if (!slot) return;
@@ -2062,10 +2377,60 @@ function uploadTrackData() {
         disposeSlot(gpuFill, tid, ch, _disposeFill);
         gpuFill[tid][ch] = {};
         rawFill[tid][ch] = {};
-        for (const [gid, b64] of Object.entries(d[ch])) {
-          const arr = b64F32(b64);
-          rawFill[tid][ch][gid] = arr;
-          gpuFill[tid][ch][gid] = buildFillGPU(arr, yMin, yMax, baseline);
+        for (const [gid, payload] of Object.entries(d[ch])) {
+          // Backwards compat: old payload was a bare base64 string. New
+          // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
+          if (typeof payload === 'string') {
+            if (payload === '') {
+              gpuFill[tid][ch][gid] = { base: null, levels: [] };
+              continue;
+            }
+            const arr = b64F32(payload);
+            rawFill[tid][ch][gid] = arr;
+            gpuFill[tid][ch][gid] = {
+              base: buildFillGPU(arr, yMin, yMax, baseline),
+              baseYMin: yMin, baseYMax: yMax,
+              levels: [],
+            };
+            continue;
+          }
+          if (!payload || !payload.base) {
+            gpuFill[tid][ch][gid] = { base: null, levels: [] };
+            continue;
+          }
+          const baseArr = b64F32(payload.base);
+          // Tooltips read rawFill, so it always holds the raw samples —
+          // never the aggregated levels.
+          rawFill[tid][ch][gid] = baseArr;
+          // The base buffer uses the cfg-level (raw-data) y range; each LOD
+          // level uses its own aggregate range from cfg.lodYRange. The
+          // baseline is normalised against whichever range the buffer was
+          // built with, so the pos/neg split stays put across levels.
+          const slot = {
+            base: buildFillGPU(baseArr, yMin, yMax, baseline),
+            baseYMin: yMin, baseYMax: yMax,
+            levels: [],
+          };
+          const lods  = payload.lods || {};
+          const bw    = payload.binWidth || {};
+          const lodYR = cfg.lodYRange || {};
+          for (const [nKey, b64] of Object.entries(lods)) {
+            const arr = b64F32(b64);
+            const r = lodYR[nKey];
+            const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
+            const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
+            slot.levels.push({
+              n: +nKey,
+              binWidth: bw[nKey] || 0,
+              gpu: buildFillGPU(arr, lvlYMin, lvlYMax, baseline),
+              yMin: lvlYMin,
+              yMax: lvlYMax,
+            });
+          }
+          // Coarsest (smallest n) → finest, the ordering pickXYLevelInfo
+          // expects.
+          slot.levels.sort((a, b) => a.n - b.n);
+          gpuFill[tid][ch][gid] = slot;
         }
       }
     } else if (cfg.type === 'histogram') {
@@ -2322,8 +2687,11 @@ function drawDensArea(gpuData, vs, ve, tt, tb, color, alpha) {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, gpuData.count);
 }
 
-// Pick the finest XY-track LOD whose bins still span >= 2 CSS pixels at the
-// current view. Returns a {gpu, yMin, yMax} record:
+// Pick the finest LOD whose bins still span >= 2 CSS pixels at the current
+// view. Serves xy *and* fill slots — both share the shape
+// { base, baseYMin, baseYMax, levels: [{n, binWidth, gpu, yMin, yMax}] }
+// and only `gpu` differs (line/point buffer vs pos/neg fill pair).
+// Returns a {gpu, yMin, yMax} record:
 //  - When zoomed in past the finest LOD (its bin covers many CSS px),
 //    prefer the unaggregated `base` buffer so fine detail isn't smoothed
 //    away. "Many CSS px" means the finest LOD's bins are much wider than
@@ -2798,7 +3166,9 @@ function _trackIsEmptyInView(cfg, chrom) {
         slot && (slot.base || (slot.levels && slot.levels.length > 0))
       );
     case 'fill':
-      return bucketEmpty(gpuFill, s => s && (s.posCount > 0 || s.negCount > 0));
+      return bucketEmpty(gpuFill, slot =>
+        slot && (slot.base || (slot.levels && slot.levels.length > 0))
+      );
     case 'histogram':
       return bucketEmpty(gpuHist, slot =>
         slot && (slot.base || (slot.levels && slot.levels.length > 0))
@@ -2967,20 +3337,23 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     }
     octx.restore();
 
-    // Y-axis ticks for quantitative tracks. For scatter/line, the active
-    // LOD level may carry its own Y range (cfg.lodYRange) — fetch the
-    // currently picked level and use its range if it has one. We walk
+    // Y-axis ticks for quantitative tracks. For scatter/line/fill, the
+    // active LOD level may carry its own Y range (cfg.lodYRange) — fetch
+    // the currently picked level and use its range if it has one. We walk
     // every group's slot and widen the range to the union so the axis
     // encompasses all groups at the active zoom.
     if (['scatter', 'line', 'fill', 'histogram'].includes(cfg.type)) {
       let yMinAct = cfg.yMin;
       let yMaxAct = cfg.yMax;
-      if ((cfg.type === 'scatter' || cfg.type === 'line') && cfg.lodYRange) {
+      const lodStore = cfg.type === 'fill' ? gpuFill
+                     : (cfg.type === 'scatter' || cfg.type === 'line') ? gpuXY
+                     : null;
+      if (lodStore && cfg.lodYRange) {
         const axisPxPerBp = (W_css - LABEL_W) / (ve - vs);
         const chName = vp.chrom;
         let lo = Infinity, hi = -Infinity;
         for (const g of (cfg.groups || [])) {
-          const slot = gpuXY[cfg.id]?.[chName]?.[g.id];
+          const slot = lodStore[cfg.id]?.[chName]?.[g.id];
           const pick = pickXYLevelInfo(slot, axisPxPerBp);
           if (pick && pick.yMin != null && pick.yMax != null) {
             if (pick.yMin < lo) lo = pick.yMin;
@@ -3222,10 +3595,14 @@ function render() {
         if (gpu) drawLine(gpu, vs, ve, tt, tb, grp.color, alpha);
       }
     } else if (cfg.type === 'fill') {
+      const pxPerBp = (W_css - LABEL_W) / (ve - vs);
       for (const grp of cfg.groups) {
+        const slot = gpuFill[cfg.id]?.[ch]?.[grp.id];
+        if (!slot) continue;
         const colorPos = grp.colorPos || grp.color;
         const colorNeg = grp.colorNeg || grp.color;
-        drawFill(gpuFill[cfg.id]?.[ch]?.[grp.id], vs, ve, tt, tb, colorPos, colorNeg, 0.6);
+        const gpu = pickXYLevel(slot, pxPerBp);
+        if (gpu) drawFill(gpu, vs, ve, tt, tb, colorPos, colorNeg, 0.6);
       }
     } else if (cfg.type === 'histogram') {
       const pxPerBp = (W_css - LABEL_W) / (ve - vs);
@@ -4749,10 +5126,11 @@ class Tracks(anywidget.AnyWidget):
         color_map: dict | None = None,
         palette: Any = None,
         height: int | None = None,
-        density_windows: tuple | int | str = (256, 1024, 4096),
+        zoom_windows: tuple | int | str | bool = (256, 1024, 4096),
         stack: bool = False,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
+        density_windows: tuple | int | str | None = None,  # deprecated -> zoom_windows
     ) -> 'Tracks':
         """Add a segment track rendered with GPU-instanced rectangles.
 
@@ -4781,7 +5159,7 @@ class Tracks(anywidget.AnyWidget):
             a large ``group_by`` x ``individual_col`` grid doesn't render an
             absurdly tall track. Pass an explicit ``height`` for the
             full-resolution haplotype view (one visible pixel per row).
-        density_windows : int, str, or tuple thereof, default ``(256, 1024, 4096)``
+        zoom_windows : int, str, tuple thereof, or False, default ``(256, 1024, 4096)``
             Resolution levels for the multi-resolution density LOD. Each
             entry is either a bin *count* (``int``) or a physical bin *size*
             in base pairs (``str`` such as ``'5kb'``, ``'1.5Mb'``, ``'500'``;
@@ -4790,7 +5168,8 @@ class Tracks(anywidget.AnyWidget):
             size)``), so the same string gives the same physical bin width on
             every chromosome. Counts are used as-is; bp-derived counts are
             capped at 65536. A single value is treated as one level; entries
-            may be mixed, e.g. ``(256, 1024, '5kb')``.
+            may be mixed, e.g. ``(256, 1024, '5kb')``. Pass ``False`` (or an
+            empty tuple) to disable LOD and always draw the raw segments.
         stack : bool, default False
             If True, groups' density contributions stack on top of each
             other in the zoomed-out density view (rather than
@@ -4809,9 +5188,13 @@ class Tracks(anywidget.AnyWidget):
         Tracks
             ``self``, to support fluent chaining.
         """
+        zoom_windows = _resolve_renamed_kwarg(
+            'add_segment_track', 'zoom_windows', zoom_windows, (256, 1024, 4096),
+            density_windows=density_windows,
+        )
         # Finest-bin specs: each entry is an int count or a bp-size string,
         # resolved to a concrete count per chromosome inside the loop below.
-        bin_specs = _normalise_bin_specs(density_windows)
+        bin_specs = _normalise_bin_specs(zoom_windows)
         tid = self._tid()
         groups, group_by, color_map, default_palette = self._prep_groups(
             df, group_by, color_map, palette
@@ -5121,12 +5504,13 @@ class Tracks(anywidget.AnyWidget):
         vmin: float | None = None,
         vmax: float | None = None,
         height: int | None = None,
-        windows: int | str = 1000,
-        density_windows: tuple | int | str | None = None,
+        zoom_windows: tuple | int | str = 1000,
         alpha: float = 0.5,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
         group_col: str | None = None,
+        windows: int | str | None = None,  # deprecated -> zoom_windows
+        density_windows: tuple | int | str | None = None,  # deprecated -> zoom_windows
     ) -> 'Tracks':
         """Add a heatmap track — one row per individual, GPU texture rendering.
 
@@ -5167,7 +5551,7 @@ class Tracks(anywidget.AnyWidget):
         height : int, optional
             Track height in CSS pixels. Defaults to ``max(90, n_individuals)``,
             i.e. at least one pixel per row.
-        windows : int or str, default 1000
+        zoom_windows : int, str, or tuple thereof, default 1000
             Finest x-resolution of the binning. An ``int`` is a fixed bin
             *count* covering the binned span. A ``str`` is a physical bin
             *size* in base pairs (``'10kb'``, ``'1.5Mb'``, ``'500'`` — units
@@ -5176,13 +5560,9 @@ class Tracks(anywidget.AnyWidget):
             the heatmap rebins to the visible window (the ⟲ button), a bp
             size yields a constant bp-per-bin resolution that reaches its full
             fineness once you zoom in — at whole-chromosome zoom it is capped
-            at 8192 bins (a GPU texture-width limit).
-        density_windows : int, str, or tuple thereof, optional
-            Alias for ``windows`` so the resolution knob has the same name on
-            every track type. Accepts the same int-count / bp-size values, and
-            also a tuple (the heatmap renders a single resolution, so it uses
-            the *finest* entry for the current span). Takes precedence over
-            ``windows`` when given.
+            at 8192 bins (a GPU texture-width limit). A tuple is accepted for
+            symmetry with the other track types; the heatmap renders a single
+            resolution, so it uses the *finest* entry for the current span.
         alpha : float, default 0.5
             Per-segment opacity (matplotlib-style). Density mode only —
             each overlapping segment adds ``alpha`` to the cell shading,
@@ -5215,20 +5595,22 @@ class Tracks(anywidget.AnyWidget):
             )
             if group_by is None:
                 group_by = group_col
+        zoom_windows = _resolve_renamed_kwarg(
+            'add_heatmap_track', 'zoom_windows', zoom_windows, 1000,
+            windows=windows, density_windows=density_windows,
+        )
         if not (0.0 < float(alpha) <= 1.0):
             raise ValueError(f"alpha must be in (0, 1], got {alpha}")
         alpha = float(alpha)
-        # Finest binning resolution: int count(s) or bp-size string(s).
-        # ``density_windows`` is the unified alias used by the other track
-        # types; when given it overrides ``windows``. Stored as parsed specs so
-        # rebinning can re-resolve them against the visible span.
-        windows_specs = _normalise_bin_specs(
-            density_windows if density_windows is not None else windows
-        )
+        # Finest binning resolution: int count(s) or bp-size string(s). Stored
+        # as parsed specs so rebinning can re-resolve them against the visible
+        # span.
+        windows_specs = _normalise_bin_specs(zoom_windows)
         if not windows_specs:
             raise ValueError(
                 "add_heatmap_track: need at least one binning resolution "
-                "(windows / density_windows must be non-empty)"
+                "(zoom_windows must be non-empty; the heatmap always bins, "
+                "so False / () is not meaningful here)"
             )
         color_map = _resolve_color_mapping(color_map)
         tid = self._tid()
@@ -5886,7 +6268,7 @@ class Tracks(anywidget.AnyWidget):
         color: str | None = None,
         height: int | None = None,
         collapse: bool = True,
-        label_padding: int = 0,
+        label_padding: float = 0,
         highlight: list[str] | dict[str, list[str]] | None = None,
         highlight_color: str | None = None,
         highlight_fill_color:    str | None = None,
@@ -5932,17 +6314,33 @@ class Tracks(anywidget.AnyWidget):
         collapse : bool, default True
             If True, merge exons across all transcripts into a single
             union set. If False, each transcript becomes its own row.
-        label_padding : int, default 0
-            Genomic bp of extra space reserved on the label-facing side
-            of every gene — to the left for ``+``-strand genes and to
-            the right for ``-``-strand genes — when assigning rows and
-            placing labels. Modeled as an invisible prefix attached to
-            each gene: row packing, label centring and label collision
-            all see the padded extent, while the spine, exons, arrows
-            and tooltip range continue to reflect the gene's true
-            bounds. Genes too close to a preceding gene are bumped to
-            a lower row so the invisible prefix can hold the label.
-            ``0`` reproduces the prior overlap-only packing exactly.
+        label_padding : float, default 0
+            Extra room reserved around every gene for its label, **in
+            kilobases** — ``200`` means 200 kb (200,000 bp), and fractions
+            are allowed (``0.5`` is 500 bp) — when assigning rows. The
+            room is split evenly on both sides, matching the label the
+            renderer draws centred on the gene, so two neighbours are
+            pushed onto separate rows exactly when the gap between them
+            is smaller than ``label_padding``, whatever their strands.
+            Modeled as an invisible margin around each gene: row packing,
+            label centring and label collision all see the padded extent,
+            while the spine, exons, arrows and tooltip range continue to
+            reflect the gene's true bounds. ``0`` reproduces plain
+            overlap-only packing.
+
+            Raising this does pull the zoom at which labels appear
+            wider, since labels never collide across rows — but it buys
+            that only by adding rows, and the exchange rate is poor:
+            roughly 2-4x the rows per doubling of the labelled span. Rows
+            need about 30 px each (an 11 px label band plus the exon and
+            a gap), so a ``height`` of 300 affords only ~10 before label
+            bands start overlapping their neighbours. Reaching
+            chromosome-wide labels this way would take dozens to hundreds
+            of rows, so treat it as a modest adjustment rather than a way
+            to label a whole chromosome. It is also a fixed genomic
+            distance chosen here, so it does not adapt as you zoom, and
+            raising ``height`` alone does *not* help — height only adds
+            vertical air between the rows packing already decided on.
         highlight : list of str or dict of str to list of str, optional
             Either a list of gene names (treated as ``{'fill': [...]}``)
             or a dict mapping a property key to a list of gene names.
@@ -6000,6 +6398,20 @@ class Tracks(anywidget.AnyWidget):
 
         if label_padding < 0:
             raise ValueError("label_padding must be non-negative.")
+        if label_padding >= 10_000:
+            # 10,000 kb is 10 Mb of padding per gene — implausible as a
+            # deliberate request, and exactly what a value carried over from
+            # the pre-kb API (which took base pairs) looks like.
+            warnings.warn(
+                f"add_gene_track: label_padding={label_padding:g} is "
+                f"{label_padding / 1000:g} Mb. label_padding is measured in "
+                f"kilobases; if this came from the base-pair form, divide it "
+                f"by 1000.",
+                UserWarning,
+                stacklevel=2,
+            )
+        # Everything downstream works in base pairs.
+        label_padding_bp = int(round(label_padding * 1000))
 
         if assembly is not None:
             from ..coords import gene_coords_region, chromosome_lengths
@@ -6054,7 +6466,7 @@ class Tracks(anywidget.AnyWidget):
                 genes_data, exons_df=exons_df, active_keys=active_keys,
             )
 
-        self._apply_label_padding(gdata, label_padding)
+        self._apply_label_padding(gdata, label_padding_bp)
 
         # Pack all genes (both strands) into the minimum number of non-overlapping
         # rows with a greedy interval lane-packing. Strand is preserved on each
@@ -6093,7 +6505,7 @@ class Tracks(anywidget.AnyWidget):
             'rows': max_rows,
             'rowsPerChrom': rows_per_chrom,
             'heightAuto': height_auto,
-            'labelPadding': label_padding,
+            'labelPadding': label_padding_bp,
             'groups': [],
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
@@ -6235,7 +6647,10 @@ class Tracks(anywidget.AnyWidget):
 
     @staticmethod
     def _apply_label_padding(gdata: dict, label_padding: int) -> None:
-        """Inflate each record's packing extent on the label-facing side.
+        """Inflate each record's packing extent symmetrically for its label.
+
+        ``label_padding`` is in **base pairs** here — :meth:`add_gene_track`
+        takes kilobases from the caller and converts before calling this.
 
         The true gene bounds are preserved as ``gs`` / ``ge`` so the
         renderer still draws spine, exons, and arrows over the real
@@ -6243,17 +6658,28 @@ class Tracks(anywidget.AnyWidget):
         midpoint, viewport culling and inter-label collision, inflating
         them acts like an invisible exon — and the same code path
         handles ``label_padding == 0``.
+
+        The padding is split evenly across both sides, which mirrors how
+        the renderer draws the label: centred on the gene's true midpoint,
+        so the room it needs extends in both directions. Half on each side
+        means two neighbours are bumped apart exactly when the gap between
+        them is under ``label_padding`` — independent of their strands.
+        (Reserving the full amount on one side, chosen by strand, left the
+        gap between a ``+`` gene and a following ``-`` gene unprotected,
+        since both padded away from it.)
         """
         if not label_padding:
             return
+        # Integer split, so the two halves still sum to label_padding exactly
+        # and the "bump when the gap is under label_padding" rule is precise.
+        lo = label_padding // 2
+        hi = label_padding - lo
         for recs in gdata.values():
             for rec in recs:
                 rec['gs'] = rec['s']
                 rec['ge'] = rec['e']
-                if rec.get('strand') == '+':
-                    rec['s'] = rec['s'] - label_padding
-                else:
-                    rec['e'] = rec['e'] + label_padding
+                rec['s'] = rec['s'] - lo
+                rec['e'] = rec['e'] + hi
 
     # ── add_point_track ──────────────────────────────────────────────────────
     def add_point_track(
@@ -6279,11 +6705,13 @@ class Tracks(anywidget.AnyWidget):
         s: float | None = None,
         size: float | None = None,
         marker: str | None = None,
-        density_windows: tuple | int | str = (256, 1024, 4096),
+        zoom_windows: tuple | int | str | bool = (256, 1024, 4096),
         aggregate: str = 'mean',
-        y_range_per_lod: bool = True,
+        y_range_per_zoom: bool = True,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
+        density_windows: tuple | int | str | None = None,  # deprecated -> zoom_windows
+        y_range_per_lod: bool | None = None,  # deprecated -> y_range_per_zoom
     ) -> 'Tracks':
         """Add a point track — point cloud rendered with ``gl.POINTS``.
 
@@ -6371,6 +6799,14 @@ class Tracks(anywidget.AnyWidget):
             If ``marker`` is anything other than ``None`` / ``'.'`` /
             ``'s'``.
         """
+        zoom_windows = _resolve_renamed_kwarg(
+            'add_point_track', 'zoom_windows', zoom_windows, (256, 1024, 4096),
+            density_windows=density_windows,
+        )
+        y_range_per_zoom = _resolve_renamed_kwarg(
+            'add_point_track', 'y_range_per_zoom', y_range_per_zoom, True,
+            y_range_per_lod=y_range_per_lod,
+        )
         if group_by is not None and value_col is not None:
             raise TypeError(
                 "pass either `group_by` or `value_col`, not both"
@@ -6395,8 +6831,8 @@ class Tracks(anywidget.AnyWidget):
             tip_fmt=tip_fmt, tip_label=tip_label,
             alpha=alpha, color=color, c=c, s=s, size=size, marker=marker,
             palette=palette,
-            density_windows=density_windows, aggregate=aggregate,
-            y_range_per_lod=y_range_per_lod,
+            zoom_windows=zoom_windows, aggregate=aggregate,
+            y_range_per_zoom=y_range_per_zoom,
         )
 
     # Backwards-compatible alias (deprecated — use :meth:`add_point_track`).
@@ -6428,11 +6864,13 @@ class Tracks(anywidget.AnyWidget):
         linewidth: float | None = None,
         ls: str | None = None,
         linestyle: str | None = None,
-        density_windows: tuple | int | str = (256, 1024, 4096),
+        zoom_windows: tuple | int | str | bool = (256, 1024, 4096),
         aggregate: str = 'mean',
-        y_range_per_lod: bool = True,
+        y_range_per_zoom: bool = True,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
+        density_windows: tuple | int | str | None = None,  # deprecated -> zoom_windows
+        y_range_per_lod: bool | None = None,  # deprecated -> y_range_per_zoom
     ) -> 'Tracks':
         """Add a line track — one connected polyline per group.
 
@@ -6503,6 +6941,14 @@ class Tracks(anywidget.AnyWidget):
             For ``linewidth`` other than ``None`` / ``1`` or ``linestyle``
             other than ``None`` / ``'-'`` / ``'solid'``.
         """
+        zoom_windows = _resolve_renamed_kwarg(
+            'add_line_track', 'zoom_windows', zoom_windows, (256, 1024, 4096),
+            density_windows=density_windows,
+        )
+        y_range_per_zoom = _resolve_renamed_kwarg(
+            'add_line_track', 'y_range_per_zoom', y_range_per_zoom, True,
+            y_range_per_lod=y_range_per_lod,
+        )
         return self._add_xy_track(
             df, name, 'line', x, y, group_by,
             color_map, height, y_range, tip_fmt=tip_fmt,
@@ -6510,8 +6956,8 @@ class Tracks(anywidget.AnyWidget):
             alpha=alpha, color=color, c=c,
             lw=lw, linewidth=linewidth, ls=ls, linestyle=linestyle,
             palette=palette,
-            density_windows=density_windows, aggregate=aggregate,
-            y_range_per_lod=y_range_per_lod,
+            zoom_windows=zoom_windows, aggregate=aggregate,
+            y_range_per_zoom=y_range_per_zoom,
         )
 
     def _add_xy_track(
@@ -6540,9 +6986,9 @@ class Tracks(anywidget.AnyWidget):
         ls: str | None = None,
         linestyle: str | None = None,
         palette: Any = None,
-        density_windows: tuple | int | str = (256, 1024, 4096),
+        zoom_windows: tuple | int | str | bool = (256, 1024, 4096),
         aggregate: str = 'mean',
-        y_range_per_lod: bool = True,
+        y_range_per_zoom: bool = True,
     ) -> 'Tracks':
         """Shared implementation for scatter and line tracks.
 
@@ -6685,7 +7131,7 @@ class Tracks(anywidget.AnyWidget):
 
         # Finest-bin specs: int counts and/or bp-size strings, resolved to
         # concrete counts per chromosome inside the loop below.
-        bin_specs = _normalise_bin_specs(density_windows)
+        bin_specs = _normalise_bin_specs(zoom_windows)
         if aggregate not in ('mean', 'sum', 'max'):
             raise ValueError(
                 f"aggregate must be 'mean', 'sum', or 'max', got {aggregate!r}"
@@ -6761,14 +7207,14 @@ class Tracks(anywidget.AnyWidget):
                     'binWidth': bin_widths,
                 }
 
-        # Per-LOD Y ranges: when y_range_per_lod is True and the caller
+        # Per-LOD Y ranges: when y_range_per_zoom is True and the caller
         # didn't force a fixed y_range, emit a per-level {yMin, yMax} map
         # so the JS can rescale the axis when it switches LOD levels.
         # Aggregates (especially 'sum') can differ from the raw range by
         # orders of magnitude; keeping a single axis makes the line clip
         # or collapse to a thin band.
         lod_y_range_out: dict[str, dict[str, float]] = {}
-        if y_range_per_lod and y_range is None:
+        if y_range_per_zoom and y_range is None:
             for nkey, (lo, hi) in lod_y_range.items():
                 if not (np.isfinite(lo) and np.isfinite(hi)):
                     continue
@@ -6781,7 +7227,7 @@ class Tracks(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': track_type, 'name': name, 'height': height,
             'yMin': yMin, 'yMax': yMax, 'pointSize': point_size,
-            'densityWindows': sorted(all_level_counts),
+            'zoomWindows': sorted(all_level_counts),
             'groups': [
                 {'id': str(i), 'name': str(g),
                  'color': color_map.get(g, default_palette[i])}
@@ -6813,8 +7259,13 @@ class Tracks(anywidget.AnyWidget):
         y_range: tuple[float, float] | None = None,
         baseline: float | None = None,
         step: str | None = None,
+        zoom_windows: tuple | int | str | bool = (256, 1024, 4096),
+        aggregate: str = 'envelope',
+        y_range_per_zoom: bool = True,
         tip_fmt: str | None = None,
         tip_label: str | None = None,
+        density_windows: tuple | int | str | None = None,  # deprecated -> zoom_windows
+        y_range_per_lod: bool | None = None,  # deprecated -> y_range_per_zoom
     ) -> 'Tracks':
         """Add a fill-between track.
 
@@ -6833,14 +7284,27 @@ class Tracks(anywidget.AnyWidget):
         x : str, default ``'pos'``
             Column for genomic position.
         y : str, optional
-            Column for a single y value. Fill extends from this curve to
-            ``baseline``. Mutually exclusive with ``y_lo`` / ``y_hi``.
+            Column for a single curve; the fill runs between it and
+            ``baseline`` (``0`` unless you move it). An alias for
+            ``y_hi``, accepted whenever ``y_lo`` is not passed — pass one
+            spelling or the other, never both.
         y_lo : str, optional
-            Column for the lower y boundary.
+            Column for the lower y boundary. Given without ``y_hi`` it is
+            the single curve instead, and the *upper* edge of the fill is
+            ``baseline`` (``0`` by default).
         y_hi : str, optional
-            Column for the upper y boundary.
+            Column for the upper y boundary. Given without ``y_lo`` it is
+            the single curve instead, and the *lower* edge of the fill is
+            ``baseline`` (``0`` by default) — the same thing ``y`` does.
+            With neither boundary nor ``y`` supplied, the columns
+            ``'lo'`` and ``'hi'`` are used.
         group_by : str, optional
-            Column whose unique values become separate groups.
+            Column whose unique values become separate groups, each drawn
+            in its own colour. Requires a two-curve band — ``y_lo`` *and*
+            ``y_hi``, either passed explicitly or defaulted to the
+            ``'lo'`` / ``'hi'`` columns. It is rejected alongside a single
+            curve, where ``color_pos`` / ``color_neg`` already claim the
+            colouring and every group would look identical.
         color_map : dict, optional
             ``{group_value: '#rrggbb'}``. When omitted, group colours
             cycle through ``'C0'``..``'C9'``.
@@ -6855,9 +7319,11 @@ class Tracks(anywidget.AnyWidget):
             ``(y_min, y_max)``. Auto-computed from data with 5% padding
             when omitted.
         baseline : float, optional
-            Y value at which the positive / negative colour split
-            occurs. Defaults to ``0`` in single-``y`` mode. In
-            ``y_lo`` / ``y_hi`` mode it defaults to ``None``, which
+            The fill's other edge in single-curve mode, and the y value
+            at which the positive / negative colour split occurs.
+            Defaults to ``0`` whenever a single curve is given (as ``y``,
+            ``y_hi``, or ``y_lo``). With both ``y_lo`` and ``y_hi`` it
+            defaults to ``None``, which
             disables dual colouring (each group is drawn in a single
             colour from ``color_map``). Pass an explicit number in lo/hi
             mode to re-enable the split.
@@ -6865,9 +7331,31 @@ class Tracks(anywidget.AnyWidget):
             Step mode for a staircase fill, matching matplotlib's
             ``fill_between(step=...)``. One of ``'pre'``, ``'post'``,
             ``'mid'``. ``None`` gives smooth linear interpolation.
+        zoom_windows : int, str, tuple thereof, or False, default ``(256, 1024, 4096)``
+            Level-of-detail resolutions. Each entry is either a bin
+            *count* (``int``) or a physical bin *size* (``str`` such as
+            ``'10kb'``); a bp size is resolved to a count per chromosome.
+            The renderer draws the coarsest level whose bins still cover
+            at least 2 CSS pixels and falls back to the raw samples once
+            they are far enough apart, so a dense band stays responsive
+            when zoomed out. Pass ``False`` (or ``()``) to disable LOD
+            and always ship only the raw samples.
+        aggregate : {'envelope', 'mean'}, default ``'envelope'``
+            How samples sharing a bin are combined. ``'envelope'`` takes
+            the ``min`` of the lower and the ``max`` of the upper
+            boundary, so a coarse level never draws a narrower band than
+            the data it summarises. ``'mean'`` averages each boundary,
+            which smooths the band but can hide spikes. In single-``y``
+            mode the aggregate is applied to ``y`` before the split
+            against ``baseline``.
+        y_range_per_zoom : bool, default True
+            Emit a per-level ``(y_min, y_max)`` so the axis rescales when
+            the renderer switches levels. Ignored when ``y_range`` is
+            given explicitly.
         tip_fmt : str, optional
             Python format string for tooltips. Available keys:
-            ``{group}``, ``{lo}``, ``{hi}``, ``{x}``.
+            ``{group}``, ``{lo}``, ``{hi}``, ``{x}``. Tooltips always
+            report the raw samples, never the aggregated levels.
         tip_label : str, optional
             Heading shown above the tooltip body. Defaults to
             ``f'{name}:'``.
@@ -6879,16 +7367,42 @@ class Tracks(anywidget.AnyWidget):
 
         Raises
         ------
+        TypeError
+            If both ``y`` and ``y_hi`` are supplied — they are two
+            spellings of the same curve.
         ValueError
-            If both ``y`` and ``y_lo`` / ``y_hi`` are supplied or if
-            ``step`` is not in ``{None, 'pre', 'post', 'mid'}``.
+            If ``y`` is combined with ``y_lo``, if ``group_by`` is given
+            for a single curve rather than a two-curve band, if ``step``
+            is not in ``{None, 'pre', 'post', 'mid'}``, or if
+            ``aggregate`` is not in ``{'envelope', 'mean'}``.
         """
+        zoom_windows = _resolve_renamed_kwarg(
+            'add_fill_track', 'zoom_windows', zoom_windows, (256, 1024, 4096),
+            density_windows=density_windows,
+        )
+        y_range_per_zoom = _resolve_renamed_kwarg(
+            'add_fill_track', 'y_range_per_zoom', y_range_per_zoom, True,
+            y_range_per_lod=y_range_per_lod,
+        )
         color_map = _resolve_color_mapping(color_map)
         color_pos = resolve_color(color_pos)
         color_neg = resolve_color(color_neg)
-        # Resolve single-y vs lo/hi mode
-        if y is not None and (y_lo is not None or y_hi is not None):
+        # ── Resolve single-curve vs band mode ────────────────────────────
+        # A lone boundary — ``y_hi=``, ``y_lo=``, or their alias ``y=`` — is
+        # a curve filled against ``baseline`` (0 unless the caller moved it),
+        # so the common "fill from zero to my signal" case needs one column,
+        # whichever name it is spelled with. Only a genuine ``y_lo`` +
+        # ``y_hi`` pair is a two-curve band.
+        if y is not None and y_hi is not None:
+            raise TypeError(
+                "add_fill_track() got both y= and y_hi=; they name the same "
+                "curve — pass only one."
+            )
+        if y is not None and y_lo is not None:
             raise ValueError("Specify either 'y' or 'y_lo'/'y_hi', not both.")
+        if y is None and (y_lo is None) != (y_hi is None):
+            y = y_hi if y_hi is not None else y_lo
+            y_lo = y_hi = None
         if y is not None:
             single_y = True
             if baseline is None:
@@ -6901,6 +7415,18 @@ class Tracks(anywidget.AnyWidget):
                 y_hi = 'hi'
             # In lo/hi mode, leave baseline as None unless the user gave one.
             # No baseline -> no pos/neg split, single colour per group.
+
+        # Groups are distinguished by colour, and a single curve has already
+        # spent its colours on the baseline split (color_pos / color_neg
+        # apply to every group alike), so the groups would be indistinguishable.
+        # Only a two-curve band leaves one colour per group free.
+        if group_by is not None and single_y:
+            raise ValueError(
+                "add_fill_track(group_by=...) needs a two-curve band: pass "
+                "both y_lo= and y_hi=. A single curve (y=, y_hi=, or y_lo= "
+                "alone) is filled against baseline and coloured by "
+                "color_pos / color_neg, which would draw every group the same."
+            )
 
         tid = self._tid()
         if group_by and group_by in df.columns:
@@ -6928,60 +7454,123 @@ class Tracks(anywidget.AnyWidget):
             yMin -= pad
             yMax += pad
 
+        if aggregate not in ('envelope', 'mean'):
+            raise ValueError(
+                f"aggregate must be 'envelope' or 'mean', got {aggregate!r}"
+            )
+        # Finest-bin specs: int counts and/or bp-size strings, resolved to
+        # concrete counts per chromosome inside the loop below.
+        bin_specs = _normalise_bin_specs(zoom_windows)
+
+        # Track per-level (yMin, yMax) extrema across all (chrom, group) pairs
+        # so the axis can rescale when the renderer switches LOD levels.
+        # Populated lazily because bp specs can resolve to different counts on
+        # chromosomes of different lengths.
+        lod_y_range: dict[str, list[float]] = {}
+        all_level_counts: set[int] = set()
+
         fill_out: dict = {}
         for chrom_val, cdf in df.groupby('chrom'):
             chrom = str(chrom_val)
             fill_out[chrom] = {}
+            csz = self.chrom_sizes.get(chrom)
             for gi, group in enumerate(groups):
                 gid = str(gi)
                 gdf = cdf[cdf[group_by] == group] if group_by else cdf
                 if gdf.empty:
-                    fill_out[chrom][gid] = ''
+                    fill_out[chrom][gid] = {'base': '', 'lods': {}, 'binWidth': {}}
                     continue
                 gdf = gdf.sort_values(x)
-                n = len(gdf)
-                arr = np.empty(n * 3, dtype=np.float32)
-                arr[0::3] = gdf[x].to_numpy(dtype=np.float32)
+                xs_arr = gdf[x].to_numpy(dtype=np.float64)
+                # In single-y mode the band is the curve split against the
+                # baseline; in lo/hi mode it is given directly.
                 if single_y:
-                    yvals = gdf[y].to_numpy(dtype=np.float32)
-                    arr[1::3] = np.minimum(yvals, baseline)
-                    arr[2::3] = np.maximum(yvals, baseline)
+                    ys_arr = gdf[y].to_numpy(dtype=np.float64)
+                    los_arr = np.minimum(ys_arr, baseline)
+                    his_arr = np.maximum(ys_arr, baseline)
                 else:
-                    arr[1::3] = gdf[y_lo].to_numpy(dtype=np.float32)
-                    arr[2::3] = gdf[y_hi].to_numpy(dtype=np.float32)
-                if step and n > 1:
-                    xs = arr[0::3]; los = arr[1::3]; his = arr[2::3]
-                    if step == 'post':
-                        m = 2 * n - 1
-                        sx  = np.empty(m, dtype=np.float32)
-                        slo = np.empty(m, dtype=np.float32)
-                        shi = np.empty(m, dtype=np.float32)
-                        sx[0::2] = xs;    sx[1::2] = xs[1:]
-                        slo[0::2] = los;  slo[1::2] = los[:-1]
-                        shi[0::2] = his;  shi[1::2] = his[:-1]
-                    elif step == 'pre':
-                        m = 2 * n - 1
-                        sx  = np.empty(m, dtype=np.float32)
-                        slo = np.empty(m, dtype=np.float32)
-                        shi = np.empty(m, dtype=np.float32)
-                        sx[0::2] = xs;    sx[1::2] = xs[:-1]
-                        slo[0::2] = los;  slo[1::2] = los[1:]
-                        shi[0::2] = his;  shi[1::2] = his[1:]
-                    elif step == 'mid':
-                        mids = (xs[:-1] + xs[1:]) / 2
-                        m = 2 * n
-                        sx  = np.empty(m, dtype=np.float32)
-                        slo = np.empty(m, dtype=np.float32)
-                        shi = np.empty(m, dtype=np.float32)
-                        sx[0::2] = np.concatenate([[xs[0]], mids])
-                        sx[1::2] = np.concatenate([mids, [xs[-1]]])
-                        slo[0::2] = los;  slo[1::2] = los
-                        shi[0::2] = his;  shi[1::2] = his
-                    else:
-                        raise ValueError(f"step must be 'pre', 'post', or 'mid', got {step!r}")
-                    arr = np.empty(m * 3, dtype=np.float32)
-                    arr[0::3] = sx; arr[1::3] = slo; arr[2::3] = shi
-                fill_out[chrom][gid] = self._pack_f32(arr)
+                    los_arr = gdf[y_lo].to_numpy(dtype=np.float64)
+                    his_arr = gdf[y_hi].to_numpy(dtype=np.float64)
+
+                # ── base buffer (stride-3, with optional step expansion) ──
+                base_b64 = self._pack_f32(
+                    _step_expand3(xs_arr, los_arr, his_arr, step)
+                )
+
+                # ── LOD levels: stride-3 (bin_centre, lo, hi) for non-empty
+                # bins only. Aggregate from the pre-step samples (so step
+                # expansion doesn't inflate bin counts), then step-expand
+                # each level so staircase semantics hold at every zoom. ────
+                lods: dict[str, str] = {}
+                bin_widths: dict[str, float] = {}
+                level_csz = csz if csz else (float(xs_arr.max()) + 1.0)
+                if level_csz > 0:
+                    level_counts = _resolve_bin_counts(
+                        bin_specs, level_csz, _MAX_LOD_BINS
+                    )
+                    all_level_counts.update(level_counts)
+                    for nbin in level_counts:
+                        if single_y:
+                            # Aggregate the raw curve, then re-split against
+                            # the baseline: averaging the already-split
+                            # boundaries would smear the pos/neg colours.
+                            counts, lo_lvl, hi_lvl = _aggregate_bin_band(
+                                xs_arr, ys_arr, ys_arr, nbin, level_csz,
+                                aggregate,
+                            )
+                            lo_lvl = np.minimum(lo_lvl, baseline)
+                            hi_lvl = np.maximum(hi_lvl, baseline)
+                        else:
+                            counts, lo_lvl, hi_lvl = _aggregate_bin_band(
+                                xs_arr, los_arr, his_arr, nbin, level_csz,
+                                aggregate,
+                            )
+                        mask = counts > 0
+                        if not mask.any():
+                            continue
+                        bw = level_csz / nbin
+                        xs_out = (np.flatnonzero(mask).astype(np.float64) + 0.5) * bw
+                        lo_out = lo_lvl[mask]
+                        hi_out = hi_lvl[mask]
+                        lods[str(nbin)] = self._pack_f32(
+                            _step_expand3(xs_out, lo_out, hi_out, step)
+                        )
+                        bin_widths[str(nbin)] = float(bw)
+
+                        # Widen this level's extrema to cover every group/chrom
+                        # that contributes to it.
+                        ymn = float(lo_out.min())
+                        ymx = float(hi_out.max())
+                        slot = lod_y_range.setdefault(
+                            str(nbin), [float('inf'), float('-inf')]
+                        )
+                        if ymn < slot[0]: slot[0] = ymn
+                        if ymx > slot[1]: slot[1] = ymx
+
+                fill_out[chrom][gid] = {
+                    'base': base_b64,
+                    'lods': lods,
+                    'binWidth': bin_widths,
+                }
+
+        # Per-LOD Y ranges: when y_range_per_zoom is True and the caller didn't
+        # force a fixed y_range, emit a per-level {yMin, yMax} map so the JS
+        # can rescale the axis when it switches LOD levels. A baseline split
+        # only reads sensibly if the baseline stays inside the level's range,
+        # so keep it enclosed.
+        lod_y_range_out: dict[str, dict[str, float]] = {}
+        if y_range_per_zoom and y_range is None:
+            for nkey, (lo, hi) in lod_y_range.items():
+                if not (np.isfinite(lo) and np.isfinite(hi)):
+                    continue
+                if baseline is not None:
+                    lo = min(lo, float(baseline))
+                    hi = max(hi, float(baseline))
+                pad = (hi - lo) * 0.05 or 0.5
+                lod_y_range_out[nkey] = {
+                    'yMin': float(lo - pad),
+                    'yMax': float(hi + pad),
+                }
 
         dual = baseline is not None
 
@@ -6996,7 +7585,9 @@ class Tracks(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': 'fill', 'name': name, 'height': height,
             'yMin': yMin, 'yMax': yMax, 'baseline': baseline,
+            'zoomWindows': sorted(all_level_counts),
             'groups': [_group_cfg(i, g) for i, g in enumerate(groups)],
+            **({'lodYRange': lod_y_range_out} if lod_y_range_out else {}),
             **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
             'tipLabel': tip_label if tip_label is not None else f'{name}:',
         }
@@ -7017,10 +7608,11 @@ class Tracks(anywidget.AnyWidget):
         y_range: tuple[float, float] | None = None,
         bin_width: float | None = None,
         stack: bool = False,
-        density_windows: tuple | int | str = (256, 1024, 4096),
+        zoom_windows: tuple | int | str | bool = (256, 1024, 4096),
         aggregate: str = 'mean',
         tip_fmt: str | None = None,
         tip_label: str | None = None,
+        density_windows: tuple | int | str | None = None,  # deprecated -> zoom_windows
     ) -> 'Tracks':
         """Add a histogram track — vertical bars centred on each ``x``.
 
@@ -7059,7 +7651,7 @@ class Tracks(anywidget.AnyWidget):
             Group order determines stacking order. When False (default),
             bars from different groups overlap, matching
             :meth:`add_segment_track`'s convention.
-        density_windows : int, str, or tuple thereof, default ``(256, 1024, 4096)``
+        zoom_windows : int, str, tuple thereof, or False, default ``(256, 1024, 4096)``
             Resolution levels for the multi-resolution LOD, matching the
             segment-track convention. Each entry is a bin *count* (``int``)
             or a physical bin *size* in base pairs (``str`` such as ``'5kb'``;
@@ -7069,8 +7661,8 @@ class Tracks(anywidget.AnyWidget):
             When zoomed out, the renderer
             picks the finest level whose bin maps to at least ~2 CSS
             pixels, keeping the visible bar count bounded by
-            chromosome size. Pass an empty tuple to disable LOD (always
-            render the original bars).
+            chromosome size. Pass ``False`` (or an empty tuple) to
+            disable LOD and always render the original bars.
         aggregate : {'mean', 'sum', 'max'}, default ``'mean'``
             How to combine multiple input bins that fall inside a single
             LOD bin. Only relevant when LOD is engaged.
@@ -7092,9 +7684,13 @@ class Tracks(anywidget.AnyWidget):
             If ``aggregate`` is not one of ``'mean'``, ``'sum'``,
             ``'max'``.
         """
+        zoom_windows = _resolve_renamed_kwarg(
+            'add_histogram_track', 'zoom_windows', zoom_windows, (256, 1024, 4096),
+            density_windows=density_windows,
+        )
         # Finest-bin specs: int counts and/or bp-size strings, resolved to
         # concrete counts per chromosome where each branch knows its length.
-        bin_specs = _normalise_bin_specs(density_windows)
+        bin_specs = _normalise_bin_specs(zoom_windows)
         if aggregate not in ('mean', 'sum', 'max'):
             raise ValueError(
                 f"aggregate must be 'mean', 'sum', or 'max'; got {aggregate!r}"
@@ -7558,7 +8154,11 @@ class Tracks(anywidget.AnyWidget):
         positions,
         chrom: str | None = None,
         *,
+        pos: str = 'pos',
+        group_by: str | None = None,
         color: str | None = None,
+        color_map: dict | None = None,
+        palette: Any = None,
         linewidth: float = 1.0,
         alpha: float = 0.3,
         dash: list | None = None,
@@ -7568,13 +8168,37 @@ class Tracks(anywidget.AnyWidget):
 
         Parameters
         ----------
-        positions : int | Iterable[int] | dict[str, Iterable[int]]
-            Base-pair positions. If a dict, keys are chromosome names
-            and values are iterables of positions on that chromosome;
-            the ``chrom`` argument is ignored in that case.
+        positions : int | Iterable[int] | dict[str, Iterable[int]] | pandas.DataFrame
+            Base-pair positions, in any of three shapes:
+
+            - a number, or an iterable of numbers, all on one chromosome;
+            - a dict mapping chromosome name to an iterable of positions
+              (``chrom`` is ignored in that case);
+            - a DataFrame, reading positions from the column named by
+              ``pos`` and chromosomes as described under ``chrom``. Rows
+              with a missing position are skipped.
         chrom : str, optional
-            Chromosome for the positions. Defaults to the current
-            viewport chromosome. Ignored when ``positions`` is a dict.
+            Chromosome for the positions; defaults to the current viewport
+            chromosome. Ignored when ``positions`` is a dict. When
+            ``positions`` is a DataFrame this may instead name the *column*
+            holding each row's chromosome — a column of that name takes
+            precedence over a chromosome of the same name — and when it is
+            omitted a ``'chrom'`` column is used if the frame has one.
+        pos : str, default ``'pos'``
+            DataFrame column holding the positions. Ignored for the other
+            input shapes.
+        group_by : str, optional
+            DataFrame column whose distinct values each get their own
+            colour, drawn from ``palette``. Requires DataFrame input, and
+            is mutually exclusive with ``color`` — one flat colour would
+            overwrite every group's. Rows with a missing group value fall
+            back to the default colour.
+        color_map : dict, optional
+            ``{group_value: colour}`` overriding individual entries of the
+            palette. Only meaningful alongside ``group_by``.
+        palette : optional
+            Qualitative palette for the groups, resolved the same way as
+            on the track methods. Only meaningful alongside ``group_by``.
         color : str, optional
             Matplotlib-style colour spec; resolved through
             :func:`_resolve_color_mapping` so names like ``'C0'`` or
@@ -7594,7 +8218,25 @@ class Tracks(anywidget.AnyWidget):
         -------
         Tracks
             ``self``, to support fluent chaining.
+
+        Raises
+        ------
+        TypeError
+            If ``group_by`` is combined with ``color``, if ``group_by`` is
+            given without DataFrame input, or if ``positions`` is a ``str``.
+        KeyError
+            If a named column is absent from the DataFrame.
         """
+        if group_by is not None and color is not None:
+            raise TypeError(
+                "add_vlines: pass either group_by= or color=, not both — a "
+                "single colour would overwrite every group's colour."
+            )
+        if group_by is not None and not isinstance(positions, pd.DataFrame):
+            raise TypeError(
+                "add_vlines: group_by= names a DataFrame column, so it "
+                "requires DataFrame input for `positions`."
+            )
         # ``None`` defers to the renderer, which uses the active theme's text
         # colour (``fg``) so the guides read on both light and dark backgrounds.
         resolved = _resolve_color_mapping(color) if color is not None else ''
@@ -7604,20 +8246,38 @@ class Tracks(anywidget.AnyWidget):
                 "add_vlines: positions must be a number or an iterable of "
                 "numbers (got str)."
             )
-        if isinstance(positions, dict):
-            items = [(str(c), _vline_positions(positions[c], 'add_vlines'))
+        # Each item is (chrom, positions, colours) — colours is None unless
+        # group_by asked for one colour per row.
+        if isinstance(positions, pd.DataFrame):
+            group_colors = (
+                _overlay_group_colors(
+                    positions, group_by, color_map, palette, 'add_vlines')
+                if group_by is not None else None
+            )
+            items = [
+                (c,
+                 rows[pos].tolist(),
+                 None if group_colors is None
+                 else [group_colors.get(g, resolved) for g in rows[group_by]])
+                for c, rows in _overlay_frame_rows(
+                    positions, chrom, [pos], 'add_vlines',
+                    self.chrom_sizes, self.viewport.get('chrom', ''),
+                )
+            ]
+        elif isinstance(positions, dict):
+            items = [(str(c), _vline_positions(positions[c], 'add_vlines'), None)
                      for c in positions]
         else:
             c = chrom if chrom is not None else self.viewport.get('chrom', '')
-            items = [(str(c), _vline_positions(positions, 'add_vlines'))]
+            items = [(str(c), _vline_positions(positions, 'add_vlines'), None)]
 
         new_entries = []
-        for c, pos_iter in items:
-            for p in pos_iter:
+        for c, pos_iter, row_colors in items:
+            for i, p in enumerate(pos_iter):
                 new_entries.append({
                     'chrom': c,
                     'pos':   int(p),
-                    'color': resolved,
+                    'color': resolved if row_colors is None else row_colors[i],
                     'width': float(linewidth),
                     'alpha': float(max(0.0, min(1.0, alpha))),
                     'dash':  list(dash) if dash else [],
@@ -7642,7 +8302,12 @@ class Tracks(anywidget.AnyWidget):
         ranges,
         chrom: str | None = None,
         *,
-        color: str = '#ffcc44',
+        start: str = 'start',
+        end: str = 'end',
+        group_by: str | None = None,
+        color: str | None = None,
+        color_map: dict | None = None,
+        palette: Any = None,
         alpha: float = 0.1,
         edgecolor: str | None = None,
         edgewidth: float = 0.0,
@@ -7653,15 +8318,39 @@ class Tracks(anywidget.AnyWidget):
 
         Parameters
         ----------
-        ranges : tuple | Iterable[tuple] | dict[str, Iterable[tuple]]
-            ``(start, end)`` pairs in base pairs. If a dict, keys are
-            chromosome names and values are iterables of pairs on that
-            chromosome; the ``chrom`` argument is ignored in that case.
+        ranges : tuple | Iterable[tuple] | dict[str, Iterable[tuple]] | pandas.DataFrame
+            ``(start, end)`` pairs in base pairs, in any of three shapes:
+
+            - one pair, or an iterable of pairs, all on one chromosome;
+            - a dict mapping chromosome name to an iterable of pairs
+              (``chrom`` is ignored in that case);
+            - a DataFrame, reading the bounds from the columns named by
+              ``start`` and ``end`` and chromosomes as described under
+              ``chrom``. Rows with a missing bound are skipped.
         chrom : str, optional
-            Chromosome for the spans. Defaults to the current viewport
-            chromosome. Ignored when ``ranges`` is a dict.
-        color : str, default ``'#ffcc44'``
-            Fill colour.
+            Chromosome for the spans; defaults to the current viewport
+            chromosome. Ignored when ``ranges`` is a dict. When ``ranges``
+            is a DataFrame this may instead name the *column* holding each
+            row's chromosome — a column of that name takes precedence over
+            a chromosome of the same name — and when it is omitted a
+            ``'chrom'`` column is used if the frame has one.
+        start, end : str, default ``'start'`` / ``'end'``
+            DataFrame columns holding the span bounds. Ignored for the
+            other input shapes.
+        group_by : str, optional
+            DataFrame column whose distinct values each get their own
+            colour, drawn from ``palette``. Requires DataFrame input, and
+            is mutually exclusive with ``color`` — one flat colour would
+            overwrite every group's. Rows with a missing group value fall
+            back to the default colour.
+        color_map : dict, optional
+            ``{group_value: colour}`` overriding individual entries of the
+            palette. Only meaningful alongside ``group_by``.
+        palette : optional
+            Qualitative palette for the groups, resolved the same way as
+            on the track methods. Only meaningful alongside ``group_by``.
+        color : str, optional
+            Fill colour, default ``'#ffcc44'``.
         alpha : float, default ``0.1``
             Fill opacity in ``[0, 1]``.
         edgecolor : str, optional
@@ -7678,8 +8367,26 @@ class Tracks(anywidget.AnyWidget):
         -------
         Tracks
             ``self``, to support fluent chaining.
+
+        Raises
+        ------
+        TypeError
+            If ``group_by`` is combined with ``color``, if ``group_by`` is
+            given without DataFrame input, or if ``ranges`` is a ``str``.
+        KeyError
+            If a named column is absent from the DataFrame.
         """
-        fill  = _resolve_color_mapping(color)
+        if group_by is not None and color is not None:
+            raise TypeError(
+                "add_spans: pass either group_by= or color=, not both — a "
+                "single colour would overwrite every group's colour."
+            )
+        if group_by is not None and not isinstance(ranges, pd.DataFrame):
+            raise TypeError(
+                "add_spans: group_by= names a DataFrame column, so it "
+                "requires DataFrame input for `ranges`."
+            )
+        fill  = _resolve_color_mapping(color if color is not None else '#ffcc44')
         edge  = _resolve_color_mapping(edgecolor) if edgecolor else ''
 
         if isinstance(ranges, str):
@@ -7704,23 +8411,41 @@ class Tracks(anywidget.AnyWidget):
                     out.append((int(pair[0]), int(pair[1])))
             return out
 
-        if isinstance(ranges, dict):
-            items = [(str(c), _pairs(ranges[c])) for c in ranges]
+        # Each item is (chrom, pairs, colours) — colours is None unless
+        # group_by asked for one colour per row.
+        if isinstance(ranges, pd.DataFrame):
+            group_colors = (
+                _overlay_group_colors(
+                    ranges, group_by, color_map, palette, 'add_spans')
+                if group_by is not None else None
+            )
+            items = [
+                (c,
+                 list(zip(rows[start].tolist(), rows[end].tolist())),
+                 None if group_colors is None
+                 else [group_colors.get(g, fill) for g in rows[group_by]])
+                for c, rows in _overlay_frame_rows(
+                    ranges, chrom, [start, end], 'add_spans',
+                    self.chrom_sizes, self.viewport.get('chrom', ''),
+                )
+            ]
+        elif isinstance(ranges, dict):
+            items = [(str(c), _pairs(ranges[c]), None) for c in ranges]
         else:
             c = chrom if chrom is not None else self.viewport.get('chrom', '')
-            items = [(str(c), _pairs(ranges))]
+            items = [(str(c), _pairs(ranges), None)]
 
         a = float(max(0.0, min(1.0, alpha)))
         new_entries = []
-        for c, pairs in items:
-            for s, e in pairs:
+        for c, pairs, row_colors in items:
+            for i, (s, e) in enumerate(pairs):
                 if e < s:
                     s, e = e, s
                 new_entries.append({
                     'chrom':     c,
                     'start':     int(s),
                     'end':       int(e),
-                    'color':     fill,
+                    'color':     fill if row_colors is None else row_colors[i],
                     'alpha':     a,
                     'edgecolor': edge,
                     'edgewidth': float(edgewidth),
