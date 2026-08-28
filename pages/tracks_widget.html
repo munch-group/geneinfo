@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,10 +12,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -76,10 +79,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e3adbaa939bcd423dddc8c8a834270b4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -535,7 +538,7 @@ table {
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        group_by<span class="op">=</span><span class="st">'pop'</span>, height<span class="op">=</span><span class="dv">60</span>, tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    .add_fill_track(</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Fill baseln'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'eig'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>, </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        qdf[qdf[<span class="st">'pop'</span>] <span class="op">==</span> <span class="st">'AFR'</span>], <span class="st">'Fill baseln'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'eig'</span>,</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span><span class="st">'post'</span>, height<span class="op">=</span><span class="dv">60</span>, tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    .add_histogram_track(</span>
@@ -681,19 +684,19 @@ table {
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .add_segment_track(</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        segs.loc[segs[<span class="st">'reg'</span>] <span class="op">==</span> <span class="st">'EUR'</span>], <span class="st">'EUR'</span>, group_by<span class="op">=</span><span class="st">'ancestry'</span>, individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>, stack<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, density_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, zoom_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    )   </span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    .add_segment_track(</span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        segs.loc[segs[<span class="st">'reg'</span>] <span class="op">==</span> <span class="st">'EAS'</span>], <span class="st">'EAS'</span>, group_by<span class="op">=</span><span class="st">'ancestry'</span>, individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>          tip_fmt<span class="op">=</span><span class="va">False</span>, stack<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, density_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, zoom_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    )    </span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    .add_heatmap_track(</span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        segs, <span class="st">'Individuals'</span>,</span>
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            group_by<span class="op">=</span><span class="st">'reg'</span>,</span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">90</span>,   <span class="co"># will be expanded to accommodate on px per segment row</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        windows<span class="op">=</span><span class="dv">2500</span>, <span class="co"># max is 8192 or 16384 depending on GPU</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        zoom_windows<span class="op">=</span><span class="dv">2500</span>, <span class="co"># max is 8192 or 16384 depending on GPU</span></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    )    </span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>, height <span class="op">=</span> <span class="dv">100</span>)</span>
