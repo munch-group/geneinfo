@@ -107,6 +107,41 @@ feedback, accessibility, and performance of the `Tracks` WebGL2 viewer.
   unchanged. `y` together with `y_hi` is now a `TypeError` (same curve,
   two spellings); `y` with `y_lo` remains a `ValueError`.
 
+**Zoom limit**
+- New `min_span` trait (default `500`) sets the narrowest viewport in base
+  pairs — the point past which zooming in stops. It replaces a `500` hard-coded
+  separately into the wheel, double-click and `+` key handlers, so the three
+  can no longer drift apart. Set `Tracks(..., min_span=100)`, or assign it live
+  like `zoom_speed` / `pan_speed`. The floor is clamped to the chromosome's own
+  span, so a `min_span` larger than a short chromosome cannot lock the view.
+
+**Exact genomic coordinates (breaking payload change)**
+- Genomic positions now travel as `int32` and are rebased against the viewport
+  start *in integer space* inside the vertex shaders
+  (`float(aXi - uVSi) / (uVE - uVS)`). They were `float32` end to end, whose
+  24-bit mantissa is exact only below 16,777,216 — above that positions snapped
+  onto a grid of 4 bp, then 8, then 16, which looked like the data was still
+  being aggregated even with `zoom_windows=False`. Twelve samples 1 bp apart at
+  60 Mb used to collapse onto 4 distinct x values; they now resolve to 12, and
+  to 12 at 240 Mb as well.
+- Applies to every WebGL path: line, scatter, fill and the segment density area
+  (`VS_DENS`), histogram bars and segment rects (`VS_RECT`), and arcs
+  (`VS_ARC`). Heatmaps are unaffected — their quad carries texture fractions
+  and is bin-limited — as are the gene track, vlines and spans, which draw on
+  the 2D canvas in double precision.
+- Vertex strides are unchanged; only the leading 4 bytes of each vertex change
+  type, so `vertexAttribIPointer(..., gl.INT, ...)` reads what
+  `vertexAttribPointer` used to. New `Tracks._pack_i32` / `_pack_xy` /
+  `_pack_xlohi` replace `_pack_f32` on the position-carrying payloads, and
+  `_step_expand` / `_step_expand3` now return components rather than a narrowed
+  interleaved buffer.
+- **Breaking, deliberately:** a notebook saved with the previous payloads will
+  render garbled positions until its cells are re-run. There is no legacy
+  decode path.
+- Derived positions (LOD bin centres, `step='mid'` midpoints) are rounded to
+  whole base pairs, half up — `np.rint`'s round-half-to-even made midpoints
+  cluster in pairs. Half a base pair is orders of magnitude below one pixel.
+
 **Gene track**
 - `add_gene_track`'s `label_padding` is now measured in **kilobases**, not
   base pairs: pass `200` for 200 kb. Fractions are allowed (`0.5` = 500 bp).

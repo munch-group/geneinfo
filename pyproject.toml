@@ -78,6 +78,7 @@ griffe = ">=2.0.2,<3"
 griffecli = ">=2.0.2,<3"
 griffelib = ">=2.0.2,<3"
 iplot = ">=0.1.9,<0.2"
+pycirclize = ">=1.10.1,<2"
 
 
 [tool.pixi.environments]

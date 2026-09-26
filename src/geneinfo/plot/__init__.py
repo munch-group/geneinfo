@@ -4,4 +4,4 @@ from .chromosome import ChromIdeogram
 from .region import gene_plot
 from .venn import venn
 from .upset import upset
-
+from .circos import circos_plot

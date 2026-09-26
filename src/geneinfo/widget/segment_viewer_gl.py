@@ -354,6 +354,17 @@ def _vline_positions(value: Any, caller: str) -> list:
         ) from e
 
 
+def _round_bp(values: Any) -> np.ndarray:
+    """Round genomic coordinates to whole base pairs as ``int32``.
+
+    Rounds halves *up* rather than to even. ``np.rint`` would send 0.5 to 0 and
+    1.5 to 2, which makes the midpoints produced by ``step='mid'`` cluster in
+    pairs instead of stepping evenly; half a base pair is far below one screen
+    pixel, but the uneven spacing is visible as a stagger.
+    """
+    return np.floor(np.asarray(values, dtype=np.float64) + 0.5).astype(np.int32)
+
+
 def _overlay_frame_rows(
     df: pd.DataFrame,
     chrom: Any,
@@ -495,33 +506,34 @@ def _step_expand(
 
     Returns
     -------
-    numpy.ndarray
-        A ``float32`` buffer of interleaved ``(x, y)`` pairs.
+    xs, ys : numpy.ndarray
+        ``float64`` component arrays. They are returned separately, rather
+        than interleaved and narrowed, because genomic positions must reach
+        :meth:`Tracks._pack_xy` unrounded — narrowing them to ``float32``
+        here would snap positions above 16,777,216 onto a 4-16 bp grid.
     """
     nn = len(xs_in)
-    arr_flat = np.empty(nn * 2, dtype=np.float32)
-    arr_flat[0::2] = np.asarray(xs_in, dtype=np.float32)
-    arr_flat[1::2] = np.asarray(ys_in, dtype=np.float32)
+    xs = np.asarray(xs_in, dtype=np.float64)
+    ys = np.asarray(ys_in, dtype=np.float64)
     if not step or nn < 2:
-        return arr_flat
-    xs = arr_flat[0::2]; ys = arr_flat[1::2]
+        return xs, ys
     if step == 'post':
         mm = 2 * nn - 1
-        sx = np.empty(mm, dtype=np.float32)
-        sy = np.empty(mm, dtype=np.float32)
+        sx = np.empty(mm, dtype=np.float64)
+        sy = np.empty(mm, dtype=np.float64)
         sx[0::2] = xs;  sx[1::2] = xs[1:]
         sy[0::2] = ys;  sy[1::2] = ys[:-1]
     elif step == 'pre':
         mm = 2 * nn - 1
-        sx = np.empty(mm, dtype=np.float32)
-        sy = np.empty(mm, dtype=np.float32)
+        sx = np.empty(mm, dtype=np.float64)
+        sy = np.empty(mm, dtype=np.float64)
         sx[0::2] = xs;  sx[1::2] = xs[:-1]
         sy[0::2] = ys;  sy[1::2] = ys[1:]
     elif step == 'mid':
         mids = (xs[:-1] + xs[1:]) / 2
         mm = 2 * nn
-        sx = np.empty(mm, dtype=np.float32)
-        sy = np.empty(mm, dtype=np.float32)
+        sx = np.empty(mm, dtype=np.float64)
+        sy = np.empty(mm, dtype=np.float64)
         sx[0::2] = np.concatenate([[xs[0]], mids])
         sx[1::2] = np.concatenate([mids, [xs[-1]]])
         sy[0::2] = ys;  sy[1::2] = ys
@@ -529,9 +541,7 @@ def _step_expand(
         raise ValueError(
             f"step must be 'pre', 'post', or 'mid', got {step!r}"
         )
-    out = np.empty(mm * 2, dtype=np.float32)
-    out[0::2] = sx; out[1::2] = sy
-    return out
+    return sx, sy
 
 
 def _step_expand3(
@@ -559,8 +569,9 @@ def _step_expand3(
 
     Returns
     -------
-    numpy.ndarray
-        A ``float32`` buffer of interleaved ``(x, lo, hi)`` triples.
+    xs, los, his : numpy.ndarray
+        ``float64`` component arrays — see :func:`_step_expand` for why the
+        positions are not narrowed here.
 
     Raises
     ------
@@ -568,18 +579,16 @@ def _step_expand3(
         If ``step`` is not one of ``'pre'``, ``'post'``, ``'mid'``, ``None``.
     """
     nn = len(xs_in)
-    arr = np.empty(nn * 3, dtype=np.float32)
-    arr[0::3] = np.asarray(xs_in,  dtype=np.float32)
-    arr[1::3] = np.asarray(los_in, dtype=np.float32)
-    arr[2::3] = np.asarray(his_in, dtype=np.float32)
+    xs  = np.asarray(xs_in,  dtype=np.float64)
+    los = np.asarray(los_in, dtype=np.float64)
+    his = np.asarray(his_in, dtype=np.float64)
     if not step or nn < 2:
-        return arr
-    xs = arr[0::3]; los = arr[1::3]; his = arr[2::3]
+        return xs, los, his
     if step in ('post', 'pre'):
         mm = 2 * nn - 1
-        sx  = np.empty(mm, dtype=np.float32)
-        slo = np.empty(mm, dtype=np.float32)
-        shi = np.empty(mm, dtype=np.float32)
+        sx  = np.empty(mm, dtype=np.float64)
+        slo = np.empty(mm, dtype=np.float64)
+        shi = np.empty(mm, dtype=np.float64)
         if step == 'post':
             sx[0::2]  = xs;   sx[1::2]  = xs[1:]
             slo[0::2] = los;  slo[1::2] = los[:-1]
@@ -591,9 +600,9 @@ def _step_expand3(
     elif step == 'mid':
         mids = (xs[:-1] + xs[1:]) / 2
         mm = 2 * nn
-        sx  = np.empty(mm, dtype=np.float32)
-        slo = np.empty(mm, dtype=np.float32)
-        shi = np.empty(mm, dtype=np.float32)
+        sx  = np.empty(mm, dtype=np.float64)
+        slo = np.empty(mm, dtype=np.float64)
+        shi = np.empty(mm, dtype=np.float64)
         sx[0::2] = np.concatenate([[xs[0]], mids])
         sx[1::2] = np.concatenate([mids, [xs[-1]]])
         slo[0::2] = los;  slo[1::2] = los
@@ -602,9 +611,7 @@ def _step_expand3(
         raise ValueError(
             f"step must be 'pre', 'post', or 'mid', got {step!r}"
         )
-    out = np.empty(mm * 3, dtype=np.float32)
-    out[0::3] = sx; out[1::3] = slo; out[2::3] = shi
-    return out
+    return sx, slo, shi
 
 
 def _aggregate_bin(
@@ -1510,20 +1517,27 @@ const dpr = Math.min(window.devicePixelRatio || 1, 2);
 // ─── Shader sources ────────────────────────────────────────────────────────
 const VS_RECT = `#version 300 es
 precision highp float;
+precision highp int;
 in vec2  aCorner;
-in float iStart, iEnd, iYLo, iYHi;
+// Exact int32 genomic bounds, rebased against the viewport start before any
+// float arithmetic — see VS_DENS for why.
+in int   iStart, iEnd;
+in float iYLo, iYHi;
 in vec3  iColor;
+uniform int   uVSi;
 uniform float uVS, uVE, uTT, uTB, uXL, uMinDx;
 flat out vec3 vColor;
 void main() {
   // Expand bars to a minimum width (in genomic units) about their centre so
   // sub-pixel bars don't vanish on raster snap when zoomed out.
-  float c   = 0.5 * (iStart + iEnd);
-  float h   = max(0.5 * (iEnd - iStart), 0.5 * uMinDx);
+  float s0  = float(iStart - uVSi);
+  float e0  = float(iEnd   - uVSi);
+  float c   = 0.5 * (s0 + e0);
+  float h   = max(0.5 * (e0 - s0), 0.5 * uMinDx);
   float s   = c - h;
   float e   = c + h;
   float gx  = mix(s, e, aCorner.x);
-  float t   = (gx - uVS) / (uVE - uVS);
+  float t   = gx / (uVE - uVS);
   float xN  = clamp(mix(uXL, 1.0, t), -1.0, 1.0);
   // iYLo / iYHi are fractional positions in the track box where 0 = top
   // and 1 = bottom (matches the segment-track convention).
@@ -1540,10 +1554,19 @@ void main() { fragColor = vec4(vColor, 1.0); }`;
 
 const VS_DENS = `#version 300 es
 precision highp float;
-in float aX, aH;
+precision highp int;
+// Genomic x arrives as an exact int32 and is rebased against the viewport
+// start in integer space. Converting the *difference* to float keeps full
+// precision at the zooms where it matters: when zoomed in the difference is
+// small and exact, and when zoomed out the rounding is far below one pixel.
+// (Carrying absolute positions as float32 snapped them onto a 4-16 bp grid,
+// since a float32 mantissa is only 24 bits.)
+in int aXi;
+in float aH;
+uniform int uVSi;
 uniform float uVS, uVE, uTT, uTB, uPointSize, uXL;
 void main() {
-  float t  = (aX - uVS) / (uVE - uVS);
+  float t  = float(aXi - uVSi) / (uVE - uVS);
   float xN = mix(uXL, 1.0, t);
   float yN = mix(uTB, uTT, aH);
   gl_Position = vec4(xN, yN, 0.0, 1.0);
@@ -1623,26 +1646,31 @@ void main() {
 // A full strip has (N+1)*2 vertices for N segments.
 const VS_ARC = `#version 300 es
 precision highp float;
+precision highp int;
 in float aT;
 in float aSide;
-in float iP1, iP2;
+// Exact int32 endpoints, rebased against the viewport start — see VS_DENS.
+in int   iP1, iP2;
 in vec3  iColor;
+uniform int   uVSi;
 uniform float uVS, uVE, uXL;   // genomic viewport -> NDC-x
 uniform float uTT, uTB;        // track top / bottom in NDC
 uniform float uApexFrac;       // apex position within band, 0=baseline 1=top
 uniform float uHalfPxX, uHalfPxY; // half stroke width in NDC along x/y
 flat out vec3 vColor;
-// Map a genomic position to NDC-x using the same formula as every other
-// program; no clamping here because arcs can run partly off-screen and the
-// scissor rect masks them instead.
-float gxToNDC(float gx) {
-  float t = (gx - uVS) / (uVE - uVS);
+// Map a viewport-relative genomic offset to NDC-x using the same formula as
+// every other program; no clamping here because arcs can run partly off-screen
+// and the scissor rect masks them instead.
+float gxToNDC(float gxRel) {
+  float t = gxRel / (uVE - uVS);
   return mix(uXL, 1.0, t);
 }
 void main() {
-  float p1x = gxToNDC(iP1);
-  float p2x = gxToNDC(iP2);
-  float cx  = gxToNDC(0.5 * (iP1 + iP2));
+  float p1 = float(iP1 - uVSi);
+  float p2 = float(iP2 - uVSi);
+  float p1x = gxToNDC(p1);
+  float p2x = gxToNDC(p2);
+  float cx  = gxToNDC(0.5 * (p1 + p2));
   // Baseline sits at track bottom (uTB); apex offset toward uTT.
   // Clamp apex so it stays inside the usable band.
   float apexY = mix(uTB, uTT, clamp(uApexFrac, 0.0, 1.0));
@@ -1719,6 +1747,7 @@ function initGlPrograms() {
     iYLo:    gl.getAttribLocation (rectProg, 'iYLo'),
     iYHi:    gl.getAttribLocation (rectProg, 'iYHi'),
     iColor:  gl.getAttribLocation (rectProg, 'iColor'),
+    uVSi:    gl.getUniformLocation(rectProg, 'uVSi'),
     uVS:     gl.getUniformLocation(rectProg, 'uVS'),
     uVE:     gl.getUniformLocation(rectProg, 'uVE'),
     uTT:     gl.getUniformLocation(rectProg, 'uTT'),
@@ -1727,8 +1756,9 @@ function initGlPrograms() {
     uMinDx:  gl.getUniformLocation(rectProg, 'uMinDx'),
   };
   dLoc = {
-    aX:         gl.getAttribLocation (densProg, 'aX'),
+    aXi:        gl.getAttribLocation (densProg, 'aXi'),
     aH:         gl.getAttribLocation (densProg, 'aH'),
+    uVSi:       gl.getUniformLocation(densProg, 'uVSi'),
     uVS:        gl.getUniformLocation(densProg, 'uVS'),
     uVE:        gl.getUniformLocation(densProg, 'uVE'),
     uTT:        gl.getUniformLocation(densProg, 'uTT'),
@@ -1759,6 +1789,7 @@ function initGlPrograms() {
     iP1:       gl.getAttribLocation (arcProg, 'iP1'),
     iP2:       gl.getAttribLocation (arcProg, 'iP2'),
     iColor:    gl.getAttribLocation (arcProg, 'iColor'),
+    uVSi:      gl.getUniformLocation(arcProg, 'uVSi'),
     uVS:       gl.getUniformLocation(arcProg, 'uVS'),
     uVE:       gl.getUniformLocation(arcProg, 'uVE'),
     uXL:       gl.getUniformLocation(arcProg, 'uXL'),
@@ -1922,12 +1953,57 @@ function panHi(ch) { return panRange[ch]?.hi ?? (chromSizes[ch] || 1); }
 // ══════════════════════════════════════════════════════════════════════════════
 // BINARY DECODE
 // ══════════════════════════════════════════════════════════════════════════════
-function b64F32(b64) {
-  if (!b64) return new Float32Array(0);
+function b64Buf(b64) {
   const bin = atob(b64);
   const u8  = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-  return new Float32Array(u8.buffer);
+  return u8.buffer;
+}
+
+function b64F32(b64) {
+  if (!b64) return new Float32Array(0);
+  return new Float32Array(b64Buf(b64));
+}
+
+// Genomic positions travel as int32 (see Tracks._pack_i32): a float32 mantissa
+// is 24 bits, so positions past 16,777,216 would snap onto a 4-16 bp grid.
+function b64I32(b64) {
+  if (!b64) return new Int32Array(0);
+  return new Int32Array(b64Buf(b64));
+}
+
+// Split an interleaved payload into component arrays once, at upload time.
+// Positions stay exact in an Int32Array and values in a Float32Array, so
+// nothing downstream has to index one buffer through two element types.
+function unpackXY(b64) {
+  if (!b64) return { xs: new Int32Array(0), ys: new Float32Array(0), n: 0 };
+  const ab = b64Buf(b64);
+  const i32 = new Int32Array(ab), f32 = new Float32Array(ab);
+  const n = i32.length >> 1;
+  const xs = new Int32Array(n), ys = new Float32Array(n);
+  for (let i = 0; i < n; i++) { xs[i] = i32[i * 2]; ys[i] = f32[i * 2 + 1]; }
+  return { xs, ys, n };
+}
+
+function unpackXLoHi(b64) {
+  if (!b64) return { xs: new Int32Array(0), los: new Float32Array(0),
+                     his: new Float32Array(0), n: 0 };
+  const ab = b64Buf(b64);
+  const i32 = new Int32Array(ab), f32 = new Float32Array(ab);
+  const n = (i32.length / 3) | 0;
+  const xs = new Int32Array(n);
+  const los = new Float32Array(n), his = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    xs[i] = i32[i * 3]; los[i] = f32[i * 3 + 1]; his[i] = f32[i * 3 + 2];
+  }
+  return { xs, los, his, n };
+}
+
+// An interleaved vertex/instance buffer whose position slots are int32 and
+// whose value slots are float32, over a single ArrayBuffer.
+function mixedVerts(nSlots) {
+  const ab = new ArrayBuffer(nSlots * 4);
+  return { ab, f32: new Float32Array(ab), i32: new Int32Array(ab) };
 }
 
 function b64U8(b64) {
@@ -1960,8 +2036,8 @@ function buildSegGPU(segs, yLo, yHi, color, nInd) {
   const n = (segs.length / stride) | 0;
   if (n === 0) return null;
   const [r, g, b] = hexRGB(color);
-  const inst   = new Float32Array(n * 7);
-  const starts = new Float32Array(n);
+  const v      = mixedVerts(n * 7);
+  const starts = new Int32Array(n);
   let maxLen = 0;
   const bandH = yHi - yLo;
   const rowH  = nInd > 0 ? bandH / nInd : bandH;
@@ -1974,13 +2050,13 @@ function buildSegGPU(segs, yLo, yHi, color, nInd) {
     const iy0 = yLo + ind * rowH;
     const iy1 = iy0 + rowH;
     const o = i * 7;
-    inst[o]   = s; inst[o+1] = e;
-    inst[o+2] = iy0; inst[o+3] = iy1;
-    inst[o+4] = r; inst[o+5] = g; inst[o+6] = b;
+    v.i32[o]   = s;   v.i32[o+1] = e;
+    v.f32[o+2] = iy0; v.f32[o+3] = iy1;
+    v.f32[o+4] = r;   v.f32[o+5] = g; v.f32[o+6] = b;
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, v.ab, gl.STATIC_DRAW);
   return { buf, starts, maxLen, count: n };
 }
 
@@ -1991,8 +2067,8 @@ function buildArcGPU(arcs, color) {
   const n = (arcs.length / 2) | 0;
   if (n === 0) return null;
   const [r, g, b] = hexRGB(color);
-  const inst   = new Float32Array(n * 5);
-  const starts = new Float32Array(n);
+  const v      = mixedVerts(n * 5);
+  const starts = new Int32Array(n);
   let maxLen = 0;
   for (let i = 0; i < n; i++) {
     const p1 = arcs[i * 2];
@@ -2000,12 +2076,12 @@ function buildArcGPU(arcs, color) {
     starts[i] = p1;
     maxLen = Math.max(maxLen, p2 - p1);
     const o = i * 5;
-    inst[o]   = p1; inst[o + 1] = p2;
-    inst[o+2] = r;  inst[o + 3] = g; inst[o + 4] = b;
+    v.i32[o]   = p1; v.i32[o + 1] = p2;
+    v.f32[o+2] = r;  v.f32[o + 3] = g; v.f32[o + 4] = b;
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, v.ab, gl.STATIC_DRAW);
   return { buf, starts, maxLen, count: n };
 }
 
@@ -2017,20 +2093,20 @@ function buildDensGPU(counts, chromSz) {
   let maxVal = 0;
   for (let i = 0; i < n; i++) maxVal = Math.max(maxVal, counts[i]);
   if (maxVal === 0) maxVal = 1;
-  const verts = new Float32Array(n * 4 * 2);
+  const v = mixedVerts(n * 4 * 2);
   let vi = 0;
   for (let i = 0; i < n; i++) {
-    const xL = i * winSz;
-    const xR = (i + 1) * winSz;
+    const xL = Math.round(i * winSz);
+    const xR = Math.round((i + 1) * winSz);
     const h  = counts[i] / maxVal;
-    verts[vi++] = xL; verts[vi++] = 0;
-    verts[vi++] = xL; verts[vi++] = h;
-    verts[vi++] = xR; verts[vi++] = 0;
-    verts[vi++] = xR; verts[vi++] = h;
+    v.i32[vi] = xL; v.f32[vi + 1] = 0; vi += 2;
+    v.i32[vi] = xL; v.f32[vi + 1] = h; vi += 2;
+    v.i32[vi] = xR; v.f32[vi + 1] = 0; vi += 2;
+    v.i32[vi] = xR; v.f32[vi + 1] = h; vi += 2;
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, v.ab, gl.STATIC_DRAW);
   return { buf, count: n * 4 };
 }
 
@@ -2041,22 +2117,22 @@ function buildDensStackedGPU(arr, chromSz, nBins) {
   const n = (arr.length / 3) | 0;
   if (n === 0) return null;
   const winSz = chromSz / nBins;
-  const verts = new Float32Array(n * 4 * 2);
+  const v = mixedVerts(n * 4 * 2);
   let vi = 0;
   for (let i = 0; i < n; i++) {
     const bi = arr[i * 3];
     const lo = arr[i * 3 + 1];
     const hi = arr[i * 3 + 2];
-    const xL = bi * winSz;
-    const xR = (bi + 1) * winSz;
-    verts[vi++] = xL; verts[vi++] = lo;
-    verts[vi++] = xL; verts[vi++] = hi;
-    verts[vi++] = xR; verts[vi++] = lo;
-    verts[vi++] = xR; verts[vi++] = hi;
+    const xL = Math.round(bi * winSz);
+    const xR = Math.round((bi + 1) * winSz);
+    v.i32[vi] = xL; v.f32[vi + 1] = lo; vi += 2;
+    v.i32[vi] = xL; v.f32[vi + 1] = hi; vi += 2;
+    v.i32[vi] = xR; v.f32[vi + 1] = lo; vi += 2;
+    v.i32[vi] = xR; v.f32[vi + 1] = hi; vi += 2;
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, v.ab, gl.STATIC_DRAW);
   return { buf, count: n * 4 };
 }
 
@@ -2098,57 +2174,53 @@ function buildHeatmapLUTGPU(rgb, size) {
 }
 
 // Build XY buffer for scatter / line: normalize y to [0,1]
-function buildXYGPU(data, yMin, yMax) {
-  const n = (data.length / 2) | 0;
+function buildXYGPU(xs, ys, yMin, yMax) {
+  const n = xs.length;
   if (n === 0) return null;
   const range = yMax - yMin || 1;
-  const verts = new Float32Array(n * 2);
+  const v = mixedVerts(n * 2);
   for (let i = 0; i < n; i++) {
-    verts[i * 2]     = data[i * 2];      // x (genomic)
-    verts[i * 2 + 1] = (data[i * 2 + 1] - yMin) / range;  // h normalized
+    v.i32[i * 2]     = xs[i];                        // x (genomic, exact)
+    v.f32[i * 2 + 1] = (ys[i] - yMin) / range;       // h normalized
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, v.ab, gl.STATIC_DRAW);
   return { buf, count: n };
 }
 
 // Build fill-between buffers: split into positive (above baseline) and negative (below)
-function buildFillGPU(data, yMin, yMax, baseline) {
-  const n = (data.length / 3) | 0;
+function buildFillGPU(xs, los, his, yMin, yMax, baseline) {
+  const n = xs.length;
   if (n === 0) return null;
   const range = yMax - yMin || 1;
   const baseN = (baseline - yMin) / range;  // normalized baseline
 
-  // Positive fill: triangle strip from max(yLo, baseline) to max(yHi, baseline)
-  const posVerts = [];
-  const negVerts = [];
+  // Two vertices per sample (strip edges), each an int32 x + float32 h.
+  const pos = mixedVerts(n * 4);
+  const neg = mixedVerts(n * 4);
   for (let i = 0; i < n; i++) {
-    const x   = data[i * 3];
-    const lo  = (data[i * 3 + 1] - yMin) / range;
-    const hi  = (data[i * 3 + 2] - yMin) / range;
-
+    const x  = xs[i];
+    const lo = (los[i] - yMin) / range;
+    const hi = (his[i] - yMin) / range;
+    const o  = i * 4;
     // Positive region (above baseline)
-    const pLo = Math.max(lo, baseN);
-    const pHi = Math.max(hi, baseN);
-    posVerts.push(x, pLo, x, pHi);
-
+    pos.i32[o]     = x; pos.f32[o + 1] = Math.max(lo, baseN);
+    pos.i32[o + 2] = x; pos.f32[o + 3] = Math.max(hi, baseN);
     // Negative region (below baseline)
-    const nLo = Math.min(lo, baseN);
-    const nHi = Math.min(hi, baseN);
-    negVerts.push(x, nLo, x, nHi);
+    neg.i32[o]     = x; neg.f32[o + 1] = Math.min(lo, baseN);
+    neg.i32[o + 2] = x; neg.f32[o + 3] = Math.min(hi, baseN);
   }
 
-  function makeBuf(arr) {
-    const f = new Float32Array(arr);
+  function makeBuf(ab) {
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, f, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, ab, gl.STATIC_DRAW);
     return buf;
   }
   return {
-    posBuf: makeBuf(posVerts), posCount: n * 2,
-    negBuf: makeBuf(negVerts), negCount: n * 2,
+    posBuf: makeBuf(pos.ab), posCount: n * 2,
+    negBuf: makeBuf(neg.ab), negCount: n * 2,
   };
 }
 
@@ -2157,20 +2229,22 @@ function buildFillGPU(data, yMin, yMax, baseline) {
 // track box where 0 = top and 1 = bottom (segment convention). So a bar of
 // height `y` with baseline 0 spans from data-fraction `min(0, y)` (bottom of
 // bar) to `max(0, y)` (top of bar), then we flip to top-down NDC convention.
-function buildHistGPU(data, yMin, yMax, binWidth, color) {
-  const n = (data.length / 2) | 0;
+function buildHistGPU(xs, ys, yMin, yMax, binWidth, color) {
+  const n = xs.length;
   if (n === 0) return null;
   const [r, g, b] = hexRGB(color);
   const range = yMax - yMin || 1;
-  const inst   = new Float32Array(n * 7);
-  const starts = new Float32Array(n);
+  const v      = mixedVerts(n * 7);
+  const starts = new Int32Array(n);
   let maxLen = 0;
   const halfW = binWidth / 2;
   for (let i = 0; i < n; i++) {
-    const x = data[i * 2];
-    const y = data[i * 2 + 1];
-    const s = x - halfW;
-    const e = x + halfW;
+    const x = xs[i];
+    const y = ys[i];
+    // Bar edges land on whole base pairs; a bin width can be odd, so round
+    // rather than truncate. Half a base pair is far below one pixel.
+    const s = Math.round(x - halfW);
+    const e = Math.round(x + halfW);
     const baseN = (0 - yMin) / range;
     const hN    = (y - yMin) / range;
     const dataLo = Math.min(baseN, hN);  // bottom of bar in data-frac
@@ -2181,34 +2255,34 @@ function buildHistGPU(data, yMin, yMax, binWidth, color) {
     starts[i] = s;
     maxLen = Math.max(maxLen, e - s);
     const o = i * 7;
-    inst[o]   = s; inst[o+1] = e;
-    inst[o+2] = yLo; inst[o+3] = yHi;
-    inst[o+4] = r; inst[o+5] = g; inst[o+6] = b;
+    v.i32[o]   = s;   v.i32[o+1] = e;
+    v.f32[o+2] = yLo; v.f32[o+3] = yHi;
+    v.f32[o+4] = r;   v.f32[o+5] = g; v.f32[o+6] = b;
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, v.ab, gl.STATIC_DRAW);
   return { buf, starts, maxLen, count: n };
 }
 
 // Stacked histogram: input stride is (x, yLo, yHi) — pre-computed in Python
 // so each bar spans [yLo, yHi] in data units. No baseline inference needed.
 // Same top-down convention flip as buildHistGPU.
-function buildHistStackedGPU(data, yMin, yMax, binWidth, color) {
-  const n = (data.length / 3) | 0;
+function buildHistStackedGPU(xs, los, his, yMin, yMax, binWidth, color) {
+  const n = xs.length;
   if (n === 0) return null;
   const [r, g, b] = hexRGB(color);
   const range = yMax - yMin || 1;
-  const inst   = new Float32Array(n * 7);
-  const starts = new Float32Array(n);
+  const v      = mixedVerts(n * 7);
+  const starts = new Int32Array(n);
   let maxLen = 0;
   const halfW = binWidth / 2;
   for (let i = 0; i < n; i++) {
-    const x   = data[i * 3];
-    const lo  = data[i * 3 + 1];
-    const hi  = data[i * 3 + 2];
-    const s = x - halfW;
-    const e = x + halfW;
+    const x   = xs[i];
+    const lo  = los[i];
+    const hi  = his[i];
+    const s = Math.round(x - halfW);
+    const e = Math.round(x + halfW);
     const loN = (lo - yMin) / range;
     const hiN = (hi - yMin) / range;
     const dataLo = Math.min(loN, hiN);
@@ -2218,13 +2292,13 @@ function buildHistStackedGPU(data, yMin, yMax, binWidth, color) {
     starts[i] = s;
     maxLen = Math.max(maxLen, e - s);
     const o = i * 7;
-    inst[o]   = s; inst[o+1] = e;
-    inst[o+2] = yLo; inst[o+3] = yHi;
-    inst[o+4] = r; inst[o+5] = g; inst[o+6] = b;
+    v.i32[o]   = s;   v.i32[o+1] = e;
+    v.f32[o+2] = yLo; v.f32[o+3] = yHi;
+    v.f32[o+4] = r;   v.f32[o+5] = g; v.f32[o+6] = b;
   }
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, v.ab, gl.STATIC_DRAW);
   return { buf, starts, maxLen, count: n };
 }
 
@@ -2264,7 +2338,7 @@ function uploadTrackData() {
           const gid = grp.id;
           const yLo = gap * 0.5 + usable * cumW[gi] / totalW;
           const yHi = gap * 0.5 + usable * cumW[gi + 1] / totalW;
-          const segs = b64F32(raw[ch]?.[gid]);
+          const segs = b64I32(raw[ch]?.[gid]);
           const nInd = grp.nInd || 0;
           gpuSeg[tid][ch][gid] = buildSegGPU(segs, yLo, yHi, grp.color, nInd);
           const densLevels = dens[ch]?.[gid] || {};
@@ -2324,23 +2398,25 @@ function uploadTrackData() {
               gpuXY[tid][ch][gid] = { base: null, levels: [] };
               continue;
             }
-            const arr = b64F32(payload);
-            rawXY[tid][ch][gid] = arr;
-            gpuXY[tid][ch][gid] = { base: buildXYGPU(arr, yMin, yMax), levels: [] };
+            const xy = unpackXY(payload);
+            rawXY[tid][ch][gid] = xy;
+            gpuXY[tid][ch][gid] = {
+              base: buildXYGPU(xy.xs, xy.ys, yMin, yMax), levels: [],
+            };
             continue;
           }
           if (!payload || !payload.base) {
             gpuXY[tid][ch][gid] = { base: null, levels: [] };
             continue;
           }
-          const baseArr = b64F32(payload.base);
-          rawXY[tid][ch][gid] = baseArr;
+          const baseXY = unpackXY(payload.base);
+          rawXY[tid][ch][gid] = baseXY;
           // The base buffer uses the cfg-level (raw-data) y range. Each
           // LOD level uses its own aggregate-range (from cfg.lodYRange)
           // so the axis can rescale when switching levels — aggregates
           // like 'sum' can land well outside the raw range.
           const slot = {
-            base: buildXYGPU(baseArr, yMin, yMax),
+            base: buildXYGPU(baseXY.xs, baseXY.ys, yMin, yMax),
             baseYMin: yMin, baseYMax: yMax,
             levels: [],
           };
@@ -2348,14 +2424,14 @@ function uploadTrackData() {
           const bw   = payload.binWidth || {};
           const lodYR = cfg.lodYRange || {};
           for (const [nKey, b64] of Object.entries(lods)) {
-            const arr = b64F32(b64);
+            const lv = unpackXY(b64);
             const r = lodYR[nKey];
             const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
             const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
             slot.levels.push({
               n: +nKey,
               binWidth: bw[nKey] || 0,
-              gpu: buildXYGPU(arr, lvlYMin, lvlYMax),
+              gpu: buildXYGPU(lv.xs, lv.ys, lvlYMin, lvlYMax),
               yMin: lvlYMin,
               yMax: lvlYMax,
             });
@@ -2385,10 +2461,10 @@ function uploadTrackData() {
               gpuFill[tid][ch][gid] = { base: null, levels: [] };
               continue;
             }
-            const arr = b64F32(payload);
-            rawFill[tid][ch][gid] = arr;
+            const fl = unpackXLoHi(payload);
+            rawFill[tid][ch][gid] = fl;
             gpuFill[tid][ch][gid] = {
-              base: buildFillGPU(arr, yMin, yMax, baseline),
+              base: buildFillGPU(fl.xs, fl.los, fl.his, yMin, yMax, baseline),
               baseYMin: yMin, baseYMax: yMax,
               levels: [],
             };
@@ -2398,16 +2474,17 @@ function uploadTrackData() {
             gpuFill[tid][ch][gid] = { base: null, levels: [] };
             continue;
           }
-          const baseArr = b64F32(payload.base);
+          const baseFill = unpackXLoHi(payload.base);
           // Tooltips read rawFill, so it always holds the raw samples —
           // never the aggregated levels.
-          rawFill[tid][ch][gid] = baseArr;
+          rawFill[tid][ch][gid] = baseFill;
           // The base buffer uses the cfg-level (raw-data) y range; each LOD
           // level uses its own aggregate range from cfg.lodYRange. The
           // baseline is normalised against whichever range the buffer was
           // built with, so the pos/neg split stays put across levels.
           const slot = {
-            base: buildFillGPU(baseArr, yMin, yMax, baseline),
+            base: buildFillGPU(baseFill.xs, baseFill.los, baseFill.his,
+                               yMin, yMax, baseline),
             baseYMin: yMin, baseYMax: yMax,
             levels: [],
           };
@@ -2415,14 +2492,15 @@ function uploadTrackData() {
           const bw    = payload.binWidth || {};
           const lodYR = cfg.lodYRange || {};
           for (const [nKey, b64] of Object.entries(lods)) {
-            const arr = b64F32(b64);
+            const lv = unpackXLoHi(b64);
             const r = lodYR[nKey];
             const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
             const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
             slot.levels.push({
               n: +nKey,
               binWidth: bw[nKey] || 0,
-              gpu: buildFillGPU(arr, lvlYMin, lvlYMax, baseline),
+              gpu: buildFillGPU(lv.xs, lv.los, lv.his,
+                                lvlYMin, lvlYMax, baseline),
               yMin: lvlYMin,
               yMax: lvlYMax,
             });
@@ -2449,7 +2527,7 @@ function uploadTrackData() {
           const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
           // Empty group: nothing to upload.
           if (payload === '' || payload == null) {
-            rawHist[tid][ch][gid] = { data: new Float32Array(0), binWidth, stacked };
+            rawHist[tid][ch][gid] = { xs: new Int32Array(0), binWidth, stacked };
             gpuHist[tid][ch][gid] = { base: null, levels: [] };
             continue;
           }
@@ -2457,12 +2535,13 @@ function uploadTrackData() {
           // builder differs (stride-3 stacked vs stride-2 unstacked).
           const baseB64 = payload.base || '';
           const lodMap  = payload.lods || {};
-          const baseArr = b64F32(baseB64);
-          rawHist[tid][ch][gid] = { data: baseArr, binWidth, stacked };
-          const buildBase = stacked ? buildHistStackedGPU : buildHistGPU;
-          const baseGpu = baseArr && baseArr.length
-            ? buildBase(baseArr, yMin, yMax, binWidth, color)
-            : null;
+          const base = stacked ? unpackXLoHi(baseB64) : unpackXY(baseB64);
+          rawHist[tid][ch][gid] = { ...base, binWidth, stacked };
+          const baseGpu = base.n === 0 ? null
+            : stacked
+              ? buildHistStackedGPU(base.xs, base.los, base.his,
+                                    yMin, yMax, binWidth, color)
+              : buildHistGPU(base.xs, base.ys, yMin, yMax, binWidth, color);
           // Build a GPU buffer for each LOD level. For stacked, levels are
           // pre-built stride-3 (x, lo, hi) arrays from Python; for
           // non-stacked, they're length-n bin values that we expand into
@@ -2470,19 +2549,21 @@ function uploadTrackData() {
           const levels = [];
           for (const [nStr, b64] of Object.entries(lodMap)) {
             const n = parseInt(nStr);
-            const vals = b64F32(b64);
-            if (!vals || vals.length === 0) continue;
             const lvlBinW = csz / n;
             let gpu;
             if (stacked) {
-              gpu = buildHistStackedGPU(vals, yMin, yMax, lvlBinW, color);
+              const lv = unpackXLoHi(b64);
+              if (lv.n === 0) continue;
+              gpu = buildHistStackedGPU(lv.xs, lv.los, lv.his,
+                                        yMin, yMax, lvlBinW, color);
             } else {
-              const xy = new Float32Array(n * 2);
-              for (let i = 0; i < n; i++) {
-                xy[i * 2]     = (i + 0.5) * lvlBinW;
-                xy[i * 2 + 1] = vals[i];
-              }
-              gpu = buildHistGPU(xy, yMin, yMax, lvlBinW, color);
+              // Non-stacked levels ship as bare per-bin values; the bin
+              // centres are reconstructed here.
+              const vals = b64F32(b64);
+              if (!vals || vals.length === 0) continue;
+              const xs = new Int32Array(n);
+              for (let i = 0; i < n; i++) xs[i] = Math.round((i + 0.5) * lvlBinW);
+              gpu = buildHistGPU(xs, vals, yMin, yMax, lvlBinW, color);
             }
             if (gpu) levels.push({ nBins: n, binWidth: lvlBinW, ...gpu });
           }
@@ -2500,11 +2581,11 @@ function uploadTrackData() {
         for (const [gid, b64] of Object.entries(d[ch])) {
           const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
           if (b64 === '' || b64 == null) {
-            rawArc[tid][ch][gid] = new Float32Array(0);
+            rawArc[tid][ch][gid] = new Int32Array(0);
             gpuArc[tid][ch][gid] = null;
             continue;
           }
-          const arr = b64F32(b64);
+          const arr = b64I32(b64);
           rawArc[tid][ch][gid] = arr;
           gpuArc[tid][ch][gid] = buildArcGPU(arr, color);
         }
@@ -2578,6 +2659,7 @@ function drawRects(gpuData, vs, ve, tt, tb, minDx) {
   if (count <= 0) return;
   const byteOff = lo * INST_STRIDE;
   gl.useProgram(rectProg);
+  gl.uniform1i(rLoc.uVSi, Math.round(vs));
   gl.uniform1f(rLoc.uVS, vs);
   gl.uniform1f(rLoc.uVE, ve);
   gl.uniform1f(rLoc.uTT, tt);
@@ -2591,10 +2673,10 @@ function drawRects(gpuData, vs, ve, tt, tb, minDx) {
   gl.bindBuffer(gl.ARRAY_BUFFER, gpuData.buf);
   const S = INST_STRIDE;
   gl.enableVertexAttribArray(rLoc.iStart);
-  gl.vertexAttribPointer(rLoc.iStart, 1, gl.FLOAT, false, S, byteOff + 0);
+  gl.vertexAttribIPointer(rLoc.iStart, 1, gl.INT, S, byteOff + 0);
   gl.vertexAttribDivisor(rLoc.iStart, 1);
   gl.enableVertexAttribArray(rLoc.iEnd);
-  gl.vertexAttribPointer(rLoc.iEnd, 1, gl.FLOAT, false, S, byteOff + 4);
+  gl.vertexAttribIPointer(rLoc.iEnd, 1, gl.INT, S, byteOff + 4);
   gl.vertexAttribDivisor(rLoc.iEnd, 1);
   gl.enableVertexAttribArray(rLoc.iYLo);
   gl.vertexAttribPointer(rLoc.iYLo, 1, gl.FLOAT, false, S, byteOff + 8);
@@ -2621,6 +2703,7 @@ function drawArcs(gpuData, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY) {
   if (count <= 0) return;
   const byteOff = lo * ARC_INST_STRIDE;
   gl.useProgram(arcProg);
+  gl.uniform1i(aLoc.uVSi, Math.round(vs));
   gl.uniform1f(aLoc.uVS, vs);
   gl.uniform1f(aLoc.uVE, ve);
   gl.uniform1f(aLoc.uXL, curXL);
@@ -2640,10 +2723,10 @@ function drawArcs(gpuData, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY) {
   gl.bindBuffer(gl.ARRAY_BUFFER, gpuData.buf);
   const S = ARC_INST_STRIDE;
   gl.enableVertexAttribArray(aLoc.iP1);
-  gl.vertexAttribPointer(aLoc.iP1, 1, gl.FLOAT, false, S, byteOff + 0);
+  gl.vertexAttribIPointer(aLoc.iP1, 1, gl.INT, S, byteOff + 0);
   gl.vertexAttribDivisor(aLoc.iP1, 1);
   gl.enableVertexAttribArray(aLoc.iP2);
-  gl.vertexAttribPointer(aLoc.iP2, 1, gl.FLOAT, false, S, byteOff + 4);
+  gl.vertexAttribIPointer(aLoc.iP2, 1, gl.INT, S, byteOff + 4);
   gl.vertexAttribDivisor(aLoc.iP2, 1);
   gl.enableVertexAttribArray(aLoc.iColor);
   gl.vertexAttribPointer(aLoc.iColor, 3, gl.FLOAT, false, S, byteOff + 8);
@@ -2659,6 +2742,7 @@ function drawArcs(gpuData, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY) {
 function setupDensProg(vs, ve, tt, tb, color, alpha) {
   const [r, g, b] = hexRGB(color);
   gl.useProgram(densProg);
+  gl.uniform1i(dLoc.uVSi, Math.round(vs));
   gl.uniform1f(dLoc.uVS, vs);
   gl.uniform1f(dLoc.uVE, ve);
   gl.uniform1f(dLoc.uTT, tt);
@@ -2671,9 +2755,11 @@ function setupDensProg(vs, ve, tt, tb, color, alpha) {
 
 function bindDensBuf(buf) {
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.enableVertexAttribArray(dLoc.aX);
-  gl.vertexAttribPointer(dLoc.aX, 1, gl.FLOAT, false, DENS_STRIDE, 0);
-  gl.vertexAttribDivisor(dLoc.aX, 0);
+  gl.enableVertexAttribArray(dLoc.aXi);
+  // Integer attribute: vertexAttribIPointer, not vertexAttribPointer. Reading
+  // an int32 slot as float (or the reverse) is silent garbage, not an error.
+  gl.vertexAttribIPointer(dLoc.aXi, 1, gl.INT, DENS_STRIDE, 0);
+  gl.vertexAttribDivisor(dLoc.aXi, 0);
   gl.enableVertexAttribArray(dLoc.aH);
   gl.vertexAttribPointer(dLoc.aH, 1, gl.FLOAT, false, DENS_STRIDE, 4);
   gl.vertexAttribDivisor(dLoc.aH, 0);
@@ -3666,6 +3752,7 @@ let geneData   = {};
 // tooltip/render don't pay a model.get round-trip per event or per frame.
 let _panSpeed     = +model.get('pan_speed')  || 1.0;
 let _zoomSpeed    = +model.get('zoom_speed') || 1.02;
+let _minSpan      = +model.get('min_span')   || 500;
 let _trackConfigs = model.get('track_configs') || [];
 
 function buildChromSel() {
@@ -3736,15 +3823,6 @@ function fmtTip(fmt, obj) {
 
 // ── Tooltip data extractors ─────────────────────────────────────────────────
 
-function bisectStride(arr, val, stride) {
-  let lo = 0, hi = (arr.length / stride) | 0;
-  while (lo < hi) {
-    const m = (lo + hi) >> 1;
-    arr[m * stride] < val ? lo = m + 1 : hi = m;
-  }
-  return lo;
-}
-
 function tipDataGene(pos, chrom, cfg) {
   const entry = geneData?.[cfg.id]?.[chrom];
   const genes = entry?.records ?? (Array.isArray(entry) ? entry : []);
@@ -3761,18 +3839,18 @@ function tipDataGene(pos, chrom, cfg) {
 function tipDataXY(pos, chrom, cfg) {
   const items = [];
   for (const grp of cfg.groups) {
-    const arr = rawXY?.[cfg.id]?.[chrom]?.[grp.id];
-    if (!arr || arr.length < 2) continue;
-    const n = (arr.length / 2) | 0;
-    const idx = bisectStride(arr, pos, 2);
+    const raw = rawXY?.[cfg.id]?.[chrom]?.[grp.id];
+    if (!raw || !raw.n) continue;
+    const { xs, ys, n } = raw;
+    const idx = bisect(xs, pos);
     let best = -1, bestDist = Infinity;
     for (const c of [idx - 1, idx]) {
       if (c >= 0 && c < n) {
-        const d = Math.abs(arr[c * 2] - pos);
+        const d = Math.abs(xs[c] - pos);
         if (d < bestDist) { bestDist = d; best = c; }
       }
     }
-    if (best >= 0) items.push({ group: grp.name, value: arr[best * 2 + 1], x: arr[best * 2] });
+    if (best >= 0) items.push({ group: grp.name, value: ys[best], x: xs[best] });
   }
   return items.length ? items : null;
 }
@@ -3780,18 +3858,18 @@ function tipDataXY(pos, chrom, cfg) {
 function tipDataFill(pos, chrom, cfg) {
   const items = [];
   for (const grp of cfg.groups) {
-    const arr = rawFill?.[cfg.id]?.[chrom]?.[grp.id];
-    if (!arr || arr.length < 3) continue;
-    const n = (arr.length / 3) | 0;
-    const idx = bisectStride(arr, pos, 3);
+    const raw = rawFill?.[cfg.id]?.[chrom]?.[grp.id];
+    if (!raw || !raw.n) continue;
+    const { xs, los, his, n } = raw;
+    const idx = bisect(xs, pos);
     let best = -1, bestDist = Infinity;
     for (const c of [idx - 1, idx]) {
       if (c >= 0 && c < n) {
-        const d = Math.abs(arr[c * 3] - pos);
+        const d = Math.abs(xs[c] - pos);
         if (d < bestDist) { bestDist = d; best = c; }
       }
     }
-    if (best >= 0) items.push({ group: grp.name, lo: arr[best * 3 + 1], hi: arr[best * 3 + 2], x: arr[best * 3] });
+    if (best >= 0) items.push({ group: grp.name, lo: los[best], hi: his[best], x: xs[best] });
   }
   return items.length ? items : null;
 }
@@ -3802,19 +3880,14 @@ function tipDataHist(pos, chrom, cfg) {
   const items = [];
   for (const grp of cfg.groups) {
     const raw = rawHist?.[cfg.id]?.[chrom]?.[grp.id];
-    if (!raw) continue;
-    const arr = raw.data;
-    if (!arr || arr.length < 2) continue;
-    const stride = raw.stacked ? 3 : 2;
-    const n = (arr.length / stride) | 0;
-    const idx = bisectStride(arr, pos, stride);
+    if (!raw || !raw.n) continue;
+    const { xs, n } = raw;
+    const idx = bisect(xs, pos);
     for (const c of [idx - 1, idx]) {
       if (c >= 0 && c < n) {
-        const cx = arr[c * stride];
+        const cx = xs[c];
         if (pos >= cx - halfW && pos <= cx + halfW) {
-          const value = raw.stacked
-            ? (arr[c * stride + 2] - arr[c * stride + 1])
-            : arr[c * stride + 1];
+          const value = raw.stacked ? (raw.his[c] - raw.los[c]) : raw.ys[c];
           items.push({ group: grp.name, value, x: cx });
           break;
         }
@@ -4075,7 +4148,9 @@ glCanvas.addEventListener('wheel', e => {
   const factor = e.deltaY > 0 ? _zoomSpeed : 1 / _zoomSpeed;
   const lo     = panLo(vp.chrom), hi = panHi(vp.chrom);
   const span   = hi - lo;
-  const nr     = clamp(range * factor, 500, span);
+  // Never let the floor exceed the span itself, or a chromosome shorter
+  // than min_span would clamp to a width it cannot display.
+  const nr     = clamp(range * factor, Math.min(_minSpan, span), span);
   const ns     = clamp(anchor - frac * nr, lo, hi - nr);
   vp = { chrom: vp.chrom, start: ns, end: ns + nr };
   scheduleRender();
@@ -4088,7 +4163,7 @@ glCanvas.addEventListener('dblclick', e => {
   const frac  = clamp(e.offsetX - LABEL_W, 0, W) / W;
   const range = vp.end - vp.start;
   const lo    = panLo(vp.chrom), hi = panHi(vp.chrom);
-  const nr    = Math.max(500, range / 2);
+  const nr    = Math.max(Math.min(_minSpan, hi - lo), range / 2);
   const anchor = vp.start + frac * range;
   const ns    = clamp(anchor - frac * nr, lo, hi - nr);
   vp = { chrom: vp.chrom, start: ns, end: ns + nr };
@@ -4110,7 +4185,7 @@ const onKey = e => {
   if (e.key === 'ArrowRight') { ns = clamp(ns + step, lo, hi - range); ne = ns + range; }
   if (e.key === 'ArrowLeft')  { ns = clamp(ns - step, lo, hi - range); ne = ns + range; }
   if (e.key === '+' || e.key === '=') {
-    const nr = Math.max(500, range / 1.5), mid = (ns + ne) / 2;
+    const nr = Math.max(Math.min(_minSpan, span), range / 1.5), mid = (ns + ne) / 2;
     ns = clamp(mid - nr/2, lo, hi - nr); ne = ns + nr;
   }
   if (e.key === '-') {
@@ -4384,6 +4459,7 @@ model.on('change:track_configs', () => {
 });
 model.on('change:pan_speed',  () => { _panSpeed  = +model.get('pan_speed')  || 1.0; });
 model.on('change:zoom_speed', () => { _zoomSpeed = +model.get('zoom_speed') || 1.02; });
+model.on('change:min_span',   () => { _minSpan   = +model.get('min_span')   || 500;  });
 model.on('change:track_data', () => {
   uploadTrackData();
   _hmBusyClear();
@@ -4552,6 +4628,12 @@ class Tracks(anywidget.AnyWidget):
     pan_speed : float, default ``1.0``
         Multiplier for click-drag pan velocity (genomic units per CSS
         pixel of mouse movement).
+    min_span : int, default ``500``
+        Narrowest viewport width in base pairs — the point past which
+        zooming in stops. Applies to the wheel, double-click and the
+        ``+`` key alike. Lower it to inspect individual bases (e.g.
+        ``min_span=100``); it is clamped to the chromosome's own span, so
+        a value larger than the chromosome cannot lock the view.
     theme : dict
         Colour palette and layout knobs. See :data:`DARK_THEME` and
         :data:`LIGHT_THEME` for the recognised keys; numeric values
@@ -4579,6 +4661,7 @@ class Tracks(anywidget.AnyWidget):
     spans         = traitlets.List([]).tag(sync=True)
     zoom_speed    = traitlets.Float(1.02).tag(sync=True)
     pan_speed     = traitlets.Float(1.0).tag(sync=True)
+    min_span      = traitlets.Int(500, min=1).tag(sync=True)
     theme         = traitlets.Dict(dict(DARK_THEME)).tag(sync=True)
 
     _PALETTE = [
@@ -4969,6 +5052,79 @@ class Tracks(anywidget.AnyWidget):
         return base64.b64encode(arr.astype(np.float32).tobytes()).decode()
 
     @staticmethod
+    def _pack_i32(arr: np.ndarray) -> str:
+        """Pack a numpy array as base64-encoded little-endian int32 bytes.
+
+        Genomic coordinates travel as ``int32`` rather than ``float32``: a
+        float32 mantissa is 24 bits, so positions above 16,777,216 snap to a
+        grid of 4 bp, then 8, then 16 as the coordinate grows, which is visible
+        as "aggregation" once the viewer is zoomed past a few kb. ``int32``
+        spans 2.1 billion, comfortably more than any assembly.
+
+        Parameters
+        ----------
+        arr : numpy.ndarray
+            Input array; cast to ``int32`` before serialisation.
+
+        Returns
+        -------
+        str
+            ASCII base64 of the raw byte buffer, decoded JS-side as an
+            ``Int32Array``.
+        """
+        return base64.b64encode(
+            _round_bp(arr).tobytes()
+        ).decode()
+
+    @staticmethod
+    def _pack_xy(xs: np.ndarray, ys: np.ndarray) -> str:
+        """Pack interleaved ``(position, value)`` pairs, 8 bytes per vertex.
+
+        The leading 4 bytes of each pair are an ``int32`` genomic position (see
+        :meth:`_pack_i32` for why) and the trailing 4 a ``float32`` value. The
+        stride is unchanged from the all-float32 layout it replaces, so the
+        GPU binding only changes which *type* it reads at offset 0.
+
+        Parameters
+        ----------
+        xs, ys : numpy.ndarray
+            Equal-length arrays of genomic positions and their values.
+
+        Returns
+        -------
+        str
+            ASCII base64 of the interleaved buffer.
+        """
+        buf = np.empty(len(xs) * 2, dtype=np.float32)
+        buf[1::2] = np.asarray(ys, dtype=np.float64).astype(np.float32)
+        buf.view(np.int32)[0::2] = _round_bp(xs)
+        return base64.b64encode(buf.tobytes()).decode()
+
+    @staticmethod
+    def _pack_xlohi(xs: np.ndarray, los: np.ndarray, his: np.ndarray) -> str:
+        """Pack interleaved ``(position, lo, hi)`` triples, 12 bytes each.
+
+        The band analogue of :meth:`_pack_xy`: an ``int32`` position followed
+        by two ``float32`` boundaries.
+
+        Parameters
+        ----------
+        xs, los, his : numpy.ndarray
+            Equal-length arrays of positions and the lower / upper band
+            boundaries.
+
+        Returns
+        -------
+        str
+            ASCII base64 of the interleaved buffer.
+        """
+        buf = np.empty(len(xs) * 3, dtype=np.float32)
+        buf[1::3] = np.asarray(los, dtype=np.float64).astype(np.float32)
+        buf[2::3] = np.asarray(his, dtype=np.float64).astype(np.float32)
+        buf.view(np.int32)[0::3] = _round_bp(xs)
+        return base64.b64encode(buf.tobytes()).decode()
+
+    @staticmethod
     def _pack_u8(arr: np.ndarray) -> str:
         """Pack a numpy array as base64-encoded uint8 bytes.
 
@@ -5249,16 +5405,16 @@ class Tracks(anywidget.AnyWidget):
                 if use_ind:
                     ind_map = grp_ind_map[gid]
                     ind_idx = np.array([ind_map[v] for v in gdf[individual_col].values],
-                                       dtype=np.float32)
-                    arr = np.empty(len(gdf) * 3, dtype=np.float32)
+                                       dtype=np.int64)
+                    arr = np.empty(len(gdf) * 3, dtype=np.int64)
                     arr[0::3] = gdf['start'].to_numpy()
                     arr[1::3] = gdf['end'].to_numpy()
                     arr[2::3] = ind_idx
                 else:
-                    arr = np.empty(len(gdf) * 2, dtype=np.float32)
+                    arr = np.empty(len(gdf) * 2, dtype=np.int64)
                     arr[0::2] = gdf['start'].to_numpy()
                     arr[1::2] = gdf['end'].to_numpy()
-                seg_out[chrom][gid] = self._pack_f32(arr)
+                seg_out[chrom][gid] = self._pack_i32(arr)
 
                 starts = gdf['start'].to_numpy()
                 for n in level_counts:
@@ -5443,10 +5599,10 @@ class Tracks(anywidget.AnyWidget):
                 order = np.argsort(lo, kind='mergesort')
                 lo = lo[order]
                 hi = hi[order]
-                arr = np.empty(len(lo) * 2, dtype=np.float32)
+                arr = np.empty(len(lo) * 2, dtype=np.int64)
                 arr[0::2] = lo
                 arr[1::2] = hi
-                arcs_out[chrom][gid] = self._pack_f32(arr)
+                arcs_out[chrom][gid] = self._pack_i32(arr)
                 group_counts[gid] += len(lo)
 
         # Resolve height / arc_height so the two are always consistent:
@@ -7161,7 +7317,7 @@ class Tracks(anywidget.AnyWidget):
                 ys_arr = gdf[y].to_numpy(dtype=np.float64)
 
                 # ── base buffer (stride-2, with optional step expansion) ──
-                base_b64 = self._pack_f32(_step_expand(xs_arr, ys_arr, step))
+                base_b64 = self._pack_xy(*_step_expand(xs_arr, ys_arr, step))
 
                 # ── LOD levels: stride-2 (bin_centre, aggregate_y) for
                 # non-empty bins only. Aggregate from the pre-step samples
@@ -7186,8 +7342,8 @@ class Tracks(anywidget.AnyWidget):
                         bw = level_csz / nbin
                         xs_out = (np.flatnonzero(mask).astype(np.float64) + 0.5) * bw
                         ys_out = lvl[mask]
-                        lods[str(nbin)] = self._pack_f32(
-                            _step_expand(xs_out, ys_out, step)
+                        lods[str(nbin)] = self._pack_xy(
+                            *_step_expand(xs_out, ys_out, step)
                         )
                         bin_widths[str(nbin)] = float(bw)
 
@@ -7493,8 +7649,8 @@ class Tracks(anywidget.AnyWidget):
                     his_arr = gdf[y_hi].to_numpy(dtype=np.float64)
 
                 # ── base buffer (stride-3, with optional step expansion) ──
-                base_b64 = self._pack_f32(
-                    _step_expand3(xs_arr, los_arr, his_arr, step)
+                base_b64 = self._pack_xlohi(
+                    *_step_expand3(xs_arr, los_arr, his_arr, step)
                 )
 
                 # ── LOD levels: stride-3 (bin_centre, lo, hi) for non-empty
@@ -7532,8 +7688,8 @@ class Tracks(anywidget.AnyWidget):
                         xs_out = (np.flatnonzero(mask).astype(np.float64) + 0.5) * bw
                         lo_out = lo_lvl[mask]
                         hi_out = hi_lvl[mask]
-                        lods[str(nbin)] = self._pack_f32(
-                            _step_expand3(xs_out, lo_out, hi_out, step)
+                        lods[str(nbin)] = self._pack_xlohi(
+                            *_step_expand3(xs_out, lo_out, hi_out, step)
                         )
                         bin_widths[str(nbin)] = float(bw)
 
@@ -7846,18 +8002,15 @@ class Tracks(anywidget.AnyWidget):
                         hi = np.where(ys_g >= 0, pos_hi, neg_hi)
                         _note_ext(lo, hi)
 
-                        n = xs_g.size
-                        arr = np.empty(n * 3, dtype=np.float32)
-                        arr[0::3] = xs_g.astype(np.float32)
-                        arr[1::3] = lo.astype(np.float32)
-                        arr[2::3] = hi.astype(np.float32)
-                        base_per_group[gid] = arr
+                        # Components, not an interleaved float32 buffer:
+                        # positions must reach _pack_xlohi unrounded.
+                        base_per_group[gid] = (xs_g, lo, hi)
                     # Empty groups: keep a zero-length array so the downstream
                     # serialisation path is uniform.
                     for gi in range(len(groups)):
                         gid = str(gi)
                         if gid not in base_per_group:
-                            base_per_group[gid] = np.zeros(0, dtype=np.float32)
+                            base_per_group[gid] = None
 
                 # ── LOD aggregations ──────────────────────────────────────
                 # For each level n, aggregate each group's values into n
@@ -7897,20 +8050,18 @@ class Tracks(anywidget.AnyWidget):
                             neg_cursor = np.where(v < 0,
                                                   neg_cursor + v, neg_cursor)
                             _note_ext(lo, hi)
-                            arr = np.empty(nbin * 3, dtype=np.float32)
-                            arr[0::3] = x_centres.astype(np.float32)
-                            arr[1::3] = lo.astype(np.float32)
-                            arr[2::3] = hi.astype(np.float32)
-                            lods_per_group[gid][str(nbin)] = self._pack_f32(arr)
+                            lods_per_group[gid][str(nbin)] = self._pack_xlohi(
+                                x_centres, lo, hi
+                            )
 
                 for gi in range(len(groups)):
                     gid = str(gi)
                     base = base_per_group[gid]
-                    if base.size == 0 and not lods_per_group[gid]:
+                    if base is None and not lods_per_group[gid]:
                         hist_out[chrom][gid] = ''
                         continue
                     hist_out[chrom][gid] = {
-                        'base': self._pack_f32(base) if base.size else '',
+                        'base': self._pack_xlohi(*base) if base is not None else '',
                         'lods': lods_per_group[gid],
                     }
             else:
@@ -7926,10 +8077,7 @@ class Tracks(anywidget.AnyWidget):
                     xs_arr = gdf[x].to_numpy(dtype=np.float64)
                     ys_arr = gdf[y].to_numpy(dtype=np.float64)
                     _note_ext(ys_arr)
-                    base_arr = np.empty(len(gdf) * 2, dtype=np.float32)
-                    base_arr[0::2] = xs_arr.astype(np.float32)
-                    base_arr[1::2] = ys_arr.astype(np.float32)
-                    base_b64 = self._pack_f32(base_arr)
+                    base_b64 = self._pack_xy(xs_arr, ys_arr)
 
                     # Build LOD aggregations: each level n is a length-n array
                     # giving the per-bin aggregate of the user's y values that
