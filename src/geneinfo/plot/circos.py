@@ -4,22 +4,11 @@ from collections import defaultdict
 import matplotlib
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
+from itertools import combinations
+
+from ..coords import chromosome_lengths
 
 __all__ = ["circos_plot"]
-
-chrom_lengths = {'hg19': {'chr1': 249250621, 'chr2': 243199373, 'chr3': 198022430, 'chr4': 191154276,
-                            'chr5': 180915260, 'chr6': 171115067, 'chr7': 159138663, 'chr8': 146364022,
-                            'chr9': 141213431, 'chr10': 135534747, 'chr11': 135006516, 'chr12': 133851895,
-                            'chr13': 115169878, 'chr14': 107349540, 'chr15': 102531392, 'chr16': 90354753,
-                            'chr17': 81195210, 'chr18': 78077248, 'chr19': 59128983, 'chr20': 63025520,
-                            'chr21': 48129895, 'chr22': 51304566, 'chrX': 155270560, 'chrY': 59373566},
-                    'hg38': {'chr1': 248956422, 'chr2': 242193529, 'chr3': 198295559, 'chr4': 190214555,
-                            'chr5': 181538259, 'chr6': 170805979, 'chr7': 159345973, 'chr8': 145138636,
-                            'chr9': 138394717, 'chr10': 133797422, 'chr11': 135086622, 'chr12': 133275309,
-                            'chr13': 114364328, 'chr14': 107043718, 'chr15': 101991189, 'chr16': 90338345,
-                            'chr17': 83257441, 'chr18': 80373285, 'chr19': 58617616, 'chr20': 64444167,
-                            'chr21': 46709983, 'chr22': 50818468, 'chrX': 156040895, 'chrY': 57227415}}
-
 
 def register_shifted_cmap(cmap_name, n_lines=24):
     name_shifted = f'shifted_{cmap_name}'
@@ -50,9 +39,9 @@ except ValueError:
     # already registered, ignore
     pass
 
-def circos_plot(stmts, #reg, 
+def circos_plot(connections, assembly, #reg, 
                 ax=None,
-                cmap='shifted_hsv', scalings={}, assembly='hg38',
+                cmap='shifted_hsv', scalings={},
         ideogram_base = 97, ideogram_height = 3, figsize = (8, 8), link_kwargs={}):
 
     import matplotlib.pyplot as plt
@@ -61,32 +50,36 @@ def circos_plot(stmts, #reg,
     _link_kwargs = dict(lw=0.5, alpha=1, zorder=0)
     _link_kwargs.update(link_kwargs)
 
+    gene_coordinates = {}
+    label_genes = set()
+    for a, b in connections:
+        if isinstance(a, str):
+            a = gene_coords(a, assembly=assembly)[0]
+        if isinstance(b, str):
+            b = gene_coords(b, assembly=assembly)[0]
+        print(a)
+        label_genes.add(a[3])
+        label_genes.add(b[3])
+        gene_coordinates[a[3]] = a[:3]
+        gene_coordinates[b[3]] = b[:3]
+
+        stmts.append((a, b))
+    # # label_genes = set([a.name for st in stmts for a in st.agent_list() if a])
+    # gene_coordinates = {}
+    # for chrom, start, end, name in gene_coords(label_genes, assembly=assembly):
+    #     gene_coordinates[name] = (chrom, start, end)
+
     ColorCycler.set_cmap(cmap)
-    # sector_lengths = chrom_lengths[assembly].copy()
-    sector_lengths = {chrom: length * scalings.get(chrom, 1) for chrom, length in chrom_lengths[assembly].items()}
+    sector_lengths = {chrom: length * scalings.get(chrom, 1) for chrom, length in chromosome_lengths[assembly].items()}
     
     circos = Circos(sectors=sector_lengths, space=3)
     chr_names = [s.name for s in circos.sectors]
     colors = ColorCycler.get_color_list(len(chr_names))
     chr_name2color = {name: color for name, color in zip(chr_names, colors)}
 
-    label_genes = set([a.name for st in stmts for a in st.agent_list() if a])
-    gene_coordinates = {}
-    for chrom, start, end, name in gene_coords(label_genes, assembly=assembly):
-        gene_coordinates[name] = (chrom, start, end)
-
-    # gene_coordinates = {}
-    # for name, data in reg.items():
-    #     if name in label_genes and 'coordinates' in data:
-    #         gene_coordinates[name] = [
-    #             data['coordinates'][assembly]['chrom'],
-    #             data['coordinates'][assembly]['start'],
-    #             data['coordinates'][assembly]['end']
-    #         ]
     gene_labels = defaultdict(list)
     for name, (chrom, start, end) in gene_coordinates.items():
         gene_labels[chrom].append([int((start+end)/2 * scalings.get(chrom, 1)), name])
-#        gene_labels[chrom].append([(start+end)/2, name])
 
     for sector in circos.sectors:
         sector.text(sector.name, r=105, size=8, color=chr_name2color[sector.name])
