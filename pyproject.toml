@@ -6,14 +6,16 @@ build-backend = "setuptools.build_meta"
 name = "geneinfo"
 version = "5.6.39"
 description = "..."
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
 dependencies = [
     'jupyter',
     'ipython',
-    'matplotlib>=3.0',
-    'seaborn',
-    'numpy>=1.1',
+    'ipykernel',
+    'numpy>=2.5.3,<3',
+    'scipy>=1.18.1,<2',
+    'matplotlib>=3.11.2,<4',
+    'seaborn>=0.13.2,<0.14',
     'requests',
     'biopython',
     'goatools>=1.2',
