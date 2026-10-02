@@ -28,7 +28,7 @@ dependencies = [
     'anywidget',
     'traitlets>=5',
     'pandas',
-    'pycirclize',
+    'pycirclize>=1.10.1,<2',
 ]
 classifiers = [
     "Programming Language :: Python :: 3"
