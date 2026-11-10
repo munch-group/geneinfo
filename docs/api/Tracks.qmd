@@ -1,7 +1,7 @@
 # Tracks { #geneinfo.widget.Tracks }
 
 ```python
-geneinfo.widget.Tracks(chroms, **kw)
+geneinfo.widget.Tracks(chroms=None, *, assembly=None, **kw)
 ```
 
 WebGL2 genomic segment viewer rendered as a Jupyter widget.
@@ -10,6 +10,20 @@ Build a stack of tracks by chaining the ``add_*_track`` methods, then
 display the instance directly in a notebook cell. All pan / zoom is
 uniform-only (zero CPU/GPU buffer work per frame); segment viewport
 culling uses sorted attribute-pointer offsets.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**chroms**]{.parameter-name} [:]{.parameter-annotation-sep} [dict of str to int, or str]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Chromosome sizes as a ``{chrom: length}`` mapping, or an assembly name such as ``'hg38'``. The first chromosome is shown initially.
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Assembly name (``'hg38'``, ``'rheMac10'``, …) whose chromosome sizes are looked up with :func:`geneinfo.coords.chromosome_lengths`; an alternative to ``chroms``. Give one of ``chroms`` and ``assembly``, not both. The assembly is also the default for :meth:`add_gene_track`.
+
+<code>[****kw**]{.parameter-name} [:]{.parameter-annotation-sep} []{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
+
+:   Passed on to :class:`anywidget.AnyWidget`; ``theme=`` overrides the default theme (see :func:`set_default_theme`).
 
 ## Track types {.doc-section .doc-section-track-types}
 
