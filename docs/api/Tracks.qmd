@@ -1755,7 +1755,7 @@ Remove tracks by display name, or a single track by index.
 ### select_tracks { #geneinfo.widget.Tracks.select_tracks }
 
 ```python
-geneinfo.widget.Tracks.select_tracks(names)
+geneinfo.widget.Tracks.select_tracks(*names)
 ```
 
 Show only the listed tracks, in the order listed.
@@ -1769,9 +1769,9 @@ instantly.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
-<code>[**names**]{.parameter-name} [:]{.parameter-annotation-sep} [str, int, or iterable of str or int]{.parameter-annotation}</code>
+<code>[***names**]{.parameter-name} [:]{.parameter-annotation-sep} [str, int, or iterable of str or int]{.parameter-annotation} [ = ]{.parameter-default-sep} [()]{.parameter-default}</code>
 
-:   Tracks to show. Each entry is a display name, which selects every track with that name (in their existing order), or a positional index into :attr:`track_configs` as it is before the call. A track listed twice is placed at its first mention. An empty list hides every track.
+:   Tracks to show, as separate arguments (``select_tracks('a', 'b')``), as one list (``select_tracks(['a', 'b'])``), or a mix. Each entry is a display name, which selects every track with that name (in their existing order), or a positional index into :attr:`track_configs` as it is before the call. A track listed twice is placed at its first mention. No entries (an empty call or an empty list) hides every track.
 
 #### Returns {.doc-section .doc-section-returns}
 
