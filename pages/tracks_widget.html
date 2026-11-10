@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.11.9">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -75,14 +75,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../pages/go_graphs.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -120,19 +121,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating nav-fixed quarto-light">
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">geneinfo</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -156,15 +156,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav">
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Visualization</a></li><li class="breadcrumb-item"><a href="../pages/tracks_widget.html">Tracks widget</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Visualization</a></li><li class="breadcrumb-item"><a href="../pages/tracks_widget.html">Tracks widget</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
   </nav>
@@ -172,7 +173,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -183,13 +184,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Information</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Information</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/gene_ids.html" class="sidebar-item-text sidebar-link">
@@ -206,13 +204,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Visualization</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Visualization</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/gene_plots.html" class="sidebar-item-text sidebar-link">
@@ -259,13 +254,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Enrichment</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Enrichment</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/go_info.html" class="sidebar-item-text sidebar-link">
@@ -282,13 +274,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Utilities</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Utilities</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/gene_lists.html" class="sidebar-item-text sidebar-link">
@@ -309,11 +298,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#highlighting" id="toc-highlighting" class="nav-link active" data-scroll-target="#highlighting">Highlighting</a></li>
+  <li><a href="#log-scaled-y-axis" id="toc-log-scaled-y-axis" class="nav-link active" data-scroll-target="#log-scaled-y-axis">Log-scaled y-axis</a></li>
+  <li><a href="#gaps-in-line-and-fill-tracks" id="toc-gaps-in-line-and-fill-tracks" class="nav-link" data-scroll-target="#gaps-in-line-and-fill-tracks">Gaps in line and fill tracks</a></li>
+  <li><a href="#hiding-showing-and-selecting-tracks" id="toc-hiding-showing-and-selecting-tracks" class="nav-link" data-scroll-target="#hiding-showing-and-selecting-tracks">Hiding, showing and selecting tracks</a></li>
+  <li><a href="#highlighting" id="toc-highlighting" class="nav-link" data-scroll-target="#highlighting">Highlighting</a></li>
   <li><a href="#segments" id="toc-segments" class="nav-link" data-scroll-target="#segments">Segments</a></li>
   <li><a href="#tooltip" id="toc-tooltip" class="nav-link" data-scroll-target="#tooltip">Tooltip</a></li>
   <li><a href="#theme" id="toc-theme" class="nav-link" data-scroll-target="#theme">Theme</a></li>
@@ -321,9 +313,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content" tabindex="-1">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Visualization</a></li><li class="breadcrumb-item"><a href="../pages/tracks_widget.html">Tracks widget</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gene_plots.html">Visualization</a></li><li class="breadcrumb-item"><a href="../pages/tracks_widget.html">Tracks widget</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Tracks widget</h1>
 </div>
@@ -555,19 +547,90 @@ table {
 </script>
 </div>
 </div>
+<section id="log-scaled-y-axis" class="level2">
+<h2 class="anchored" data-anchor-id="log-scaled-y-axis">Log-scaled y-axis</h2>
+<p>Point and line tracks take <code>y_scale='log'</code> to draw their y-axis on a base-10 log scale, ticked at powers of ten. This is set per track, so log and linear tracks can sit in the same viewer. Rows with values ≤ 0 have no position on a log axis; they are dropped with a warning. A <code>y_range</code> is given in data units, e.g.&nbsp;<code>y_range=(1e-8, 1)</code>, and tooltips show data values.</p>
+<p>When zoomed out, values in a bin are first aggregated (<code>aggregate='mean'</code>, <code>'sum'</code> or <code>'max'</code>) and the result is then placed on the log axis, so <code>'mean'</code> is the ordinary arithmetic mean.</p>
+<div id="06e8cc4b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>qdf[<span class="st">'pval'</span>] <span class="op">=</span> <span class="dv">10</span> <span class="op">**</span> <span class="op">-</span>np.random.default_rng(<span class="dv">1</span>).exponential(<span class="fl">1.5</span>, <span class="bu">len</span>(qdf))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>viewer_log <span class="op">=</span> (</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    .add_point_track(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'p-value'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'pval'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        y_scale<span class="op">=</span><span class="st">'log'</span>, tip_fmt<span class="op">=</span><span class="st">'</span><span class="sc">{group}</span><span class="st">: </span><span class="sc">{value:.2g}</span><span class="st">'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    .add_line_track(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Rate (linear)'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'rate'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>, step<span class="op">=</span><span class="st">'post'</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>viewer_log</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="gaps-in-line-and-fill-tracks" class="level2">
+<h2 class="anchored" data-anchor-id="gaps-in-line-and-fill-tracks">Gaps in line and fill tracks</h2>
+<p>A missing value (<code>NaN</code>) breaks a line or fill track, as in matplotlib: the line or band stops at the last sample before the missing value and resumes at the next sample after it. For a fill, a <code>NaN</code> in <code>y</code>, or in either <code>y_lo</code> or <code>y_hi</code>, makes a gap. Positions that simply have no row are bridged, so add rows with <code>NaN</code> where the track should break. When zoomed out, a bin is only a gap if all its samples are <code>NaN</code>; other bins aggregate their non-missing samples.</p>
+<div id="2cb2a9f6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>qgap <span class="op">=</span> qdf.copy()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>missing <span class="op">=</span> (qgap[<span class="st">'chrom'</span>] <span class="op">==</span> <span class="st">'chr1'</span>) <span class="op">&amp;</span> qgap[<span class="st">'pos'</span>].between(<span class="dv">60_000_000</span>, <span class="dv">120_000_000</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>qgap.loc[missing, [<span class="st">'rate'</span>, <span class="st">'ci_lo'</span>, <span class="st">'ci_hi'</span>]] <span class="op">=</span> np.nan</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>viewer_gap <span class="op">=</span> (</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    .add_line_track(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        qgap, <span class="st">'Lines'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'rate'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span><span class="st">'post'</span>, tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    .add_fill_track(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        qgap, <span class="st">'Fill btwn'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y_hi<span class="op">=</span><span class="st">'ci_hi'</span>, y_lo<span class="op">=</span><span class="st">'ci_lo'</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        group_by<span class="op">=</span><span class="st">'pop'</span>, tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>viewer_gap</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="hiding-showing-and-selecting-tracks" class="level2">
+<h2 class="anchored" data-anchor-id="hiding-showing-and-selecting-tracks">Hiding, showing and selecting tracks</h2>
+<p><code>remove_track</code> deletes a track and its data. To take a track out of view and bring it back later without re-rendering it, use <code>hide_track</code> and <code>show_track</code> instead: a hidden track keeps its data and its place, so showing it again is instant. All three accept a track name, which selects every track with that name, or a position in the track list (negative positions count from the end).</p>
+<div id="205b87f7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>viewer6 <span class="op">=</span> (</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .add_point_track(qdf, <span class="st">'Scatter'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'fst'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>, tip_fmt<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    .add_line_track(qdf, <span class="st">'Lines'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'rate'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>, tip_fmt<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    .add_fill_track(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Fill btwn'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y_hi<span class="op">=</span><span class="st">'ci_hi'</span>, y_lo<span class="op">=</span><span class="st">'ci_lo'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        group_by<span class="op">=</span><span class="st">'pop'</span>, tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>viewer6</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>added_tracks</code> lists the names of all tracks, hidden ones included, in display order:</p>
+<div id="04772e3c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>viewer6.added_tracks()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Hide a track and show it again:</p>
+<div id="c95a9820" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>viewer6.hide_track(<span class="st">'Scatter'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>viewer6.show_track(<span class="st">'Scatter'</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>select_tracks</code> shows only the listed tracks, in the order listed, and hides the rest. Here it shows the fill track above the line track and hides the scatter track. Passing <code>viewer6.added_tracks()</code> shows everything again.</p>
+<div id="fb9d8a14" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>viewer6.select_tracks([<span class="st">'Fill btwn'</span>, <span class="st">'Lines'</span>])<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
 <section id="highlighting" class="level2">
 <h2 class="anchored" data-anchor-id="highlighting">Highlighting</h2>
 <div id="8f3fab2a" class="cell" data-execution_count="10">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>viewer2 <span class="op">=</span> (</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                    height <span class="op">=</span> <span class="dv">100</span>, </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                    highlight<span class="op">=</span>[<span class="st">'LRRC7'</span>, <span class="st">'LRRC40'</span>, <span class="st">'CTH'</span>, <span class="st">'SRSF11'</span>, <span class="st">'CTH'</span>], </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                    highlight_color<span class="op">=</span><span class="st">"#ee55c5"</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                    )</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># zoom to region interest for demonstration purposes</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>viewer2.zoom_to(<span class="st">'chr1'</span>, center<span class="op">=</span><span class="dv">70000000</span>, window<span class="op">=</span><span class="dv">1200000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>viewer2 <span class="op">=</span> (</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                    height <span class="op">=</span> <span class="dv">100</span>, </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                    highlight<span class="op">=</span>[<span class="st">'LRRC7'</span>, <span class="st">'LRRC40'</span>, <span class="st">'CTH'</span>, <span class="st">'SRSF11'</span>, <span class="st">'CTH'</span>], </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                    highlight_color<span class="op">=</span><span class="st">"#ee55c5"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># zoom to region interest for demonstration purposes</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>viewer2.zoom_to(<span class="st">'chr1'</span>, center<span class="op">=</span><span class="dv">70000000</span>, window<span class="op">=</span><span class="dv">1200000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"7c5a60063c0741cf8bccb86d24c2e68a","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -575,29 +638,29 @@ table {
 </div>
 </div>
 <div id="1983c587" class="cell" data-execution_count="11">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>viewer3 <span class="op">=</span> (</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                    height <span class="op">=</span> <span class="dv">100</span>, </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                    highlight<span class="op">=</span>{                                                                   </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'fill'</span>:      [<span class="st">'ANKRD13C'</span>, <span class="st">'LRRC40'</span>, <span class="st">'CTH'</span>],                                           </span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'stroke'</span>:    [<span class="st">'LRRC40'</span>],                                                     </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'outline'</span>:   [<span class="st">'BRCA1'</span>],                                                   </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'color'</span>:     [<span class="st">'LRRC40'</span>],                                                    </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'bold'</span>:      [<span class="st">'LRRC7'</span>, <span class="st">'LRRC40'</span>],                                           </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'italic'</span>:    [<span class="st">'ANKRD13C'</span>],                                                     </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'underline'</span>: [<span class="st">'CTH'</span>],                                                    </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'halo'</span>:      [<span class="st">'SRSF11'</span>],                                                   </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                    }, </span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                    highlight_fill_color    <span class="op">=</span> <span class="st">"#e03a4e"</span>,                  </span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                    highlight_spine_color   <span class="op">=</span> <span class="st">"#d80ce6"</span>,                                          </span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                    highlight_outline_color <span class="op">=</span> <span class="st">"#000000"</span>,                                          </span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>                    highlight_label_color   <span class="op">=</span> <span class="st">"#169f4a"</span>,                                          </span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>                    highlight_halo_color    <span class="op">=</span> <span class="st">"#79CAD32E"</span>,    </span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>                    )</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># zoom to region interest for demonstration purposes</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>viewer3.zoom_to(<span class="st">'chr1'</span>, center<span class="op">=</span><span class="dv">70300000</span>, window<span class="op">=</span><span class="dv">600000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>viewer3 <span class="op">=</span> (</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                    height <span class="op">=</span> <span class="dv">100</span>, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                    highlight<span class="op">=</span>{                                                                   </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'fill'</span>:      [<span class="st">'ANKRD13C'</span>, <span class="st">'LRRC40'</span>, <span class="st">'CTH'</span>],                                           </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'stroke'</span>:    [<span class="st">'LRRC40'</span>],                                                     </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'outline'</span>:   [<span class="st">'BRCA1'</span>],                                                   </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'color'</span>:     [<span class="st">'LRRC40'</span>],                                                    </span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'bold'</span>:      [<span class="st">'LRRC7'</span>, <span class="st">'LRRC40'</span>],                                           </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'italic'</span>:    [<span class="st">'ANKRD13C'</span>],                                                     </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'underline'</span>: [<span class="st">'CTH'</span>],                                                    </span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'halo'</span>:      [<span class="st">'SRSF11'</span>],                                                   </span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                    }, </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                    highlight_fill_color    <span class="op">=</span> <span class="st">"#e03a4e"</span>,                  </span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                    highlight_spine_color   <span class="op">=</span> <span class="st">"#d80ce6"</span>,                                          </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>                    highlight_outline_color <span class="op">=</span> <span class="st">"#000000"</span>,                                          </span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>                    highlight_label_color   <span class="op">=</span> <span class="st">"#169f4a"</span>,                                          </span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>                    highlight_halo_color    <span class="op">=</span> <span class="st">"#79CAD32E"</span>,    </span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co"># zoom to region interest for demonstration purposes</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>viewer3.zoom_to(<span class="st">'chr1'</span>, center<span class="op">=</span><span class="dv">70300000</span>, window<span class="op">=</span><span class="dv">600000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"f5eacf70db874a5d9040506c384da1d0","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -609,7 +672,7 @@ table {
 <h2 class="anchored" data-anchor-id="segments">Segments</h2>
 <p>Synthetic segment data:</p>
 <div id="0309623c" class="cell" data-execution_count="20">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>segs.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>segs.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
@@ -679,29 +742,29 @@ table {
 </div>
 </div>
 <div id="cafb5b2a" class="cell" data-execution_count="21">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>viewer4 <span class="op">=</span> (</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .add_segment_track(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        segs.loc[segs[<span class="st">'reg'</span>] <span class="op">==</span> <span class="st">'EUR'</span>], <span class="st">'EUR'</span>, group_by<span class="op">=</span><span class="st">'ancestry'</span>, individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>, stack<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, zoom_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    )   </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    .add_segment_track(</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        segs.loc[segs[<span class="st">'reg'</span>] <span class="op">==</span> <span class="st">'EAS'</span>], <span class="st">'EAS'</span>, group_by<span class="op">=</span><span class="st">'ancestry'</span>, individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>          tip_fmt<span class="op">=</span><span class="va">False</span>, stack<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, zoom_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    )    </span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    .add_heatmap_track(</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        segs, <span class="st">'Individuals'</span>,</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            group_by<span class="op">=</span><span class="st">'reg'</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">90</span>,   <span class="co"># will be expanded to accommodate on px per segment row</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        zoom_windows<span class="op">=</span><span class="dv">2500</span>, <span class="co"># max is 8192 or 16384 depending on GPU</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    )    </span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>, height <span class="op">=</span> <span class="dv">100</span>)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>viewer4</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>viewer4 <span class="op">=</span> (</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    .add_segment_track(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        segs.loc[segs[<span class="st">'reg'</span>] <span class="op">==</span> <span class="st">'EUR'</span>], <span class="st">'EUR'</span>, group_by<span class="op">=</span><span class="st">'ancestry'</span>, individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>, stack<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, zoom_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    )   </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    .add_segment_track(</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        segs.loc[segs[<span class="st">'reg'</span>] <span class="op">==</span> <span class="st">'EAS'</span>], <span class="st">'EAS'</span>, group_by<span class="op">=</span><span class="st">'ancestry'</span>, individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>          tip_fmt<span class="op">=</span><span class="va">False</span>, stack<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">60</span>, zoom_windows<span class="op">=</span>(<span class="dv">512</span>, <span class="dv">2048</span>, <span class="dv">8192</span>),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    )    </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    .add_heatmap_track(</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>        segs, <span class="st">'Individuals'</span>,</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        individual_col<span class="op">=</span><span class="st">'ind'</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>            group_by<span class="op">=</span><span class="st">'reg'</span>,</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span><span class="dv">90</span>,   <span class="co"># will be expanded to accommodate on px per segment row</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        zoom_windows<span class="op">=</span><span class="dv">2500</span>, <span class="co"># max is 8192 or 16384 depending on GPU</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    )    </span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(assembly<span class="op">=</span><span class="st">'hg38'</span>, height <span class="op">=</span> <span class="dv">100</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>viewer4</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"99bfbc6601a94919a66cc207fb490e64","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -715,22 +778,22 @@ table {
 <p>Available keys per track type: - <strong>Gene</strong>: <code>name</code>, <code>strand</code>, <code>start</code>, <code>end</code> - <strong>Scatter / Line</strong>: <code>group</code>, <code>value</code>, <code>x</code> - <strong>Fill</strong>: <code>group</code>, <code>lo</code>, <code>hi</code>, <code>x</code> - <strong>Histogram</strong>: <code>group</code>, <code>value</code>, <code>x</code> - <strong>Segment</strong>: <code>group</code> - <strong>Heatmap</strong>: <code>group</code>, <code>individual</code>, <code>nInd</code></p>
 <p>If a format string references an invalid key, the tooltip shows the available keys as a hint.</p>
 <div id="a6889c1b" class="cell" data-execution_count="22">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>viewer5 <span class="op">=</span> (</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .add_point_track(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Scatter'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'fst'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="st">"</span><span class="sc">{value:.4f}</span><span class="st"> is the value for </span><span class="sc">{group}</span><span class="st">"</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    .add_line_track(</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Lines'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'rate'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="st">"For </span><span class="sc">{group}</span><span class="st"> the value is </span><span class="sc">{value:.2f}</span><span class="st">"</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        assembly<span class="op">=</span><span class="st">'hg38'</span>, height<span class="op">=</span><span class="dv">44</span>, </span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="st">"The gene at this pos is </span><span class="sc">{name}</span><span class="st">"</span>,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>viewer5</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>viewer5 <span class="op">=</span> (</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    Tracks(chrom_sizes)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    .add_point_track(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Scatter'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'fst'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="st">"</span><span class="sc">{value:.4f}</span><span class="st"> is the value for </span><span class="sc">{group}</span><span class="st">"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    .add_line_track(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        qdf, <span class="st">'Lines'</span>, x<span class="op">=</span><span class="st">'pos'</span>, y<span class="op">=</span><span class="st">'rate'</span>, group_by<span class="op">=</span><span class="st">'pop'</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="st">"For </span><span class="sc">{group}</span><span class="st"> the value is </span><span class="sc">{value:.2f}</span><span class="st">"</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    .add_gene_track(</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        assembly<span class="op">=</span><span class="st">'hg38'</span>, height<span class="op">=</span><span class="dv">44</span>, </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        tip_fmt<span class="op">=</span><span class="st">"The gene at this pos is </span><span class="sc">{name}</span><span class="st">"</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>viewer5</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"06174149e746418caaa7c63b4a1aed84","version_major":2,"version_minor":1,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -742,14 +805,14 @@ table {
 <h2 class="anchored" data-anchor-id="theme">Theme</h2>
 <p>The widget has a light and dark default theme determined by the vscodenb package if installed. You get the active theme defaults like this:</p>
 <div id="7b8e3139" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.widget <span class="im">import</span> get_default_theme, set_default_theme</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>theme <span class="op">=</span> get_default_theme()</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>theme</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.widget <span class="im">import</span> get_default_theme, set_default_theme</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>theme <span class="op">=</span> get_default_theme()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>theme</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>You can change the theme colors and save them back for use in subsequent viewers:</p>
 <div id="f8257646" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># theme['input_bg'] = 'pink'</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>set_default_theme(theme)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># theme['input_bg'] = 'pink'</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>set_default_theme(theme)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
@@ -834,7 +897,8 @@ table {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
       // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
       for (var i=0; i<links.length; i++) {
         const link = links[i];
         if (!isInternal(link.href)) {
@@ -843,8 +907,69 @@ table {
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+          if (!link.classList.contains('no-external-icon')) {
+          }
         }
       }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
       const config = {
         allowHTML: true,
@@ -858,6 +983,7 @@ table {
         interactiveBorder: 10,
         theme: 'quarto',
         placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
       };
       if (contentFn) {
         config.content = contentFn;
@@ -1020,44 +1146,54 @@ table {
           const lineIds = lines.map((line) => {
             return targetCell + "-" + line;
           })
-          let top = null;
-          let height = null;
-          let parent = null;
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
           if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
             }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
             }
+            placeBand(gutterDiv, el, lastEl);
             selectedAnnoteEl = annoteEl;
           }
         };
@@ -1156,7 +1292,10 @@ table {
     }
   });
   </script>
-<nav class="page-navigation">
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
   <div class="nav-page nav-page-previous">
       <a href="../pages/go_graphs.html" class="pagination-link" aria-label="GO graphs">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">GO graphs</span>

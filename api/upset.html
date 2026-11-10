@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>upset – geneinfo</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/Tracks.html" rel="next">
+<link href="../api/venn.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../api/_styles-quartodoc.css">
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">geneinfo</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../api/"> 
+<span class="menu-text">API reference</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery/"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/munch-group/geneinfo/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/upset.html">upset</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Function reference</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Gene information</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/gene_info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_info</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/gene_info_region.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_info_region</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Gene plots</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/gene_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GenomeIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GenomeIdeogram</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/ChromIdeogram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ChromIdeogram</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/venn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">venn</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/upset.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">upset</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Tracks widget</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/Tracks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tracks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">UCSC tracks</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/search_tracks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">search_tracks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/list_tracks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">list_tracks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/track_info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">track_info</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/get_track.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">get_track</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/get_track_meta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">get_track_meta</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/list_subtracks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">list_subtracks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Gene coordinates</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/gene_coords.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/gene_coords_region.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_coords_region</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">ID conversion</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/ensembl_id.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ensembl_id</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/hgcn_symbol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">hgcn_symbol</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/ensembl2symbol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ensembl2symbol</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/ensembl2ncbi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ensembl2ncbi</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">STRING networks</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/string_network_table.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">string_network_table</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/show_string_network.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">show_string_network</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label">GO information</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/go_info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">go_info</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/go_term2name.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">go_term2name</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/go_name2term.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">go_name2term</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/get_go_terms_for_genes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">get_go_terms_for_genes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/get_terms_for_go_regex.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">get_terms_for_go_regex</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/go_annotation_table.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">go_annotation_table</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-9-label">GO enrichment</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/go_enrichment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">go_enrichment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/show_go_evidence_codes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">show_go_evidence_codes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/symbols_protein_coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">symbols_protein_coding</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/download_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">download_data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-10-label">GO graphs</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/email.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">email</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/show_go_dag_for_gene.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">show_go_dag_for_gene</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/show_go_dag_for_terms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">show_go_dag_for_terms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/show_go_dag_enrichment_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">show_go_dag_enrichment_results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-11-label">Gene annotation</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/get_genes_for_go_regex.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">get_genes_for_go_regex</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/get_genes_for_go_terms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">get_genes_for_go_terms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/gene_annotation_table.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gene_annotation_table</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-controls="quarto-sidebar-section-12" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-12-label">Gene lists</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-12" aria-labelledby="quarto-sidebar-section-12-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GeneList.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GeneList</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/GeneListCollection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GeneListCollection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label">Utilities</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/horizon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">horizon</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/stairs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">stairs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/clear_cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">clear_cache</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#geneinfo.plot.upset" id="toc-geneinfo.plot.upset" class="nav-link active" data-scroll-target="#geneinfo.plot.upset">upset</a></li>
+  <li><a href="#upset.py-v0.6.0" id="toc-upset.py-v0.6.0" class="nav-link" data-scroll-target="#upset.py-v0.6.0">upset.py v0.6.0</a>
+  <ul class="collapse">
+  <li><a href="#quickstart" id="toc-quickstart" class="nav-link" data-scroll-target="#quickstart">Quickstart</a></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul class="collapse">
+  <li><a href="#geneinfo.plot.upset.compute_intersections" id="toc-geneinfo.plot.upset.compute_intersections" class="nav-link" data-scroll-target="#geneinfo.plot.upset.compute_intersections">compute_intersections</a></li>
+  <li><a href="#geneinfo.plot.upset.upset" id="toc-geneinfo.plot.upset.upset" class="nav-link" data-scroll-target="#geneinfo.plot.upset.upset">upset</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/gene_plot.html">Gene plots</a></li><li class="breadcrumb-item"><a href="../api/upset.html">upset</a></li></ol></nav></header>
+
+
+
+
+<section id="geneinfo.plot.upset" class="level1">
+<h1>upset</h1>
+<p><code>geneinfo.plot.upset</code></p>
+</section>
+<section id="upset.py-v0.6.0" class="level1">
+<h1>upset.py v0.6.0</h1>
+<p>UpSet-style intersection plot where the count bars are replaced by stacked gene (or any element) name labels that grow upward from a shared baseline, visually resembling a bar chart.</p>
+<p><strong>Column layout</strong> is decided independently per column based on the number of genes it contains, controlled by <em>two_col_threshold</em> (default 15):</p>
+<ul>
+<li><strong>≤ threshold</strong> → single centered column at 1 × <em>col_width</em>.</li>
+<li><strong>&gt; threshold</strong> → paired two-sub-column layout at 2 × <em>col_width</em>. Shorter names are left-aligned on the left sub-column; longer names are right-aligned on the right sub-column, so each row spans the full column width in proportion to combined name length.</li>
+</ul>
+<p>The dot in the matrix panel is always centred in its column regardless of width. The figure background is transparent.</p>
+<p><strong>Wrapping</strong>: when <em>wrap=True</em> the <em>max_cols</em> intersections-per-row limit is respected and additional rows are added below, producing a single figure with multiple stacked gene+matrix panel pairs — one per row of columns.</p>
+<p><strong>Intersection semantics</strong> are controlled by <em>mode</em>:</p>
+<ul>
+<li><code>'exclusive'</code> (default) — a gene appears in exactly one column.</li>
+<li><code>'inclusive'</code> — a gene appears in every column whose listed sets are a subset of the sets that gene belongs to.</li>
+</ul>
+<section id="quickstart" class="level2 doc-section doc-section-quickstart">
+<h2 class="doc-section doc-section-quickstart anchored" data-anchor-id="quickstart">Quickstart</h2>
+<pre><code>from geneinfo.plot import upset
+import matplotlib.pyplot as plt
+
+sets = {
+    "Cancer drivers": {"TP53", "BRCA1", "KRAS", "PTEN", "EGFR", "APC"},
+    "PI3K pathway":   {"PTEN", "KRAS", "AKT1", "MTOR", "EGFR", "PIK3CA"},
+    "DNA repair":     {"BRCA1", "TP53", "ATM", "CHEK2", "PTEN", "MLH1"},
+}
+fig = upset(sets, title="Gene set overlaps")
+fig.savefig("overlaps.pdf", bbox_inches="tight", transparent=True)
+plt.show()</code></pre>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#geneinfo.plot.upset.compute_intersections">compute_intersections</a></td>
+<td>Compute pairwise/n-way intersections.</td>
+</tr>
+<tr class="even">
+<td><a href="#geneinfo.plot.upset.upset">upset</a></td>
+<td>Draw an UpSet-style intersection plot where stacked gene names replace the</td>
+</tr>
+</tbody>
+</table>
+<section id="geneinfo.plot.upset.compute_intersections" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.upset.compute_intersections">compute_intersections</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.upset.compute_intersections(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    sets,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    min_size<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    sort_by<span class="op">=</span><span class="st">'size'</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    max_cols<span class="op">=</span><span class="dv">30</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    singletons<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'exclusive'</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compute pairwise/n-way intersections.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<dl>
+<dt><code><span class="parameter-name"><strong>sets</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Mapping</code>[<code>str</code>, <code>set</code>]</span></code></dt>
+<dd>
+<p>Mapping of label -&gt; element collection.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>min_size</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">1</span></code></dt>
+<dd>
+<p>Discard intersections smaller than this.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>sort_by</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'size'</span></code></dt>
+<dd>
+<p><code>'size'</code> - largest intersection first (default). <code>'degree'</code> - most sets involved first, then by size.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>max_cols</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">30</span></code></dt>
+<dd>
+<p>Truncate output to at most this many intersections after sorting. When called from <code>upset</code> with <code>wrap=True</code> this cap is applied per row rather than to the total.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>singletons</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">True</span></code></dt>
+<dd>
+<p>If <code>False</code>, remove degree-1 intersections before the <code>max_cols</code> cap so they cannot crowd out genuine multi-set overlaps.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>mode</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'exclusive'</span></code></dt>
+<dd>
+<p><code>'exclusive'</code> (default) — each column shows elements that belong to <em>exactly</em> the listed sets and no others. <code>'inclusive'</code> — each column shows elements that belong to <em>at least</em> the listed sets; they may also appear in other sets. A gene shared by A, B, and C will appear in the A∩B, A∩C, B∩C, and A∩B∩C columns simultaneously.</p>
+</dd>
+</dl>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<dl>
+<dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">list of <code>(frozenset\[str\], list\[str\])</code></span></code></dt>
+<dd>
+<p>Each tuple is <em>(set_labels_in_intersection, sorted_element_list)</em>.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="geneinfo.plot.upset.upset" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.plot.upset.upset">upset</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>geneinfo.plot.upset.upset(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    sets,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    min_size<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    sort_by<span class="op">=</span><span class="st">'size'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    max_cols<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    max_labels<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    singletons<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'exclusive'</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    wrap<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    cmap<span class="op">=</span><span class="st">'tab10'</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    col_width<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    gene_row_h<span class="op">=</span><span class="fl">0.14</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    set_row_h<span class="op">=</span><span class="fl">0.28</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    size_bar_cols<span class="op">=</span><span class="fl">4.0</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    gene_pad<span class="op">=</span><span class="fl">0.04</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    two_col_threshold<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    two_col_ratio<span class="op">=</span><span class="fl">1.5</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    gene_fontsize<span class="op">=</span><span class="fl">6.5</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    gene_fontfamily<span class="op">=</span><span class="st">'monospace'</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    gene_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    gene_fontweight<span class="op">=</span><span class="st">'normal'</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    count_fontsize<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    count_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    label_fontsize<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    label_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    label_fontweight<span class="op">=</span><span class="st">'bold'</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    label_fontfamily<span class="op">=</span><span class="st">'sans-serif'</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    title_fontsize<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    title_fontweight<span class="op">=</span><span class="st">'bold'</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    dot_size<span class="op">=</span><span class="fl">5.5</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    dot_filled_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    dot_empty_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    col_divider_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    col_divider_lw<span class="op">=</span><span class="fl">0.4</span>,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    baseline_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    baseline_lw<span class="op">=</span><span class="fl">0.9</span>,</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    row_grid_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    row_grid_lw<span class="op">=</span><span class="fl">0.4</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    size_bar_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    size_bar_alpha<span class="op">=</span><span class="fl">0.4</span>,</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    show_set_sizes<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    show_size_bars<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    bars<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    show_count<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    truncate_suffix<span class="op">=</span><span class="st">'...'</span>,</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    highlight<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    highlight_color<span class="op">=</span><span class="st">'#F0EEE8'</span>,</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Draw an UpSet-style intersection plot where stacked gene names replace the conventional count bars, growing upward from a shared baseline.</p>
+<p><strong>Column layout</strong> is decided independently per column:</p>
+<ul>
+<li>Columns with <strong>≤ two_col_threshold</strong> genes use a <strong>single centered stack</strong> at 1 × <em>col_width</em>.</li>
+<li>Columns with <strong>&gt; two_col_threshold</strong> genes use a <strong>paired two-sub-column layout</strong> at 2 × <em>col_width</em>: shorter names left-aligned on the left half, longer names right-aligned on the right half.</li>
+</ul>
+<p>The dot in the matrix panel is always centred in its column. The figure background is fully transparent.</p>
+<p><strong>Wrapping</strong>: when <em>wrap=True</em>, all intersections are computed without the <em>max_cols</em> cap, then laid out <em>max_cols</em> columns at a time. Each group of columns occupies one gene-panel + matrix-panel pair, and the pairs are stacked vertically within a single figure. Set-name labels and size bars are repeated on every row so each row is self-contained.</p>
+<p><strong>Intersection semantics</strong> are controlled by <em>mode</em>:</p>
+<ul>
+<li><code>'exclusive'</code> (default) — a gene appears in exactly one column.</li>
+<li><code>'inclusive'</code> — a gene appears in every column whose listed sets are a subset of the sets that gene belongs to.</li>
+</ul>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<dl>
+<dt><code><span class="parameter-name"><strong>sets</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Mapping</code>[<code>str</code>, 'set | list'] | <code>List</code>[<code>GeneList</code>]</span></code></dt>
+<dd>
+<p>Gene (or any element) sets to compare. Values can be <code>set</code> or <code>list</code>; duplicates are ignored.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>min_size</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">1</span></code></dt>
+<dd>
+<p>Discard intersections with fewer than this many elements.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>sort_by</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'size'</span></code></dt>
+<dd>
+<p>Column ordering: <code>'size'</code> — largest intersection first (default); <code>'degree'</code> — most sets involved first, then by size.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>max_cols</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">15</span></code></dt>
+<dd>
+<p>Without wrapping: hard cap on the number of columns displayed. With <code>wrap=True</code>: number of intersection columns per row. Singletons are filtered <em>before</em> this cap when <code>singletons=False</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>max_labels</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>int</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Cap on gene labels shown per column. <code>None</code> = unlimited.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>singletons</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">False</span></code></dt>
+<dd>
+<p>If <code>False</code> (default), degree-1 intersections (genes unique to a single set) are excluded before the <em>max_cols</em> cap is applied.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>mode</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'exclusive'</span></code></dt>
+<dd>
+<p><code>'exclusive'</code> (default) or <code>'inclusive'</code>. See above.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>wrap</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">False</span></code></dt>
+<dd>
+<p>If <code>True</code>, ignore the <em>max_cols</em> truncation and instead lay out all intersections across multiple rows, <em>max_cols</em> columns each. Each row is a complete gene-panel + matrix-panel pair with set labels repeated on the left. Default <code>False</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">True</span></code></dt>
+<dd>
+<p>If <code>True</code> (default), each set gets a distinct colour from <em>cmap</em> applied to its label, size bar, and filled dots. Gene name text always uses the theme foreground. <code>False</code> → monochrome.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>cmap</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'tab10'</span></code></dt>
+<dd>
+<p>Matplotlib colormap name for <code>color=True</code>. Defaults to <code>'tab10'</code>; auto-upgraded to <code>'tab20'</code> for &gt; 10 sets.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>col_width</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">1.0</span></code></dt>
+<dd>
+<p>Width of a narrow (single-column) intersection column in inches. Wide (two-column) columns are 2 × <em>col_width</em>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>gene_row_h</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.14</span></code></dt>
+<dd>
+<p>Vertical space per gene-label row in inches.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>set_row_h</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.28</span></code></dt>
+<dd>
+<p>Height of each set row in the dot-matrix panel in inches.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>size_bar_cols</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">4.0</span></code></dt>
+<dd>
+<p>Width of the set-label + size-bar region in <em>col_width</em> units. Overridden when <code>bars=False</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>gene_pad</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.04</span></code></dt>
+<dd>
+<p>Gap between a column divider and the nearest gene-name character, as a fraction of a column width. Wide columns only. Default 0.04.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>two_col_threshold</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">15</span></code></dt>
+<dd>
+<p>Columns with <strong>more than</strong> this many genes use the wide two-column layout (2 × <em>col_width</em>); others use the narrow single layout. Default 15.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>figsize</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>tuple</code>[<code>float</code>, <code>float</code>]]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Override auto figure size <code>(width_in, height_in)</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>gene_fontsize</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">6.5</span></code></dt>
+<dd>
+<p>Font size for gene name labels (pt). Default 6.5.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>gene_fontfamily</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'monospace'</span></code></dt>
+<dd>
+<p>Font family for gene name labels. Default <code>'monospace'</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>gene_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour for gene name labels. <code>None</code> → theme foreground.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>gene_fontweight</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'normal'</span></code></dt>
+<dd>
+<p>Font weight for gene name labels. Default <code>'normal'</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>count_fontsize</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>float</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Font size for intersection-count labels. Defaults to <code>gene_fontsize - 0.5</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>count_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour for count labels and truncation markers. <code>None</code> → theme foreground at ~45 % opacity.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>label_fontsize</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>float</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Font size for set name labels. Defaults to <code>gene_fontsize + 0.5</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>label_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour for set name labels. <code>None</code> → theme foreground (or set colour when <code>color=True</code>).</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>label_fontweight</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'bold'</span></code></dt>
+<dd>
+<p>Font weight for set name labels. Default <code>'bold'</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>label_fontfamily</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'sans-serif'</span></code></dt>
+<dd>
+<p>Font family for set name labels. Default <code>'sans-serif'</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>title</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Optional figure title string (placed above the first row).</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>title_fontsize</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>float</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Font size for the figure title. Defaults to <code>gene_fontsize + 4</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>title_fontweight</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'bold'</span></code></dt>
+<dd>
+<p>Font weight for the figure title. Default <code>'bold'</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>dot_size</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">5.5</span></code></dt>
+<dd>
+<p>Dot-matrix circle diameter (matplotlib marker-size units).</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>dot_filled_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour of filled dots. <code>None</code> → theme foreground (or set colour).</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>dot_empty_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour of empty dots. <code>None</code> → theme foreground at ~18 % opacity.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>col_divider_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour of vertical column-divider lines. <code>None</code> → theme foreground at ~15 % opacity.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>col_divider_lw</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.4</span></code></dt>
+<dd>
+<p>Line width of column dividers. Default 0.4.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>baseline_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour of the horizontal baseline between gene and matrix panels. <code>None</code> → theme foreground at ~50 % opacity.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>baseline_lw</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.9</span></code></dt>
+<dd>
+<p>Line width of the baseline. Default 0.9.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>row_grid_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour of horizontal lines between set rows in the matrix panel. <code>None</code> → theme foreground at ~12 % opacity.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>row_grid_lw</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.4</span></code></dt>
+<dd>
+<p>Line width of row-grid lines. Default 0.4.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>size_bar_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>str</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour of set-size bars. <code>None</code> → theme foreground (or set colour).</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>size_bar_alpha</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.4</span></code></dt>
+<dd>
+<p>Opacity of set-size bars. Default 0.40.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>show_set_sizes</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">True</span></code></dt>
+<dd>
+<p>Append total element count to each set label. Default <code>True</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>show_size_bars</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">True</span></code></dt>
+<dd>
+<p>Draw horizontal set-size bars. Ignored when <code>bars=False</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>bars</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">False</span></code></dt>
+<dd>
+<p>If <code>False</code> (default), hide size bars and use a narrow label-only margin. <code>True</code> shows the classic UpSet-style size bars.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>show_count</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">True</span></code></dt>
+<dd>
+<p>Print intersection size above each gene-label column. Default <code>True</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>truncate_suffix</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'…'</span></code></dt>
+<dd>
+<p>Appended when a column is capped by <em>max_labels</em>. Default <code>'...'</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>highlight</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>list</code>[<code>frozenset</code>[<code>str</code>]]]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>List of <code>frozenset</code> of set-name strings whose columns are shaded with <em>highlight_color</em>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>highlight_color</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'#F0EEE8'</span></code></dt>
+<dd>
+<p>Background fill for highlighted columns. Default <code>'#F0EEE8'</code>.</p>
+</dd>
+</dl>
+</section>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<dl>
+<dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>matplotlib</code>.<code>figure</code>.<code>Figure</code></span></code></dt>
+<dd>
+
+</dd>
+</dl>
+</section>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<p>Basic usage::</p>
+<pre><code>upset({"A": {"x","y"}, "B": {"y","z"}, "C": {"z","x"}})</code></pre>
+<p>Wrap all intersections across multiple rows, 12 columns per row::</p>
+<pre><code>fig = upset(my_sets, wrap=True, max_cols=12, singletons=True)
+fig.savefig("wrapped.pdf", bbox_inches="tight", transparent=True)</code></pre>
+<p>Inclusive mode with per-set colour::</p>
+<pre><code>upset(
+    my_sets,
+    mode="inclusive",
+    color=True,
+    cmap="Set2",
+    gene_fontsize=7,
+    title="Shared gene sets",
+)</code></pre>
+<p>Dark theme::</p>
+<pre><code>with plt.style.context("dark_background"):
+    upset(my_sets)</code></pre>
+<p>Highlight a specific intersection::</p>
+<pre><code>upset(
+    my_sets,
+    highlight=[frozenset(["Cancer drivers", "DNA repair"])],
+)</code></pre>
+
+
+</section>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/munch-group\.github\.io\/geneinfo\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/venn.html" class="pagination-link" aria-label="venn">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">venn</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/Tracks.html" class="pagination-link" aria-label="Tracks">
+        <span class="nav-page-text">Tracks</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
