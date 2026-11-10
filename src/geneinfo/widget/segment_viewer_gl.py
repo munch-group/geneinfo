@@ -5611,6 +5611,81 @@ class Tracks(anywidget.AnyWidget):
         """
         return self._set_track_hidden(name_or_index, False, 'show_track')
 
+    def added_tracks(self) -> list[str]:
+        """Return the display names of all tracks, in display order.
+
+        Hidden tracks (see :meth:`hide_track`) are included, in the
+        position they will take when shown again.
+
+        Returns
+        -------
+        list of str
+            One name per track; a name occurs more than once if several
+            tracks share it.
+        """
+        return [c.get('name') for c in self.track_configs]
+
+    def select_tracks(self, names: Any) -> 'Tracks':
+        """Show only the listed tracks, in the order listed.
+
+        A shortcut for hiding every track, then showing the listed ones,
+        except that the shown tracks are also reordered to follow
+        ``names``. The remaining tracks stay hidden, after the shown ones
+        and in their existing order, so their data is kept and a later
+        :meth:`show_track` or :meth:`select_tracks` restores them
+        instantly.
+
+        Parameters
+        ----------
+        names : str, int, or iterable of str or int
+            Tracks to show. Each entry is a display name, which selects
+            every track with that name (in their existing order), or a
+            positional index into :attr:`track_configs` as it is before
+            the call. A track listed twice is placed at its first
+            mention. An empty list hides every track.
+
+        Returns
+        -------
+        Tracks
+            ``self``, for fluent chaining.
+
+        Raises
+        ------
+        KeyError
+            If any entry matches no track. The viewer is left unchanged.
+
+        See Also
+        --------
+        added_tracks, hide_track, show_track
+        """
+        if isinstance(names, (str, int)):
+            names = [names]
+        configs = list(self.track_configs)
+        # Resolve every entry before changing anything, so a bad name
+        # leaves the viewer as it was.
+        order: list[int] = []
+        for key in names:
+            for idx in self._track_indices(key, 'select_tracks'):
+                if idx not in order:
+                    order.append(idx)
+        chosen = set(order)
+
+        def _with_hidden(cfg: dict, hidden: bool) -> dict:
+            cfg = {k: v for k, v in cfg.items() if k != 'hidden'}
+            if hidden:
+                cfg['hidden'] = True
+            return cfg
+
+        new_configs = (
+            [_with_hidden(configs[i], False) for i in order]
+            + [_with_hidden(c, True) for i, c in enumerate(configs)
+               if i not in chosen]
+        )
+        # Only the configs change; track data and GPU buffers are kept.
+        if new_configs != configs:
+            self.track_configs = new_configs
+        return self
+
     def clear_tracks(self) -> 'Tracks':
         """Remove every track from the viewer.
 
