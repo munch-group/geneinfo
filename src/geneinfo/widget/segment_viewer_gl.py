@@ -1923,6 +1923,11 @@ const gpuHist = {};   // [tid][ch][gid] = { base: rectGpu|null, levels: [{nBins,
 const gpuArc  = {};   // [tid][ch][gid] = { buf, starts, maxLen, count }
 const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
 const rawFill = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,lo,hi,...]
+// Track ids whose payload has been uploaded. track_data and track_configs
+// arrive as separate model changes; when the data for a new track lands
+// before its config, uploadTrackData cannot see the track yet, so the
+// track_configs handler uploads any configured track missing from this set.
+const _uploadedTids = new Set();
 const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
 const rawArc  = {};   // tooltip: [tid][chrom][gid] = Float32Array [p1,p2,...]
 
@@ -1976,6 +1981,7 @@ function disposeTid(tid) {
   if (gpuFill[tid]) { for (const ch of Object.keys(gpuFill[tid])) disposeSlot(gpuFill, tid, ch, _disposeFill); delete gpuFill[tid]; }
   if (gpuHist[tid]) { for (const ch of Object.keys(gpuHist[tid])) disposeSlot(gpuHist, tid, ch, _disposeHist); delete gpuHist[tid]; }
   if (gpuArc[tid])  { for (const ch of Object.keys(gpuArc[tid]))  disposeSlot(gpuArc,  tid, ch, _disposeArc);  delete gpuArc[tid]; }
+  _uploadedTids.delete(tid);
   delete rawXY[tid];
   delete rawFill[tid];
   delete rawHist[tid];
@@ -2432,6 +2438,7 @@ function uploadTrackData() {
     const tid = cfg.id;
     const d   = td[tid];
     if (!d) continue;
+    _uploadedTids.add(tid);
 
     if (cfg.type === 'segment') {
       const raw   = d.segs || {};
@@ -4645,6 +4652,11 @@ model.on('change:track_configs', () => {
   _allTrackConfigs = model.get('track_configs') || [];
   _trackConfigs = _allTrackConfigs.filter(c => !c.hidden);
   _reconcileTids();
+  // A track whose data arrived before its config has not been uploaded yet.
+  const td = model.get('track_data') || {};
+  if (_allTrackConfigs.some(c => td[c.id] && !_uploadedTids.has(c.id))) {
+    uploadTrackData();
+  }
   updateHeatmapBtns();
   scheduleRender();
 });
@@ -4713,6 +4725,21 @@ class Tracks(anywidget.AnyWidget):
     display the instance directly in a notebook cell. All pan / zoom is
     uniform-only (zero CPU/GPU buffer work per frame); segment viewport
     culling uses sorted attribute-pointer offsets.
+
+    Parameters
+    ----------
+    chroms : dict of str to int, or str, optional
+        Chromosome sizes as a ``{chrom: length}`` mapping, or an assembly
+        name such as ``'hg38'``. The first chromosome is shown initially.
+    assembly : str, optional
+        Assembly name (``'hg38'``, ``'rheMac10'``, …) whose chromosome
+        sizes are looked up with
+        :func:`geneinfo.coords.chromosome_lengths`; an alternative to
+        ``chroms``. Give one of ``chroms`` and ``assembly``, not both.
+        The assembly is also the default for :meth:`add_gene_track`.
+    **kw
+        Passed on to :class:`anywidget.AnyWidget`; ``theme=`` overrides
+        the default theme (see :func:`set_default_theme`).
 
     Track types
     -----------
@@ -4942,20 +4969,33 @@ class Tracks(anywidget.AnyWidget):
 
     def __init__(
         self,
-        chroms: dict[str, int] | str,
+        chroms: dict[str, int] | str | None = None,
+        *,
+        assembly: str | None = None,
         **kw,
     ):
         """Construct an empty viewer for a given set of chromosome sizes.
 
+        Give either ``chroms`` or ``assembly``, not both:
+        ``Tracks(chrom_sizes)``, ``Tracks('hg38')`` or
+        ``Tracks(assembly='hg38')``.
+
         Parameters
         ----------
-        chroms : dict of str to int, or str
+        chroms : dict of str to int, or str, optional
             Either an explicit ``{chrom: length}`` mapping (coerced to
             ``str``/``int``), or an assembly identifier string
             (``'hg38'``, ``'rheMac10'``, …) to look up chromosome sizes
             via :func:`geneinfo.coords.chromosome_lengths`. The first
             key of the resulting mapping (in iteration order) becomes
             the initial viewport.
+        assembly : str, optional
+            Assembly identifier (``'hg38'``, ``'rheMac10'``, …) whose
+            chromosome sizes are looked up with
+            :func:`geneinfo.coords.chromosome_lengths`. The same as
+            passing the identifier as ``chroms``. The assembly is also
+            the default for tracks that need one, such as
+            :meth:`add_gene_track`.
         **kw
             Extra keyword arguments forwarded to
             :class:`anywidget.AnyWidget`. The recognised extra is
@@ -4967,8 +5007,25 @@ class Tracks(anywidget.AnyWidget):
         Raises
         ------
         TypeError
-            If ``chroms`` is neither a dict nor a string.
+            If ``chroms`` is neither a dict nor a string, or if both or
+            neither of ``chroms`` and ``assembly`` are given.
         """
+        if assembly is not None:
+            if chroms is not None:
+                raise TypeError(
+                    "Tracks(...) got both chroms and assembly=; pass only one"
+                )
+            if not isinstance(assembly, str):
+                raise TypeError(
+                    f"Tracks(assembly=...) expected a string, got "
+                    f"{type(assembly).__name__}"
+                )
+            chroms = assembly
+        elif chroms is None:
+            raise TypeError(
+                "Tracks(...) needs chromosome sizes: pass a {chrom: length} "
+                "dict or assembly='hg38' (or another assembly name)"
+            )
         if isinstance(chroms, str):
             # Deferred import avoids pulling coords (and its network
             # dependencies) in for callers who pass an explicit dict.
@@ -5444,8 +5501,11 @@ class Tracks(anywidget.AnyWidget):
         ``track_configs`` without updating ``track_data``) that would
         leave the widget in a half-broken state.
         """
-        self.track_data    = {**self.track_data, tid: data}
-        self.track_configs = [*self.track_configs, cfg]
+        # One message for both traits, so the browser never sees a config
+        # without its data or the other way round.
+        with self.hold_sync():
+            self.track_data    = {**self.track_data, tid: data}
+            self.track_configs = [*self.track_configs, cfg]
         return self
 
     # ── Track removal ────────────────────────────────────────────────────────
@@ -5480,8 +5540,9 @@ class Tracks(anywidget.AnyWidget):
         for tid in tids:
             self._heatmap_sources.pop(tid, None)
             self._heatmap_global.pop(tid, None)
-        self.track_configs = configs
-        self.track_data    = new_data
+        with self.hold_sync():
+            self.track_configs = configs
+            self.track_data    = new_data
         return self
 
     def _track_indices(
@@ -5696,8 +5757,9 @@ class Tracks(anywidget.AnyWidget):
         """
         self._heatmap_sources.clear()
         self._heatmap_global.clear()
-        self.track_configs = []
-        self.track_data    = {}
+        with self.hold_sync():
+            self.track_configs = []
+            self.track_data    = {}
         return self
 
     # ── add_segment_track ────────────────────────────────────────────────────
