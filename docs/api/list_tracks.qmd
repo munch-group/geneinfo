@@ -1,0 +1,19 @@
+# list_tracks { #geneinfo.ucsc.list_tracks }
+
+```python
+geneinfo.ucsc.list_tracks(assembly, *, label_wrap=80)
+```
+
+Print all tracks for an assembly (including flattened subtracks).
+
+Same as :func:`search_tracks` without queries.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Genome assembly, e.g. ``'hg38'``.
+
+<code>[**label_wrap**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [80]{.parameter-default}</code>
+
+:   Width at which each track's long label is wrapped.

@@ -1,0 +1,38 @@
+# search_tracks { #geneinfo.ucsc.search_tracks }
+
+```python
+geneinfo.ucsc.search_tracks(*queries, assembly, label_wrap=80)
+```
+
+Print tracks matching fuzzy queries (or all tracks when no query given).
+
+Each output line is a track name followed by its long label. Names are
+matched word by word with fuzzy string matching, and tracks matching
+more of the words, more closely, are listed first.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[***queries**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [()]{.parameter-default}</code>
+
+:   Search terms. Each is split into words; a track's score is the sum of its best fuzzy-match scores across all words.
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Genome assembly, e.g. ``'hg38'``.
+
+<code>[**label_wrap**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [80]{.parameter-default}</code>
+
+:   Width at which each track's long label is wrapped.
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If ``assembly`` is ``None``.
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+>>> from geneinfo import ucsc
+>>> ucsc.search_tracks('recombination', assembly='hg38')
+```

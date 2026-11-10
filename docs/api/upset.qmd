@@ -1,0 +1,418 @@
+# upset { #geneinfo.plot.upset }
+
+`geneinfo.plot.upset`
+
+upset.py  v0.6.0
+==================
+UpSet-style intersection plot where the count bars are replaced by stacked
+gene (or any element) name labels that grow upward from a shared baseline,
+visually resembling a bar chart.
+
+**Column layout** is decided independently per column based on the number of
+genes it contains, controlled by *two_col_threshold* (default 15):
+
+* **≤ threshold** → single centered column at 1 × *col_width*.
+* **> threshold** → paired two-sub-column layout at 2 × *col_width*.
+  Shorter names are left-aligned on the left sub-column; longer names are
+  right-aligned on the right sub-column, so each row spans the full column
+  width in proportion to combined name length.
+
+The dot in the matrix panel is always centred in its column regardless of
+width.  The figure background is transparent.
+
+**Wrapping**: when *wrap=True* the *max_cols* intersections-per-row limit is
+respected and additional rows are added below, producing a single figure with
+multiple stacked gene+matrix panel pairs — one per row of columns.
+
+**Intersection semantics** are controlled by *mode*:
+
+* ``'exclusive'`` (default) — a gene appears in exactly one column.
+* ``'inclusive'`` — a gene appears in every column whose listed sets are a
+  subset of the sets that gene belongs to.
+
+## Quickstart {.doc-section .doc-section-quickstart}
+
+    from geneinfo.plot import upset
+    import matplotlib.pyplot as plt
+
+    sets = {
+        "Cancer drivers": {"TP53", "BRCA1", "KRAS", "PTEN", "EGFR", "APC"},
+        "PI3K pathway":   {"PTEN", "KRAS", "AKT1", "MTOR", "EGFR", "PIK3CA"},
+        "DNA repair":     {"BRCA1", "TP53", "ATM", "CHEK2", "PTEN", "MLH1"},
+    }
+    fig = upset(sets, title="Gene set overlaps")
+    fig.savefig("overlaps.pdf", bbox_inches="tight", transparent=True)
+    plt.show()
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [compute_intersections](#geneinfo.plot.upset.compute_intersections) | Compute pairwise/n-way intersections. |
+| [upset](#geneinfo.plot.upset.upset) | Draw an UpSet-style intersection plot where stacked gene names replace the |
+
+### compute_intersections { #geneinfo.plot.upset.compute_intersections }
+
+```python
+geneinfo.plot.upset.compute_intersections(
+    sets,
+    *,
+    min_size=1,
+    sort_by='size',
+    max_cols=30,
+    singletons=True,
+    mode='exclusive',
+)
+```
+
+Compute pairwise/n-way intersections.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**sets**]{.parameter-name} [:]{.parameter-annotation-sep} [[Mapping](`collections.abc.Mapping`)\[[str](`str`), [set](`set`)\]]{.parameter-annotation}</code>
+
+:   Mapping of label -> element collection.
+
+<code>[**min_size**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1]{.parameter-default}</code>
+
+:   Discard intersections smaller than this.
+
+<code>[**sort_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'size\']{.parameter-default}</code>
+
+:   ``'size'`` - largest intersection first (default). ``'degree'`` - most sets involved first, then by size.
+
+<code>[**max_cols**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [30]{.parameter-default}</code>
+
+:   Truncate output to at most this many intersections after sorting. When called from ``upset`` with ``wrap=True`` this cap is applied per row rather than to the total.
+
+<code>[**singletons**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   If ``False``, remove degree-1 intersections before the ``max_cols`` cap so they cannot crowd out genuine multi-set overlaps.
+
+<code>[**mode**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'exclusive\']{.parameter-default}</code>
+
+:   ``'exclusive'`` (default) — each column shows elements that belong to *exactly* the listed sets and no others.  ``'inclusive'`` — each column shows elements that belong to *at least* the listed sets; they may also appear in other sets.  A gene shared by A, B, and C will appear in the A∩B, A∩C, B∩C, and A∩B∩C columns simultaneously.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [list of ``(frozenset\[str\], list\[str\])``]{.parameter-annotation}</code>
+
+:   Each tuple is *(set_labels_in_intersection, sorted_element_list)*.
+
+### upset { #geneinfo.plot.upset.upset }
+
+```python
+geneinfo.plot.upset.upset(
+    sets,
+    *,
+    min_size=1,
+    sort_by='size',
+    max_cols=15,
+    max_labels=None,
+    singletons=False,
+    mode='exclusive',
+    wrap=False,
+    color=True,
+    cmap='tab10',
+    col_width=1.0,
+    gene_row_h=0.14,
+    set_row_h=0.28,
+    size_bar_cols=4.0,
+    gene_pad=0.04,
+    two_col_threshold=15,
+    two_col_ratio=1.5,
+    figsize=None,
+    gene_fontsize=6.5,
+    gene_fontfamily='monospace',
+    gene_color=None,
+    gene_fontweight='normal',
+    count_fontsize=None,
+    count_color=None,
+    label_fontsize=None,
+    label_color=None,
+    label_fontweight='bold',
+    label_fontfamily='sans-serif',
+    title=None,
+    title_fontsize=None,
+    title_fontweight='bold',
+    dot_size=5.5,
+    dot_filled_color=None,
+    dot_empty_color=None,
+    col_divider_color=None,
+    col_divider_lw=0.4,
+    baseline_color=None,
+    baseline_lw=0.9,
+    row_grid_color=None,
+    row_grid_lw=0.4,
+    size_bar_color=None,
+    size_bar_alpha=0.4,
+    show_set_sizes=True,
+    show_size_bars=True,
+    bars=False,
+    show_count=True,
+    truncate_suffix='...',
+    highlight=None,
+    highlight_color='#F0EEE8',
+)
+```
+
+Draw an UpSet-style intersection plot where stacked gene names replace the
+conventional count bars, growing upward from a shared baseline.
+
+**Column layout** is decided independently per column:
+
+* Columns with **≤ two_col_threshold** genes use a **single centered
+  stack** at 1 × *col_width*.
+* Columns with **> two_col_threshold** genes use a **paired two-sub-column
+  layout** at 2 × *col_width*: shorter names left-aligned on the left
+  half, longer names right-aligned on the right half.
+
+The dot in the matrix panel is always centred in its column.  The figure
+background is fully transparent.
+
+**Wrapping**: when *wrap=True*, all intersections are computed without the
+*max_cols* cap, then laid out *max_cols* columns at a time.  Each group of
+columns occupies one gene-panel + matrix-panel pair, and the pairs are
+stacked vertically within a single figure.  Set-name labels and size bars
+are repeated on every row so each row is self-contained.
+
+**Intersection semantics** are controlled by *mode*:
+
+* ``'exclusive'`` (default) — a gene appears in exactly one column.
+* ``'inclusive'`` — a gene appears in every column whose listed sets are
+  a subset of the sets that gene belongs to.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**sets**]{.parameter-name} [:]{.parameter-annotation-sep} [[Mapping](`collections.abc.Mapping`)\[[str](`str`), \'set \| list\'\] \| [List](`typing.List`)\[[GeneList](`geneinfo.genelist.GeneList`)\]]{.parameter-annotation}</code>
+
+:   Gene (or any element) sets to compare.  Values can be ``set`` or ``list``; duplicates are ignored.
+
+<code>[**min_size**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1]{.parameter-default}</code>
+
+:   Discard intersections with fewer than this many elements.
+
+<code>[**sort_by**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'size\']{.parameter-default}</code>
+
+:   Column ordering: ``'size'`` — largest intersection first (default); ``'degree'`` — most sets involved first, then by size.
+
+<code>[**max_cols**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [15]{.parameter-default}</code>
+
+:   Without wrapping: hard cap on the number of columns displayed. With ``wrap=True``: number of intersection columns per row. Singletons are filtered *before* this cap when ``singletons=False``.
+
+<code>[**max_labels**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[int](`int`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Cap on gene labels shown per column.  ``None`` = unlimited.
+
+<code>[**singletons**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   If ``False`` (default), degree-1 intersections (genes unique to a single set) are excluded before the *max_cols* cap is applied.
+
+<code>[**mode**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'exclusive\']{.parameter-default}</code>
+
+:   ``'exclusive'`` (default) or ``'inclusive'``.  See above.
+
+<code>[**wrap**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   If ``True``, ignore the *max_cols* truncation and instead lay out all intersections across multiple rows, *max_cols* columns each. Each row is a complete gene-panel + matrix-panel pair with set labels repeated on the left.  Default ``False``.
+
+<code>[**color**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   If ``True`` (default), each set gets a distinct colour from *cmap* applied to its label, size bar, and filled dots.  Gene name text always uses the theme foreground.  ``False`` → monochrome.
+
+<code>[**cmap**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'tab10\']{.parameter-default}</code>
+
+:   Matplotlib colormap name for ``color=True``.  Defaults to ``'tab10'``; auto-upgraded to ``'tab20'`` for > 10 sets.
+
+<code>[**col_width**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1.0]{.parameter-default}</code>
+
+:   Width of a narrow (single-column) intersection column in inches. Wide (two-column) columns are 2 × *col_width*.
+
+<code>[**gene_row_h**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.14]{.parameter-default}</code>
+
+:   Vertical space per gene-label row in inches.
+
+<code>[**set_row_h**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.28]{.parameter-default}</code>
+
+:   Height of each set row in the dot-matrix panel in inches.
+
+<code>[**size_bar_cols**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [4.0]{.parameter-default}</code>
+
+:   Width of the set-label + size-bar region in *col_width* units. Overridden when ``bars=False``.
+
+<code>[**gene_pad**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.04]{.parameter-default}</code>
+
+:   Gap between a column divider and the nearest gene-name character, as a fraction of a column width.  Wide columns only.  Default 0.04.
+
+<code>[**two_col_threshold**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [15]{.parameter-default}</code>
+
+:   Columns with **more than** this many genes use the wide two-column layout (2 × *col_width*); others use the narrow single layout. Default 15.
+
+<code>[**figsize**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[tuple](`tuple`)\[[float](`float`), [float](`float`)\]\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Override auto figure size ``(width_in, height_in)``.
+
+<code>[**gene_fontsize**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [6.5]{.parameter-default}</code>
+
+:   Font size for gene name labels (pt).  Default 6.5.
+
+<code>[**gene_fontfamily**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'monospace\']{.parameter-default}</code>
+
+:   Font family for gene name labels.  Default ``'monospace'``.
+
+<code>[**gene_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour for gene name labels.  ``None`` → theme foreground.
+
+<code>[**gene_fontweight**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'normal\']{.parameter-default}</code>
+
+:   Font weight for gene name labels.  Default ``'normal'``.
+
+<code>[**count_fontsize**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[float](`float`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Font size for intersection-count labels.  Defaults to ``gene_fontsize - 0.5``.
+
+<code>[**count_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour for count labels and truncation markers. ``None`` → theme foreground at ~45 % opacity.
+
+<code>[**label_fontsize**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[float](`float`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Font size for set name labels.  Defaults to ``gene_fontsize + 0.5``.
+
+<code>[**label_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour for set name labels.  ``None`` → theme foreground (or set colour when ``color=True``).
+
+<code>[**label_fontweight**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'bold\']{.parameter-default}</code>
+
+:   Font weight for set name labels.  Default ``'bold'``.
+
+<code>[**label_fontfamily**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'sans-serif\']{.parameter-default}</code>
+
+:   Font family for set name labels.  Default ``'sans-serif'``.
+
+<code>[**title**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Optional figure title string (placed above the first row).
+
+<code>[**title_fontsize**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[float](`float`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Font size for the figure title.  Defaults to ``gene_fontsize + 4``.
+
+<code>[**title_fontweight**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'bold\']{.parameter-default}</code>
+
+:   Font weight for the figure title.  Default ``'bold'``.
+
+<code>[**dot_size**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [5.5]{.parameter-default}</code>
+
+:   Dot-matrix circle diameter (matplotlib marker-size units).
+
+<code>[**dot_filled_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour of filled dots.  ``None`` → theme foreground (or set colour).
+
+<code>[**dot_empty_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour of empty dots.  ``None`` → theme foreground at ~18 % opacity.
+
+<code>[**col_divider_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour of vertical column-divider lines. ``None`` → theme foreground at ~15 % opacity.
+
+<code>[**col_divider_lw**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.4]{.parameter-default}</code>
+
+:   Line width of column dividers.  Default 0.4.
+
+<code>[**baseline_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour of the horizontal baseline between gene and matrix panels. ``None`` → theme foreground at ~50 % opacity.
+
+<code>[**baseline_lw**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.9]{.parameter-default}</code>
+
+:   Line width of the baseline.  Default 0.9.
+
+<code>[**row_grid_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour of horizontal lines between set rows in the matrix panel. ``None`` → theme foreground at ~12 % opacity.
+
+<code>[**row_grid_lw**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.4]{.parameter-default}</code>
+
+:   Line width of row-grid lines.  Default 0.4.
+
+<code>[**size_bar_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour of set-size bars.  ``None`` → theme foreground (or set colour).
+
+<code>[**size_bar_alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.4]{.parameter-default}</code>
+
+:   Opacity of set-size bars.  Default 0.40.
+
+<code>[**show_set_sizes**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Append total element count to each set label.  Default ``True``.
+
+<code>[**show_size_bars**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Draw horizontal set-size bars.  Ignored when ``bars=False``.
+
+<code>[**bars**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   If ``False`` (default), hide size bars and use a narrow label-only margin.  ``True`` shows the classic UpSet-style size bars.
+
+<code>[**show_count**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Print intersection size above each gene-label column.  Default ``True``.
+
+<code>[**truncate_suffix**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'...\']{.parameter-default}</code>
+
+:   Appended when a column is capped by *max_labels*.  Default ``'...'``.
+
+<code>[**highlight**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[list](`list`)\[[frozenset](`frozenset`)\[[str](`str`)\]\]\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   List of ``frozenset`` of set-name strings whose columns are shaded with *highlight_color*.
+
+<code>[**highlight_color**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'#F0EEE8\']{.parameter-default}</code>
+
+:   Background fill for highlighted columns.  Default ``'#F0EEE8'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[matplotlib](`matplotlib`).[figure](`matplotlib.figure`).[Figure](`matplotlib.figure.Figure`)]{.parameter-annotation}</code>
+
+:   
+
+#### Examples {.doc-section .doc-section-examples}
+
+Basic usage::
+
+    upset({"A": {"x","y"}, "B": {"y","z"}, "C": {"z","x"}})
+    
+
+Wrap all intersections across multiple rows, 12 columns per row::
+
+    fig = upset(my_sets, wrap=True, max_cols=12, singletons=True)
+    fig.savefig("wrapped.pdf", bbox_inches="tight", transparent=True)
+
+Inclusive mode with per-set colour::
+
+    upset(
+        my_sets,
+        mode="inclusive",
+        color=True,
+        cmap="Set2",
+        gene_fontsize=7,
+        title="Shared gene sets",
+    )
+
+Dark theme::
+
+    with plt.style.context("dark_background"):
+        upset(my_sets)
+
+Highlight a specific intersection::
+
+    upset(
+        my_sets,
+        highlight=[frozenset(["Cancer drivers", "DNA repair"])],
+    )

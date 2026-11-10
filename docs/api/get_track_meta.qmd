@@ -1,0 +1,29 @@
+# get_track_meta { #geneinfo.ucsc.get_track_meta }
+
+```python
+geneinfo.ucsc.get_track_meta(track_name, assembly)
+```
+
+Return the UCSC metadata dict for a single track (searching subtracks).
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**track_name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   UCSC track or subtrack name, as listed by :func:`search_tracks`.
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Genome assembly, e.g. ``'hg38'``.
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[dict](`dict`)]{.parameter-annotation}</code>
+
+:   The track's entry from the UCSC ``/list/tracks`` endpoint, e.g. ``type``, ``shortLabel``, ``longLabel``. Subtracks also carry ``_parent``, the name of their container.
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
+
+:   If the track does not exist in the assembly.

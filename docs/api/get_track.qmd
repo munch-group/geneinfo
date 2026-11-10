@@ -1,0 +1,86 @@
+# get_track { #geneinfo.ucsc.get_track }
+
+```python
+geneinfo.ucsc.get_track(
+    track_name,
+    assembly,
+    chrom=None,
+    start=None,
+    end=None,
+    *,
+    as_frame=True,
+    value_column=None,
+    interact_side='source',
+    force_type=None,
+)
+```
+
+Fetch a UCSC track and return a normalized ``DataFrame``.
+
+Fetches are automatically batched to stay below UCSC's
+``maxItemsLimit``:
+
+- When ``chrom`` is omitted, one request is made per chromosome in the
+  assembly.
+- When a single-chromosome request comes back truncated
+  (``itemsReturned >= maxItemsLimit * 0.95``), the region is bisected
+  recursively until every response is un-truncated, or until the
+  candidate region drops below
+  :data:`_MIN_BISECT_BP` bp (at which point a warning is emitted).
+
+Each sub-request is individually shelve-cached, so re-running the same
+query costs nothing beyond the adapter step.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**track_name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   UCSC track identifier (as listed by :func:`search_tracks`).
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Genome assembly, e.g. ``'hg38'``.
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| None]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Optional region restriction. ``chrom`` is auto-prefixed with ``'chr'`` when missing. When ``chrom`` is ``None`` the entire assembly is fetched chromosome-by-chromosome.
+
+<code>[**start**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| None]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Optional region restriction. ``chrom`` is auto-prefixed with ``'chr'`` when missing. When ``chrom`` is ``None`` the entire assembly is fetched chromosome-by-chromosome.
+
+<code>[**end**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| None]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Optional region restriction. ``chrom`` is auto-prefixed with ``'chr'`` when missing. When ``chrom`` is ``None`` the entire assembly is fetched chromosome-by-chromosome.
+
+<code>[**as_frame**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   When ``False`` return the raw JSON payloads from UCSC. If the fetch was batched, a ``list`` of envelopes is returned; otherwise a single envelope ``dict``.
+
+<code>[**value_column**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| None]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Override the column selected as ``value``. By default the first numeric column matching :data:`_VALUE_COLUMN_PREFERENCE` wins, then the first other numeric column.
+
+<code>[**interact_side**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'source\']{.parameter-default}</code>
+
+:   For ``interact`` / ``bigInteract`` tracks, whether to expose the ``source*`` (default) or ``target*`` side as ``chrom/start/end``.
+
+<code>[**force_type**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| None]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Override the dispatch family (``'bed'``, ``'wig'``, ``'interact'``). Useful when the metadata ``type`` is missing or inaccurate.
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Columns ``chrom, start, end, value`` first (when derivable), then any remaining original columns. The index is a fresh ``RangeIndex``.
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[UnsupportedTrackType](`geneinfo.ucsc.UnsupportedTrackType`)]{.parameter-annotation}</code>
+
+:   For track types whose payload cannot be flattened into a value dataframe (bam/cram/hic/vcfTabix/...) or for composite/super-track containers. The message identifies acceptable alternatives.
+
+<code>[:]{.parameter-annotation-sep} [[UcscApiError](`geneinfo.ucsc.UcscApiError`)]{.parameter-annotation}</code>
+
+:   For HTTP or API-level failures.

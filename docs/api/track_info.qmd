@@ -1,0 +1,50 @@
+# track_info { #geneinfo.ucsc.track_info }
+
+```python
+geneinfo.ucsc.track_info(track_name, assembly)
+```
+
+Display the fields of a UCSC track: name, example value, description.
+
+The table is displayed, not returned: one row per field with columns
+``field``, ``example`` and ``description``, left-aligned and with long
+descriptions unwrapped. Outside IPython / Jupyter it is printed as
+plain text.
+
+The table mirrors the field / example / description columns of the
+Table Browser's "describe table schema" page. That page sits behind a
+bot check, so it is rebuilt from the REST API instead: field names and
+descriptions come from ``/list/schema``, and each example is the first
+non-empty value of that field among the track's first 50 records, so
+``example`` is empty when none of them has a value.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**track_name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   UCSC track (or subtrack) name, e.g. ``'lrSvAll'``.
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Genome assembly, e.g. ``'hg38'``.
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
+
+:   If the track does not exist in the assembly.
+
+<code>[:]{.parameter-annotation-sep} [[UnsupportedTrackType](`geneinfo.ucsc.UnsupportedTrackType`)]{.parameter-annotation}</code>
+
+:   If the track is a composite/view container; the message lists its subtracks.
+
+<code>[:]{.parameter-annotation-sep} [[UcscApiError](`geneinfo.ucsc.UcscApiError`)]{.parameter-annotation}</code>
+
+:   If the UCSC API rejects the request.
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+>>> from geneinfo import ucsc
+>>> ucsc.track_info('lrSvAll', assembly='hg38')
+```

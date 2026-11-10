@@ -1,0 +1,29 @@
+# list_subtracks { #geneinfo.ucsc.list_subtracks }
+
+```python
+geneinfo.ucsc.list_subtracks(track_name, assembly)
+```
+
+Return a DataFrame of leaf subtracks under a composite/view container.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**track_name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Name of a composite or view container track.
+
+<code>[**assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Genome assembly, e.g. ``'hg38'``.
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   Columns ``name``, ``type``, ``shortLabel``, one row per subtrack that holds data. Empty for a track that is not a container.
+
+## Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
+
+:   If the track does not exist in the assembly.

@@ -162,13 +162,17 @@ theme : dict
 | [add_spans](#geneinfo.widget.Tracks.add_spans) | Add shaded vertical spans across all tracks. |
 | [add_ucsc_track](#geneinfo.widget.Tracks.add_ucsc_track) | Fetch a UCSC track and add it as a widget track of the given kind. |
 | [add_vlines](#geneinfo.widget.Tracks.add_vlines) | Add thin vertical guide lines across all tracks. |
+| [added_tracks](#geneinfo.widget.Tracks.added_tracks) | Return the display names of all tracks, in display order. |
 | [clear_spans](#geneinfo.widget.Tracks.clear_spans) | Remove all vertical spans. |
 | [clear_tracks](#geneinfo.widget.Tracks.clear_tracks) | Remove every track from the viewer. |
 | [clear_vlines](#geneinfo.widget.Tracks.clear_vlines) | Remove all vertical marker lines. |
 | [colorbar](#geneinfo.widget.Tracks.colorbar) | Build a compact matplotlib key for a value-mode heatmap. |
+| [hide_track](#geneinfo.widget.Tracks.hide_track) | Hide tracks without removing them. |
 | [legend](#geneinfo.widget.Tracks.legend) | Arm a legend strip to appear above the widget on display. |
-| [remove_track](#geneinfo.widget.Tracks.remove_track) | Remove a single track by display name or by index. |
+| [remove_track](#geneinfo.widget.Tracks.remove_track) | Remove tracks by display name, or a single track by index. |
+| [select_tracks](#geneinfo.widget.Tracks.select_tracks) | Show only the listed tracks, in the order listed. |
 | [set_viewport](#geneinfo.widget.Tracks.set_viewport) | Move the viewport to a new chromosome and base-pair window. |
+| [show_track](#geneinfo.widget.Tracks.show_track) | Show tracks hidden with :meth:`hide_track`. |
 | [zoom_to](#geneinfo.widget.Tracks.zoom_to) | Zoom the viewport to a chromosome, range, or centred window. |
 
 ### add_arc_track { #geneinfo.widget.Tracks.add_arc_track }
@@ -297,6 +301,13 @@ Either supply ``y`` (fill from a single curve to ``baseline``) or
 both ``y_lo`` and ``y_hi`` (fill between two curves). When
 ``baseline`` is set, the area above and below it can be drawn in
 distinct colours.
+
+A missing value (``NaN`` in ``y``, or in either ``y_lo`` or
+``y_hi``) breaks the fill, as in matplotlib: nothing is filled
+between the samples on either side of it. Positions that simply
+have no row are bridged, so add ``NaN`` rows where the fill should
+break. When zoomed out, a bin whose samples are all ``NaN`` is a
+gap; other bins aggregate their non-``NaN`` samples.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
@@ -784,6 +795,13 @@ geneinfo.widget.Tracks.add_line_track(
 ```
 
 Add a line track — one connected polyline per group.
+
+A missing ``y`` value (``NaN``) breaks the line, as in matplotlib:
+the line stops at the last sample before it and resumes at the
+next sample after it. Positions that simply have no row are
+bridged, so add ``NaN`` rows where the line should break. When
+zoomed out, a bin whose samples are all ``NaN`` is a gap; other
+bins aggregate their non-``NaN`` samples.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
@@ -1471,6 +1489,23 @@ Add thin vertical guide lines across all tracks.
 
 :   If a named column is absent from the DataFrame.
 
+### added_tracks { #geneinfo.widget.Tracks.added_tracks }
+
+```python
+geneinfo.widget.Tracks.added_tracks()
+```
+
+Return the display names of all tracks, in display order.
+
+Hidden tracks (see :meth:`hide_track`) are included, in the
+position they will take when shown again.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [list of str]{.parameter-annotation}</code>
+
+:   One name per track; a name occurs more than once if several tracks share it.
+
 ### clear_spans { #geneinfo.widget.Tracks.clear_spans }
 
 ```python
@@ -1575,6 +1610,43 @@ palette and raise :class:`ValueError`.
 
 :   If the named track is in density mode (no palette).
 
+### hide_track { #geneinfo.widget.Tracks.hide_track }
+
+```python
+geneinfo.widget.Tracks.hide_track(name_or_index)
+```
+
+Hide tracks without removing them.
+
+A name hides every track with that name; an index hides the one
+track at that position. The track disappears from the view, but its data stays in the
+widget (in Python and in the browser), so :meth:`show_track`
+brings it back instantly, in its original position, without
+re-sending or re-building anything. Hiding a hidden track does
+nothing.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**name_or_index**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) or [int](`int`)]{.parameter-annotation}</code>
+
+:   The track's display ``name``, or a positional index into :attr:`track_configs` (negative indices count from the end). Hidden tracks keep their position, so they count too.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, for fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
+
+:   If no track matches.
+
+#### See Also {.doc-section .doc-section-see-also}
+
+show_track, remove_track
+
 ### legend { #geneinfo.widget.Tracks.legend }
 
 ```python
@@ -1646,13 +1718,13 @@ and density-mode tracks raise :class:`ValueError`.
 geneinfo.widget.Tracks.remove_track(name_or_index)
 ```
 
-Remove a single track by display name or by index.
+Remove tracks by display name, or a single track by index.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
 <code>[**name_or_index**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) or [int](`int`)]{.parameter-annotation}</code>
 
-:   When a string, matches the track's display ``name``. When an integer, treated as a positional index into :attr:`track_configs` (negative indices count from the end, like a Python list).
+:   When a string, every track with that display ``name`` is removed. When an integer, the one track at that position in :attr:`track_configs` (negative indices count from the end, like a Python list).
 
 #### Returns {.doc-section .doc-section-returns}
 
@@ -1665,6 +1737,43 @@ Remove a single track by display name or by index.
 <code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
 
 :   If no track matches.
+
+### select_tracks { #geneinfo.widget.Tracks.select_tracks }
+
+```python
+geneinfo.widget.Tracks.select_tracks(names)
+```
+
+Show only the listed tracks, in the order listed.
+
+A shortcut for hiding every track, then showing the listed ones,
+except that the shown tracks are also reordered to follow
+``names``. The remaining tracks stay hidden, after the shown ones
+and in their existing order, so their data is kept and a later
+:meth:`show_track` or :meth:`select_tracks` restores them
+instantly.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**names**]{.parameter-name} [:]{.parameter-annotation-sep} [str, int, or iterable of str or int]{.parameter-annotation}</code>
+
+:   Tracks to show. Each entry is a display name, which selects every track with that name (in their existing order), or a positional index into :attr:`track_configs` as it is before the call. A track listed twice is placed at its first mention. An empty list hides every track.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, for fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
+
+:   If any entry matches no track. The viewer is left unchanged.
+
+#### See Also {.doc-section .doc-section-see-also}
+
+added_tracks, hide_track, show_track
 
 ### set_viewport { #geneinfo.widget.Tracks.set_viewport }
 
@@ -1699,6 +1808,40 @@ Move the viewport to a new chromosome and base-pair window.
 <code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
 
 :   If ``chrom`` is not in :attr:`chrom_sizes`.
+
+### show_track { #geneinfo.widget.Tracks.show_track }
+
+```python
+geneinfo.widget.Tracks.show_track(name_or_index)
+```
+
+Show tracks hidden with :meth:`hide_track`.
+
+A name shows every track with that name; an index shows the one
+track at that position. The track reappears in the position it had before it was
+hidden. Showing a visible track does nothing.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**name_or_index**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) or [int](`int`)]{.parameter-annotation}</code>
+
+:   The track's display ``name``, or a positional index into :attr:`track_configs` (negative indices count from the end).
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, for fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
+
+:   If no track matches.
+
+#### See Also {.doc-section .doc-section-see-also}
+
+hide_track
 
 ### zoom_to { #geneinfo.widget.Tracks.zoom_to }
 
