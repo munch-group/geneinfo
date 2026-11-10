@@ -558,6 +558,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#geneinfo.widget.Tracks" id="toc-geneinfo.widget.Tracks" class="nav-link active" data-scroll-target="#geneinfo.widget.Tracks">Tracks</a>
   <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#track-types" id="toc-track-types" class="nav-link" data-scroll-target="#track-types">Track types</a></li>
   <li><a href="#toolbar" id="toc-toolbar" class="nav-link" data-scroll-target="#toolbar">Toolbar</a></li>
   <li><a href="#pan-and-zoom" id="toc-pan-and-zoom" class="nav-link" data-scroll-target="#pan-and-zoom">Pan and zoom</a></li>
@@ -601,9 +602,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="geneinfo.widget.Tracks" class="level1">
 <h1>Tracks</h1>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks(chroms, <span class="op">**</span>kw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks(chroms<span class="op">=</span><span class="va">None</span>, <span class="op">*</span>, assembly<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>WebGL2 genomic segment viewer rendered as a Jupyter widget.</p>
 <p>Build a stack of tracks by chaining the <code>add_*_track</code> methods, then display the instance directly in a notebook cell. All pan / zoom is uniform-only (zero CPU/GPU buffer work per frame); segment viewport culling uses sorted attribute-pointer offsets.</p>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
+<dl>
+<dt><code><span class="parameter-name"><strong>chroms</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">dict of str to int, or str</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Chromosome sizes as a <code>{chrom: length}</code> mapping, or an assembly name such as <code>'hg38'</code>. The first chromosome is shown initially.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>assembly</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Assembly name (<code>'hg38'</code>, <code>'rheMac10'</code>, …) whose chromosome sizes are looked up with :func:<code>geneinfo.coords.chromosome_lengths</code>; an alternative to <code>chroms</code>. Give one of <code>chroms</code> and <code>assembly</code>, not both. The assembly is also the default for :meth:<code>add_gene_track</code>.</p>
+</dd>
+<dt><code><span class="parameter-name">****kw**</span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">{}</span></code></dt>
+<dd>
+<p>Passed on to :class:<code>anywidget.AnyWidget</code>; <code>theme=</code> overrides the default theme (see :func:<code>set_default_theme</code>).</p>
+</dd>
+</dl>
+</section>
 <section id="track-types" class="level2 doc-section doc-section-track-types">
 <h2 class="doc-section doc-section-track-types anchored" data-anchor-id="track-types">Track types</h2>
 <p>:meth:<code>add_segment_track</code> Instanced GPU rectangles with automatic level-of-detail (LOD) density fallback when zoomed out. :meth:<code>add_heatmap_track</code> R8 texture rendering; handles 10 k+ individuals at 60 fps. :meth:<code>add_gene_track</code> Exon blocks plus intron connectors (drawn on the 2D overlay). :meth:<code>add_point_track</code> Point cloud (<code>gl.POINTS</code>). :meth:<code>add_line_track</code> Connected polyline per group (<code>gl.LINE_STRIP</code>). :meth:<code>add_fill_track</code> Fill-between two curves with optional pos/neg colour split. :meth:<code>add_histogram_track</code> Vertical bars with multi-resolution LOD. :meth:<code>add_arc_track</code> Arcs linking pairs of genomic positions. :meth:<code>add_ucsc_track</code> A UCSC Genome Browser track fetched by name and drawn as a point, line, histogram, fill, segment or heatmap track.</p>
@@ -755,8 +773,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add an arc track connecting pairs of positions on the same chromosome.</p>
 <p>Each record is drawn as a quadratic-Bezier curve from <code>pos1</code> to <code>pos2</code> with a fixed apex height above the track baseline, clamped so the apex never leaves the track band. Useful for splice junctions, Hi-C interactions, structural-variant links, and similar pairwise-coordinate data.</p>
-<section id="parameters" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -853,8 +871,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Add a fill-between track.</p>
 <p>Either supply <code>y</code> (fill from a single curve to <code>baseline</code>) or both <code>y_lo</code> and <code>y_hi</code> (fill between two curves). When <code>baseline</code> is set, the area above and below it can be drawn in distinct colours.</p>
 <p>A missing value (<code>NaN</code> in <code>y</code>, or in either <code>y_lo</code> or <code>y_hi</code>) breaks the fill, as in matplotlib: nothing is filled between the samples on either side of it. Positions that simply have no row are bridged, so add <code>NaN</code> rows where the fill should break. When zoomed out, a bin whose samples are all <code>NaN</code> is a gap; other bins aggregate their non-<code>NaN</code> samples.</p>
-<section id="parameters-1" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<section id="parameters-2" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -996,8 +1014,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a gene / exon annotation track.</p>
-<section id="parameters-2" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
+<section id="parameters-3" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>genes_data</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>dict</code> or <code>pandas</code>.<code>DataFrame</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
@@ -1115,8 +1133,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a heatmap track — one row per individual, GPU texture rendering.</p>
-<section id="parameters-3" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
+<section id="parameters-4" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1245,8 +1263,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a histogram track — vertical bars centred on each <code>x</code>.</p>
-<section id="parameters-4" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<section id="parameters-5" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1365,8 +1383,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a line track — one connected polyline per group.</p>
 <p>A missing <code>y</code> value (<code>NaN</code>) breaks the line, as in matplotlib: the line stops at the last sample before it and resumes at the next sample after it. Positions that simply have no row are bridged, so add <code>NaN</code> rows where the line should break. When zoomed out, a bin whose samples are all <code>NaN</code> is a gap; other bins aggregate their non-<code>NaN</code> samples.</p>
-<section id="parameters-5" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1531,8 +1549,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    y_range_per_lod<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a point track — point cloud rendered with <code>gl.POINTS</code>.</p>
-<section id="parameters-6" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<section id="parameters-7" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1695,8 +1713,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a segment track rendered with GPU-instanced rectangles.</p>
-<section id="parameters-7" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
+<section id="parameters-8" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1785,8 +1803,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    replace<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add shaded vertical spans across all tracks.</p>
-<section id="parameters-8" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
+<section id="parameters-9" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>ranges</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>tuple</code> | <code>Iterable</code>[<code>tuple</code>] | <code>dict</code>[<code>str</code>, <code>Iterable</code>[<code>tuple</code>]] | <code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1893,8 +1911,8 @@ df = get_track('trackName', 'hg38',
                chrom='chr1', start=..., end=...,
                value_column='pValue')
 Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
-<section id="parameters-9" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
+<section id="parameters-10" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>ucsc_track</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> | None</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
@@ -2002,8 +2020,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    replace<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add thin vertical guide lines across all tracks.</p>
-<section id="parameters-10" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
+<section id="parameters-11" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>positions</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code> | <code>Iterable</code>[<code>int</code>] | <code>dict</code>[<code>str</code>, <code>Iterable</code>[<code>int</code>]] | <code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -2144,8 +2162,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Build a compact matplotlib key for a value-mode heatmap.</p>
 <p>Continuous tracks render as a small colorbar; discrete tracks as a stacked swatch/label legend. Density-mode tracks have no palette and raise :class:<code>ValueError</code>.</p>
-<section id="parameters-11" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
+<section id="parameters-12" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-12">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>track_name</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
 <dd>
@@ -2201,8 +2219,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.hide_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Hide tracks without removing them.</p>
 <p>A name hides every track with that name; an index hides the one track at that position. The track disappears from the view, but its data stays in the widget (in Python and in the browser), so :meth:<code>show_track</code> brings it back instantly, in its original position, without re-sending or re-building anything. Hiding a hidden track does nothing.</p>
-<section id="parameters-12" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-12">Parameters</h4>
+<section id="parameters-13" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-13">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>name_or_index</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> or <code>int</code></span></code></dt>
 <dd>
@@ -2254,8 +2272,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </blockquote>
 </blockquote>
 <p>Validation happens up-front: unknown names raise :class:<code>KeyError</code> and density-mode tracks raise :class:<code>ValueError</code>.</p>
-<section id="parameters-13" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-13">Parameters</h4>
+<section id="parameters-14" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-14">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name">*<strong>track_names</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">()</span></code></dt>
 <dd>
@@ -2301,8 +2319,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.remove_track">remove_track</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.remove_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Remove tracks by display name, or a single track by index.</p>
-<section id="parameters-14" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-14">Parameters</h4>
+<section id="parameters-15" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-15">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>name_or_index</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> or <code>int</code></span></code></dt>
 <dd>
@@ -2331,15 +2349,15 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.select_tracks" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.select_tracks">select_tracks</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.select_tracks(names)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.select_tracks(<span class="op">*</span>names)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Show only the listed tracks, in the order listed.</p>
 <p>A shortcut for hiding every track, then showing the listed ones, except that the shown tracks are also reordered to follow <code>names</code>. The remaining tracks stay hidden, after the shown ones and in their existing order, so their data is kept and a later :meth:<code>show_track</code> or :meth:<code>select_tracks</code> restores them instantly.</p>
-<section id="parameters-15" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-15">Parameters</h4>
+<section id="parameters-16" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-16">Parameters</h4>
 <dl>
-<dt><code><span class="parameter-name"><strong>names</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">str, int, or iterable of str or int</span></code></dt>
+<dt><code><span class="parameter-name">*<strong>names</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">str, int, or iterable of str or int</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">()</span></code></dt>
 <dd>
-<p>Tracks to show. Each entry is a display name, which selects every track with that name (in their existing order), or a positional index into :attr:<code>track_configs</code> as it is before the call. A track listed twice is placed at its first mention. An empty list hides every track.</p>
+<p>Tracks to show, as separate arguments (<code>select_tracks('a', 'b')</code>), as one list (<code>select_tracks(['a', 'b'])</code>), or a mix. Each entry is a display name, which selects every track with that name (in their existing order), or a positional index into :attr:<code>track_configs</code> as it is before the call. A track listed twice is placed at its first mention. No entries (an empty call or an empty list) hides every track.</p>
 </dd>
 </dl>
 </section>
@@ -2370,8 +2388,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.set_viewport">set_viewport</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.set_viewport(chrom, start, end)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Move the viewport to a new chromosome and base-pair window.</p>
-<section id="parameters-16" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-16">Parameters</h4>
+<section id="parameters-17" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-17">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>chrom</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
 <dd>
@@ -2411,8 +2429,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.show_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Show tracks hidden with :meth:<code>hide_track</code>.</p>
 <p>A name shows every track with that name; an index shows the one track at that position. The track reappears in the position it had before it was hidden. Showing a visible track does nothing.</p>
-<section id="parameters-17" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-17">Parameters</h4>
+<section id="parameters-18" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-18">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>name_or_index</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> or <code>int</code></span></code></dt>
 <dd>
@@ -2461,8 +2479,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <li><code>zoom_to('chrX', center=150_000, window=1_000_000)</code> — centre on <code>center</code> with the given window width. <code>window</code> defaults to <code>1_000_000</code> bp when omitted.</li>
 </ul>
 <p>The <code>start</code>/<code>end</code> and <code>center</code>/<code>window</code> styles are mutually exclusive.</p>
-<section id="parameters-18" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-18">Parameters</h4>
+<section id="parameters-19" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-19">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>chrom</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
 <dd>
