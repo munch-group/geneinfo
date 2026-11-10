@@ -25,6 +25,7 @@ ideograms (chrom_ideogram).
 | [GenomeIdeogram](GenomeIdeogram.qmd#geneinfo.plot.GenomeIdeogram) | Class to plot ideograms of chromosomes in a genome assembly. |
 | [ChromIdeogram](ChromIdeogram.qmd#geneinfo.plot.ChromIdeogram) | Child class of GenomeIdeogram for plotting single chromosome ideograms. |
 | [venn](venn.qmd#geneinfo.plot.venn) |  |
+| [upset](upset.qmd#geneinfo.plot.upset) | upset.py  v0.6.0 |
 
 ## Tracks widget
 
@@ -34,6 +35,21 @@ Widget for zooming/panning large chromosome tracks with gene annotation.
 | | |
 | --- | --- |
 | [Tracks](Tracks.qmd#geneinfo.widget.Tracks) | WebGL2 genomic segment viewer rendered as a Jupyter widget. |
+
+## UCSC tracks
+
+These functions find, describe and fetch tracks from the UCSC Genome
+Browser through its REST API. Fetched data is cached on disk.
+
+
+| | |
+| --- | --- |
+| [search_tracks](search_tracks.qmd#geneinfo.ucsc.search_tracks) | Print tracks matching fuzzy queries (or all tracks when no query given). |
+| [list_tracks](list_tracks.qmd#geneinfo.ucsc.list_tracks) | Print all tracks for an assembly (including flattened subtracks). |
+| [track_info](track_info.qmd#geneinfo.ucsc.track_info) | Display the fields of a UCSC track: name, example value, description. |
+| [get_track](get_track.qmd#geneinfo.ucsc.get_track) | Fetch a UCSC track and return a normalized ``DataFrame``. |
+| [get_track_meta](get_track_meta.qmd#geneinfo.ucsc.get_track_meta) | Return the UCSC metadata dict for a single track (searching subtracks). |
+| [list_subtracks](list_subtracks.qmd#geneinfo.ucsc.list_subtracks) | Return a DataFrame of leaf subtracks under a composite/view container. |
 
 ## Gene coordinates
 

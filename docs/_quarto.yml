@@ -135,6 +135,18 @@ quartodoc:
       package: geneinfo.widget
       contents:
         - Tracks
+    - title: UCSC tracks
+      desc: |
+        These functions find, describe and fetch tracks from the UCSC Genome
+        Browser through its REST API. Fetched data is cached on disk.
+      package: geneinfo.ucsc
+      contents:
+        - search_tracks
+        - list_tracks
+        - track_info
+        - get_track
+        - get_track_meta
+        - list_subtracks
     - title: Gene coordinates
       desc: |
         These functions retrieve coordinates of named genes or genes in a chromosomal region.

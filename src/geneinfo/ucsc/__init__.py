@@ -3,11 +3,12 @@ UCSC REST API track access with per-track-type dispatch.
 
 Public API
 ----------
-- ``list_ucsc_tracks(assembly)`` / ``search_ucsc_tracks(*queries, assembly=...)``
-- ``get_ucsc_track_meta(track_name, assembly)``
-- ``get_ucsc_track(track_name, assembly, chrom=..., start=..., end=..., ...)``
+- ``list_tracks(assembly)`` / ``search_tracks(*queries, assembly=...)``
+- ``get_track_meta(track_name, assembly)``
+- ``track_info(track_name, assembly)``
+- ``get_track(track_name, assembly, chrom=..., start=..., end=..., ...)``
 
-The goal of :func:`get_ucsc_track` is to return a pandas ``DataFrame`` with a
+The goal of :func:`get_track` is to return a pandas ``DataFrame`` with a
 predictable schema ``chrom, start, end, value`` (plus any extra fields that
 were present in the source payload) for every track type where that mapping
 is meaningful. Track types that do not map onto a numeric-per-interval model
@@ -19,6 +20,7 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Iterable
 from pathlib import Path
+import functools
 import re
 import sys
 import textwrap
@@ -209,23 +211,173 @@ def _flatten_tracks(tracks: dict, parent: str | None = None) -> dict:
     return flat
 
 
-def get_ucsc_track_meta(track_name: str, assembly: str) -> dict:
-    """Return the UCSC metadata dict for a single track (searching subtracks)."""
+def get_track_meta(track_name: str, assembly: str) -> dict:
+    """Return the UCSC metadata dict for a single track (searching subtracks).
+
+    Parameters
+    ----------
+    track_name : str
+        UCSC track or subtrack name, as listed by :func:`search_tracks`.
+    assembly : str
+        Genome assembly, e.g. ``'hg38'``.
+
+    Returns
+    -------
+    dict
+        The track's entry from the UCSC ``/list/tracks`` endpoint, e.g.
+        ``type``, ``shortLabel``, ``longLabel``. Subtracks also carry
+        ``_parent``, the name of their container.
+
+    Raises
+    ------
+    KeyError
+        If the track does not exist in the assembly.
+    """
     tracks = _flatten_tracks(_fetch_all_tracks(assembly))
     if track_name not in tracks:
         raise KeyError(f"Track {track_name!r} not found in assembly {assembly!r}")
     return tracks[track_name]
 
 
-def list_ucsc_subtracks(track_name: str, assembly: str) -> pd.DataFrame:
+def list_subtracks(track_name: str, assembly: str) -> pd.DataFrame:
     """Return a DataFrame of leaf subtracks under a composite/view container.
 
-    Columns: ``name``, ``type``, ``shortLabel``. For a non-container track
-    this returns an empty DataFrame.
+    Parameters
+    ----------
+    track_name : str
+        Name of a composite or view container track.
+    assembly : str
+        Genome assembly, e.g. ``'hg38'``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Columns ``name``, ``type``, ``shortLabel``, one row per subtrack
+        that holds data. Empty for a track that is not a container.
+
+    Raises
+    ------
+    KeyError
+        If the track does not exist in the assembly.
     """
-    meta = get_ucsc_track_meta(track_name, assembly)
+    meta = get_track_meta(track_name, assembly)
     leaves = _walk_leaves(meta) if _is_container(meta) else []
     return pd.DataFrame(leaves, columns=["name", "type", "shortLabel"])
+
+
+# --- track schema -----------------------------------------------------------
+
+
+# Records scanned for a non-empty example value per field. The hgTables
+# schema page shows a single row, but many tracks leave optional fields empty
+# on their first record, so a few rows give far more useful examples.
+_SCHEMA_SAMPLE_ITEMS = 50
+
+
+@shelve_it()
+def _fetch_ucsc_track_schema(assembly: str, track_name: str) -> dict:
+    """Fetch and cache (shelve) the ``/list/schema`` envelope for a track."""
+    return _request_json("/list/schema", {"genome": assembly, "track": track_name})
+
+
+@shelve_it()
+def _fetch_ucsc_track_sample(assembly: str, track_name: str, n_items: int) -> list:
+    """Fetch and cache (shelve) the first ``n_items`` records of a track.
+
+    ``/getData/track`` returns records either as a flat list (bigBed and
+    friends) or as ``{chrom: [records]}`` (SQL tables, wiggle); both are
+    flattened into one list, in the order the API returns them.
+    """
+    envelope = _request_json(
+        "/getData/track",
+        {"genome": assembly, "track": track_name, "maxItemsOutput": str(n_items)},
+    )
+    payload = envelope.get(track_name, [])
+    if isinstance(payload, dict):
+        records = [r for recs in payload.values() if isinstance(recs, list) for r in recs]
+    elif isinstance(payload, list):
+        records = payload
+    else:
+        records = []
+    return [r for r in records if isinstance(r, dict)][:n_items]
+
+
+def track_info(track_name: str, assembly: str) -> None:
+    """Display the fields of a UCSC track: name, example value, description.
+
+    The table is displayed, not returned: one row per field with columns
+    ``field``, ``example`` and ``description``, left-aligned and with long
+    descriptions unwrapped. Outside IPython / Jupyter it is printed as
+    plain text.
+
+    The table mirrors the field / example / description columns of the
+    Table Browser's "describe table schema" page. That page sits behind a
+    bot check, so it is rebuilt from the REST API instead: field names and
+    descriptions come from ``/list/schema``, and each example is the first
+    non-empty value of that field among the track's first 50 records, so
+    ``example`` is empty when none of them has a value.
+
+    Parameters
+    ----------
+    track_name : str
+        UCSC track (or subtrack) name, e.g. ``'lrSvAll'``.
+    assembly : str
+        Genome assembly, e.g. ``'hg38'``.
+
+    Raises
+    ------
+    KeyError
+        If the track does not exist in the assembly.
+    UnsupportedTrackType
+        If the track is a composite/view container; the message lists its
+        subtracks.
+    UcscApiError
+        If the UCSC API rejects the request.
+
+    Examples
+    --------
+    >>> from geneinfo import ucsc
+    >>> ucsc.track_info('lrSvAll', assembly='hg38')   # doctest: +SKIP
+    """
+    meta = get_track_meta(track_name, assembly)
+    _check_container(meta, track_name, assembly)
+
+    schema = _fetch_ucsc_track_schema(assembly, track_name)
+    columns = schema.get("columnTypes") or []
+    if not columns:
+        raise UcscApiError(
+            f"UCSC API returned no schema for track {track_name!r} on {assembly!r}"
+        )
+    records = _fetch_ucsc_track_sample(assembly, track_name, _SCHEMA_SAMPLE_ITEMS)
+
+    rows = []
+    for col in columns:
+        field = col.get("name", "")
+        example = ""
+        for rec in records:
+            value = rec.get(field)
+            if value is not None and str(value) != "":
+                example = str(value)
+                break
+        rows.append(
+            {"field": field, "example": example, "description": col.get("description", "")}
+        )
+    df = pd.DataFrame(rows, columns=["field", "example", "description"])
+
+    with pd.option_context("display.max_colwidth", 200, "display.max_rows", 100):
+        try:
+            from IPython import get_ipython
+            from IPython.display import display
+        except ImportError:
+            get_ipython = None
+        if get_ipython is not None and get_ipython() is not None:
+            display(
+                df.style
+                .set_properties(**{"text-align": "left"})
+                .set_table_styles([{"selector": "th", "props": [("text-align", "left")]}])
+            )
+        else:
+            print(df.to_string())
 
 
 # --- listing / searching ----------------------------------------------------
@@ -238,13 +390,48 @@ def _normalize(name: str) -> str:
     return name.strip()
 
 
-def list_ucsc_tracks(assembly: str, *, label_wrap: int = 80) -> None:
-    """Print all tracks for an assembly (including flattened subtracks)."""
-    search_ucsc_tracks(assembly=assembly, label_wrap=label_wrap)
+def list_tracks(assembly: str, *, label_wrap: int = 80) -> None:
+    """Print all tracks for an assembly (including flattened subtracks).
+
+    Same as :func:`search_tracks` without queries.
+
+    Parameters
+    ----------
+    assembly : str
+        Genome assembly, e.g. ``'hg38'``.
+    label_wrap : int, default 80
+        Width at which each track's long label is wrapped.
+    """
+    search_tracks(assembly=assembly, label_wrap=label_wrap)
 
 
-def search_ucsc_tracks(*queries: str, assembly: str, label_wrap: int = 80) -> None:
-    """Print tracks matching fuzzy queries (or all tracks when no query given)."""
+def search_tracks(*queries: str, assembly: str, label_wrap: int = 80) -> None:
+    """Print tracks matching fuzzy queries (or all tracks when no query given).
+
+    Each output line is a track name followed by its long label. Names are
+    matched word by word with fuzzy string matching, and tracks matching
+    more of the words, more closely, are listed first.
+
+    Parameters
+    ----------
+    *queries : str
+        Search terms. Each is split into words; a track's score is the sum
+        of its best fuzzy-match scores across all words.
+    assembly : str
+        Genome assembly, e.g. ``'hg38'``.
+    label_wrap : int, default 80
+        Width at which each track's long label is wrapped.
+
+    Raises
+    ------
+    ValueError
+        If ``assembly`` is ``None``.
+
+    Examples
+    --------
+    >>> from geneinfo import ucsc
+    >>> ucsc.search_tracks('recombination', assembly='hg38')   # doctest: +SKIP
+    """
     if assembly is None:
         raise ValueError("assembly is required")
 
@@ -623,7 +810,7 @@ def _assembly_chromosomes(assembly: str) -> list[str]:
 # --- public entry point -----------------------------------------------------
 
 
-def get_ucsc_track(
+def get_track(
     track_name: str,
     assembly: str,
     chrom: str | None = None,
@@ -654,7 +841,7 @@ def get_ucsc_track(
     Parameters
     ----------
     track_name
-        UCSC track identifier (as listed by :func:`search_ucsc_tracks`).
+        UCSC track identifier (as listed by :func:`search_tracks`).
     assembly
         Genome assembly, e.g. ``'hg38'``.
     chrom, start, end
@@ -694,7 +881,7 @@ def get_ucsc_track(
     if chrom is not None and not str(chrom).startswith("chr"):
         chrom = f"chr{chrom}"
 
-    meta = get_ucsc_track_meta(track_name, assembly)
+    meta = get_track_meta(track_name, assembly)
     _check_container(meta, track_name, assembly)
     track_type = meta.get("type", "")
     family = force_type or _track_type_family(track_type)
@@ -794,12 +981,47 @@ def get_ucsc_track(
     return df.reset_index(drop=True)
 
 
+# --- deprecated names ---------------------------------------------------------
+
+
+def _deprecated_alias(old_name: str, func):
+    """Return a wrapper for ``func`` under its old ``ucsc_``-prefixed name.
+
+    The wrapper emits a ``DeprecationWarning`` pointing at the new name and
+    otherwise behaves exactly like ``func``.
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        warnings.warn(
+            f"geneinfo.ucsc.{old_name} is deprecated; use "
+            f"geneinfo.ucsc.{func.__name__} instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return func(*args, **kwargs)
+
+    wrapper.__name__ = wrapper.__qualname__ = old_name
+    wrapper.__doc__ = (
+        f"Deprecated alias of :func:`{func.__name__}`.\n\n" + (func.__doc__ or "")
+    )
+    return wrapper
+
+
+get_ucsc_track_meta = _deprecated_alias("get_ucsc_track_meta", get_track_meta)
+list_ucsc_subtracks = _deprecated_alias("list_ucsc_subtracks", list_subtracks)
+list_ucsc_tracks = _deprecated_alias("list_ucsc_tracks", list_tracks)
+search_ucsc_tracks = _deprecated_alias("search_ucsc_tracks", search_tracks)
+get_ucsc_track = _deprecated_alias("get_ucsc_track", get_track)
+
+
 __all__ = [
-    "get_ucsc_track",
-    "get_ucsc_track_meta",
-    "list_ucsc_subtracks",
-    "list_ucsc_tracks",
-    "search_ucsc_tracks",
+    "get_track",
+    "get_track_meta",
+    "list_subtracks",
+    "list_tracks",
+    "search_tracks",
+    "track_info",
     "UcscApiError",
     "UnsupportedTrackType",
 ]
+

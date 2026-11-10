@@ -11,10 +11,19 @@ website:
       - api/GenomeIdeogram.qmd
       - api/ChromIdeogram.qmd
       - api/venn.qmd
+      - api/upset.qmd
       section: Gene plots
     - contents:
       - api/Tracks.qmd
       section: Tracks widget
+    - contents:
+      - api/search_tracks.qmd
+      - api/list_tracks.qmd
+      - api/track_info.qmd
+      - api/get_track.qmd
+      - api/get_track_meta.qmd
+      - api/list_subtracks.qmd
+      section: UCSC tracks
     - contents:
       - api/gene_coords.qmd
       - api/gene_coords_region.qmd
