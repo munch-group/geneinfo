@@ -5686,7 +5686,7 @@ class Tracks(anywidget.AnyWidget):
         """
         return [c.get('name') for c in self.track_configs]
 
-    def select_tracks(self, names: Any) -> 'Tracks':
+    def select_tracks(self, *names: Any) -> 'Tracks':
         """Show only the listed tracks, in the order listed.
 
         A shortcut for hiding every track, then showing the listed ones,
@@ -5698,12 +5698,15 @@ class Tracks(anywidget.AnyWidget):
 
         Parameters
         ----------
-        names : str, int, or iterable of str or int
-            Tracks to show. Each entry is a display name, which selects
-            every track with that name (in their existing order), or a
-            positional index into :attr:`track_configs` as it is before
-            the call. A track listed twice is placed at its first
-            mention. An empty list hides every track.
+        *names : str, int, or iterable of str or int
+            Tracks to show, as separate arguments
+            (``select_tracks('a', 'b')``), as one list
+            (``select_tracks(['a', 'b'])``), or a mix. Each entry is a
+            display name, which selects every track with that name (in
+            their existing order), or a positional index into
+            :attr:`track_configs` as it is before the call. A track listed
+            twice is placed at its first mention. No entries (an empty
+            call or an empty list) hides every track.
 
         Returns
         -------
@@ -5719,13 +5722,18 @@ class Tracks(anywidget.AnyWidget):
         --------
         added_tracks, hide_track, show_track
         """
-        if isinstance(names, (str, int)):
-            names = [names]
+        # Flatten one level: each argument is a name / index or a list of them.
+        keys: list = []
+        for arg in names:
+            if isinstance(arg, (str, int)):
+                keys.append(arg)
+            else:
+                keys.extend(arg)
         configs = list(self.track_configs)
         # Resolve every entry before changing anything, so a bad name
         # leaves the viewer as it was.
         order: list[int] = []
-        for key in names:
+        for key in keys:
             for idx in self._track_indices(key, 'select_tracks'):
                 if idx not in order:
                     order.append(idx)
