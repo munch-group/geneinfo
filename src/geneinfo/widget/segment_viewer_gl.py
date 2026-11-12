@@ -1889,8 +1889,8 @@ initGlPrograms();
 
 // WebGL context-loss recovery: on loss, cancel the frame loop and drop all
 // per-tid GPU handles (the ones from the old context are invalid). On
-// restore, rebuild programs and re-upload current track_data from the
-// model so the viewer recovers without a full remount.
+// restore, rebuild programs and fetch / re-upload the track data in view so
+// the viewer recovers without a full remount.
 let _glLost = false;
 glCanvas.addEventListener('webglcontextlost', (e) => {
   e.preventDefault();
@@ -1934,18 +1934,35 @@ const gpuHist = {};   // [tid][ch][gid] = { base: rectGpu|null, levels: [{nBins,
 const gpuArc  = {};   // [tid][ch][gid] = { buf, starts, maxLen, count }
 const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
 const rawFill = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,lo,hi,...]
-// Per-track upload bookkeeping. Python bumps track_revs[tid] whenever a
-// track's payload changes, and syncTracks uploads only the tracks whose
-// revision differs from the one on the GPU — every track_data change
-// resends the whole dict, so re-uploading everything on each change would
-// redo all the decoding and GPU work for every track already shown.
-const _uploadedRev = {};  // tid -> revision whose payload is on the GPU
-const _failedRev   = {};  // tid -> revision whose upload threw (not retried)
-const _trackErrors = {};  // tid -> message drawn on the track's band
+// ─── Track payload loading ────────────────────────────────────────────────
+// Track data is not part of the synced model state (unless the viewer was
+// built with embed_data=True, see syncTracks). Each view fetches what it
+// draws from the kernel — one track, one chromosome at a time — with the
+// _cmd_fetch_track command, and the arrays arrive as binary buffers. Python
+// bumps track_revs[tid] whenever a track's payload changes, which makes all
+// of that track's chromosomes stale; a stale chromosome keeps drawing its
+// old GPU data until the new slice replaces it, so a refresh never flickers.
+//
+// State is keyed by `${tid}|${chrom}`; the chrom '*' means "every
+// chromosome" (an embedded payload is uploaded whole).
+const _loadedRev  = {};  // key -> revision whose payload is on the GPU
+const _failedRev  = {};  // key -> revision whose fetch/upload failed (not retried)
+const _loadErrors = {};  // key -> message drawn on the track's band
+const _inflight   = {};  // key -> { id, rev, t0 } — the outstanding fetch
+const _requests   = {};  // fetch command id -> key
+const FETCH_RETRY_MS = 60000;  // re-send a fetch that never got an answer
+const SLOW_FETCH_MS  = 4000;   // after this the band says "waiting for kernel…"
+function _key(tid, ch) { return tid + '|' + ch; }
 function _forgetUploads() {
-  for (const k of Object.keys(_uploadedRev)) delete _uploadedRev[k];
-  for (const k of Object.keys(_failedRev))   delete _failedRev[k];
-  for (const k of Object.keys(_trackErrors)) delete _trackErrors[k];
+  for (const m of [_loadedRev, _failedRev, _loadErrors, _inflight, _requests]) {
+    for (const k of Object.keys(m)) delete m[k];
+  }
+}
+function _forgetTid(tid) {
+  const pre = tid + '|';
+  for (const m of [_loadedRev, _failedRev, _loadErrors, _inflight]) {
+    for (const k of Object.keys(m)) if (k.startsWith(pre)) delete m[k];
+  }
 }
 const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
 const rawArc  = {};   // tooltip: [tid][chrom][gid] = Float32Array [p1,p2,...]
@@ -1981,7 +1998,7 @@ function _disposeHist(slot) {
 function _disposeArc(slot)  { if (slot) _delBuf(slot.buf); }
 
 // Dispose one (tid, ch) entry across a given store — the channel bucket is a
-// {gid: slot} dict. Called from uploadTrackData right before it reassigns
+// {gid: slot} dict. Called from uploadTrack right before it reassigns
 // `store[tid][ch] = {}`, so stale GPU handles do not leak on re-upload.
 function disposeSlot(store, tid, ch, disposer) {
   const bucket = store[tid] && store[tid][ch];
@@ -2000,14 +2017,26 @@ function disposeTid(tid) {
   if (gpuFill[tid]) { for (const ch of Object.keys(gpuFill[tid])) disposeSlot(gpuFill, tid, ch, _disposeFill); delete gpuFill[tid]; }
   if (gpuHist[tid]) { for (const ch of Object.keys(gpuHist[tid])) disposeSlot(gpuHist, tid, ch, _disposeHist); delete gpuHist[tid]; }
   if (gpuArc[tid])  { for (const ch of Object.keys(gpuArc[tid]))  disposeSlot(gpuArc,  tid, ch, _disposeArc);  delete gpuArc[tid]; }
-  delete _uploadedRev[tid];
-  delete _failedRev[tid];
-  delete _trackErrors[tid];
+  _forgetTid(tid);
   delete rawXY[tid];
   delete rawFill[tid];
   delete rawHist[tid];
   delete rawArc[tid];
   delete geneData[tid];
+}
+
+// Dispose one chromosome of one track (a slice whose upload failed part-way),
+// leaving the track's other chromosomes alone.
+function disposeTidChrom(tid, ch) {
+  const stores = [[gpuSeg, _disposeSeg], [gpuDens, _disposeDens], [gpuHM, _disposeHM],
+                  [gpuXY, _disposeXY], [gpuFill, _disposeFill], [gpuHist, _disposeHist],
+                  [gpuArc, _disposeArc]];
+  for (const [store, disposer] of stores) {
+    if (store[tid] && store[tid][ch]) { disposeSlot(store, tid, ch, disposer); delete store[tid][ch]; }
+  }
+  for (const raw of [rawXY, rawFill, rawHist, rawArc, geneData]) {
+    if (raw[tid]) delete raw[tid][ch];
+  }
 }
 
 // Dispose every GPU resource across every store. Called on widget teardown
@@ -2041,7 +2070,40 @@ function panHi(ch) { return panRange[ch]?.hi ?? (chromSizes[ch] || 1); }
 // ══════════════════════════════════════════════════════════════════════════════
 // BINARY DECODE
 // ══════════════════════════════════════════════════════════════════════════════
+// A fetched payload's binary arrays travel as separate message buffers; the
+// response lists where each one goes (a key path into the payload).
+function _putBuffers(payload, paths, buffers) {
+  (paths || []).forEach((path, i) => {
+    let o = payload;
+    for (let j = 0; j < path.length - 1; j++) o = o[path[j]];
+    o[path[path.length - 1]] = buffers[i];
+  });
+  return payload;
+}
+
+// Binary arrays reach the browser as DataViews (or other views) at arbitrary
+// byte offsets. Copy each into its own ArrayBuffer so typed arrays over it
+// are aligned; an empty one becomes '' — the empty-group marker the upload
+// code checks for. Returns a new object; the input is not modified.
+function _normalizePayload(o) {
+  if (o instanceof ArrayBuffer) return o.byteLength ? o : '';
+  if (ArrayBuffer.isView(o)) {
+    return o.byteLength ? o.buffer.slice(o.byteOffset, o.byteOffset + o.byteLength) : '';
+  }
+  if (Array.isArray(o)) return o.map(_normalizePayload);
+  if (o && typeof o === 'object') {
+    const out = {};
+    for (const k of Object.keys(o)) out[k] = _normalizePayload(o[k]);
+    return out;
+  }
+  return o;
+}
+
+// Packed arrays arrive either as base64 text (older payloads) or as an
+// ArrayBuffer already unpacked from a binary message (see _normalizePayload);
+// every decoder accepts both.
 function b64Buf(b64) {
+  if (typeof b64 !== 'string') return b64;
   const bin = atob(b64);
   const u8  = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
@@ -2096,6 +2158,7 @@ function mixedVerts(nSlots) {
 
 function b64U8(b64) {
   if (!b64) return new Uint8Array(0);
+  if (typeof b64 !== 'string') return new Uint8Array(b64);
   const bin = atob(b64);
   const u8  = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
@@ -2457,27 +2520,129 @@ function _trackRev(tid) {
   return r == null ? 0 : r;
 }
 
-// Bring the GPU in line with the model: free removed tracks and upload every
-// configured track whose payload revision is not on the GPU yet (and has not
-// already failed). track_configs, track_data and track_revs may arrive in one
-// message or several, in any order — each change calls this, and a track is
-// uploaded once its config, data and revision are all present.
+// Payloads embedded in the model state (Tracks(..., embed_data=True)).
+function _embedded() { return model.get('embedded_data') || {}; }
+
+function _isCurrent(tid, ch, rev) {
+  return _loadedRev[_key(tid, '*')] === rev || _loadedRev[_key(tid, ch)] === rev;
+}
+
+// Bring the GPU in line with the model: free removed tracks, upload embedded
+// payloads whose revision is not on the GPU yet, and request the chromosome
+// in view for every other visible track. track_configs, track_revs and
+// embedded_data may arrive in one message or several, in any order — each
+// change calls this.
 function syncTracks() {
   _reconcileTids();
   if (_glLost) return;  // the webglcontextrestored handler syncs again
-  const td   = model.get('track_data') || {};
+  const emb  = _embedded();
   const cfgs = model.get('track_configs') || [];
-  const pending = cfgs.filter(c => {
-    if (!td[c.id]) return false;
-    const rev = _trackRev(c.id);
-    return _uploadedRev[c.id] !== rev && _failedRev[c.id] !== rev;
-  });
-  if (pending.length) uploadTrackData(pending);
+  let uploaded = false;
+  for (const cfg of cfgs) {
+    const d = emb[cfg.id];
+    if (!d) continue;
+    const rev = _trackRev(cfg.id), k = _key(cfg.id, '*');
+    if (_loadedRev[k] === rev || _failedRev[k] === rev) continue;
+    _uploadSlice(cfg, '*', rev, () => _normalizePayload(d));
+    uploaded = true;
+  }
+  if (uploaded) _updatePanRange();
+  _requestMissing();
+}
+
+// Ask the kernel for each track's slice of the chromosome in view that is
+// neither current on the GPU, already requested, nor failed at this
+// revision. Called on every model change and at the start of every frame, so
+// a chromosome switch from any source (menu, keys, Python zoom_to) loads.
+// Hidden tracks are fetched too, after the visible ones (the kernel answers
+// in order), so show_track / select_tracks display them at once.
+function _requestMissing() {
+  if (_glLost) return;
+  const ch = vp.chrom, emb = _embedded(), now = performance.now();
+  const hidden = _allTrackConfigs.filter(c => c.hidden);
+  for (const cfg of [..._trackConfigs, ...hidden]) {
+    const tid = cfg.id;
+    if (emb[tid]) continue;
+    const rev = _trackRev(tid), k = _key(tid, ch);
+    if (_isCurrent(tid, ch, rev) || _failedRev[k] === rev) continue;
+    const f = _inflight[k];
+    if (f && f.rev === rev && now - f.t0 < FETCH_RETRY_MS) continue;
+    const id = invokeCmd('_cmd_fetch_track', { tid, chrom: ch });
+    _inflight[k] = { id, rev, t0: now };
+    _requests[id] = k;
+    delete _loadErrors[k];
+    // Redraw once the fetch counts as slow, so the band's notice updates.
+    setTimeout(scheduleRender, SLOW_FETCH_MS + 50);
+  }
+}
+
+// A fetch response: put the binary buffers back into the payload and upload
+// it, unless it was superseded (newer revision, forgotten on context loss).
+function _onFetchResponse(msg, buffers) {
+  const k = _requests[msg.id];
+  if (k === undefined) return;   // another view's fetch, or another command
+  delete _requests[msg.id];
+  const f = _inflight[k];
+  if (!f || f.id !== msg.id) return;
+  delete _inflight[k];
+  const r = msg.response || {};
+  const cfg = (model.get('track_configs') || []).find(c => c.id === r.tid);
+  if (!cfg || _glLost) { scheduleRender(); return; }
+  if (r.error) {
+    _failedRev[k]  = f.rev;
+    _loadErrors[k] = r.error;
+    console.error(`[Tracks] could not load track "${cfg.name}" (${r.chrom}): ${r.error}`);
+    scheduleRender();
+    return;
+  }
+  const cur = _trackRev(r.tid);
+  if (r.rev !== cur) {
+    // The payload changed after this fetch was answered; fetch it again.
+    if (r.rev < cur) _requestMissing();
+    return;
+  }
+  _uploadSlice(cfg, r.chrom, r.rev,
+               () => _normalizePayload(_putBuffers(r.payload || {}, r.paths, buffers || [])));
+  _updatePanRange();
+  scheduleRender();
+}
+
+// Upload one slice (chrom '*' = a whole embedded payload) of one track. A
+// failure frees what made it to the GPU, is recorded for this revision (so it
+// is not retried on every model change) and shows on the track's band; the
+// other tracks and chromosomes are unaffected.
+function _uploadSlice(cfg, ch, rev, getPayload) {
+  const tid = cfg.id, k = _key(tid, ch);
+  try {
+    uploadTrack(cfg, getPayload());
+    _loadedRev[k] = rev;
+    delete _failedRev[k];
+    delete _loadErrors[k];
+  } catch (err) {
+    if (ch === '*') disposeTid(tid); else disposeTidChrom(tid, ch);
+    _failedRev[k]  = rev;
+    _loadErrors[k] = (err && err.message) ? err.message : String(err);
+    console.error(`[Tracks] could not load track "${cfg.name}":`, err);
+  }
+}
+
+// What the band of track `cfg` should say for chromosome `ch` when it has
+// nothing to draw: { error }, { loading }, or null for "no data in view".
+function _loadStatus(cfg, ch) {
+  const tid = cfg.id;
+  const err = _loadErrors[_key(tid, ch)] || _loadErrors[_key(tid, '*')];
+  if (err) return { error: err };
+  const f = _inflight[_key(tid, ch)];
+  if (f) {
+    const slow = performance.now() - f.t0 > SLOW_FETCH_MS;
+    return { loading: slow ? 'waiting for kernel…' : 'loading…' };
+  }
+  return null;
 }
 
 // Decode one track's payload and build its GPU buffers. Throws when the
 // track cannot be uploaded (allocation failure, malformed payload, GPU out
-// of memory); uploadTrackData isolates the failure to this one track.
+// of memory); _uploadSlice isolates the failure to this one slice.
 function uploadTrack(cfg, d) {
   const tid = cfg.id;
   // Clear stale GL errors so the check below sees only this upload's.
@@ -2551,7 +2716,8 @@ function uploadTrack(cfg, d) {
       }
     }
   } else if (cfg.type === 'gene') {
-    geneData[tid] = d;
+    // Payloads arrive one chromosome at a time; keep the ones already here.
+    geneData[tid] = { ...(geneData[tid] || {}), ...d };
   } else if (cfg.type === 'scatter' || cfg.type === 'line') {
     if (!gpuXY[tid]) gpuXY[tid] = {};
     if (!rawXY[tid]) rawXY[tid] = {};
@@ -2565,7 +2731,7 @@ function uploadTrack(cfg, d) {
       for (const [gid, payload] of Object.entries(d[ch])) {
         // Backwards compat: old payload was a bare base64 string. New
         // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
-        if (typeof payload === 'string') {
+        if (typeof payload === 'string' || payload instanceof ArrayBuffer) {
           if (payload === '') {
             gpuXY[tid][ch][gid] = { base: null, levels: [] };
             continue;
@@ -2628,7 +2794,7 @@ function uploadTrack(cfg, d) {
       for (const [gid, payload] of Object.entries(d[ch])) {
         // Backwards compat: old payload was a bare base64 string. New
         // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
-        if (typeof payload === 'string') {
+        if (typeof payload === 'string' || payload instanceof ArrayBuffer) {
           if (payload === '') {
             gpuFill[tid][ch][gid] = { base: null, levels: [] };
             continue;
@@ -2775,47 +2941,21 @@ function uploadTrack(cfg, d) {
   }
 }
 
-// Upload the given track configs' payloads, one track at a time. A track that
-// fails is freed from the GPU, marked failed for its current revision (so a
-// failing payload is not retried on every model change) and shows the error
-// on its band; the other tracks are unaffected.
-function uploadTrackData(cfgsToUpload) {
-  const td = model.get('track_data') || {};
-  for (const cfg of cfgsToUpload) {
-    const tid = cfg.id;
-    const d   = td[tid];
-    if (!d) continue;
-    const rev = _trackRev(tid);
-    try {
-      uploadTrack(cfg, d);
-      _uploadedRev[tid] = rev;
-      delete _failedRev[tid];
-      delete _trackErrors[tid];
-    } catch (err) {
-      disposeTid(tid);
-      _failedRev[tid]   = rev;
-      _trackErrors[tid] = (err && err.message) ? err.message : String(err);
-      console.error(`[Tracks] could not load track "${cfg.name}":`, err);
-    }
-  }
-  const cfgs = model.get('track_configs') || [];
-
-  // Recompute per-chrom pan clamp as the intersection of all heatmap domains
-  // on that chrom. If any heatmap is at full-chrom (or there are no heatmaps),
-  // the clamp for that chrom is cleared.
+// Recompute the per-chrom pan clamp as the intersection of the domains of
+// the heatmap slices on the GPU (a rebinned heatmap covers only part of its
+// chromosome), then clamp the viewport into it. A chrom where every heatmap
+// spans the whole chromosome, or that has none, gets no clamp.
+function _updatePanRange() {
   for (const ch of Object.keys(panRange)) delete panRange[ch];
-  for (const cfg of cfgs) {
-    if (cfg.type !== 'heatmap') continue;
-    const d = td[cfg.id];
-    if (!d) continue;
-    for (const ch of Object.keys(d)) {
+  for (const cfg of (model.get('track_configs') || [])) {
+    if (cfg.type !== 'heatmap' || !gpuHM[cfg.id]) continue;
+    for (const [ch, byGid] of Object.entries(gpuHM[cfg.id])) {
       const csz = chromSizes[ch] || 1;
       let lo = 0, hi = csz;
-      for (const info of Object.values(d[ch])) {
-        const s = info.xStart ?? 0;
-        const e = info.xEnd   ?? csz;
-        lo = Math.max(lo, s);
-        hi = Math.min(hi, e);
+      for (const slot of Object.values(byGid || {})) {
+        if (!slot) continue;
+        lo = Math.max(lo, slot.xStart ?? 0);
+        hi = Math.min(hi, slot.xEnd   ?? csz);
       }
       if (lo > 0 || hi < csz) {
         const prev = panRange[ch];
@@ -3707,7 +3847,8 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
     }
 
     // ── Upload failure, or "no data in view" for an empty track band ──────
-    const loadErr = _trackErrors[cfg.id];
+    const status  = _loadStatus(cfg, vp.chrom);
+    const loadErr = status && status.error;
     if (loadErr || _trackIsEmptyInView(cfg, vp.chrom)) {
       octx.save();
       octx.globalAlpha  = loadErr ? 0.9 : 0.55;
@@ -3716,7 +3857,8 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
       octx.textAlign    = 'center';
       octx.textBaseline = 'middle';
       octx.fillText(
-        loadErr ? `could not load track: ${loadErr}` : 'no data in view',
+        loadErr ? `could not load track: ${loadErr}`
+                : ((status && status.loading) || 'no data in view'),
         LABEL_W + (W_css - LABEL_W) / 2,
         cssY + ch / 2,
         W_css - LABEL_W - 8,
@@ -3866,6 +4008,7 @@ function render() {
 }
 
 function _renderFrame() {
+  _requestMissing();
   const W_css = wrap.offsetWidth || 800;
   const cfgs  = _trackConfigs;
   // With every track hidden, still draw the (empty) frame so the last
@@ -4653,7 +4796,9 @@ function invokeCmd(name, msg) {
   // Match anywidget's command envelope so the @command-decorated Python
   // handler is routed correctly — plain model.send(...) with a custom
   // envelope does not reliably reach on_msg in VS Code's Jupyter.
-  model.send({ id: randId(), kind: 'anywidget-command', name, msg });
+  const id = randId();
+  model.send({ id, kind: 'anywidget-command', name, msg });
+  return id;
 }
 
 const _HM_REC_GLYPH = hmRecBtn.textContent;
@@ -4799,15 +4944,22 @@ model.on('change:track_configs', () => {
 model.on('change:pan_speed',  () => { _panSpeed  = +model.get('pan_speed')  || 1.0; });
 model.on('change:zoom_speed', () => { _zoomSpeed = +model.get('zoom_speed') || 1.02; });
 model.on('change:min_span',   () => { _minSpan   = +model.get('min_span')   || 500;  });
-model.on('change:track_data', () => {
+model.on('change:embedded_data', () => {
   syncTracks();
-  _hmBusyClear();
   scheduleRender();
 });
 model.on('change:track_revs', () => {
   syncTracks();
+  // A heatmap recompute/reset bumps the track's revision when it is done.
+  _hmBusyClear();
   scheduleRender();
 });
+// Replies to commands; _onFetchResponse ignores everything but this view's
+// own track fetches.
+const _onCustomMsg = (msg, buffers) => {
+  if (msg && msg.kind === 'anywidget-command-response') _onFetchResponse(msg, buffers);
+};
+model.on('msg:custom', _onCustomMsg);
 model.on('change:vlines', () => { scheduleRender(); });
 model.on('change:spans', () => { scheduleRender(); });
 
@@ -4836,6 +4988,7 @@ scheduleRender();
 
 return () => {
   ro.disconnect();
+  if (model.off) model.off('msg:custom', _onCustomMsg);
   glCanvas.removeEventListener('mousemove', onMove);
   // onDragMove/onUp are only on window while a drag is in progress; the
   // explicit removes are a belt-and-braces no-op if we tear down mid-drag.
@@ -4856,6 +5009,53 @@ return () => {
 
 } // end render()
 """
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Payload transport helpers
+# ─────────────────────────────────────────────────────────────────────────────
+def _chrom_slice(track_type: str | None, data: dict, chrom: str) -> dict:
+    """Return the part of a track payload that covers one chromosome.
+
+    Segment payloads are ``{'segs': {chrom: …}, 'dens': {chrom: …}}``; every
+    other track type is keyed by chromosome at the top level. A chromosome
+    without data gives an empty slice, which the viewer draws as "no data
+    in view".
+    """
+    if track_type == 'segment':
+        return {part: ({chrom: data[part][chrom]}
+                       if chrom in data.get(part, {}) else {})
+                for part in ('segs', 'dens')}
+    return {chrom: data[chrom]} if chrom in data else {}
+
+
+def _split_buffers(
+    payload: Any,
+) -> tuple[Any, list[list[str | int]], list[bytes]]:
+    """Take the packed arrays (``bytes``) out of a payload for sending.
+
+    Returns a copy of ``payload`` without them, the key path each one was
+    found at, and the arrays, in matching order — the JS-side
+    ``_putBuffers`` puts them back. An empty array becomes ``''``, the
+    empty-group marker the viewer checks for.
+    """
+    paths: list[list[str | int]] = []
+    bufs: list[bytes] = []
+
+    def walk(o: Any, path: list[str | int]) -> Any:
+        if isinstance(o, (bytes, bytearray, memoryview)):
+            if len(o) == 0:
+                return ''
+            paths.append(path)
+            bufs.append(bytes(o) if not isinstance(o, bytes) else o)
+            return None
+        if isinstance(o, dict):
+            return {k: walk(v, [*path, k]) for k, v in o.items()}
+        if isinstance(o, list):
+            return [walk(v, [*path, i]) for i, v in enumerate(o)]
+        return o
+
+    return walk(payload, []), paths, bufs
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -4983,9 +5183,18 @@ class Tracks(anywidget.AnyWidget):
         methods and :meth:`remove_track` / :meth:`clear_tracks`; do
         not mutate directly.
     track_data : dict
-        Track-id-keyed payloads consumed by the JS uploader. Maintained
-        by the ``add_*_track`` methods and :meth:`remove_track` /
+        Track-id-keyed payloads. Kept in the kernel, not synced: the
+        browser fetches the chromosome it shows, track by track, as
+        binary buffers (so drawing data needs a running kernel, unless
+        the viewer was made with ``embed_data=True``). Maintained by the
+        ``add_*_track`` methods and :meth:`remove_track` /
         :meth:`clear_tracks`; do not mutate directly.
+    track_revs : dict
+        ``{track id: revision}``, bumped whenever a track's payload
+        changes; the browser refetches only tracks whose revision changed.
+    embedded_data : dict
+        A synced copy of ``track_data`` with ``embed_data=True``, empty
+        otherwise.
     viewport : dict
         ``{'chrom': str, 'start': int, 'end': int}``. Use
         :meth:`set_viewport` or :meth:`zoom_to` to change it from
@@ -5024,10 +5233,18 @@ class Tracks(anywidget.AnyWidget):
 
     chrom_sizes   = traitlets.Dict({}).tag(sync=True)
     track_configs = traitlets.List([]).tag(sync=True)
-    track_data    = traitlets.Dict({}).tag(sync=True)
-    # {tid: revision}, bumped whenever a track's payload changes. The whole
-    # track_data dict is resent on every change, so the browser compares
-    # revisions to upload only the tracks that actually changed.
+    # {tid: payload} for every track. Kept in the kernel and *not* synced:
+    # each browser view fetches the slices it draws, one track and one
+    # chromosome at a time, with the _cmd_fetch_track command (binary
+    # buffers, no base64). Syncing it would resend every track's data for
+    # every chromosome on each change.
+    track_data    = traitlets.Dict({})
+    # Copy of track_data that *is* synced, filled only with
+    # Tracks(..., embed_data=True) so the data is part of the widget state
+    # (saved notebooks, HTML export) and the viewer draws without a kernel.
+    embedded_data = traitlets.Dict({}).tag(sync=True)
+    # {tid: revision}, bumped whenever a track's payload changes; the
+    # browser refetches (or re-uploads) only tracks whose revision changed.
     track_revs    = traitlets.Dict({}).tag(sync=True)
     viewport      = traitlets.Dict({'chrom': '', 'start': 0, 'end': 0}).tag(sync=True)
     vlines        = traitlets.List([]).tag(sync=True)
@@ -5119,6 +5336,7 @@ class Tracks(anywidget.AnyWidget):
         chroms: dict[str, int] | str | None = None,
         *,
         assembly: str | None = None,
+        embed_data: bool = False,
         **kw,
     ):
         """Construct an empty viewer for a given set of chromosome sizes.
@@ -5143,6 +5361,14 @@ class Tracks(anywidget.AnyWidget):
             passing the identifier as ``chroms``. The assembly is also
             the default for tracks that need one, such as
             :meth:`add_gene_track`.
+        embed_data : bool, default False
+            By default track data stays in the kernel and the viewer
+            fetches the chromosome it shows on demand, so it needs a
+            running kernel to draw data. With ``True`` all track data is
+            embedded in the widget state instead: the viewer then draws
+            without a kernel (saved notebooks, HTML export), at the cost
+            of sending every track's data for every chromosome to the
+            browser, again on each change.
         **kw
             Extra keyword arguments forwarded to
             :class:`anywidget.AnyWidget`. The recognised extra is
@@ -5193,6 +5419,7 @@ class Tracks(anywidget.AnyWidget):
             kw['theme'] = _resolve_color_mapping(kw['theme'])
         else:
             kw['theme'] = dict(_default_theme)
+        self._embed_data = bool(embed_data)
         super().__init__(**kw)
         self.chrom_sizes = {str(k): int(v) for k, v in chrom_sizes.items()}
         first = next(iter(self.chrom_sizes))
@@ -5207,6 +5434,47 @@ class Tracks(anywidget.AnyWidget):
         # :meth:`legend` — ``_ipython_display_`` reads this to know which
         # value-mode heatmap tracks to summarise above the widget.
         self._legend_spec: dict | None = None
+
+    @anywidget.experimental.command
+    def _cmd_fetch_track(
+        self, msg: dict[str, Any], buffers: list,
+    ) -> tuple[dict[str, Any], list]:
+        """Send one track's payload for one chromosome to the browser.
+
+        The viewer calls this for every visible track whose data for the
+        chromosome in view is missing or out of date (see ``track_revs``).
+        Packed arrays travel as binary buffers rather than base64 text.
+
+        Parameters
+        ----------
+        msg : dict
+            Command payload with ``'tid'`` and ``'chrom'``.
+        buffers : list
+            Binary buffers carried with the command (unused).
+
+        Returns
+        -------
+        tuple of (dict, list)
+            ``({'tid', 'chrom', 'rev', 'payload', 'paths'}, buffers)``:
+            the payload with every packed array taken out, the key path
+            each one came from, and the arrays themselves. On failure the
+            dict carries ``'error'`` instead, which the viewer shows on
+            the track's band.
+        """
+        tid, chrom = str(msg.get('tid')), str(msg.get('chrom'))
+        head = {'tid': tid, 'chrom': chrom}
+        try:
+            data = self.track_data.get(tid)
+            cfg = next((c for c in self.track_configs if c.get('id') == tid),
+                       None)
+            if data is None or cfg is None:
+                return ({**head, 'error': 'track no longer exists'}, [])
+            payload = _chrom_slice(cfg.get('type'), data, chrom)
+            payload, paths, bufs = _split_buffers(payload)
+            return ({**head, 'rev': self.track_revs.get(tid, 0),
+                     'payload': payload, 'paths': paths}, bufs)
+        except Exception as e:  # never leave the viewer waiting forever
+            return ({**head, 'error': f'{type(e).__name__}: {e}'}, [])
 
     @anywidget.experimental.command
     def _cmd_heatmap_recompute(
@@ -5496,9 +5764,13 @@ class Tracks(anywidget.AnyWidget):
         for tid in changed:
             self._next_rev += 1
             revs[tid] = self._next_rev
-        # One message for both traits (nested hold_sync joins the outer one).
+        # One message for the synced traits (a nested hold_sync joins the
+        # outer one). track_data itself is not synced; the browser fetches
+        # from it on demand unless the viewer embeds its data.
         with self.hold_sync():
             self.track_data = data
+            if self._embed_data:
+                self.embedded_data = data
             self.track_revs = revs
 
     def _tid(self) -> str:
@@ -5516,8 +5788,8 @@ class Tracks(anywidget.AnyWidget):
         return tid
 
     @staticmethod
-    def _pack_f32(arr: np.ndarray) -> str:
-        """Pack a numpy array as base64-encoded little-endian float32 bytes.
+    def _pack_f32(arr: np.ndarray) -> bytes:
+        """Pack a numpy array as little-endian float32 bytes.
 
         Parameters
         ----------
@@ -5526,15 +5798,15 @@ class Tracks(anywidget.AnyWidget):
 
         Returns
         -------
-        str
-            ASCII base64 of the raw byte buffer, ready to ship through
-            the traitlets sync layer to the JS-side ``b64F32`` decoder.
+        bytes
+            The raw byte buffer; it reaches the browser as a binary
+            message buffer, decoded by the JS-side ``b64F32``.
         """
-        return base64.b64encode(arr.astype(np.float32).tobytes()).decode()
+        return arr.astype('<f4').tobytes()
 
     @staticmethod
-    def _pack_i32(arr: np.ndarray) -> str:
-        """Pack a numpy array as base64-encoded little-endian int32 bytes.
+    def _pack_i32(arr: np.ndarray) -> bytes:
+        """Pack a numpy array as little-endian int32 bytes.
 
         Genomic coordinates travel as ``int32`` rather than ``float32``: a
         float32 mantissa is 24 bits, so positions above 16,777,216 snap to a
@@ -5549,16 +5821,13 @@ class Tracks(anywidget.AnyWidget):
 
         Returns
         -------
-        str
-            ASCII base64 of the raw byte buffer, decoded JS-side as an
-            ``Int32Array``.
+        bytes
+            The raw byte buffer, decoded JS-side as an ``Int32Array``.
         """
-        return base64.b64encode(
-            _round_bp(arr).tobytes()
-        ).decode()
+        return _round_bp(arr).astype('<i4', copy=False).tobytes()
 
     @staticmethod
-    def _pack_xy(xs: np.ndarray, ys: np.ndarray) -> str:
+    def _pack_xy(xs: np.ndarray, ys: np.ndarray) -> bytes:
         """Pack interleaved ``(position, value)`` pairs, 8 bytes per vertex.
 
         The leading 4 bytes of each pair are an ``int32`` genomic position (see
@@ -5573,16 +5842,16 @@ class Tracks(anywidget.AnyWidget):
 
         Returns
         -------
-        str
-            ASCII base64 of the interleaved buffer.
+        bytes
+            The interleaved buffer.
         """
         buf = np.empty(len(xs) * 2, dtype=np.float32)
         buf[1::2] = np.asarray(ys, dtype=np.float64).astype(np.float32)
         buf.view(np.int32)[0::2] = _round_bp(xs)
-        return base64.b64encode(buf.tobytes()).decode()
+        return buf.astype('<f4', copy=False).tobytes()
 
     @staticmethod
-    def _pack_xlohi(xs: np.ndarray, los: np.ndarray, his: np.ndarray) -> str:
+    def _pack_xlohi(xs: np.ndarray, los: np.ndarray, his: np.ndarray) -> bytes:
         """Pack interleaved ``(position, lo, hi)`` triples, 12 bytes each.
 
         The band analogue of :meth:`_pack_xy`: an ``int32`` position followed
@@ -5596,18 +5865,18 @@ class Tracks(anywidget.AnyWidget):
 
         Returns
         -------
-        str
-            ASCII base64 of the interleaved buffer.
+        bytes
+            The interleaved buffer.
         """
         buf = np.empty(len(xs) * 3, dtype=np.float32)
         buf[1::3] = np.asarray(los, dtype=np.float64).astype(np.float32)
         buf[2::3] = np.asarray(his, dtype=np.float64).astype(np.float32)
         buf.view(np.int32)[0::3] = _round_bp(xs)
-        return base64.b64encode(buf.tobytes()).decode()
+        return buf.astype('<f4', copy=False).tobytes()
 
     @staticmethod
-    def _pack_u8(arr: np.ndarray) -> str:
-        """Pack a numpy array as base64-encoded uint8 bytes.
+    def _pack_u8(arr: np.ndarray) -> bytes:
+        """Pack a numpy array as uint8 bytes.
 
         Parameters
         ----------
@@ -5616,11 +5885,10 @@ class Tracks(anywidget.AnyWidget):
 
         Returns
         -------
-        str
-            ASCII base64 of the raw byte buffer, ready to ship through
-            the traitlets sync layer to the JS-side ``b64U8`` decoder.
+        bytes
+            The raw byte buffer, decoded by the JS-side ``b64U8``.
         """
-        return base64.b64encode(arr.astype(np.uint8).tobytes()).decode()
+        return arr.astype(np.uint8).tobytes()
 
     # ── Shared build helpers ─────────────────────────────────────────────────
     def _prep_groups(
@@ -6620,7 +6888,9 @@ class Tracks(anywidget.AnyWidget):
         if lut_info is not None:
             # LUT ships as 256 × 3 uint8 bytes; JS side decodes into an RGB8
             # texture keyed to byte index (0 reserved for "no data").
-            cfg['lut'] = self._pack_u8(lut_info['lut_u8'].reshape(-1))
+            # Configs are plain JSON, so the palette LUT stays base64 text.
+            cfg['lut'] = base64.b64encode(
+                self._pack_u8(lut_info['lut_u8'].reshape(-1))).decode()
             # value_col drives cell colour; group-band labels in the left
             # bar must fall back to the default track-label colour so they
             # aren't tinted by a now-irrelevant group palette.

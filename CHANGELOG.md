@@ -4,6 +4,27 @@
 
 ### Widget (`geneinfo.widget.segment_viewer_gl`)
 
+**Track data is fetched on demand, as binary**
+- Track data no longer travels in the synced widget state. The browser
+  fetches the chromosome in view, one track at a time, from the kernel
+  (`_cmd_fetch_track`), with the arrays as binary message buffers instead
+  of base64 text. Before, every change (adding a track, rebinning a
+  heatmap) resent every track's data for every chromosome; with large data
+  this exhausted browser memory and the viewer stayed blank.
+- Hidden tracks are fetched in the background after the visible ones, so
+  `show_track` / `select_tracks` / `hide_track` never refetch or reload.
+- Bands show "loading…" while a fetch is outstanding and "waiting for
+  kernel…" after a few seconds (e.g. while a cell is running); a failed
+  fetch or upload is shown on the track's band.
+- Drawing data now needs a running kernel. `Tracks(..., embed_data=True)`
+  embeds all track data in the widget state as before (now binary), for
+  saved notebooks and HTML export.
+- `track_data` is no longer a synced trait; new synced traits
+  `track_revs` and `embedded_data`. The `_pack_*` helpers return `bytes`.
+- Tests: `test/test_tracks_widget.py`, which also runs the widget's
+  browser code in Node (`test/js/tracks_harness.mjs`) when `node` is
+  available.
+
 End-to-end pass across API, trait validation, GL resource management, UI
 feedback, accessibility, and performance of the `Tracks` WebGL2 viewer.
 
