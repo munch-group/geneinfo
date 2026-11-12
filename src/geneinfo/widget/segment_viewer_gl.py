@@ -44,7 +44,8 @@ import matplotlib.colors as mcolors
 import numpy as np
 import pandas as pd
 import traitlets
-
+from ..information import hgcn_symbol
+from ..coords import gene_coords
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Colour resolution
@@ -9623,10 +9624,11 @@ class Tracks(anywidget.AnyWidget):
 
     def zoom_to(
         self,
-        chrom: str,
+        chrom: str | None = None,
         start: int | None = None,
         end: int | None = None,
         *,
+        gene: str | None = None,
         center: int | None = None,
         window: int | None = None,
     ) -> 'Tracks':
@@ -9647,13 +9649,15 @@ class Tracks(anywidget.AnyWidget):
 
         Parameters
         ----------
-        chrom : str
+        chrom : str, optional
             Chromosome name.
         start : int, optional
             Inclusive start position in base pairs. When given, ``end``
             must also be given (and ``center``/``window`` must not).
         end : int, optional
             Exclusive end position in base pairs.
+        gene: str, optional
+            Name of gene to center on.
         center : int, optional
             Genomic position to centre on, in base pairs. Keyword-only.
         window : int, optional
@@ -9668,6 +9672,18 @@ class Tracks(anywidget.AnyWidget):
         Tracks
             ``self``, to support fluent chaining.
         """
+
+        range_given = start is not None or end is not None
+        center_given = center is not None or window is not None
+
+        if gene is not None:
+            if range_given or center_given:
+                raise TypeError("zoom_to: do not use start/end or center, not both")
+            chrom, start, end, name = gene_coords(gene, assembly=self.assembly)[0]
+            if window is not None:
+                return self.set_viewport(chrom, int((start + end)/2 - window/2), int((start + end)/2 + window/2)) 
+            return self.set_viewport(chrom, int(start)-50_000, int(end)+50_000)
+
         chrom = str(chrom)
         if chrom not in self.chrom_sizes:
             raise KeyError(
@@ -9675,8 +9691,6 @@ class Tracks(anywidget.AnyWidget):
             )
         csz = int(self.chrom_sizes[chrom])
 
-        range_given = start is not None or end is not None
-        center_given = center is not None or window is not None
         if range_given and center_given:
             raise TypeError(
                 "zoom_to: pass either start/end or center/window, "
