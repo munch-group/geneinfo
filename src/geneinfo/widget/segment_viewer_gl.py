@@ -9947,7 +9947,7 @@ class Tracks(anywidget.AnyWidget):
         center_given = center is not None or window is not None
 
         if gene is not None:
-            if range_given or center_given:
+            if range_given or center is not None:
                 raise TypeError("zoom_to: do not use start/end or center, not both")
             chrom, start, end, name = gene_coords(gene, assembly=self.assembly)[0]
             if window is not None:
