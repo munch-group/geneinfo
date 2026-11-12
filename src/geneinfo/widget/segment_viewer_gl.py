@@ -37,6 +37,7 @@ from __future__ import annotations
 import base64
 import re
 import warnings
+from collections.abc import Iterable
 from typing import Any
 import anywidget
 import matplotlib.colors as mcolors
@@ -1904,11 +1905,20 @@ glCanvas.addEventListener('webglcontextlost', (e) => {
   for (const k of Object.keys(gpuFill))  delete gpuFill[k];
   for (const k of Object.keys(gpuHist))  delete gpuHist[k];
   for (const k of Object.keys(gpuArc))   delete gpuArc[k];
+  // Nothing is on the GPU any more: the restore path re-uploads every track.
+  _forgetUploads();
+  console.error(
+    '[Tracks] WebGL context lost — the browser dropped this viewer\'s GPU ' +
+    'state (GPU memory exhausted, or too many WebGL viewers open at once).'
+  );
+  // render() draws the labels and a notice on the 2-D overlay while the
+  // context is lost, so the viewer never goes silently blank.
+  scheduleRender();
 }, false);
 glCanvas.addEventListener('webglcontextrestored', () => {
   _glLost = false;
   initGlPrograms();
-  uploadTrackData();
+  syncTracks();
   scheduleRender();
 }, false);
 
@@ -1923,11 +1933,19 @@ const gpuHist = {};   // [tid][ch][gid] = { base: rectGpu|null, levels: [{nBins,
 const gpuArc  = {};   // [tid][ch][gid] = { buf, starts, maxLen, count }
 const rawXY   = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,y,...]
 const rawFill = {};   // tooltip: [tid][chrom][gid] = Float32Array [x,lo,hi,...]
-// Track ids whose payload has been uploaded. track_data and track_configs
-// arrive as separate model changes; when the data for a new track lands
-// before its config, uploadTrackData cannot see the track yet, so the
-// track_configs handler uploads any configured track missing from this set.
-const _uploadedTids = new Set();
+// Per-track upload bookkeeping. Python bumps track_revs[tid] whenever a
+// track's payload changes, and syncTracks uploads only the tracks whose
+// revision differs from the one on the GPU — every track_data change
+// resends the whole dict, so re-uploading everything on each change would
+// redo all the decoding and GPU work for every track already shown.
+const _uploadedRev = {};  // tid -> revision whose payload is on the GPU
+const _failedRev   = {};  // tid -> revision whose upload threw (not retried)
+const _trackErrors = {};  // tid -> message drawn on the track's band
+function _forgetUploads() {
+  for (const k of Object.keys(_uploadedRev)) delete _uploadedRev[k];
+  for (const k of Object.keys(_failedRev))   delete _failedRev[k];
+  for (const k of Object.keys(_trackErrors)) delete _trackErrors[k];
+}
 const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
 const rawArc  = {};   // tooltip: [tid][chrom][gid] = Float32Array [p1,p2,...]
 
@@ -1981,7 +1999,9 @@ function disposeTid(tid) {
   if (gpuFill[tid]) { for (const ch of Object.keys(gpuFill[tid])) disposeSlot(gpuFill, tid, ch, _disposeFill); delete gpuFill[tid]; }
   if (gpuHist[tid]) { for (const ch of Object.keys(gpuHist[tid])) disposeSlot(gpuHist, tid, ch, _disposeHist); delete gpuHist[tid]; }
   if (gpuArc[tid])  { for (const ch of Object.keys(gpuArc[tid]))  disposeSlot(gpuArc,  tid, ch, _disposeArc);  delete gpuArc[tid]; }
-  _uploadedTids.delete(tid);
+  delete _uploadedRev[tid];
+  delete _failedRev[tid];
+  delete _trackErrors[tid];
   delete rawXY[tid];
   delete rawFill[tid];
   delete rawHist[tid];
@@ -2430,298 +2450,354 @@ function buildHistStackedGPU(xs, los, his, yMin, yMax, binWidth, color) {
 // ══════════════════════════════════════════════════════════════════════════════
 // DATA UPLOAD (from model → GPU)
 // ══════════════════════════════════════════════════════════════════════════════
-function uploadTrackData() {
+// Revision of a track's payload, bumped by Python on every change to it.
+function _trackRev(tid) {
+  const r = (model.get('track_revs') || {})[tid];
+  return r == null ? 0 : r;
+}
+
+// Bring the GPU in line with the model: free removed tracks and upload every
+// configured track whose payload revision is not on the GPU yet (and has not
+// already failed). track_configs, track_data and track_revs may arrive in one
+// message or several, in any order — each change calls this, and a track is
+// uploaded once its config, data and revision are all present.
+function syncTracks() {
+  _reconcileTids();
+  if (_glLost) return;  // the webglcontextrestored handler syncs again
   const td   = model.get('track_data') || {};
-  const cfgs = model.get('track_configs');
+  const cfgs = model.get('track_configs') || [];
+  const pending = cfgs.filter(c => {
+    if (!td[c.id]) return false;
+    const rev = _trackRev(c.id);
+    return _uploadedRev[c.id] !== rev && _failedRev[c.id] !== rev;
+  });
+  if (pending.length) uploadTrackData(pending);
+}
 
-  for (const cfg of cfgs) {
-    const tid = cfg.id;
-    const d   = td[tid];
-    if (!d) continue;
-    _uploadedTids.add(tid);
-
-    if (cfg.type === 'segment') {
-      const raw   = d.segs || {};
-      const dens  = d.dens || {};
-      const nG    = cfg.groups.length;
-      const gap   = 0.08;
-      const stacked = !!cfg.stacked;
-      const weights = cfg.groups.map(g => g.nInd || 1);
-      const totalW  = weights.reduce((a, b) => a + b, 0);
-      const usable  = 1.0 - gap;
-      const cumW    = [0];
-      for (let i = 0; i < nG; i++) cumW.push(cumW[i] + weights[i]);
-      if (!gpuSeg[tid])  gpuSeg[tid]  = {};
-      if (!gpuDens[tid]) gpuDens[tid] = {};
-      for (const ch of Object.keys(raw)) {
-        disposeSlot(gpuSeg,  tid, ch, _disposeSeg);
-        disposeSlot(gpuDens, tid, ch, _disposeDens);
-        gpuSeg[tid][ch]  = {};
-        gpuDens[tid][ch] = {};
-        const csz = chromSizes[ch] || 1;
-        for (let gi = 0; gi < nG; gi++) {
-          const grp = cfg.groups[gi];
-          const gid = grp.id;
-          const yLo = gap * 0.5 + usable * cumW[gi] / totalW;
-          const yHi = gap * 0.5 + usable * cumW[gi + 1] / totalW;
-          const segs = b64I32(raw[ch]?.[gid]);
-          const nInd = grp.nInd || 0;
-          gpuSeg[tid][ch][gid] = buildSegGPU(segs, yLo, yHi, grp.color, nInd);
-          const densLevels = dens[ch]?.[gid] || {};
-          const levels = [];
-          for (const [nBins, b64] of Object.entries(densLevels)) {
-            const cnts = b64F32(b64);
-            if (!cnts || cnts.length === 0) continue;
-            const n = parseInt(nBins);
-            const gpu = stacked
-              ? buildDensStackedGPU(cnts, csz, n)
-              : buildDensGPU(cnts, csz);
-            if (gpu) levels.push({ nBins: n, binWidth: csz / n, ...gpu });
-          }
-          levels.sort((a, b) => a.nBins - b.nBins);
-          gpuDens[tid][ch][gid] = levels;
+// Decode one track's payload and build its GPU buffers. Throws when the
+// track cannot be uploaded (allocation failure, malformed payload, GPU out
+// of memory); uploadTrackData isolates the failure to this one track.
+function uploadTrack(cfg, d) {
+  const tid = cfg.id;
+  // Clear stale GL errors so the check below sees only this upload's.
+  for (let i = 0; i < 8 && gl.getError() !== gl.NO_ERROR; i++) {}
+  if (cfg.type === 'segment') {
+    const raw   = d.segs || {};
+    const dens  = d.dens || {};
+    const nG    = cfg.groups.length;
+    const gap   = 0.08;
+    const stacked = !!cfg.stacked;
+    const weights = cfg.groups.map(g => g.nInd || 1);
+    const totalW  = weights.reduce((a, b) => a + b, 0);
+    const usable  = 1.0 - gap;
+    const cumW    = [0];
+    for (let i = 0; i < nG; i++) cumW.push(cumW[i] + weights[i]);
+    if (!gpuSeg[tid])  gpuSeg[tid]  = {};
+    if (!gpuDens[tid]) gpuDens[tid] = {};
+    for (const ch of Object.keys(raw)) {
+      disposeSlot(gpuSeg,  tid, ch, _disposeSeg);
+      disposeSlot(gpuDens, tid, ch, _disposeDens);
+      gpuSeg[tid][ch]  = {};
+      gpuDens[tid][ch] = {};
+      const csz = chromSizes[ch] || 1;
+      for (let gi = 0; gi < nG; gi++) {
+        const grp = cfg.groups[gi];
+        const gid = grp.id;
+        const yLo = gap * 0.5 + usable * cumW[gi] / totalW;
+        const yHi = gap * 0.5 + usable * cumW[gi + 1] / totalW;
+        const segs = b64I32(raw[ch]?.[gid]);
+        const nInd = grp.nInd || 0;
+        gpuSeg[tid][ch][gid] = buildSegGPU(segs, yLo, yHi, grp.color, nInd);
+        const densLevels = dens[ch]?.[gid] || {};
+        const levels = [];
+        for (const [nBins, b64] of Object.entries(densLevels)) {
+          const cnts = b64F32(b64);
+          if (!cnts || cnts.length === 0) continue;
+          const n = parseInt(nBins);
+          const gpu = stacked
+            ? buildDensStackedGPU(cnts, csz, n)
+            : buildDensGPU(cnts, csz);
+          if (gpu) levels.push({ nBins: n, binWidth: csz / n, ...gpu });
         }
+        levels.sort((a, b) => a.nBins - b.nBins);
+        gpuDens[tid][ch][gid] = levels;
       }
-    } else if (cfg.type === 'heatmap') {
-      if (!gpuHM[tid]) gpuHM[tid] = {};
-      for (const ch of Object.keys(d)) {
-        disposeSlot(gpuHM, tid, ch, _disposeHM);
-        gpuHM[tid][ch] = {};
-        for (const [gid, info] of Object.entries(d[ch])) {
-          const u8 = b64U8(info.data);
-          const hmSlot = buildHeatmapGPU(
-            u8, info.nInd, info.nWin,
-            info.xStart ?? 0,
-            info.xEnd   ?? (chromSizes[ch] || 1),
-          );
-          // Count shading ships exact per-cell segment counts for the tooltip.
-          if (hmSlot && info.counts) hmSlot.counts = b64I32(info.counts);
-          gpuHM[tid][ch][gid] = hmSlot;
-        }
+    }
+  } else if (cfg.type === 'heatmap') {
+    if (!gpuHM[tid]) gpuHM[tid] = {};
+    for (const ch of Object.keys(d)) {
+      disposeSlot(gpuHM, tid, ch, _disposeHM);
+      gpuHM[tid][ch] = {};
+      for (const [gid, info] of Object.entries(d[ch])) {
+        const u8 = b64U8(info.data);
+        const hmSlot = buildHeatmapGPU(
+          u8, info.nInd, info.nWin,
+          info.xStart ?? 0,
+          info.xEnd   ?? (chromSizes[ch] || 1),
+        );
+        // Count shading ships exact per-cell segment counts for the tooltip.
+        if (hmSlot && info.counts) hmSlot.counts = b64I32(info.counts);
+        gpuHM[tid][ch][gid] = hmSlot;
       }
-      // Value-mode heatmap: upload 1-D palette LUT once per track.
-      if (cfg.mode && cfg.mode !== 'density' && cfg.lut) {
-        const lutBytes = b64U8(cfg.lut);
-        const size = (lutBytes.length / 3) | 0;
-        if (size > 0) {
-          _disposeHMLUT(gpuHMLUT[tid]);
-          gpuHMLUT[tid] = buildHeatmapLUTGPU(lutBytes, size);
-        }
+    }
+    // Value-mode heatmap: upload 1-D palette LUT once per track.
+    if (cfg.mode && cfg.mode !== 'density' && cfg.lut) {
+      const lutBytes = b64U8(cfg.lut);
+      const size = (lutBytes.length / 3) | 0;
+      if (size > 0) {
+        _disposeHMLUT(gpuHMLUT[tid]);
+        gpuHMLUT[tid] = buildHeatmapLUTGPU(lutBytes, size);
       }
-    } else if (cfg.type === 'gene') {
-      geneData[tid] = d;
-    } else if (cfg.type === 'scatter' || cfg.type === 'line') {
-      if (!gpuXY[tid]) gpuXY[tid] = {};
-      if (!rawXY[tid]) rawXY[tid] = {};
-      const yMin = cfg.yMin ?? 0;
-      const yMax = cfg.yMax ?? 1;
-      const isLine = cfg.type === 'line';
-      for (const ch of Object.keys(d)) {
-        disposeSlot(gpuXY, tid, ch, _disposeXY);
-        gpuXY[tid][ch] = {};
-        rawXY[tid][ch] = {};
-        for (const [gid, payload] of Object.entries(d[ch])) {
-          // Backwards compat: old payload was a bare base64 string. New
-          // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
-          if (typeof payload === 'string') {
-            if (payload === '') {
-              gpuXY[tid][ch][gid] = { base: null, levels: [] };
-              continue;
-            }
-            const xy = unpackXY(payload);
-            rawXY[tid][ch][gid] = xy;
-            gpuXY[tid][ch][gid] = {
-              base: buildXYGPU(xy.xs, xy.ys, yMin, yMax, isLine), levels: [],
-            };
-            continue;
-          }
-          if (!payload || !payload.base) {
+    }
+  } else if (cfg.type === 'gene') {
+    geneData[tid] = d;
+  } else if (cfg.type === 'scatter' || cfg.type === 'line') {
+    if (!gpuXY[tid]) gpuXY[tid] = {};
+    if (!rawXY[tid]) rawXY[tid] = {};
+    const yMin = cfg.yMin ?? 0;
+    const yMax = cfg.yMax ?? 1;
+    const isLine = cfg.type === 'line';
+    for (const ch of Object.keys(d)) {
+      disposeSlot(gpuXY, tid, ch, _disposeXY);
+      gpuXY[tid][ch] = {};
+      rawXY[tid][ch] = {};
+      for (const [gid, payload] of Object.entries(d[ch])) {
+        // Backwards compat: old payload was a bare base64 string. New
+        // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
+        if (typeof payload === 'string') {
+          if (payload === '') {
             gpuXY[tid][ch][gid] = { base: null, levels: [] };
             continue;
           }
-          const baseXY = unpackXY(payload.base);
-          rawXY[tid][ch][gid] = baseXY;
-          // The base buffer uses the cfg-level (raw-data) y range. Each
-          // LOD level uses its own aggregate-range (from cfg.lodYRange)
-          // so the axis can rescale when switching levels — aggregates
-          // like 'sum' can land well outside the raw range.
-          const slot = {
-            base: buildXYGPU(baseXY.xs, baseXY.ys, yMin, yMax, isLine),
-            baseYMin: yMin, baseYMax: yMax,
-            levels: [],
+          const xy = unpackXY(payload);
+          rawXY[tid][ch][gid] = xy;
+          gpuXY[tid][ch][gid] = {
+            base: buildXYGPU(xy.xs, xy.ys, yMin, yMax, isLine), levels: [],
           };
-          const lods = payload.lods || {};
-          const bw   = payload.binWidth || {};
-          const lodYR = cfg.lodYRange || {};
-          for (const [nKey, b64] of Object.entries(lods)) {
-            const lv = unpackXY(b64);
-            const r = lodYR[nKey];
-            const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
-            const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
-            slot.levels.push({
-              n: +nKey,
-              binWidth: bw[nKey] || 0,
-              gpu: buildXYGPU(lv.xs, lv.ys, lvlYMin, lvlYMax, isLine),
-              yMin: lvlYMin,
-              yMax: lvlYMax,
-            });
-          }
-          // Sort coarsest (smallest n / largest binWidth) → finest, matching
-          // the histogram LOD ordering so pickXYLevel can use the same
-          // "overwrite on qualifying level" idiom.
-          slot.levels.sort((a, b) => a.n - b.n);
-          gpuXY[tid][ch][gid] = slot;
+          continue;
         }
+        if (!payload || !payload.base) {
+          gpuXY[tid][ch][gid] = { base: null, levels: [] };
+          continue;
+        }
+        const baseXY = unpackXY(payload.base);
+        rawXY[tid][ch][gid] = baseXY;
+        // The base buffer uses the cfg-level (raw-data) y range. Each
+        // LOD level uses its own aggregate-range (from cfg.lodYRange)
+        // so the axis can rescale when switching levels — aggregates
+        // like 'sum' can land well outside the raw range.
+        const slot = {
+          base: buildXYGPU(baseXY.xs, baseXY.ys, yMin, yMax, isLine),
+          baseYMin: yMin, baseYMax: yMax,
+          levels: [],
+        };
+        const lods = payload.lods || {};
+        const bw   = payload.binWidth || {};
+        const lodYR = cfg.lodYRange || {};
+        for (const [nKey, b64] of Object.entries(lods)) {
+          const lv = unpackXY(b64);
+          const r = lodYR[nKey];
+          const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
+          const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
+          slot.levels.push({
+            n: +nKey,
+            binWidth: bw[nKey] || 0,
+            gpu: buildXYGPU(lv.xs, lv.ys, lvlYMin, lvlYMax, isLine),
+            yMin: lvlYMin,
+            yMax: lvlYMax,
+          });
+        }
+        // Sort coarsest (smallest n / largest binWidth) → finest, matching
+        // the histogram LOD ordering so pickXYLevel can use the same
+        // "overwrite on qualifying level" idiom.
+        slot.levels.sort((a, b) => a.n - b.n);
+        gpuXY[tid][ch][gid] = slot;
       }
-    } else if (cfg.type === 'fill') {
-      if (!gpuFill[tid]) gpuFill[tid] = {};
-      if (!rawFill[tid]) rawFill[tid] = {};
-      const yMin = cfg.yMin ?? 0;
-      const yMax = cfg.yMax ?? 1;
-      const baseline = cfg.baseline ?? 0;
-      for (const ch of Object.keys(d)) {
-        disposeSlot(gpuFill, tid, ch, _disposeFill);
-        gpuFill[tid][ch] = {};
-        rawFill[tid][ch] = {};
-        for (const [gid, payload] of Object.entries(d[ch])) {
-          // Backwards compat: old payload was a bare base64 string. New
-          // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
-          if (typeof payload === 'string') {
-            if (payload === '') {
-              gpuFill[tid][ch][gid] = { base: null, levels: [] };
-              continue;
-            }
-            const fl = unpackXLoHi(payload);
-            rawFill[tid][ch][gid] = fl;
-            gpuFill[tid][ch][gid] = {
-              base: buildFillGPU(fl.xs, fl.los, fl.his, yMin, yMax, baseline),
-              baseYMin: yMin, baseYMax: yMax,
-              levels: [],
-            };
-            continue;
-          }
-          if (!payload || !payload.base) {
+    }
+  } else if (cfg.type === 'fill') {
+    if (!gpuFill[tid]) gpuFill[tid] = {};
+    if (!rawFill[tid]) rawFill[tid] = {};
+    const yMin = cfg.yMin ?? 0;
+    const yMax = cfg.yMax ?? 1;
+    const baseline = cfg.baseline ?? 0;
+    for (const ch of Object.keys(d)) {
+      disposeSlot(gpuFill, tid, ch, _disposeFill);
+      gpuFill[tid][ch] = {};
+      rawFill[tid][ch] = {};
+      for (const [gid, payload] of Object.entries(d[ch])) {
+        // Backwards compat: old payload was a bare base64 string. New
+        // payload is {base, lods, binWidth}. Empty group is {'base':'', ...}.
+        if (typeof payload === 'string') {
+          if (payload === '') {
             gpuFill[tid][ch][gid] = { base: null, levels: [] };
             continue;
           }
-          const baseFill = unpackXLoHi(payload.base);
-          // Tooltips read rawFill, so it always holds the raw samples —
-          // never the aggregated levels.
-          rawFill[tid][ch][gid] = baseFill;
-          // The base buffer uses the cfg-level (raw-data) y range; each LOD
-          // level uses its own aggregate range from cfg.lodYRange. The
-          // baseline is normalised against whichever range the buffer was
-          // built with, so the pos/neg split stays put across levels.
-          const slot = {
-            base: buildFillGPU(baseFill.xs, baseFill.los, baseFill.his,
-                               yMin, yMax, baseline),
+          const fl = unpackXLoHi(payload);
+          rawFill[tid][ch][gid] = fl;
+          gpuFill[tid][ch][gid] = {
+            base: buildFillGPU(fl.xs, fl.los, fl.his, yMin, yMax, baseline),
             baseYMin: yMin, baseYMax: yMax,
             levels: [],
           };
-          const lods  = payload.lods || {};
-          const bw    = payload.binWidth || {};
-          const lodYR = cfg.lodYRange || {};
-          for (const [nKey, b64] of Object.entries(lods)) {
+          continue;
+        }
+        if (!payload || !payload.base) {
+          gpuFill[tid][ch][gid] = { base: null, levels: [] };
+          continue;
+        }
+        const baseFill = unpackXLoHi(payload.base);
+        // Tooltips read rawFill, so it always holds the raw samples —
+        // never the aggregated levels.
+        rawFill[tid][ch][gid] = baseFill;
+        // The base buffer uses the cfg-level (raw-data) y range; each LOD
+        // level uses its own aggregate range from cfg.lodYRange. The
+        // baseline is normalised against whichever range the buffer was
+        // built with, so the pos/neg split stays put across levels.
+        const slot = {
+          base: buildFillGPU(baseFill.xs, baseFill.los, baseFill.his,
+                             yMin, yMax, baseline),
+          baseYMin: yMin, baseYMax: yMax,
+          levels: [],
+        };
+        const lods  = payload.lods || {};
+        const bw    = payload.binWidth || {};
+        const lodYR = cfg.lodYRange || {};
+        for (const [nKey, b64] of Object.entries(lods)) {
+          const lv = unpackXLoHi(b64);
+          const r = lodYR[nKey];
+          const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
+          const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
+          slot.levels.push({
+            n: +nKey,
+            binWidth: bw[nKey] || 0,
+            gpu: buildFillGPU(lv.xs, lv.los, lv.his,
+                              lvlYMin, lvlYMax, baseline),
+            yMin: lvlYMin,
+            yMax: lvlYMax,
+          });
+        }
+        // Coarsest (smallest n) → finest, the ordering pickXYLevelInfo
+        // expects.
+        slot.levels.sort((a, b) => a.n - b.n);
+        gpuFill[tid][ch][gid] = slot;
+      }
+    }
+  } else if (cfg.type === 'histogram') {
+    if (!gpuHist[tid]) gpuHist[tid] = {};
+    if (!rawHist[tid]) rawHist[tid] = {};
+    const yMin = cfg.yMin ?? 0;
+    const yMax = cfg.yMax ?? 1;
+    const binWidth = cfg.binWidth ?? 1;
+    const stacked  = !!cfg.stacked;
+    for (const ch of Object.keys(d)) {
+      disposeSlot(gpuHist, tid, ch, _disposeHist);
+      gpuHist[tid][ch] = {};
+      rawHist[tid][ch] = {};
+      const csz = chromSizes[ch] || 1;
+      for (const [gid, payload] of Object.entries(d[ch])) {
+        const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
+        // Empty group: nothing to upload.
+        if (payload === '' || payload == null) {
+          rawHist[tid][ch][gid] = { xs: new Int32Array(0), binWidth, stacked };
+          gpuHist[tid][ch][gid] = { base: null, levels: [] };
+          continue;
+        }
+        // Both stacked and non-stacked ship as { base, lods }; only the
+        // builder differs (stride-3 stacked vs stride-2 unstacked).
+        const baseB64 = payload.base || '';
+        const lodMap  = payload.lods || {};
+        const base = stacked ? unpackXLoHi(baseB64) : unpackXY(baseB64);
+        rawHist[tid][ch][gid] = { ...base, binWidth, stacked };
+        const baseGpu = base.n === 0 ? null
+          : stacked
+            ? buildHistStackedGPU(base.xs, base.los, base.his,
+                                  yMin, yMax, binWidth, color)
+            : buildHistGPU(base.xs, base.ys, yMin, yMax, binWidth, color);
+        // Build a GPU buffer for each LOD level. For stacked, levels are
+        // pre-built stride-3 (x, lo, hi) arrays from Python; for
+        // non-stacked, they're length-n bin values that we expand into
+        // (centre, value) pairs here.
+        const levels = [];
+        for (const [nStr, b64] of Object.entries(lodMap)) {
+          const n = parseInt(nStr);
+          const lvlBinW = csz / n;
+          let gpu;
+          if (stacked) {
             const lv = unpackXLoHi(b64);
-            const r = lodYR[nKey];
-            const lvlYMin = (r && isFinite(r.yMin)) ? r.yMin : yMin;
-            const lvlYMax = (r && isFinite(r.yMax)) ? r.yMax : yMax;
-            slot.levels.push({
-              n: +nKey,
-              binWidth: bw[nKey] || 0,
-              gpu: buildFillGPU(lv.xs, lv.los, lv.his,
-                                lvlYMin, lvlYMax, baseline),
-              yMin: lvlYMin,
-              yMax: lvlYMax,
-            });
+            if (lv.n === 0) continue;
+            gpu = buildHistStackedGPU(lv.xs, lv.los, lv.his,
+                                      yMin, yMax, lvlBinW, color);
+          } else {
+            // Non-stacked levels ship as bare per-bin values; the bin
+            // centres are reconstructed here.
+            const vals = b64F32(b64);
+            if (!vals || vals.length === 0) continue;
+            const xs = new Int32Array(n);
+            for (let i = 0; i < n; i++) xs[i] = Math.round((i + 0.5) * lvlBinW);
+            gpu = buildHistGPU(xs, vals, yMin, yMax, lvlBinW, color);
           }
-          // Coarsest (smallest n) → finest, the ordering pickXYLevelInfo
-          // expects.
-          slot.levels.sort((a, b) => a.n - b.n);
-          gpuFill[tid][ch][gid] = slot;
+          if (gpu) levels.push({ nBins: n, binWidth: lvlBinW, ...gpu });
         }
+        levels.sort((a, b) => a.nBins - b.nBins);  // coarsest → finest
+        gpuHist[tid][ch][gid] = { base: baseGpu, levels };
       }
-    } else if (cfg.type === 'histogram') {
-      if (!gpuHist[tid]) gpuHist[tid] = {};
-      if (!rawHist[tid]) rawHist[tid] = {};
-      const yMin = cfg.yMin ?? 0;
-      const yMax = cfg.yMax ?? 1;
-      const binWidth = cfg.binWidth ?? 1;
-      const stacked  = !!cfg.stacked;
-      for (const ch of Object.keys(d)) {
-        disposeSlot(gpuHist, tid, ch, _disposeHist);
-        gpuHist[tid][ch] = {};
-        rawHist[tid][ch] = {};
-        const csz = chromSizes[ch] || 1;
-        for (const [gid, payload] of Object.entries(d[ch])) {
-          const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
-          // Empty group: nothing to upload.
-          if (payload === '' || payload == null) {
-            rawHist[tid][ch][gid] = { xs: new Int32Array(0), binWidth, stacked };
-            gpuHist[tid][ch][gid] = { base: null, levels: [] };
-            continue;
-          }
-          // Both stacked and non-stacked ship as { base, lods }; only the
-          // builder differs (stride-3 stacked vs stride-2 unstacked).
-          const baseB64 = payload.base || '';
-          const lodMap  = payload.lods || {};
-          const base = stacked ? unpackXLoHi(baseB64) : unpackXY(baseB64);
-          rawHist[tid][ch][gid] = { ...base, binWidth, stacked };
-          const baseGpu = base.n === 0 ? null
-            : stacked
-              ? buildHistStackedGPU(base.xs, base.los, base.his,
-                                    yMin, yMax, binWidth, color)
-              : buildHistGPU(base.xs, base.ys, yMin, yMax, binWidth, color);
-          // Build a GPU buffer for each LOD level. For stacked, levels are
-          // pre-built stride-3 (x, lo, hi) arrays from Python; for
-          // non-stacked, they're length-n bin values that we expand into
-          // (centre, value) pairs here.
-          const levels = [];
-          for (const [nStr, b64] of Object.entries(lodMap)) {
-            const n = parseInt(nStr);
-            const lvlBinW = csz / n;
-            let gpu;
-            if (stacked) {
-              const lv = unpackXLoHi(b64);
-              if (lv.n === 0) continue;
-              gpu = buildHistStackedGPU(lv.xs, lv.los, lv.his,
-                                        yMin, yMax, lvlBinW, color);
-            } else {
-              // Non-stacked levels ship as bare per-bin values; the bin
-              // centres are reconstructed here.
-              const vals = b64F32(b64);
-              if (!vals || vals.length === 0) continue;
-              const xs = new Int32Array(n);
-              for (let i = 0; i < n; i++) xs[i] = Math.round((i + 0.5) * lvlBinW);
-              gpu = buildHistGPU(xs, vals, yMin, yMax, lvlBinW, color);
-            }
-            if (gpu) levels.push({ nBins: n, binWidth: lvlBinW, ...gpu });
-          }
-          levels.sort((a, b) => a.nBins - b.nBins);  // coarsest → finest
-          gpuHist[tid][ch][gid] = { base: baseGpu, levels };
+    }
+  } else if (cfg.type === 'arc') {
+    if (!gpuArc[tid]) gpuArc[tid] = {};
+    if (!rawArc[tid]) rawArc[tid] = {};
+    for (const ch of Object.keys(d)) {
+      disposeSlot(gpuArc, tid, ch, _disposeArc);
+      gpuArc[tid][ch] = {};
+      rawArc[tid][ch] = {};
+      for (const [gid, b64] of Object.entries(d[ch])) {
+        const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
+        if (b64 === '' || b64 == null) {
+          rawArc[tid][ch][gid] = new Int32Array(0);
+          gpuArc[tid][ch][gid] = null;
+          continue;
         }
-      }
-    } else if (cfg.type === 'arc') {
-      if (!gpuArc[tid]) gpuArc[tid] = {};
-      if (!rawArc[tid]) rawArc[tid] = {};
-      for (const ch of Object.keys(d)) {
-        disposeSlot(gpuArc, tid, ch, _disposeArc);
-        gpuArc[tid][ch] = {};
-        rawArc[tid][ch] = {};
-        for (const [gid, b64] of Object.entries(d[ch])) {
-          const color = cfg.groups.find(g => g.id === gid)?.color || '#4488cc';
-          if (b64 === '' || b64 == null) {
-            rawArc[tid][ch][gid] = new Int32Array(0);
-            gpuArc[tid][ch][gid] = null;
-            continue;
-          }
-          const arr = b64I32(b64);
-          rawArc[tid][ch][gid] = arr;
-          gpuArc[tid][ch][gid] = buildArcGPU(arr, color);
-        }
+        const arr = b64I32(b64);
+        rawArc[tid][ch][gid] = arr;
+        gpuArc[tid][ch][gid] = buildArcGPU(arr, color);
       }
     }
   }
+
+  // Buffer and texture allocations report running out of GPU memory through
+  // the GL error flag, not by throwing — the track would silently draw
+  // nothing, so surface it as a failure instead.
+  const glErr = gl.getError();
+  if (glErr === gl.OUT_OF_MEMORY) throw new Error('GPU out of memory');
+  if (gl.isContextLost()) throw new Error('WebGL context lost');
+  if (glErr !== gl.NO_ERROR) {
+    console.warn(`[Tracks] WebGL error 0x${glErr.toString(16)} while uploading track "${cfg.name}"`);
+  }
+}
+
+// Upload the given track configs' payloads, one track at a time. A track that
+// fails is freed from the GPU, marked failed for its current revision (so a
+// failing payload is not retried on every model change) and shows the error
+// on its band; the other tracks are unaffected.
+function uploadTrackData(cfgsToUpload) {
+  const td = model.get('track_data') || {};
+  for (const cfg of cfgsToUpload) {
+    const tid = cfg.id;
+    const d   = td[tid];
+    if (!d) continue;
+    const rev = _trackRev(tid);
+    try {
+      uploadTrack(cfg, d);
+      _uploadedRev[tid] = rev;
+      delete _failedRev[tid];
+      delete _trackErrors[tid];
+    } catch (err) {
+      disposeTid(tid);
+      _failedRev[tid]   = rev;
+      _trackErrors[tid] = (err && err.message) ? err.message : String(err);
+      console.error(`[Tracks] could not load track "${cfg.name}":`, err);
+    }
+  }
+  const cfgs = model.get('track_configs') || [];
 
   // Recompute per-chrom pan clamp as the intersection of all heatmap domains
   // on that chrom. If any heatmap is at full-chrom (or there are no heatmaps),
@@ -3629,18 +3705,20 @@ function drawOverlay(cfgs, vs, ve, W_css, H_css) {
       drawYAxis(cfg, cssY, yMinAct, yMaxAct);
     }
 
-    // ── "no data in view" placeholder for an empty track band ─────────────
-    if (_trackIsEmptyInView(cfg, vp.chrom)) {
+    // ── Upload failure, or "no data in view" for an empty track band ──────
+    const loadErr = _trackErrors[cfg.id];
+    if (loadErr || _trackIsEmptyInView(cfg, vp.chrom)) {
       octx.save();
-      octx.globalAlpha  = 0.55;
-      octx.fillStyle    = th.axis_text || '#888899';
+      octx.globalAlpha  = loadErr ? 0.9 : 0.55;
+      octx.fillStyle    = loadErr ? '#e05555' : (th.axis_text || '#888899');
       octx.font         = 'italic 10px monospace';
       octx.textAlign    = 'center';
       octx.textBaseline = 'middle';
       octx.fillText(
-        'no data in view',
+        loadErr ? `could not load track: ${loadErr}` : 'no data in view',
         LABEL_W + (W_css - LABEL_W) / 2,
         cssY + ch / 2,
+        W_css - LABEL_W - 8,
       );
       octx.restore();
     }
@@ -3738,13 +3816,55 @@ function trackH(cfg) {
 }
 
 function scheduleRender() {
-  if (rafId || _glLost) return;
+  // Scheduled even while the WebGL context is lost: the frame then draws the
+  // 2-D overlay (labels, axes) and a notice instead of the GL layer.
+  if (rafId) return;
   rafId = requestAnimationFrame(render);
+}
+
+// Centred notice box over the data area of the 2-D overlay, used when the
+// viewer cannot draw its data (lost WebGL context, a frame that threw).
+function _drawNotice(lines, W_css, H_css) {
+  octx.save();
+  octx.scale(dpr, dpr);
+  octx.font = '12px monospace';
+  const w = Math.min(W_css - LABEL_W - 16,
+                     Math.max(...lines.map(l => octx.measureText(l).width)) + 24);
+  const h = lines.length * 17 + 14;
+  const x = LABEL_W + (W_css - LABEL_W - w) / 2;
+  const y = Math.max(SCALEBAR_H + 4, (H_css - h) / 2);
+  octx.globalAlpha = 0.92;
+  octx.fillStyle   = th.panel || '#1c1c26';
+  octx.fillRect(x, y, w, h);
+  octx.globalAlpha = 1;
+  octx.strokeStyle = '#e05555';
+  octx.lineWidth   = 1;
+  octx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+  octx.fillStyle    = th.axis_text || '#ccccdd';
+  octx.textAlign    = 'center';
+  octx.textBaseline = 'top';
+  lines.forEach((l, i) => octx.fillText(l, x + w / 2, y + 8 + i * 17, w - 12));
+  octx.restore();
 }
 
 function render() {
   rafId = null;
-  if (_glLost) return;
+  try {
+    _renderFrame();
+  } catch (err) {
+    // A frame that throws would otherwise leave the canvas blank with no
+    // hint why; report it and keep the viewer responsive for later frames.
+    console.error('[Tracks] render failed:', err);
+    try {
+      const W_css = wrap.offsetWidth || 800;
+      const H_css = (ov.height / dpr) || 150;
+      _drawNotice(['Tracks could not draw this view:',
+                   String((err && err.message) || err)], W_css, H_css);
+    } catch (_) { /* the overlay itself is unusable — nothing more to do */ }
+  }
+}
+
+function _renderFrame() {
   const W_css = wrap.offsetWidth || 800;
   const cfgs  = _trackConfigs;
   // With every track hidden, still draw the (empty) frame so the last
@@ -3752,6 +3872,7 @@ function render() {
   if (!cfgs || (!cfgs.length && !_allTrackConfigs.length)) return;
 
   const totalH_css = SCALEBAR_H + cfgs.reduce((s, c) => s + trackH(c), 0);
+  if (_glLost) { _renderLostFrame(cfgs, W_css, totalH_css); return; }
   const W_gl   = Math.round(W_css * dpr);
   const H_gl   = Math.round(totalH_css * dpr);
 
@@ -3916,6 +4037,25 @@ function render() {
   }
 
   drawOverlay(cfgs, vs, ve, W_css, totalH_css);
+}
+
+// Frame drawn while the WebGL context is lost: the GL layer is unusable, so
+// show the labels and axes on the 2-D overlay plus a notice explaining why
+// the data is gone — never a silently blank viewer.
+function _renderLostFrame(cfgs, W_css, totalH_css) {
+  const W_gl = Math.round(W_css * dpr), H_gl = Math.round(totalH_css * dpr);
+  if (ov.width !== W_gl || ov.height !== H_gl) {
+    ov.width = W_gl; ov.height = H_gl;
+    ov.style.cssText  = `width:${W_css}px;height:${totalH_css}px`;
+    glCanvas.style.cssText = `width:${W_css}px;height:${totalH_css}px`;
+    wrap.style.height = totalH_css + 'px';
+  }
+  drawOverlay(cfgs, vp.start, vp.end, W_css, totalH_css);
+  _drawNotice([
+    'WebGL context lost — the browser dropped this viewer\'s GPU data.',
+    'Usually GPU memory is exhausted or too many viewers are open.',
+    'Close other viewers (tracks.close()) or restart the kernel, then re-display.',
+  ], W_css, totalH_css);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -4651,12 +4791,7 @@ function _reconcileTids() {
 model.on('change:track_configs', () => {
   _allTrackConfigs = model.get('track_configs') || [];
   _trackConfigs = _allTrackConfigs.filter(c => !c.hidden);
-  _reconcileTids();
-  // A track whose data arrived before its config has not been uploaded yet.
-  const td = model.get('track_data') || {};
-  if (_allTrackConfigs.some(c => td[c.id] && !_uploadedTids.has(c.id))) {
-    uploadTrackData();
-  }
+  syncTracks();
   updateHeatmapBtns();
   scheduleRender();
 });
@@ -4664,8 +4799,12 @@ model.on('change:pan_speed',  () => { _panSpeed  = +model.get('pan_speed')  || 1
 model.on('change:zoom_speed', () => { _zoomSpeed = +model.get('zoom_speed') || 1.02; });
 model.on('change:min_span',   () => { _minSpan   = +model.get('min_span')   || 500;  });
 model.on('change:track_data', () => {
-  uploadTrackData();
+  syncTracks();
   _hmBusyClear();
+  scheduleRender();
+});
+model.on('change:track_revs', () => {
+  syncTracks();
   scheduleRender();
 });
 model.on('change:vlines', () => { scheduleRender(); });
@@ -4688,7 +4827,10 @@ ro.observe(wrap);
 // ══════════════════════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════════════════════
-uploadTrackData();
+// A track that fails to upload must not abort render() here: the listeners
+// above are already attached and the frame below still draws, showing the
+// failure on the track's band instead of leaving the viewer blank.
+syncTracks();
 scheduleRender();
 
 return () => {
@@ -4882,6 +5024,10 @@ class Tracks(anywidget.AnyWidget):
     chrom_sizes   = traitlets.Dict({}).tag(sync=True)
     track_configs = traitlets.List([]).tag(sync=True)
     track_data    = traitlets.Dict({}).tag(sync=True)
+    # {tid: revision}, bumped whenever a track's payload changes. The whole
+    # track_data dict is resent on every change, so the browser compares
+    # revisions to upload only the tracks that actually changed.
+    track_revs    = traitlets.Dict({}).tag(sync=True)
     viewport      = traitlets.Dict({'chrom': '', 'start': 0, 'end': 0}).tag(sync=True)
     vlines        = traitlets.List([]).tag(sync=True)
     spans         = traitlets.List([]).tag(sync=True)
@@ -5054,6 +5200,8 @@ class Tracks(anywidget.AnyWidget):
         self._heatmap_global:  dict[str, dict] = {}
         # Monotonic so remove_track doesn't let a new track reuse a freed id.
         self._next_tid_index: int = 0
+        # Source of track_revs values; monotonic across the widget's life.
+        self._next_rev: int = 0
         # Opt-in legend strip. Empty until the user calls
         # :meth:`legend` — ``_ipython_display_`` reads this to know which
         # value-mode heatmap tracks to summarise above the widget.
@@ -5305,7 +5453,7 @@ class Tracks(anywidget.AnyWidget):
             return
         hm = {**self.track_data.get(tid, {})}
         hm[chrom] = new_entry
-        self.track_data = {**self.track_data, tid: hm}
+        self._set_track_data({**self.track_data, tid: hm}, changed=[tid])
 
     def _restore_heatmap_global(self, tid: str) -> None:
         """Restore the original whole-chromosome heatmap pixels.
@@ -5319,10 +5467,38 @@ class Tracks(anywidget.AnyWidget):
         cached = self._heatmap_global.get(tid)
         if cached is None:
             return
-        self.track_data = {**self.track_data, tid: {
+        self._set_track_data({**self.track_data, tid: {
             ch: {gid: {**entry} for gid, entry in groups.items()}
             for ch, groups in cached.items()
-        }}
+        }}, changed=[tid])
+
+    def _set_track_data(
+        self, data: dict[str, Any], changed: Iterable[str] = (),
+    ) -> None:
+        """Replace ``track_data`` and bump the revision of changed tracks.
+
+        Every write to ``track_data`` goes through here so ``track_revs``
+        stays in step with it: the browser uploads a track only when its
+        revision changes, so a payload written without a bump would never
+        reach the GPU.
+
+        Parameters
+        ----------
+        data : dict
+            The complete new ``{tid: payload}`` mapping.
+        changed : iterable of str
+            Track IDs whose payload is new or different. Tracks missing
+            from ``data`` lose their revision.
+        """
+        revs = {tid: rev for tid, rev in self.track_revs.items()
+                if tid in data}
+        for tid in changed:
+            self._next_rev += 1
+            revs[tid] = self._next_rev
+        # One message for both traits (nested hold_sync joins the outer one).
+        with self.hold_sync():
+            self.track_data = data
+            self.track_revs = revs
 
     def _tid(self) -> str:
         """Return a fresh, monotonically increasing track ID.
@@ -5504,7 +5680,8 @@ class Tracks(anywidget.AnyWidget):
         # One message for both traits, so the browser never sees a config
         # without its data or the other way round.
         with self.hold_sync():
-            self.track_data    = {**self.track_data, tid: data}
+            self._set_track_data({**self.track_data, tid: data},
+                                 changed=[tid])
             self.track_configs = [*self.track_configs, cfg]
         return self
 
@@ -5542,7 +5719,7 @@ class Tracks(anywidget.AnyWidget):
             self._heatmap_global.pop(tid, None)
         with self.hold_sync():
             self.track_configs = configs
-            self.track_data    = new_data
+            self._set_track_data(new_data)
         return self
 
     def _track_indices(
@@ -5767,7 +5944,7 @@ class Tracks(anywidget.AnyWidget):
         self._heatmap_global.clear()
         with self.hold_sync():
             self.track_configs = []
-            self.track_data    = {}
+            self._set_track_data({})
         return self
 
     # ── add_segment_track ────────────────────────────────────────────────────
