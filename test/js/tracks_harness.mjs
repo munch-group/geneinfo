@@ -51,16 +51,31 @@ console.warn  = (...a) => warns.push(a.map(String).join(' '));
 
 // WebGL2 stub: counts buffer/texture uploads made outside animation frames
 // (i.e. data uploads, not per-frame scratch buffers); getError is scriptable.
-let uploads = 0, nextGlErrors = [], ctxLost = false;
-const GL = { NO_ERROR: 0, OUT_OF_MEMORY: 0x505 };
+// texImage2D checks the data size the way WebGL does: each row but the last
+// is padded to the UNPACK_ALIGNMENT, and too little data is INVALID_OPERATION.
+let uploads = 0, nextGlErrors = [], ctxLost = false, glErrFlag = 0, texRejects = 0;
+const GL = { NO_ERROR: 0, OUT_OF_MEMORY: 0x505, INVALID_OPERATION: 0x502,
+             UNPACK_ALIGNMENT: 0x0CF5, RED: 0x1903, RGB: 0x1907, RGBA: 0x1908 };
+const TEXEL_BYTES = { [GL.RED]: 1, [GL.RGB]: 3, [GL.RGBA]: 4 };
 function mkGL() {
+  let align = 4;
   return new Proxy({}, { get: (t, p) => {
     if (p in GL) return GL[p];
     if (typeof p === 'string' && /^[A-Z0-9_]+$/.test(p)) return 0x9000 + p.length;
     switch (p) {
-      case 'bufferData': case 'texImage2D': case 'bufferSubData': case 'texSubImage2D':
+      case 'pixelStorei': return (pname, v) => { if (pname === GL.UNPACK_ALIGNMENT) align = v; };
+      case 'texImage2D': return (tg, lvl, ifmt, w, h, b, fmt, type, data) => {
+        if (!inFrame) uploads++;
+        const row = w * (TEXEL_BYTES[fmt] || 4);
+        const need = h > 0 ? (h - 1) * Math.ceil(row / align) * align + row : 0;
+        if (data && data.length < need) { glErrFlag ||= GL.INVALID_OPERATION; texRejects++; }
+      };
+      case 'bufferData': case 'bufferSubData': case 'texSubImage2D':
         return () => { if (!inFrame) uploads++; };
-      case 'getError': return () => (nextGlErrors.length ? nextGlErrors.shift() : 0);
+      case 'getError': return () => {
+        if (nextGlErrors.length) return nextGlErrors.shift();
+        const e = glErrFlag; glErrFlag = 0; return e;
+      };
       case 'isContextLost': return () => ctxLost;
       case 'getShaderParameter': case 'getProgramParameter': return () => true;
       case 'getParameter': return () => 8192;
@@ -402,6 +417,29 @@ ok(errors.length === 0, `remove + clear with replies in flight: no errors ${erro
   uploads = 0; k.flush(); frames();
   ok(uploads === 2 * chr1Uploads && errors.length === 0,
      `each view uploads its own replies once (${uploads} vs ${2 * chr1Uploads})`);
+}
+
+// ── 15. Heatmaps whose bin count is not a multiple of 4 ───────────────────
+// A bp-sized zoom_windows resolves to arbitrary counts (here 100 and 50 bins
+// on the two chromosomes, and 23 after a rebin), which WebGL rejected under
+// the default 4-byte row alignment, leaving the band blank.
+if (C.odd) {
+  const sizes = C.odd.state.chrom_sizes;
+  m = mount('odd'); frames(); m.kernel.flush(); redraw();
+  ok(errors.length === 0 && texRejects === 0 && !drawnStarting('could not load track'),
+     `odd-width heatmap uploads on chr1 (${texRejects} rejected) ${errors[0] || ''}`);
+  m.model.fire({ viewport: { chrom: 'chr2', start: 0, end: sizes.chr2 } });
+  frames(); m.kernel.flush(); redraw();
+  ok(errors.length === 0 && texRejects === 0, `odd-width heatmap uploads on chr2 ${errors[0] || ''}`);
+  // The rebinned detail view arrives as a new revision of the track.
+  const k = mkKernel('odd_rebinned');
+  m.kernel.handle = k.handle.bind(k); m.kernel.flush = k.flush.bind(k);
+  m.model.fire({ viewport: { chrom: 'chr1', start: 100000, end: 330000 } }); frames();
+  m.model.fire({ track_revs: clone(C.odd_rebinned.state.track_revs) }); frames();
+  k.flush(); redraw();
+  ok(fetches(k).length > 0 && errors.length === 0 && texRejects === 0
+     && !drawnStarting('could not load track'),
+     `rebinned 23-bin detail view uploads ${errors[0] || ''}`);
 }
 
 console.log = origLog;

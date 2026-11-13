@@ -4,6 +4,18 @@
 
 ### Widget (`geneinfo.widget.segment_viewer_gl`)
 
+**Fix: heatmaps blank when the bin count is not a multiple of 4**
+- Heatmap textures were uploaded with WebGL's default 4-byte row
+  alignment, so any heatmap whose number of bins was not a multiple of 4
+  was rejected by `texImage2D` and drew as background. This hit
+  bp-sized `zoom_windows` (e.g. `"10kb"`) most, since the bin count is
+  then `ceil(span / 10 kb)` for whatever view is rebinned, but also
+  whole-chromosome views of small chromosomes. Rows are now uploaded
+  tightly packed.
+- Any WebGL error during a track upload is now shown on the track's band
+  ("could not load track: WebGL error …") instead of only a console
+  warning.
+
 **Track data is fetched on demand, as binary**
 - Track data no longer travels in the synced widget state. The browser
   fetches the chromosome in view, one track at a time, from the kernel

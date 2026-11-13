@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "geneinfo"
 version = "5.6.44"
 description = "..."
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 authors = [{name = "Kasper Munch", email = "kaspermunch@birc.au.dk"}]
 dependencies = [
     'jupyter',
@@ -64,7 +64,7 @@ channels = ["conda-forge", "munch-group"]
 platforms = ["osx-arm64", "linux-64"]
 
 [tool.pixi.pypi-dependencies]
-geneinfo = { path = ".", editable = true }
+liftover = ">=1.5.0,<2"
 
 [tool.pixi.dependencies]
 tqdm = "*"
@@ -81,8 +81,8 @@ griffecli = ">=2.0.2,<3"
 griffelib = ">=2.0.2,<3"
 iplot = ">=0.1.9,<0.2"
 pycirclize = ">=1.10.1,<2"
-crossrepo = ">=0.1.27,<0.2"
-
+crossrepo = ">=0.1.28,<0.2"
+matplotlib="*"
 
 [tool.pixi.environments]
 default = {solve-group = "default"}

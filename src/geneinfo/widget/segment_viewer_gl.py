@@ -2290,9 +2290,18 @@ function buildDensStackedGPU(arr, chromSz, nBins) {
 // Build heatmap texture
 function buildHeatmapGPU(u8, nInd, nWin, xStart, xEnd) {
   if (!u8 || u8.length === 0) return null;
+  if (u8.length < nInd * nWin) {
+    throw new Error(`heatmap slice has ${u8.length} bytes, expected ${nInd} x ${nWin}`);
+  }
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
+  // Rows are tightly packed, one byte per texel. The default 4-byte unpack
+  // alignment would make WebGL expect each row padded to a multiple of 4 and
+  // reject the upload whenever nWin is not one (e.g. a bp-sized zoom_windows
+  // resolved against an arbitrary view), leaving the heatmap blank.
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, nWin, nInd, 0, gl.RED, gl.UNSIGNED_BYTE, u8);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
   // We do our own X-axis box-filter in the fragment shader (see FS_TEX), so
   // keep per-texel reads crisp and rely on NEAREST sampling vertically. Mipmaps
   // would also downsample in the nInd (row) dimension, which is semantically
@@ -2936,9 +2945,9 @@ function uploadTrack(cfg, d) {
   const glErr = gl.getError();
   if (glErr === gl.OUT_OF_MEMORY) throw new Error('GPU out of memory');
   if (gl.isContextLost()) throw new Error('WebGL context lost');
-  if (glErr !== gl.NO_ERROR) {
-    console.warn(`[Tracks] WebGL error 0x${glErr.toString(16)} while uploading track "${cfg.name}"`);
-  }
+  // Any other error means a buffer or texture was rejected and would draw
+  // as nothing; report it on the track's band rather than only the console.
+  if (glErr !== gl.NO_ERROR) throw new Error(`WebGL error 0x${glErr.toString(16)}`);
 }
 
 // Recompute the per-chrom pan clamp as the intersection of the domains of

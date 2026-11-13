@@ -175,7 +175,17 @@ class TestTransportBrowser(unittest.TestCase):
         e = _add_first_two(Tracks(CHROMS, embed_data=True), seg, pts)
         emb_state, emb_paths, emb_bufs = _remove_buffers(
             {'embedded_data': e.embedded_data})
+        # Heatmap whose bins are not a multiple of 4 wide: 100 on chr1, 50 on
+        # chr2, then 23 after rebinning chr1 to a detail view.
+        odd = Tracks(CHROMS).add_heatmap_track(
+            seg, 'H', individual_col='ind', zoom_windows='10kb')
+        odd_state, odd_replies = _state(odd), _replies(odd)
+        hid = odd.track_configs[0]['id']
+        odd._rebin_heatmap_for_view(hid, 'chr1', 100_000, 330_000)
+        self.assertEqual(odd.track_data[hid]['chr1']['0']['nWin'], 23)
         cases = {
+            'odd': {'state': odd_state, 'replies': odd_replies},
+            'odd_rebinned': {'state': _state(odd), 'replies': _replies(odd)},
             'empty': {'state': _state(Tracks(CHROMS)), 'replies': {}},
             'two': {'state': two, 'replies': _replies(t)},
             'seven': {'state': _state(t), 'replies': _replies(t)},
