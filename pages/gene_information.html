@@ -285,6 +285,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/liftover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lifting coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Caching</span></a>
   </div>
@@ -330,7 +336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:14.237349Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:14.237213Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.797369Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.796924Z&quot;}}" data-tags="[]" data-execution_count="2">
+<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:16.859206Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:16.859114Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:18.694037Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:18.693536Z&quot;}}" data-tags="[]" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> vscodenb <span class="im">import</span> set_vscode_theme</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    set_vscode_theme(style<span class="op">=</span><span class="st">'ticks'</span>, frame<span class="op">=</span><span class="va">False</span>)</span>
@@ -347,44 +353,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.coords <span class="im">import</span> gene_coords, gene_coords_region</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 
-<style>
-.widget-label,
-.widget-html,
-.widget-button,
-.widget-dropdown,
-.widget-text,
-.widget-textarea {
-    color: #CCCCCC !important;  /* Set to desired color */
-    font-size: 10px !important;      /* Font size */
-
-}
-div.widget-html-content > progress { /* Outer container */
-    height: 10px !important;
-
-}
-div.jp-OutputArea-output td.output_html { /* tqdm HTML output area */
-    height: 5px !important;
-}
-div.progress { /* Jupyter Notebook (classic) */
-    height: 5px !important;
-    min-height: 5px !important;
-    margin-top: 12px !important;    
-}
-div.progress-bar { /* Inner bar */
-    height: 5px !important;
-    min-height: 5px !important;
-    line-height: 5px !important;
-    color: 'white' !important;
-    padding-bottom: 0px !important;    
-}
-
-table {
-    font-variant-numeric: tabular-nums; 
-}
-</style>
-</div>
-<div class="cell-output cell-output-display">
-
+        <style>
+        :root {
+            --vscodenb-foreground: var(--vscode-editor-foreground, var(--jp-content-font-color1, #1f1f1f));
+            --jp-widgets-color: var(--vscodenb-foreground);
+        }
+        </style>
+        
         <style>
         .cell-output-ipywidget-background {
             background-color: transparent !important;
@@ -392,20 +367,27 @@ table {
        .jp-OutputArea-output {
            background-color: transparent;
         }  
-        /*
-        :root {
-            --jp-widgets-color: var(--vscode-editor-foreground);
-            --jp-widgets-font-size: var(--vscode-editor-font-size);
-        }  
-        */
         /* tqdm styling: */
         .widget-label,
         .widget-html,
-        .widget-button,
         .widget-dropdown,
         .widget-text,
         .widget-textarea {
             font-size: 10px !important;      /* Font size */
+        }
+        /* Not !important, so widgets.Button(style={'font_size': ...}), which
+           sets an inline style, still applies. The element selector outranks
+           ipywidgets' own .jupyter-button rule. */
+        button.widget-button {
+            font-size: 10px;
+        }
+        /* tqdm progress bar labels ("47%" and "470/1000 [00:03<00:03, ...]") */
+        .widget-label,
+        .widget-html,
+        .widget-htmlmath,
+        .widget-html-content,
+        .widget-htmlmath-content {
+            color: var(--vscodenb-foreground) !important;
         }
         div.widget-html-content > progress { /* Outer container */
             height: 10px !important;
@@ -423,9 +405,75 @@ table {
             height: 5px !important;
             min-height: 5px !important;
             line-height: 5px !important;
-            color: 'white' !important;
+            color: white !important;
             padding-bottom: 0px !important;    
         }
+        table {
+            font-variant-numeric: tabular-nums; 
+        }                     
+        </style>                          
+        
+</div>
+<div class="cell-output cell-output-display">
+
+        <style>
+        :root {
+            --vscodenb-foreground: var(--vscode-editor-foreground, var(--jp-content-font-color1, #1f1f1f));
+            --jp-widgets-color: var(--vscodenb-foreground);
+        }
+        </style>
+        
+        <style>
+        .cell-output-ipywidget-background {
+            background-color: transparent !important;
+        }
+       .jp-OutputArea-output {
+           background-color: transparent;
+        }  
+        /* tqdm styling: */
+        .widget-label,
+        .widget-html,
+        .widget-dropdown,
+        .widget-text,
+        .widget-textarea {
+            font-size: 10px !important;      /* Font size */
+        }
+        /* Not !important, so widgets.Button(style={'font_size': ...}), which
+           sets an inline style, still applies. The element selector outranks
+           ipywidgets' own .jupyter-button rule. */
+        button.widget-button {
+            font-size: 10px;
+        }
+        /* tqdm progress bar labels ("47%" and "470/1000 [00:03<00:03, ...]") */
+        .widget-label,
+        .widget-html,
+        .widget-htmlmath,
+        .widget-html-content,
+        .widget-htmlmath-content {
+            color: var(--vscodenb-foreground) !important;
+        }
+        div.widget-html-content > progress { /* Outer container */
+            height: 10px !important;
+        
+        }
+        div.jp-OutputArea-output td.output_html { /* tqdm HTML output area */
+            height: 5px !important;
+        }
+        div.progress { /* Jupyter Notebook (classic) */
+            height: 5px !important;
+            min-height: 5px !important;
+            margin-top: 12px !important;    
+        }
+        div.progress-bar { /* inner bar */
+            height: 5px !important;
+            min-height: 5px !important;
+            line-height: 5px !important;
+            color: white !important;
+            padding-bottom: 0px !important;    
+        }
+        table {
+            font-variant-numeric: tabular-nums; 
+        }                     
         </style>                          
         
 </div>
@@ -433,7 +481,7 @@ table {
 <section id="summary-gene-information" class="level2">
 <h2 class="anchored" data-anchor-id="summary-gene-information">Summary gene information</h2>
 <p><strong>Using gene symbol:</strong></p>
-<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.799051Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.798892Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.826948Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.826483Z&quot;}}" data-tags="[]" data-execution_count="3">
+<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:18.695796Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:18.695633Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:20.159224Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:20.158177Z&quot;}}" data-tags="[]" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gene_info(<span class="st">'USP4'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>USP4</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> UNP, Unph<br>
@@ -445,7 +493,7 @@ table {
 </div>
 </div>
 <p><strong>Using NCBI ID:</strong></p>
-<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.828310Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.828213Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.842838Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.842392Z&quot;}}" data-tags="[]" data-execution_count="4">
+<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:20.161385Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:20.161202Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:21.402384Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:21.401760Z&quot;}}" data-tags="[]" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gene_info(<span class="dv">7157</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>TP53</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> BCC7, BMFS5, LFS1, P53, TRP53<br>
@@ -457,13 +505,13 @@ table {
 </div>
 </div>
 <p><strong>For a a list of genes:</strong></p>
-<div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.844194Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.844096Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.857956Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.857599Z&quot;}}" data-tags="[]" data-execution_count="5">
+<div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:21.404246Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:21.404109Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:23.570508Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:23.569560Z&quot;}}" data-tags="[]" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gene_info([<span class="st">'LARS2'</span>, <span class="st">'XCR1'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>LARS2</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> HLASA, LEURS, PRLTS4, mtLeuRS<br>
 <em>leucyl-tRNA synthetase 2, mitochondrial</em><br>
 <strong>Summary:</strong> This gene encodes a class 1 aminoacyl-tRNA synthetase, mitochondrial leucyl-tRNA synthetase. Each of the twenty aminoacyl-tRNA synthetases catalyzes the aminoacylation of a specific tRNA or tRNA isoaccepting family with the cognate amino acid. [provided by RefSeq, Jul 2008].<br>
-<strong>Human genomic position:</strong> 3:45388527-45554726 (hg38), 3:45429998-45590913 (hg19)<br>
+<strong>Human genomic position:</strong> 3:45388516-45554726 (hg38), 3:45429998-45590913 (hg19)<br>
 <a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=LARS2">Gene card</a></p>
 <hr>
 </div>
@@ -471,13 +519,13 @@ table {
 <p><strong>Symbol:</strong> <strong><em>XCR1</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> CCXCR1, GPR5<br>
 <em>X-C motif chemokine receptor 1</em><br>
 <strong>Summary:</strong> The protein encoded by this gene is a chemokine receptor belonging to the G protein-coupled receptor superfamily. The family members are characterized by the presence of 7 transmembrane domains. The encoded protein transduces a signal by increasing the intracellular calcium ion level. The viral macrophage inflammatory protein-II is an antagonist of this receptor and blocks signaling. Some studies have implicated a cluster of genes at 3p21.31, including this gene, as associated with COVID-19 risk. The encoded protein may also play a role in cell proliferation and migration in several types of cancer. [provided by RefSeq, Jan 2023].<br>
-<strong>Human genomic position:</strong> 3:46016990-46085825 (hg38), 3:46058516-46069234 (hg19)<br>
+<strong>Human genomic position:</strong> 3:46016988-46085850 (hg38), 3:46058516-46069234 (hg19)<br>
 <a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=XCR1">Gene card</a></p>
 <hr>
 </div>
 </div>
 <p><strong>For genes a region:</strong></p>
-<div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.859366Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.859285Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.874195Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.873807Z&quot;}}" data-execution_count="6">
+<div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:23.573036Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:23.572830Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:26.502825Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:26.501827Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gene_info_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display cell-output-markdown">
 <p><strong>Symbol:</strong> <strong><em>FGF16</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> FGF-16, MF4<br>
@@ -490,7 +538,7 @@ table {
 <p><strong>Symbol:</strong> <strong><em>ATRX</em></strong> (protein-coding) &nbsp; &nbsp; &nbsp; &nbsp; <strong>Aliases:</strong> JMS, MRX52, RAD54, RAD54L, XH2, XNP, ZNF-HX<br>
 <em>ATRX chromatin remodeler</em><br>
 <strong>Summary:</strong> The protein encoded by this gene contains an ATPase/helicase domain, and thus it belongs to the SWI/SNF family of chromatin remodeling proteins. This protein is found to undergo cell cycle-dependent phosphorylation, which regulates its nuclear matrix and chromatin association, and suggests its involvement in the gene regulation at interphase and chromosomal segregation in mitosis. Mutations in this gene are associated with X-linked syndromes exhibiting cognitive disabilities as well as alpha-thalassemia (ATRX) syndrome. These mutations have been shown to cause diverse changes in the pattern of DNA methylation, which may provide a link between chromatin remodeling, DNA methylation, and gene expression in developmental processes. Multiple alternatively spliced transcript variants encoding distinct isoforms have been reported. [provided by RefSeq, Jul 2017].<br>
-<strong>Human genomic position:</strong> X:77504880-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)<br>
+<strong>Human genomic position:</strong> X:77504862-77786233 (hg38), HG1426_PATCH:76765832-77047170, X:76760356-77041702 (hg19)<br>
 <a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=ATRX">Gene card</a></p>
 <hr>
 </div>
@@ -498,7 +546,7 @@ table {
 </section>
 <section id="get-the-hgcn-symbol-for-an-alias" class="level2">
 <h2 class="anchored" data-anchor-id="get-the-hgcn-symbol-for-an-alias">Get the HGCN symbol for an alias</h2>
-<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.875518Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.875427Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.892825Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.892388Z&quot;}}" data-execution_count="7">
+<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:26.505120Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:26.504932Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:26.528673Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:26.528059Z&quot;}}" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>hgcn_symbol([<span class="st">'CXorf23'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'ENSG00000173681'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>['BCLAF3', 'BCLAF3', 'BCLAF3']</code></pre>
@@ -508,7 +556,7 @@ table {
 <section id="gene-coordinates" class="level2">
 <h2 class="anchored" data-anchor-id="gene-coordinates">Gene coordinates</h2>
 <p>For a list of genes:</p>
-<div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.894061Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.893980Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.907149Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.906706Z&quot;}}" data-execution_count="8">
+<div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:26.530414Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:26.530295Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:26.562330Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:26.561913Z&quot;}}" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gene_coords([<span class="st">'ATRX'</span>, <span class="st">'MAGT1'</span>, <span class="st">'FOXP2'</span>], assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>[('chrX', 77504879, 77786216, 'ATRX'),
@@ -517,7 +565,7 @@ table {
 </div>
 </div>
 <p>For the genes in a genomic region:</p>
-<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.908302Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.908222Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:15.922118Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:15.921727Z&quot;}}" data-tags="[]" data-execution_count="9">
+<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:26.563669Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:26.563581Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:27.271342Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:27.270756Z&quot;}}" data-tags="[]" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gene_coords_region(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77000000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>[('FGF16',
@@ -604,15 +652,23 @@ table {
 <section id="ucsc-track-data-download" class="level2">
 <h2 class="anchored" data-anchor-id="ucsc-track-data-download">UCSC track data download</h2>
 <p>List tracks with short descriptions:</p>
-<div id="cell-20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:15.923431Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:15.923346Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:19.538734Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:19.538331Z&quot;}}" data-execution_count="10">
+<div id="cell-20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:27.272976Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:27.272851Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:29.428078Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:29.427672Z&quot;}}" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>search_ucsc_tracks(assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>abSplice                                   Aberrant Splicing Prediction Scores
+<pre><code>abraom                                     SNV Frequencies: ABraOM Brazil - 1,171 unrelated individuals
+abSplice                                   Aberrant Splicing Prediction Scores
 affyGnf1h                                  Alignments of Affymetrix Consensus/Exemplars from GNF1H
 affyU133                                   Alignments of Affymetrix Consensus/Exemplars from HG-U133
 affyU95                                    Alignments of Affymetrix Consensus/Exemplars from HG-U95
+alfaVcf                                    SNV Frequencies: NCBI ALFA (dbGaP data) - 408k mixed WGS/WES/array, 163M
+                                           variants
+allofus                                    SNV Frequencies: AllOfUs v7 - 245k WGS, local-ancestry-stratified, AC&gt;=20
+alphaGenome                                AlphaGenome Variant Impact (AVI) score for all single-base substitutions
 alphaMissense                              AlphaMissense Score for all possible single-basepair mutations (zoom in for
                                            scores)
+aou1kSv                                    Structural Variants from 1,027 All of Us samples (PacBio HiFi)
+aprSv                                      Structural Variants from 53 Arab Pangenome Reference samples (UAE-resident; HiFi
+                                           + ONT)
 augustusGene                               AUGUSTUS ab initio gene predictions v3.1
 avada                                      Avada Variants extracted from full text publications
 bismap                                     Single-read and multi-read mappability after bisulfite conversion
@@ -628,19 +684,28 @@ cadd1_7_Del                                CADD 1.7 Score: Deletions - label is 
 cadd1_7_Ins                                CADD 1.7 Score: Insertions - label is length of insertion
 caddDel                                    CADD 1.6 Score: Deletions - label is length of deletion
 caddIns                                    CADD 1.6 Score: Insertions - label is length of insertion
+cardSv                                     Structural Variants from 351 NIH CARD brain samples (ONT; NABEC + HBCC)
 ccdsGene                                   Consensus CDS
 cCREregistry                               ENCODE4 Registry of candidate Cis-Regulatory Elements (cCREs)
 centromeres                                Centromere Locations
 chainSelf                                  Human Chained Self Alignments
+chinamap                                   SNV Frequencies: ChinaMAP phase 1 - 10,588 WGS at ~40x, Chinese natural
+                                           population
+chirmade101Sv                              Structural Variants from 101 SVatalog samples (cystic fibrosis; Chirmade et al.
+                                           2026)
 chm13LiftOver                              CHM13 (GCA_009914755.4) v1_nfLO liftOver alignments
 civic                                      CIViC - Expert &amp; crowd-sourced cancer variant interpretation
 clinGenComp                                ClinGen curation activities (Dosage Sensitivity and Gene-Disease Validity)
+clinPred                                   ClinPred Pathogenicity Score for missense variants (zoom for exact score)
 clinvar                                    ClinVar Variants
 cloneEndSuper                              Mapping of clone libraries end placements
 clsLongReadRnaTrack                        Capture long-seq long-read lncRNAs
 cnvDevDelay                                Copy Number Variation Morbidity Map of Developmental Delay
 colonWangCellType                          Colon cells binned by cell type from Wang et al 2020
 colonWangDonor                             Colon cells binned by organ donor from Wang et al 2020
+colorsDbSnv                                SNV Frequencies: CoLoRSdb v1.2.0 - 1,027 PacBio HiFi WGS, SNV/indel callset
+colorsDbSv                                 Structural Variants from 1,427 CoLoRSdb samples (Consortium of Long-Read
+                                           Sequencing, PacBio HiFi)
 cons100way                                 UCSC 100 Vertebrates - 100 vertebrate genomes aligned with MultiZ by the UCSC
                                            Browser Group
 cons241way                                 Zoonomia Alignment - 241 Placental Mammal Genomes aligned by the Zoonomia
@@ -667,6 +732,8 @@ covidHgiGwasR4Pval                         COVID risk variants from GWAS meta-an
                                            Initiative (Rel 4, Oct 2020)
 covidMuts                                  Rare variants underlying COVID-19 severity and susceptibility from the COVID
                                            Human Genetics Effort
+cpc1Sv                                     Structural Variants from 58 Chinese Pangenome Consortium samples (CPC-only;
+                                           HiFi)
 cpgIslandExt                               CpG Islands (Islands &lt; 300 Bases are Light Green)
 cpgIslandExtUnmasked                       CpG Islands on All Sequence (Islands &lt; 300 Bases are Light Green)
 crisprAllTargets                           CRISPR/Cas9 -NGG Targets, whole genome
@@ -679,21 +746,31 @@ dbSnp153Composite                          Short Genetic Variants from dbSNP rel
 dbSnp155Composite                          Short Genetic Variants from dbSNP release 155
 dbVar_common                               NCBI dbVar Curated Common Structural Variants
 dbVar_conflict                             NCBI dbVar Curated Conflict Variants
+dbVar_other                                NCBI dbVar Other Structural Variants
+dbVar_somatic                              NCBI dbVar Somatic Structural Variants
 decipher                                   DECIPHER CNVs
 decipherPopulation                         DECIPHER: Population CNVs
 decipherSnvs                               DECIPHER: Chromosomal Imbalance and Phenotype in Humans (SNVs)
-deepvariant                                CoLoRSdb long-read small variants
+decodeSv                                   Structural Variants from 3,622 deCODE samples (Icelandic; Oxford Nanopore)
 denisovan                                  Ancient Hominids: Arcseqhub Denisovan VCF Variants
 dgvPlus                                    Database of Genomic Variants: Structural Variation (CNV, Inversion, In/del)
 dosageSensitivity                          pHaplo and pTriplo dosage sensitivity map from Collins et al 2022
 encode4LongRnaTranscripts                  ENCODE4 Long Read Transcripts
+encode4ProCap_A673_procap                  A673 (ENCSR046BCI) PRO-cap transcription start sites
+encode4ProCap_Caco-2_procap                Caco-2 (ENCSR100LIJ) PRO-cap transcription start sites
+encode4ProCap_Calu3_procap                 Calu3 (ENCSR935RNW) PRO-cap transcription start sites
+encode4ProCap_HUVEC_procap                 HUVEC (ENCSR098LLB) PRO-cap transcription start sites
+encode4ProCap_K562_procap                  K562 (ENCSR261KBX) PRO-cap transcription start sites
+encode4ProCap_MCF10A_procap                MCF10A (ENCSR799DGV) PRO-cap transcription start sites
 encodeCcreCombined                         ENCODE3 Registry of candidate Cis-Regulatory Elements (cCREs)
 encRegTfbsClustered                        Transcription Factor ChIP-seq Clusters (340 factors, 129 cell types) from ENCODE
                                            3
 encTfChipPk                                Transcription Factor ChIP-seq Peaks (340 factors in 129 cell types) from ENCODE
                                            3
 epdNew                                     Promoters from EPDnew
+epigenCentral                              EpigenCentral: CpG probes of published DNA methylation signatures
 est                                        Human ESTs Including Unspliced
+eve                                        EVE missense variant effect scores
 exomeProbesets                             Exome Capture Probesets and Targeted Region
 fetalGeneAtlasAssay                        Fetal Gene Atlas binned by assay (cell/nucleus) from Cao et al 2020
 fetalGeneAtlasCellType                     Fetal Gene Atlas binned by cell type from Cao et al 2020
@@ -703,15 +780,29 @@ fetalGeneAtlasOrgan                        Fetal Gene Atlas binned by organ from
 fetalGeneAtlasOrganCellLineage             Fetal Gene Atlas binned by cell lineage and organ from Cao et al 2020
 fetalGeneAtlasRtGroup                      Fetal Gene Atlas binned by RT group from Cao et al 2020
 fetalGeneAtlasSex                          Fetal Gene Atlas binned by sex from Cao et al 2020
+fiberSeqAcc                                Fiber-seq percent-accessible chromatin in seven common cell lines
+fiberSeqCompendium                         Fiber-seq accessibility, FIRE peaks and CpG methylation in 41 samples
+finngen                                    SNV Frequencies: Finland FinnGen - 500k samples, arrays, imputation used 8.5k
+                                           WGS
 fishClones                                 Clones Placed on Cytogenetic Map Using FISH
+fiveUltraUorfs                             ncORFs: uORFs in MANE Select transcripts from 5ULTRA
 g2p                                        Gene2Phenotype Project
+ga4kSnv                                    SNV Frequencies: GA4K Children's Mercy - 552 PacBio HiFi WGS, pediatric RD
+ga4kSv                                     Structural Variants from 502 GA4K samples (Children's Mercy, pediatric rare
+                                           disease; PacBio HiFi)
 gap                                        Gap Locations
+gasp                                       SNV Frequencies: GenomeAsia Pilot - Substitutions
+gaspIndel                                  SNV Frequencies: GenomeAsia Pilot - Indels
 gc5BaseBw                                  GC Percent in 5-Base Windows
 gdcCancer                                  TCGA Pan-Cancer mutations: 33 TCGA Cancer Projects Summary (Pan-Can 33)
 genCC                                      GenCC: The Gene Curation Coalition Annotations
+gencNcOrfs                                 ncORFs: GENCODE Phase I non-canonical ORFs with Ribo-seq, peptide evidence
+gencNcOrfsComprehensive                    ncORFs: GENCODE Phase II non-canonical ORFs - comprehensive
+gencNcOrfsPrimary                          ncORFs: GENCODE Phase II non-canonical ORFs - primary
 geneHancer                                 GeneHancer Regulatory Elements and Gene Interactions
 geneid                                     Geneid Gene Predictions
 geneReviews                                GeneReviews
+genomeindia                                SNV Frequencies: GenomeIndia - 9,768 WGS, 83 populations (Bhattacharyya 2025)
 genomicSuperDups                           Duplications of &gt;1000 Bases of Non-RepeatMasked Sequence
 genotypeArrays                             Microarray Probesets and OGM sites
 genscan                                    Genscan Gene Predictions
@@ -727,6 +818,8 @@ gnomadCopyNumberVariants                   Genome Aggregation Database (gnomAD) 
 gnomadGenomesVariantsV3                    Genome Aggregation Database (gnomAD) Genome Variants v3
 gnomadGenomesVariantsV3_1                  Deprecated: Genome Aggregation Database (gnomAD) Genome Variants v3.1
 gnomadGenomesVariantsV3_1_1                Genome Aggregation Database (gnomAD) Genome Variants v3.1.1
+gnomadMpc                                  gnomAD Missense Deleteriousness Prediction by Constraint (MPC) v4.1.1
+gnomadMpcOverlaps                          gnomAD MPC v4.1.1 - variants scored against multiple transcripts
 gnomadPext                                 Genome Aggregation Database (gnomAD) Proportion Expression Across Transcript
                                            Scores (pext)
 gnomadPLI                                  Genome Aggregation Database (gnomAD) Predicted Constraint Metrics (LOEUF, pLI,
@@ -735,9 +828,12 @@ gnomadStr                                  Genome Aggregation Database (gnomAD) 
                                            Associated Loci
 gnomadStructuralVariants                   Genome Aggregation Database (gnomAD) - Structural Variants v4.1
 gnomadVariantsV2                           Genome Aggregation Database (gnomAD) Genome and Exome Variants v2.1
-gnomadVariantsV4.1                         Genome Aggregation Database (gnomAD) Genome and Exome Variants v4.1
+gnomadVariantsV4.1                         Genome Aggregation Database (gnomAD) Genome and Exome Variants v4.1.1
 gold                                       Assembly from Fragments
+gonl                                       SNV Frequencies: Genome of the Netherlands - 250 Dutch trios
 grcIncidentDb                              GRC Incident Database
+gregor                                     SNV Frequencies: GREGoR Consortium - Release 4, 3,624 WGS samples, rare disease
+                                           families
 gtexCov                                    GTEx V8 RNA-Seq Read Coverage by Tissue
 gtexEqtlHighConf                           GTEx fine-mapped cis-eQTLs
 gtexGene                                   Gene Expression in 53 tissues from GTEx RNA-seq of 8555 samples (570 donors)
@@ -745,8 +841,11 @@ gtexGeneV8                                 Gene Expression in 54 tissues from GT
                                            (V8, Aug 2019)
 gtexImmuneAtlasFullDetails                 GTEx single nuclei immune expression
 gtexTranscExpr                             Transcript Expression in 53 tissues from GTEx RNA-seq of 8555 samples/570 donors
+gustafsonSv                                Structural Variants from 100 1000 Genomes samples (University of Washington ONT;
+                                           Gustafson et al. 2024)
 gwasCatalog                                NHGRI-EBI Catalog of Published Genome-Wide Association Studies
 gwipsvizRiboseq                            Ribosome Profiling from GWIPS-viz
+han945Sv                                   Structural Variants from 945 Han Chinese samples (long-read)
 heartAtlasAgeGroup                         Heart cell RNA binned by age group of donor from https://heartcellatlas.org
 heartAtlasCellStates                       Heart cell RNA binned by cell state from https://heartcellatlas.org
 heartAtlasCellTypes                        Heart cell RNA binned by cell type from https://heartcellatlas.org
@@ -762,22 +861,30 @@ hgdp                                       Phased Variants: Human Genome Diversi
                                            populations
 hgdp1k                                     Phased Variants: gnomAD HGDP + 1000 genomes callset - 4094 whole genomes, 80
                                            populations
+hgdp1kFreq                                 SNV Frequencies: gnomAD HGDP + 1000 Genomes - 4,094 WGS, 80 populations
 hgIkmc                                     International Knockout Mouse Consortium Genes Mapped to Human Genome
 hgmd                                       Human Gene Mutation Database - Public Version 2025
 hgnc                                       HUGO Gene Nomenclature
+hgsvc2Sv                                   Structural Variants from 32 HGSVC2 assemblies (freeze 4; Ebert et al. 2021)
+hgsvc3Sv                                   Structural Variants from 65 HGSVC3 assemblies (diverse ancestry; HiFi + ONT)
 hicAndMicroC                               Comparison of Micro-C and In situ Hi-C protocols in H1-hESC and HFFc6
 highlyReproducible                         Highly Reproducible genomic regions for sequencing
 hmc                                        HMC - Homologous Missense Constraint Score on PFAM domains
+hostseq                                    SNV Frequencies: gnomAD-Canada HostSeq - 10,487 WGS, Canadian COVID-19 cohort
+hprc2v21Sv                                 Structural Variants from 233 HPRC v2.1 assemblies (minigraph-cactus pangenome
+                                           graph)
 hprcArrV1                                  Rearrangements including indels, inversions, and duplications
 hprcChainNet                               Human Genomes, Chain/Net pairwise alignments, as mapped by the HPRC project
 hprcDecomposed                             HPRC variants decomposed from hprc-v1.0-mc.grch38.vcfbub.a100k.wave.vcf.gz (Liao
                                            et al 2023), no size filtering
 hprcVCFDecomposedOver3                     HPRC VCF variants filtered for items size &gt; 3bp
 hprcVCFDecomposedUnder4                    HPRC VCF variants filtered for items size &lt;= 3bp
+hrc                                        SNV Frequencies: Haplotype Reference Consortium - 30k WGS (excl. 1000 Genomes)
 humanMethylationAtlasSignals               Human Methylation Atlas WGBS cell type signals
 humanMethylationAtlasSummary               Human Methylation Atlas summary regions and enhancers
 ileumWangCellType                          Ileum cells binned by cell type from Wang et al 2020
 ileumWangDonor                             Ileum cells binned by organ donor from Wang et al 2020
+indigenomes                                SNV Frequencies: IndiGenomes India - 1,029 samples
 interactions                               Protein Interactions from Curated Databases and Text-Mining
 intronEst                                  Human ESTs That Have Been Spliced
 iscaComposite                              Clinical Genome Resource (ClinGen) CNVs
@@ -791,7 +898,7 @@ kidneyStewartDetailedCellType              Kidney RNA binned by detailed cell ty
 kidneyStewartExperiment                    Kidney RNA binned by Experiment from Stewart et al 2019
 kidneyStewartProject                       Kidney RNA binned by project from Stewart et al 2019
 knownAlt                                   Alternative Splicing, Alternative Promoter and Similar Events in UCSC Genes
-knownGene                                  GENCODE V49
+knownGene                                  GENCODE V50
 knownGeneV36                               GENCODE V36
 knownGeneV38                               GENCODE V38
 knownGeneV39                               GENCODE V39
@@ -801,6 +908,8 @@ knownGeneV45                               GENCODE V45
 knownGeneV46                               GENCODE V46
 knownGeneV47                               GENCODE V47
 knownGeneV48                               GENCODE V48
+knownGeneV49                               GENCODE V49
+kova                                       SNV Frequencies: KOVA Korea - 5305 samples, 1.9k WGS+3.4k WES
 liftHg19                                   UCSC LiftOver and NCBI ReMap: Genome alignments to convert annotations to hg19
 lincRNAsAllCellTypeTopView                 lincRNA RNA-Seq reads expression abundances
 lincRNAsTranscripts                        lincRNA and TUCP transcripts
@@ -811,6 +920,12 @@ lovdComp                                   LOVD: Leiden Open Variation Database 
 lrg                                        Locus Reference Genomic (LRG) / RefSeqGene Sequences Mapped to Dec. 2013
                                            (GRCh38/hg38) Assembly
 lrgTranscriptAli                           Locus Reference Genomic (LRG) / RefSeqGene Fixed Transcript Annotations
+lrSv1kgOnt                                 Structural Variants from 1,019 1000 Genomes samples (Vienna ONT; Schloissnig et
+                                           al. 2025)
+lrSv1kLin                                  Structural Variants from 1,218 1000 Genomes samples (long-read merge; Lin et
+                                           al.)
+lrSvAll                                    All long-read SVs merged across subtracks by exact position, with per-database
+                                           AC
 lungTravaglini2020CellType10x              Lung cells 10x method binned by merged cell type from Travaglini et al 2020
 lungTravaglini2020CellTypeFacs             Lung cells FACS method binned by merged cell type from Travaglini et al 2020
 lungTravaglini2020Compartment10x           Lung cells 10x method binned by compartment from Travaglini et al 2020
@@ -832,25 +947,52 @@ lungTravaglini2020OrganFacs                Lung cells FACS method binned by orga
 lungTravaglini2020Sample10x                Lung cells 10x method binned by sample from Travaglini et al 2020
 lungTravaglini2020SampleFacs               Lung cells FACS method binned by sample from Travaglini et al 2020
 mane                                       MANE Select Plus Clinical: Representative transcript from RefSeq &amp; GENCODE
-mastermind                                 Genomenon Mastermind Variants extracted from full text publications
 mavedb_align_composite                     MaveDB Experiment Sequence Alignments
 mavedb_maps                                Variant Effect Maps from MaveDB
 Max_counts_multiwig                        FANTOM5: Max counts of CAGE reads
+meiEul1db                                  euL1db: curated L1-HS insertion polymorphisms (Mir 2015)
+meiEul1dbRef                               euL1db: L1-HS copies present in the reference genome (Mir 2015)
+meiHgsvc3                                  Mobile element insertions in 65 HGSVC3 long-read assembled samples
+meiHmeid                                   Mobile element insertions in 5,675 NyuWa + 1000 Genomes samples (HMEID v1.1)
+meiSwegen                                  Mobile element insertions in 1,000 SweGen Swedish samples (MELT, lifted from
+                                           GRCh37)
+metamorf                                   ncORFs: MetamORF - meta-database of non-canonical ORFs
+methaDory                                  MethaDory: CpG probes of published DNA methylation episignatures
 mexbb                                      Phased Variants: Mexico Biobank 6k Array
 mgcFullMrna                                Mammalian Gene Collection Full ORF mRNAs
+mgrb                                       SNV Frequencies: Australia Medical Genome Reference Bank - 4,011 WGS
 microsat                                   Microsatellites - Di-nucleotide and Tri-nucleotide Repeats
 miRnaAtlas                                 Tissue-Specific microRNA Expression from Two Individuals
 mitoMap                                    MITOMAP: A human mitochondrial genome database
+mprabase                                   MPRAs: MPRA Base Enhancer Elements
+mpraVarDb                                  MPRAs: MPRAVarDB - MPRA-tested Regulatory Variant Effects
 mrna                                       Human mRNAs from GenBank
 muscleDeMicheliCellType                    Muscle RNA binned by cell type from De Micheli et al 2020
 muscleDeMicheliSample                      Muscle RNA binned by biosample from De Micheli et al 2020
 mutScore                                   MutScore: Variant clustering in 3D protein structures
+mxbFreq                                    SNV Frequencies: Mexico Biobank - 6,011 individuals, genotyping array
 neanderthal                                Ancient Hominids: Arcseqhub Neanderthal VCF Variants
 nestedRepeats                              Fragments of Interrupted Repeats Joined by RepeatMasker ID
+nmdDetectiveA                              NMDetective-A: Random forest prediction of NMD efficiency (Lindeboom 2016)
+nmdDetectiveAi                             NMDetective-AI: Deep-learning NMD efficiency prediction per position (MANE
+                                           Select only)
+nmdDetectiveAiBed                          NMDetective-AI: Per-stop-gain predictions for every codon (MANE Select only)
+nmdDetectiveA_ptc                          NMDetective-A: Random forest NMD efficiency for first out-of-frame PTC
+nmdDetectiveB                              NMDetective-B: Decision tree prediction of NMD efficiency (Lindeboom 2016)
+nmdDetectiveB_ptc                          NMDetective-B: Decision tree NMD efficiency for first out-of-frame PTC
+nmdEscGencode                              NMD escape predictions: Gencode transcripts
+nmdEscMane                                 NMD escape predictions: MANE Select Plus Clinical transcripts
+nmdEscNcbiRefSeq                           NMD escape predictions: NCBI RefSeq Curated transcripts
+noyvertSv                                  Structural Variants from 888 1000 Genomes samples (Boehringer ONT; Noyvert et
+                                           al. 2025)
+npm                                        SNV Frequencies: NPM Singapore - 9,770 WGS samples
 nuMtSeq                                    Nuclear mitochondrial DNA segments
+nuorfdb                                    ncORFs: nuORFdb - non-canonical ORFs from nuORFdb v1.2
 omimAvSnp                                  OMIM Allelic Variant Phenotypes
 omimGene2                                  OMIM Gene Phenotypes - Dark Green Can Be Disease-causing
 omimLocation                               OMIM Cytogenetic Loci Phenotypes - Gene Unknown
+openprot                                   ncORFs: OpenProt - alternative and reference proteins v2.2
+openprotMs                                 ncORFs: OpenProt - proteins with at least 2 MS peptides v2.2
 oreganno                                   Regulatory elements from ORegAnno
 orfeomeMrna                                ORFeome Collaboration Gene Clones
 orphadata                                  Orphadata: Aggregated Data From Orphanet
@@ -861,7 +1003,6 @@ pancreasBaronDonor                         Pancreas cells binned by organ donor 
 panelApp                                   Genomics England and Australia PanelApp Diagnostics
 panmask151b                                Panmask Easy 151b Regions: High accuracy for variant calling
 patchesPsl                                 GRC Patches: Alt Haplotypes and Fix Sequences
-pbsv                                       CoLoRSdb long-read structural variants
 placentalChainNet                          Non-primate Placental Mammal Genomes, Chain and Net Alignments
 placentaVentoTormoCellDetailed10x          Placenta and decidua cells binned by detailed cell type 10x from Vento-Tormo et
                                            al 2018
@@ -881,9 +1022,24 @@ placentaVentoTormoMatFetSs2                Placenta and decidua cells binned by 
 placentaVentoTormoStage10x                 Placenta and decidua cells binned by placental stage 10x from Vento-Tormo et al
                                            2018
 platinumGenomes                            Platinum genome variants
+popEve                                     popEVE proteome-wide missense deleteriousness scores
+primateAi                                  PrimateAI-3D Pathogenicity Predictions for Missense Variants
 primateChainNet                            Primate Genomes, Chain and Net Alignments
 problematic                                Problematic/special genomic regions for sequencing or very variable regions
 problematicGIAB                            Difficult regions from GIAB via NCBI
+proCapNet_A673_contrib                     A673 (ENCSR072YCM) ProCapNet sequence-contribution scores
+proCapNet_A673_pred                        A673 (ENCSR072YCM) ProCapNet predicted PRO-cap
+proCapNet_Caco-2_contrib                   Caco-2 (ENCSR182QNJ) ProCapNet sequence-contribution scores
+proCapNet_Caco-2_pred                      Caco-2 (ENCSR182QNJ) ProCapNet predicted PRO-cap
+proCapNet_Calu3_contrib                    Calu3 (ENCSR797DEF) ProCapNet sequence-contribution scores
+proCapNet_Calu3_pred                       Calu3 (ENCSR797DEF) ProCapNet predicted PRO-cap
+proCapNet_HUVEC_contrib                    HUVEC (ENCSR801ECP) ProCapNet sequence-contribution scores
+proCapNet_HUVEC_pred                       HUVEC (ENCSR801ECP) ProCapNet predicted PRO-cap
+proCapNet_K562_contrib                     K562 (ENCSR740IPL) ProCapNet sequence-contribution scores
+proCapNet_K562_pred                        K562 (ENCSR740IPL) ProCapNet predicted PRO-cap
+proCapNet_MCF10A_contrib                   MCF10A (ENCSR860TYZ) ProCapNet sequence-contribution scores
+proCapNet_MCF10A_pred                      MCF10A (ENCSR860TYZ) ProCapNet predicted PRO-cap
+promoterAi                                 PromoterAI Promoter Variant Impact Scores (zoom for exact score)
 pseudogenes                                Pseudogenes and Parents
 pubtator                                   dbSNP variants and other genetic variants grounded to dbSNP by tmVar; collected
                                            by PubTator3
@@ -904,9 +1060,15 @@ revel                                      REVEL Pathogenicity Score for single-
                                            score)
 rmsk                                       Repeating Elements by RepeatMasker
 robustPeaks                                FANTOM5: DPI peak, robust set
+saudi                                      SNV Frequencies: Saudi Genome Project - 302 WGS samples
 scaffolds                                  GRCh38 Defined Scaffold Identifiers
+schema                                     SNV Frequencies: SCHEMA Schizophrenia Exome Meta-Analysis - WES 24k cases, 97k
+                                           controls
+sfariSparkExomes                           SNV Frequencies: SFARI SPARK - 140k WES
+sfariSparkWgs                              SNV Frequencies: SFARI SPARK iWGS v1.1 Pilot - 12,519 WGS
 sgdp                                       Phased Variants: Simons Genome Diversity Project - 279 samples, unmixed
                                            populations
+sgdpFreq                                   SNV Frequencies: Simons Genome Diversity Project - 279 WGS, 142 populations
 sgpGene                                    SGP Gene Predictions Using Mouse/Human Homology
 sibGene                                    Swiss Institute of Bioinformatics Gene Predictions from mRNA and ESTs
 sibTxGraph                                 Alternative Splicing Graph from Swiss Institute of Bioinformatics
@@ -952,6 +1114,8 @@ spliceVarDb                                SpliceVarDB: Experimentally validated
 spMut                                      UniProt/SwissProt Amino Acid Substitutions
 strchive                                   STRchive Disease-Associated Short Tandem Repeat Loci
 stsMap                                     STS Markers on Genetic (blue) and Radiation Hybrid (black) Maps
+svatalogSnv                                SNV Frequencies: GWAS SVatalog - 101 samples, 10X Genomics linked-read SNPs
+swefreq                                    SNV Frequencies: Sweden SweGen - 1k WGS
 tabulaSapiensFullDetails                   Tabula sapiens full details view
 tabulaSapiensTissueCellType                Tabula sapiens RNA by tissue and cell type
 tcgaGeneExpr                               Gene Expression in 33 TCGA Cancer Tissues (GENCODE v23)
@@ -960,8 +1124,14 @@ TFrPeakClusters                            Transcription Factor Representative P
                                            biosamples) from ENCODE 4
 tgpPhase3                                  1000 Genomes Phase 3 Integrated Variant Calls from IGSR: SNVs and Indels
 tgpTrios                                   Thousand Genomes Project Family VCF Trios
+tishkoff180                                SNV Frequencies: 180 WGS from 12 Indigenous African Populations (Fan 2023)
+tommo60kjpn                                SNV Frequencies: Japan 61k - ToMMo SNV+Indels
+tommoJpSv                                  Structural Variants from 333 Japanese samples (ToMMo, 111 trios)
 tommoStr                                   ToMMo 61KJPN Short Tandem Repeat Allele Counts (Expansion Hunter)
+topmed                                     SNV Frequencies: NHLBI TOPMed - 151k WGS
 Total_counts_multiwig                      FANTOM5: Total counts of CAGE reads
+tpmi                                       SNV Frequencies: Taiwan Precision Medicine Initiative - Axiom TPM1 chip, Han
+                                           Chinese
 transMapEnsemblV5                          TransMap Ensembl and GENCODE Mappings Version 5
 transMapEstV5                              TransMap EST Mappings Version 5
 transMapRefSeqV5                           TransMap RefSeq Gene Mappings Version 5
@@ -974,16 +1144,26 @@ ucscGenePfam                               Pfam Domains in GENCODE Genes
 ucscRetroAli9                              Retroposed Genes V9, Including Pseudogenes
 ucscToINSDC                                Accession at INSDC - International Nucleotide Sequence Database Collaboration
 ucscToRefSeq                               RefSeq Accession
+ukbb                                       SNV Frequencies: UK Biobank Genotypes - 361k White British, Neale Lab Round 2
+                                           imputed
 ukbDepletion                               UK Biobank / deCODE Genetics Depletion Rank Score
 umap                                       Single-read and multi-read mappability by Umap
 uniprot                                    UniProt SwissProt/TrEMBL Protein Annotations
 unusualcons                                Unusually Conserved Regions - Ultracons, HARs, etc.
+utrAnnotUorfs                              ncORFs: Upstream Open Reading Frames (uORFs) from UTRannotator
 varaico                                    Varaico Variants extracted from full text publications, titles, and abstracts
 varaicoSuppl                               Varaico Variants extracted from Supplementary Data
 varChat                                    enGenome VarChat: Literature match and variant's summary
+varFreqsAffected                           SNV Frequencies: variants in ~150,000 affected or case individuals (autism,
+                                           schizophrenia, rare disease cohorts)
+varFreqsArray                              SNV Frequencies: Genotyping-array cohorts combined (TPMI, Mexico Biobank, UK
+                                           Biobank imputed)
+varFreqsBackground                         SNV Frequencies: variants in ~1.5 million individuals from population cohorts
+                                           and unaffected or control arms
 vertebrateChainNet                         Non-placental Vertebrate Genomes, Chain and Net Alignments
 viennaVntr                                 1000 Genomes Vienna ONT VNTR Allele Statistics (VAMOS, 1,019 samples, long-read)
 vistaEnhancersBb                           VISTA Enhancers
+wbbc                                       SNV Frequencies: Westlake BioBank for Chinese - 4,480 WGS, 4 regional Han groups
 webstr                                     WebSTR Short Tandem Repeat Loci (EnsembleTR Panel, 1000 Genomes)
 wgEncodeGencodeV20                         Gene Annotations from GENCODE Version 20 (Ensembl 76)
 wgEncodeGencodeV22                         All GENCODE transcripts including comprehensive set V22
@@ -1014,11 +1194,20 @@ wgEncodeGencodeV46                         All GENCODE annotations from V46 (Ens
 wgEncodeGencodeV47                         All GENCODE annotations from V47 (Ensembl 113)
 wgEncodeGencodeV48                         All GENCODE annotations from V48 (Ensembl 114)
 wgEncodeGencodeV49                         All GENCODE annotations from V49 (Ensembl 115)
-wgEncodeReg4Epigenetics                    Peaks and signal from individual DNase-seq, ATAC-seq, histone ChIP-seq, or CTCF
-                                           ChIP-seq experiments from ENCODE 4
+wgEncodeGencodeV50                         All GENCODE annotations from V50 (Ensembl 116)
+wgEncodeReg4Atac                           Chromatin accessibility from ATAC-seq signal, averaged by organ/tissue
+wgEncodeReg4Dnase                          Chromatin accessibility from DNase-seq signal, averaged by organ/tissue
+wgEncodeReg4Epigenetics                    Peaks and signal from individual DNase, ATAC, histone, and CTCF experiments from
+                                           ENCODE 4
+wgEncodeReg4MarkCtcf                       CTCF binding signal from ChIP-seq, averaged by organ/tissue
+wgEncodeReg4MarkH3k27ac                    H3K27ac signal marking active enhancers and promoters, averaged by organ/tissue
+wgEncodeReg4MarkH3k4me3                    H3K4me3 signal marking active and poised promoters, averaged by organ/tissue
 wgEncodeReg4RnaSeq                         Signal from individual total RNA-seq experiments from ENCODE 4
 wgEncodeReg4TfChip                         Peaks and signal from individual transcription factor ChIP experiments from
                                            ENCODE 4
+wgEncodeReg4TfPeaks                        Transcription factor representative peak (rPeak) clusters from ENCODE 4
+wgEncodeReg4Txn                            Strand-specific transcription signal measured by total RNA-seq, averaged by
+                                           organ/tissue
 wgEncodeRegDnase                           DNase I Hypersensitivity in 95 cell types from ENCODE
 wgEncodeRegDnaseClustered                  DNase I Hypersensitivity Peak Clusters from ENCODE (95 cell types)
 wgEncodeRegDnaseWig                        DNase I Hypersensitivity Signal Colored by Similarity from ENCODE
@@ -1034,12 +1223,12 @@ xenoRefGene                                Non-Human RefSeq Genes</code></pre>
 </div>
 </div>
 <p>Search track using search terms:</p>
-<div id="cell-22" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:19.540226Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:19.540117Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:24.033683Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:24.033195Z&quot;}}" data-execution_count="11">
+<div id="cell-22" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:29.429486Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:29.429375Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:31.547935Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:31.547509Z&quot;}}" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>search_ucsc_tracks(<span class="st">'gene'</span>, <span class="st">'refseq'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>xenoRefGene                     Non-Human RefSeq Genes
-wgEncodeReg4Epigenetics         Peaks and signal from individual DNase-seq, ATAC-seq, histone ChIP-seq, or CTCF
-                                ChIP-seq experiments from ENCODE 4
+wgEncodeReg4Epigenetics         Peaks and signal from individual DNase, ATAC, histone, and CTCF experiments from
+                                ENCODE 4
 ucscToRefSeq                    RefSeq Accession
 ucscGenePfam                    Pfam Domains in GENCODE Genes
 transMapRefSeqV5                TransMap RefSeq Gene Mappings Version 5
@@ -1050,6 +1239,8 @@ refSeqFuncElems                 NCBI RefSeq Functional Elements
 refSeqComposite                 RefSeq genes from NCBI
 pseudogenes                     Pseudogenes and Parents
 omimGene2                       OMIM Gene Phenotypes - Dark Green Can Be Disease-causing
+nmdEscNcbiRefSeq                NMD escape predictions: NCBI RefSeq Curated transcripts
+knownGeneV49                    GENCODE V49
 knownGeneV48                    GENCODE V48
 knownGeneV47                    GENCODE V47
 knownGeneV46                    GENCODE V46
@@ -1059,7 +1250,7 @@ knownGeneV43                    GENCODE V43
 knownGeneV39                    GENCODE V39
 knownGeneV38                    GENCODE V38
 knownGeneV36                    GENCODE V36
-knownGene                       GENCODE V49
+knownGene                       GENCODE V50
 gtexGeneV8                      Gene Expression in 54 tissues from GTEx RNA-seq of 17382 samples, 948 donors
                                 (V8, Aug 2019)
 gtexGene                        Gene Expression in 53 tissues from GTEx RNA-seq of 8555 samples (570 donors)
@@ -1079,7 +1270,7 @@ augustusGene                    AUGUSTUS ab initio gene predictions v3.1</code><
 </div>
 </div>
 <p>Download a named track as a dataframe. Note that not all data can be made to fit into a dataframe.</p>
-<div id="cell-24" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:24.035202Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:24.035087Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:24.888988Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:24.888197Z&quot;}}" data-execution_count="12">
+<div id="cell-24" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:31.549256Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:31.549169Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:32.483570Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:32.482878Z&quot;}}" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> get_ucsc_track(<span class="st">'recombAvg'</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, </span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                    chrom<span class="op">=</span><span class="st">'chrX'</span>, start<span class="op">=</span><span class="dv">50_000_000</span>, end<span class="op">=</span><span class="dv">70_000_000</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                       )  </span>

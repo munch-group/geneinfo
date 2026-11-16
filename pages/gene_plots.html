@@ -288,6 +288,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/liftover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lifting coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Caching</span></a>
   </div>
@@ -330,7 +336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:37.628745Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:37.628628Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:39.105402Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:39.104964Z&quot;}}" data-tags="[]" data-execution_count="2">
+<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:42.152836Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:42.152715Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:43.633665Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:43.633125Z&quot;}}" data-tags="[]" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -348,44 +354,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'svg'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 
-<style>
-.widget-label,
-.widget-html,
-.widget-button,
-.widget-dropdown,
-.widget-text,
-.widget-textarea {
-    color: #CCCCCC !important;  /* Set to desired color */
-    font-size: 10px !important;      /* Font size */
-
-}
-div.widget-html-content > progress { /* Outer container */
-    height: 10px !important;
-
-}
-div.jp-OutputArea-output td.output_html { /* tqdm HTML output area */
-    height: 5px !important;
-}
-div.progress { /* Jupyter Notebook (classic) */
-    height: 5px !important;
-    min-height: 5px !important;
-    margin-top: 12px !important;    
-}
-div.progress-bar { /* Inner bar */
-    height: 5px !important;
-    min-height: 5px !important;
-    line-height: 5px !important;
-    color: 'white' !important;
-    padding-bottom: 0px !important;    
-}
-
-table {
-    font-variant-numeric: tabular-nums; 
-}
-</style>
-</div>
-<div class="cell-output cell-output-display">
-
+        <style>
+        :root {
+            --vscodenb-foreground: var(--vscode-editor-foreground, var(--jp-content-font-color1, #1f1f1f));
+            --jp-widgets-color: var(--vscodenb-foreground);
+        }
+        </style>
+        
         <style>
         .cell-output-ipywidget-background {
             background-color: transparent !important;
@@ -393,20 +368,27 @@ table {
        .jp-OutputArea-output {
            background-color: transparent;
         }  
-        /*
-        :root {
-            --jp-widgets-color: var(--vscode-editor-foreground);
-            --jp-widgets-font-size: var(--vscode-editor-font-size);
-        }  
-        */
         /* tqdm styling: */
         .widget-label,
         .widget-html,
-        .widget-button,
         .widget-dropdown,
         .widget-text,
         .widget-textarea {
             font-size: 10px !important;      /* Font size */
+        }
+        /* Not !important, so widgets.Button(style={'font_size': ...}), which
+           sets an inline style, still applies. The element selector outranks
+           ipywidgets' own .jupyter-button rule. */
+        button.widget-button {
+            font-size: 10px;
+        }
+        /* tqdm progress bar labels ("47%" and "470/1000 [00:03<00:03, ...]") */
+        .widget-label,
+        .widget-html,
+        .widget-htmlmath,
+        .widget-html-content,
+        .widget-htmlmath-content {
+            color: var(--vscodenb-foreground) !important;
         }
         div.widget-html-content > progress { /* Outer container */
             height: 10px !important;
@@ -424,16 +406,82 @@ table {
             height: 5px !important;
             min-height: 5px !important;
             line-height: 5px !important;
-            color: 'white' !important;
+            color: white !important;
             padding-bottom: 0px !important;    
         }
+        table {
+            font-variant-numeric: tabular-nums; 
+        }                     
+        </style>                          
+        
+</div>
+<div class="cell-output cell-output-display">
+
+        <style>
+        :root {
+            --vscodenb-foreground: var(--vscode-editor-foreground, var(--jp-content-font-color1, #1f1f1f));
+            --jp-widgets-color: var(--vscodenb-foreground);
+        }
+        </style>
+        
+        <style>
+        .cell-output-ipywidget-background {
+            background-color: transparent !important;
+        }
+       .jp-OutputArea-output {
+           background-color: transparent;
+        }  
+        /* tqdm styling: */
+        .widget-label,
+        .widget-html,
+        .widget-dropdown,
+        .widget-text,
+        .widget-textarea {
+            font-size: 10px !important;      /* Font size */
+        }
+        /* Not !important, so widgets.Button(style={'font_size': ...}), which
+           sets an inline style, still applies. The element selector outranks
+           ipywidgets' own .jupyter-button rule. */
+        button.widget-button {
+            font-size: 10px;
+        }
+        /* tqdm progress bar labels ("47%" and "470/1000 [00:03<00:03, ...]") */
+        .widget-label,
+        .widget-html,
+        .widget-htmlmath,
+        .widget-html-content,
+        .widget-htmlmath-content {
+            color: var(--vscodenb-foreground) !important;
+        }
+        div.widget-html-content > progress { /* Outer container */
+            height: 10px !important;
+        
+        }
+        div.jp-OutputArea-output td.output_html { /* tqdm HTML output area */
+            height: 5px !important;
+        }
+        div.progress { /* Jupyter Notebook (classic) */
+            height: 5px !important;
+            min-height: 5px !important;
+            margin-top: 12px !important;    
+        }
+        div.progress-bar { /* inner bar */
+            height: 5px !important;
+            min-height: 5px !important;
+            line-height: 5px !important;
+            color: white !important;
+            padding-bottom: 0px !important;    
+        }
+        table {
+            font-variant-numeric: tabular-nums; 
+        }                     
         </style>                          
         
 </div>
 </div>
 <section id="plot-data-over-gene-annotation" class="level2">
 <h2 class="anchored" data-anchor-id="plot-data-over-gene-annotation">Plot data over gene annotation</h2>
-<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:39.118439Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:39.118255Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:39.135916Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:39.135466Z&quot;}}" data-execution_count="3">
+<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:43.635078Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:43.634932Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:43.648076Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:43.647560Z&quot;}}" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># x = np.linspace(1, 1520300000, 100000)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># y = np.random.random(100000)</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># dummy manhattan data</span></span>
@@ -442,7 +490,7 @@ table {
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> rng.exponential(scale<span class="op">=</span><span class="dv">1</span>, size<span class="op">=</span>x.size)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong>Standard plot:</strong></p>
-<div id="cell-6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:39.137219Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:39.137139Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:39.425505Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:39.425093Z&quot;}}" data-execution_count="4">
+<div id="cell-6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:43.649369Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:43.649298Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:44.774490Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:44.773923Z&quot;}}" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> gene_plot</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg38'</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
@@ -456,7 +504,7 @@ table {
 </div>
 </div>
 <p><strong>Same on older hg19 assembly:</strong></p>
-<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:39.437197Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:39.437022Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:39.626985Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:39.626436Z&quot;}}" data-execution_count="5">
+<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:44.784865Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:44.784625Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:45.795476Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:45.795067Z&quot;}}" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -469,7 +517,7 @@ table {
 </div>
 </div>
 <p><strong>Two subplots for data:</strong></p>
-<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:39.637698Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:39.637591Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:39.913754Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:39.913334Z&quot;}}" data-execution_count="6">
+<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:45.803831Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:45.803730Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:46.120994Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:46.120431Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ax1, ax2 <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, return_axes<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ax1.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>ax2.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
@@ -483,7 +531,7 @@ table {
 </div>
 </div>
 <p><strong>Three subplots for data and adjusted aspect ratio:</strong></p>
-<div id="cell-12" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:39.934377Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:39.934261Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:40.312800Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:40.312293Z&quot;}}" data-execution_count="7">
+<div id="cell-12" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:46.137333Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:46.137208Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:46.492433Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:46.491950Z&quot;}}" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ax1, ax2, ax3 <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg38'</span>, return_axes<span class="op">=</span><span class="dv">3</span>, aspect<span class="op">=</span><span class="fl">0.5</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ax1.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ax2.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
@@ -498,7 +546,7 @@ table {
 </div>
 </div>
 <p><strong>Highlight a list of genes:</strong></p>
-<div id="cell-14" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:40.342372Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:40.342240Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:40.568256Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:40.567810Z&quot;}}" data-execution_count="8">
+<div id="cell-14" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:46.517652Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:46.517461Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:46.716684Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:46.716312Z&quot;}}" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>[<span class="st">'ATRX'</span>, <span class="st">'ATP7A'</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>sns.despine(ax<span class="op">=</span>ax) <span class="co"># make it look nicer</span></span>
@@ -513,7 +561,7 @@ table {
 </div>
 <p><strong>Combinatorial hightlighting:</strong></p>
 <p>Combining text weight, style, color and bbox:</p>
-<div id="cell-16" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:40.578490Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:40.578385Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:40.591963Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:40.591498Z&quot;}}" data-execution_count="9">
+<div id="cell-16" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:46.724804Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:46.724713Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:46.736708Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:46.736300Z&quot;}}" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>highlight <span class="op">=</span> defaultdict(<span class="bu">dict</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'ATRX'</span>, <span class="st">'COX7B'</span>, <span class="st">'PGK1'</span>]:</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(weight<span class="op">=</span><span class="st">'bold'</span>))</span>
@@ -524,7 +572,7 @@ table {
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'PGK1'</span>, <span class="st">'ATRX'</span>]:</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(bbox<span class="op">=</span><span class="bu">dict</span>(edgecolor<span class="op">=</span><span class="st">'black'</span>, facecolor<span class="op">=</span><span class="st">'none'</span>, linewidth<span class="op">=</span><span class="fl">0.2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:40.593234Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:40.593136Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:40.783957Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:40.783528Z&quot;}}" data-execution_count="10">
+<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:46.738000Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:46.737928Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:46.937262Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:46.936849Z&quot;}}" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>highlight)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>sns.despine(ax<span class="op">=</span>ax) <span class="co"># make it look nicer</span></span>
@@ -537,7 +585,7 @@ table {
 </div>
 </div>
 </div>
-<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:40.794176Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:40.794071Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:40.807516Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:40.807068Z&quot;}}" data-execution_count="11">
+<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:46.947366Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:46.947249Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:46.958908Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:46.958541Z&quot;}}" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>highlight <span class="op">=</span> defaultdict(<span class="bu">dict</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'COX7B'</span>]:</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(weight<span class="op">=</span><span class="st">'bold'</span>))</span>
@@ -548,7 +596,7 @@ table {
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gene <span class="kw">in</span> [<span class="st">'ATRX'</span>, <span class="st">'TAF9B'</span>]:</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    highlight[gene].update(<span class="bu">dict</span>(bbox<span class="op">=</span><span class="bu">dict</span>(edgecolor<span class="op">=</span><span class="st">'black'</span>, facecolor<span class="op">=</span><span class="st">'none'</span>, linewidth<span class="op">=</span><span class="fl">0.2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-19" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:40.808818Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:40.808729Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:41.010551Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:41.010147Z&quot;}}" data-execution_count="12">
+<div id="cell-19" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:46.960203Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:46.960131Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:47.157329Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:47.156874Z&quot;}}" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>highlight)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>)</span>
@@ -563,7 +611,7 @@ table {
 </div>
 </div>
 <p><strong>Larger with colors:</strong></p>
-<div id="cell-21" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:41.020813Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:41.020703Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:41.386448Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:41.385959Z&quot;}}" data-execution_count="13">
+<div id="cell-21" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:47.165356Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:47.165257Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:47.603222Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:47.602770Z&quot;}}" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, <span class="st">'hg19'</span>, highlight<span class="op">=</span>highlight, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>))</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, s<span class="op">=</span><span class="dv">2</span>, c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'viridis_r'</span>)</span>
@@ -578,7 +626,7 @@ table {
 </div>
 </div>
 <p><strong>Other features:</strong></p>
-<div id="cell-23" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:41.401106Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:41.400999Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:41.597134Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:41.596649Z&quot;}}" data-execution_count="14">
+<div id="cell-23" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:47.614576Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:47.614472Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:47.890543Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:47.890062Z&quot;}}" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> gene_plot(<span class="st">'chrX'</span>, <span class="dv">76500000</span>, <span class="dv">77500000</span>, assembly<span class="op">=</span><span class="st">'hg19'</span>,</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                  figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>),          <span class="co"># larger figure</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                  exact_exons<span class="op">=</span><span class="va">False</span>,        <span class="co"># allow exons to be wide enough to be visible on large plots</span></span>

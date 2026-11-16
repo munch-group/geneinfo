@@ -84,9 +84,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -288,6 +285,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/liftover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lifting coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Caching</span></a>
   </div>
@@ -324,7 +327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="87621660" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-22T10:35:30.739425Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-22T10:35:30.739325Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-22T10:35:36.466647Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-22T10:35:36.466092Z&quot;}}" data-execution_count="1">
+<div id="87621660" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:32:43.382470Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:32:43.382247Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:32:48.612855Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:32:48.612418Z&quot;}}" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pathlib</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -337,44 +340,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>sheet <span class="op">=</span> GeneListCollection(google_sheet<span class="op">=</span><span class="st">'1JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 
-<style>
-.widget-label,
-.widget-html,
-.widget-button,
-.widget-dropdown,
-.widget-text,
-.widget-textarea {
-    color: #CCCCCC !important;  /* Set to desired color */
-    font-size: 10px !important;      /* Font size */
-
-}
-div.widget-html-content > progress { /* Outer container */
-    height: 10px !important;
-
-}
-div.jp-OutputArea-output td.output_html { /* tqdm HTML output area */
-    height: 5px !important;
-}
-div.progress { /* Jupyter Notebook (classic) */
-    height: 5px !important;
-    min-height: 5px !important;
-    margin-top: 12px !important;    
-}
-div.progress-bar { /* Inner bar */
-    height: 5px !important;
-    min-height: 5px !important;
-    line-height: 5px !important;
-    color: 'white' !important;
-    padding-bottom: 0px !important;    
-}
-
-table {
-    font-variant-numeric: tabular-nums; 
-}
-</style>
-</div>
-<div class="cell-output cell-output-display">
-
+        <style>
+        :root {
+            --vscodenb-foreground: var(--vscode-editor-foreground, var(--jp-content-font-color1, #1f1f1f));
+            --jp-widgets-color: var(--vscodenb-foreground);
+        }
+        </style>
+        
         <style>
         .cell-output-ipywidget-background {
             background-color: transparent !important;
@@ -382,20 +354,27 @@ table {
        .jp-OutputArea-output {
            background-color: transparent;
         }  
-        /*
-        :root {
-            --jp-widgets-color: var(--vscode-editor-foreground);
-            --jp-widgets-font-size: var(--vscode-editor-font-size);
-        }  
-        */
         /* tqdm styling: */
         .widget-label,
         .widget-html,
-        .widget-button,
         .widget-dropdown,
         .widget-text,
         .widget-textarea {
             font-size: 10px !important;      /* Font size */
+        }
+        /* Not !important, so widgets.Button(style={'font_size': ...}), which
+           sets an inline style, still applies. The element selector outranks
+           ipywidgets' own .jupyter-button rule. */
+        button.widget-button {
+            font-size: 10px;
+        }
+        /* tqdm progress bar labels ("47%" and "470/1000 [00:03<00:03, ...]") */
+        .widget-label,
+        .widget-html,
+        .widget-htmlmath,
+        .widget-html-content,
+        .widget-htmlmath-content {
+            color: var(--vscodenb-foreground) !important;
         }
         div.widget-html-content > progress { /* Outer container */
             height: 10px !important;
@@ -413,14 +392,80 @@ table {
             height: 5px !important;
             min-height: 5px !important;
             line-height: 5px !important;
-            color: 'white' !important;
+            color: white !important;
             padding-bottom: 0px !important;    
         }
+        table {
+            font-variant-numeric: tabular-nums; 
+        }                     
+        </style>                          
+        
+</div>
+<div class="cell-output cell-output-display">
+
+        <style>
+        :root {
+            --vscodenb-foreground: var(--vscode-editor-foreground, var(--jp-content-font-color1, #1f1f1f));
+            --jp-widgets-color: var(--vscodenb-foreground);
+        }
+        </style>
+        
+        <style>
+        .cell-output-ipywidget-background {
+            background-color: transparent !important;
+        }
+       .jp-OutputArea-output {
+           background-color: transparent;
+        }  
+        /* tqdm styling: */
+        .widget-label,
+        .widget-html,
+        .widget-dropdown,
+        .widget-text,
+        .widget-textarea {
+            font-size: 10px !important;      /* Font size */
+        }
+        /* Not !important, so widgets.Button(style={'font_size': ...}), which
+           sets an inline style, still applies. The element selector outranks
+           ipywidgets' own .jupyter-button rule. */
+        button.widget-button {
+            font-size: 10px;
+        }
+        /* tqdm progress bar labels ("47%" and "470/1000 [00:03<00:03, ...]") */
+        .widget-label,
+        .widget-html,
+        .widget-htmlmath,
+        .widget-html-content,
+        .widget-htmlmath-content {
+            color: var(--vscodenb-foreground) !important;
+        }
+        div.widget-html-content > progress { /* Outer container */
+            height: 10px !important;
+        
+        }
+        div.jp-OutputArea-output td.output_html { /* tqdm HTML output area */
+            height: 5px !important;
+        }
+        div.progress { /* Jupyter Notebook (classic) */
+            height: 5px !important;
+            min-height: 5px !important;
+            margin-top: 12px !important;    
+        }
+        div.progress-bar { /* inner bar */
+            height: 5px !important;
+            min-height: 5px !important;
+            line-height: 5px !important;
+            color: white !important;
+            padding-bottom: 0px !important;    
+        }
+        table {
+            font-variant-numeric: tabular-nums; 
+        }                     
         </style>                          
         
 </div>
 </div>
-<div id="9ef334ef" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-22T10:35:36.468246Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-22T10:35:36.468122Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-22T10:35:36.841130Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-22T10:35:36.840568Z&quot;}}" data-execution_count="2">
+<div id="9ef334ef" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:32:48.614842Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:32:48.614709Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:32:49.092861Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:32:49.092319Z&quot;}}" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> upset</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>genes <span class="op">=</span> sheet.get(<span class="st">'ari_nonPUR'</span>)</span>
@@ -455,13 +500,6 @@ table {
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    wrap<span class="op">=</span><span class="va">True</span>,</span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#fig.savefig("out.pdf", bbox_inches="tight")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><a href="upset_files/figure-html/cell-3-output-1.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="upset_files/figure-html/cell-3-output-1.svg" class="img-fluid figure-img"></a></p>
-</figure>
-</div>
-</div>
 </div>
 
 
@@ -956,38 +994,6 @@ table {
   </div>
 </nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
-(function() {
-  let previousOnload = window.onload;
-  window.onload = () => {
-    if (previousOnload) {
-      previousOnload();
-    }
-    lightboxQuarto.on('slide_before_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      const href = trigger.getAttribute('href');
-      if (href !== null) {
-        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-        if (imgEl !== null) {
-          const srcAttr = imgEl.getAttribute("src");
-          if (srcAttr && srcAttr.startsWith("data:")) {
-            slideConfig.href = srcAttr;
-          }
-        }
-      } 
-    });
-  
-    lightboxQuarto.on('slide_after_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(slideNode);
-      }
-    });
-  
-  };
-  
-})();
-          </script>
 
 
 

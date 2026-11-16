@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../pages/gene_lists.html" rel="prev">
+<link href="../pages/liftover.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
@@ -281,6 +281,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/liftover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lifting coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Caching</span></a>
   </div>
@@ -329,7 +335,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="clearing-the-cache" class="level2">
 <h2 class="anchored" data-anchor-id="clearing-the-cache">Clearing the cache</h2>
 <p>To clear that cache use:</p>
-<div id="ce57cdd5-2070-4a40-9bf0-69916099f1de" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T06:59:24.486181Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T06:59:24.486060Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T06:59:26.371091Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T06:59:26.370590Z&quot;}}" data-execution_count="2">
+<div id="ce57cdd5-2070-4a40-9bf0-69916099f1de" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:29:41.322399Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:29:41.322302Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:29:43.240884Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:29:43.240447Z&quot;}}" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.utils <span class="im">as</span> utils</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>utils.clear_cache()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -338,15 +344,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="disabling-use-of-the-cache" class="level2">
 <h2 class="anchored" data-anchor-id="disabling-use-of-the-cache">Disabling use of the cache</h2>
 <p>To just disable its use for the current kernel, so all info is retrieved anew, use:</p>
-<div id="4a9fdd64-10d1-4e17-ac04-52b661246235" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T06:59:26.372875Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T06:59:26.372697Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T06:59:26.426028Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T06:59:26.425545Z&quot;}}" data-execution_count="3">
+<div id="4a9fdd64-10d1-4e17-ac04-52b661246235" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:29:43.242601Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:29:43.242457Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:29:43.257896Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:29:43.257525Z&quot;}}" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>utils.use_cache <span class="op">=</span> <span class="va">False</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To switch it back on:</p>
-<div id="6c35590f-931b-4e68-bb59-b5ba23e593da" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T06:59:26.427536Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T06:59:26.427447Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T06:59:26.439364Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T06:59:26.439000Z&quot;}}" data-execution_count="4">
+<div id="6c35590f-931b-4e68-bb59-b5ba23e593da" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:29:43.259349Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:29:43.259269Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:29:43.267838Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:29:43.267472Z&quot;}}" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>utils.use_cache <span class="op">=</span> <span class="va">True</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To temporarily disable for a block of code you can use:</p>
-<div id="8c3f0e09-7db5-4321-bc4c-1b6518228b73" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T06:59:26.440876Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T06:59:26.440784Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T06:59:26.451244Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T06:59:26.450874Z&quot;}}" data-execution_count="5">
+<div id="8c3f0e09-7db5-4321-bc4c-1b6518228b73" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:29:43.269113Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:29:43.269040Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:29:43.277728Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:29:43.277323Z&quot;}}" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> utils.cache_disabled():</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -354,7 +360,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="exposing-retrieval-of-information" class="level2">
 <h2 class="anchored" data-anchor-id="exposing-retrieval-of-information">Exposing retrieval of information</h2>
 <p>If you want to keep track of when cached information is used and when it is retrieved, you can set:</p>
-<div id="23429cbd-4292-4568-b812-28d10849df65" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T06:59:26.452632Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T06:59:26.452551Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T06:59:26.463025Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T06:59:26.462617Z&quot;}}" data-execution_count="6">
+<div id="23429cbd-4292-4568-b812-28d10849df65" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:29:43.278947Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:29:43.278877Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:29:43.287140Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:29:43.286709Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>utils.verbose_retrieval <span class="op">=</span> <span class="va">True</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>This will print a message to stderr each time data is retrieved.</p>
@@ -841,8 +847,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation" aria-label="Page">
   <div class="nav-page nav-page-previous">
-      <a href="../pages/gene_lists.html" class="pagination-link" aria-label="Gene lists">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Gene lists</span>
+      <a href="../pages/liftover.html" class="pagination-link" aria-label="Lifting coordinates">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Lifting coordinates</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

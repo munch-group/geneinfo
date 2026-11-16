@@ -285,6 +285,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/liftover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lifting coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Caching</span></a>
   </div>
@@ -327,14 +333,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:13:45.452125Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:13:45.451475Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:13:47.006717Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:13:47.006161Z&quot;}}" data-execution_count="1">
+<div id="cell-1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:32:51.149411Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:32:51.149289Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:32:52.775073Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:32:52.774064Z&quot;}}" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.genelist <span class="im">import</span> GeneList <span class="im">as</span> glist</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.plot <span class="im">import</span> venn</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="genelist" class="level2">
 <h2 class="anchored" data-anchor-id="genelist">GeneList</h2>
 <p>Long lists of gene names do not work well visually:</p>
-<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:13:47.008408Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:13:47.008217Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:13:48.443550Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:13:48.442929Z&quot;}}" data-execution_count="2">
+<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:32:52.778348Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:32:52.778117Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:32:54.159572Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:32:54.159015Z&quot;}}" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> glist([<span class="ss">f'gene</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">150</span>)]).name(<span class="st">'a'</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> glist([<span class="ss">f'gene</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">60</span>)]).name(<span class="st">'b'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> glist([<span class="ss">f'gene</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">30</span>, <span class="dv">100</span>)]).name(<span class="st">'c'</span>)</span>
@@ -350,7 +356,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:13:48.465973Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:13:48.465838Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:13:54.045956Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:13:54.045537Z&quot;}}" data-execution_count="3">
+<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:32:54.182299Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:32:54.182168Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:32:59.304710Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:32:59.304259Z&quot;}}" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>venn(b, c, d, e, cmap<span class="op">=</span><span class="st">'tab10'</span>, background<span class="op">=</span>a)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -360,7 +366,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:13:54.047391Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:13:54.047272Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:13:59.609681Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:13:59.609134Z&quot;}}" data-execution_count="4">
+<div id="cell-6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:32:59.305967Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:32:59.305885Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:33:04.367073Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:33:04.366619Z&quot;}}" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>venn(b, c, d, e, cmap<span class="op">=</span><span class="st">'tab10'</span>, background<span class="op">=</span>a, ncols<span class="op">=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -370,7 +376,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:13:59.611740Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:13:59.611608Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:14:03.307029Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:14:03.306524Z&quot;}}" data-execution_count="5">
+<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:33:04.368367Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:33:04.368276Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:33:07.668950Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:33:07.668520Z&quot;}}" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>venn(b, c, d, e, cmap<span class="op">=</span><span class="st">'tab10'</span>, background<span class="op">=</span>a, petals<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>

@@ -282,6 +282,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/liftover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lifting coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Caching</span></a>
   </div>
@@ -326,18 +332,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:09.999742Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:09.999643Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:11.611023Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:11.610597Z&quot;}}" data-tags="[]" data-execution_count="2">
+<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:30:31.090796Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:30:31.090708Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:30:32.816554Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:30:32.816117Z&quot;}}" data-tags="[]" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geneinfo.information <span class="im">as</span> gi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="conversion-from-ensembl-ids" class="level2">
 <h2 class="anchored" data-anchor-id="conversion-from-ensembl-ids">Conversion from ENSEMBL IDs:</h2>
-<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:11.612722Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:11.612560Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:11.669151Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:11.668678Z&quot;}}" data-execution_count="3">
+<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:30:32.818389Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:30:32.818208Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:30:41.358882Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:30:41.358438Z&quot;}}" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gi.ensembl2ncbi(<span class="st">'ENSG00000128573'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>93986</code></pre>
 </div>
 </div>
-<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:11.689796Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:11.689695Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:11.704461Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:11.704041Z&quot;}}" data-execution_count="4">
+<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:30:41.393080Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:30:41.392893Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:30:41.544830Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:30:41.544393Z&quot;}}" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gi.ensembl2symbol(<span class="st">'ENSG00000128573'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>'FOXP2'</code></pre>
@@ -346,13 +352,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="conversion-to-ensembl-ids" class="level2">
 <h2 class="anchored" data-anchor-id="conversion-to-ensembl-ids">Conversion to ENSEMBL IDs:</h2>
-<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:11.705721Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:11.705640Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:11.718236Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:11.717863Z&quot;}}" data-execution_count="5">
+<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:30:41.546281Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:30:41.546177Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:30:44.189904Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:30:44.189021Z&quot;}}" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gi.ensembl_id(<span class="st">'FOXP2'</span>, species<span class="op">=</span><span class="st">'Homo sapiens'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>'ENSG00000128573'</code></pre>
 </div>
 </div>
-<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:11.719477Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:11.719393Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:11.732169Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:11.731823Z&quot;}}" data-execution_count="6">
+<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:30:44.192435Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:30:44.192239Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:30:52.904370Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:30:52.903230Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gi.ensembl_id([<span class="st">'FOXP2'</span>, <span class="st">'93986'</span>], species<span class="op">=</span><span class="st">'Homo sapiens'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>['ENSG00000128573', 'ENSG00000128573']</code></pre>
@@ -362,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="conversion-to-hgcn-gene-symbols" class="level2">
 <h2 class="anchored" data-anchor-id="conversion-to-hgcn-gene-symbols">Conversion to HGCN gene symbols</h2>
 <p>Species Human sapiens is assumed.</p>
-<div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:11.733557Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:11.733476Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:11.748101Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:11.747699Z&quot;}}" data-execution_count="7">
+<div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:30:52.906910Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:30:52.906702Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:14.654825Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:14.653831Z&quot;}}" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gi.hgcn_symbol([<span class="st">'CXorf23'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'ENSG00000173681'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>['BCLAF3', 'BCLAF3', 'BCLAF3']</code></pre>

@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../pages/cashing.html" rel="next">
+<link href="../pages/liftover.html" rel="next">
 <link href="../pages/go_enrichment.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -285,6 +285,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/liftover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lifting coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/cashing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Caching</span></a>
   </div>
@@ -330,14 +336,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:27.518446Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:27.518331Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:28.992227Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:28.991747Z&quot;}}" data-execution_count="2">
+<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:34.703757Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:34.703664Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.395331Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.394849Z&quot;}}" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.genelist <span class="im">import</span> GeneListCollection</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> geneinfo.genelist <span class="im">import</span> GeneList <span class="im">as</span> glist</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="genelist" class="level2">
 <h2 class="anchored" data-anchor-id="genelist">GeneList</h2>
 <p>Long lists of gene names do not work well visually:</p>
-<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:28.993975Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:28.993807Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.012583Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.012211Z&quot;}}" data-execution_count="3">
+<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.396889Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.396752Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.414867Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.414456Z&quot;}}" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dummy_genes <span class="op">=</span> [<span class="st">'ABCB7'</span>, <span class="st">'ACTRT1'</span>, <span class="st">'AKAP4'</span>, <span class="st">'ALG13'</span>, <span class="st">'ARHGAP36'</span>, <span class="st">'ATP7A'</span>, <span class="st">'ATRX'</span>, <span class="st">'BCLAF3'</span>, <span class="st">'BRCC3'</span>, <span class="st">'CAPN6'</span>, <span class="st">'CCNB3'</span>, <span class="st">'CFAP47'</span>, <span class="st">'CLCN5'</span>, <span class="st">'CMC4'</span>, <span class="st">'CNKSR2'</span>, <span class="st">'COX7B'</span>, <span class="st">'CYBB'</span>, <span class="st">'DCX'</span>, <span class="st">'DKC1'</span>, <span class="st">'DYNLT3'</span>, <span class="st">'ENOX2'</span>, <span class="st">'ENOX2-AS1'</span>, <span class="st">'EZHIP'</span>, <span class="st">'F8'</span>, <span class="st">'F8A1'</span>, <span class="st">'FAM120C'</span>, <span class="st">'FGF16'</span>]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dummy_genes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
@@ -372,7 +378,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>GeneList objects work just like normal lists but have some additional features that usefull for exploring sets of genes.</p>
 <p>When displayed they render as Markdown in columns to make them easier to read:</p>
-<div id="cell-7" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.033552Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.033447Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.045947Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.045603Z&quot;}}" data-execution_count="4">
+<div id="cell-7" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.436808Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.436693Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.447399Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.446999Z&quot;}}" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">=</span> glist(dummy_genes)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>list_A</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
@@ -417,7 +423,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="highlight-genes" class="level2">
 <h2 class="anchored" data-anchor-id="highlight-genes">Highlight genes</h2>
 <p>The bitwise operator <code>&lt;&lt;</code> is overloaded and highlights genes also present in another gene list:</p>
-<div id="cell-10" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.047390Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.047302Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.057961Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.057587Z&quot;}}" data-execution_count="5">
+<div id="cell-10" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.448847Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.448756Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.458402Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.458015Z&quot;}}" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>list_B <span class="op">=</span> glist(dummy_genes[::<span class="dv">2</span>])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
@@ -458,7 +464,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody></table>
 </div>
 </div>
-<div id="cell-11" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.059232Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.059141Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.069729Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.069320Z&quot;}}" data-execution_count="6">
+<div id="cell-11" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.459583Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.459512Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.469137Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.468740Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>list_C <span class="op">=</span> glist(dummy_genes[:<span class="dv">12</span>])</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_C</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
@@ -507,7 +513,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><span style="font-style: italic;">Italic</span></li>
 </ol>
 <p>Genes with all styles applied looks like <span style="font-weight: bold; color:#1876D2; text-decoration: underline; font-style: italic;">this</span>.</p>
-<div id="cell-13" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.070995Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.070916Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.081557Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.081216Z&quot;}}" data-execution_count="7">
+<div id="cell-13" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.470407Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.470331Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.479209Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.478877Z&quot;}}" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>list_D <span class="op">=</span> glist(dummy_genes[::<span class="dv">4</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>list_E <span class="op">=</span> glist(dummy_genes[<span class="dv">2</span>::<span class="dv">10</span>])</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -551,7 +557,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The highlight color can be changed by passing a HEX color to <code>set_highlight_color</code>:</p>
-<div id="cell-15" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.082897Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.082819Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.093499Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.093144Z&quot;}}" data-execution_count="8">
+<div id="cell-15" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.480466Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.480397Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.489098Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.488714Z&quot;}}" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>glist.set_highlight_color(<span class="st">'#009D2B'</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -593,7 +599,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Reset highlght color:</p>
-<div id="cell-17" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.094796Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.094717Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.105368Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.104957Z&quot;}}" data-execution_count="9">
+<div id="cell-17" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.490295Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.490221Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.499012Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.498611Z&quot;}}" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>glist.reset_highlight_color()</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> list_E <span class="op">&lt;&lt;</span> list_D <span class="op">&lt;&lt;</span>  list_C <span class="op">&lt;&lt;</span> list_B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
@@ -639,7 +645,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="set-operations">Set operations</h2>
 <p>The bitwise operators, <code>&amp;</code>, <code>|</code>, and <code>^</code>, to allow set operations on gene lists.</p>
 <p>Highlight in A the intersection between B and C:</p>
-<div id="cell-21" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.106816Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.106720Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.117100Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.116761Z&quot;}}" data-execution_count="10">
+<div id="cell-21" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.500258Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.500187Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.508744Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.508369Z&quot;}}" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">&amp;</span> list_C)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
@@ -680,7 +686,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Highlight in A the union between B and C:</p>
-<div id="cell-23" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.118420Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.118344Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.128871Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.128546Z&quot;}}" data-execution_count="11">
+<div id="cell-23" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.509969Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.509903Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.518558Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.518236Z&quot;}}" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">|</span> list_C)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
@@ -721,7 +727,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Highlight in A the genes not shared by B and C:</p>
-<div id="cell-25" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.130174Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.130100Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.140611Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.140237Z&quot;}}" data-execution_count="12">
+<div id="cell-25" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.519819Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.519750Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.528254Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.527883Z&quot;}}" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> list_C)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
@@ -762,7 +768,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Highlight in A the genes in B but not in C (set difference):</p>
-<div id="cell-27" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.141936Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.141860Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.152262Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.151953Z&quot;}}" data-execution_count="13">
+<div id="cell-27" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.529485Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.529417Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.537931Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.537649Z&quot;}}" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_B <span class="op">^</span> (list_B <span class="op">&amp;</span> list_C))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
@@ -803,7 +809,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Highlight in A the genes in C but not in B (set difference):</p>
-<div id="cell-29" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.153637Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.153560Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.163987Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.163583Z&quot;}}" data-execution_count="14">
+<div id="cell-29" class="cell gene-list" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.539245Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.539175Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.547800Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.547439Z&quot;}}" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>list_A <span class="op">&lt;&lt;</span> (list_C <span class="op">^</span> (list_C <span class="op">&amp;</span> list_B))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
@@ -857,7 +863,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    &lt;free text description of the gene list&gt;</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    &lt;free text description of the gene list&gt;</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">genes</span><span class="kw">:</span><span class="at"> &lt;gene_name&gt;, &lt;gene_name&gt;, ...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="cell-32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.165327Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.165248Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.175667Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.175299Z&quot;}}" data-execution_count="15">
+<div id="cell-32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.549066Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.548995Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.557623Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.557250Z&quot;}}" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>yaml <span class="op">=</span> <span class="st">"""</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="st">cool_genes:</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="st">    description: "A list of cool genes"</span></span>
@@ -869,40 +875,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'gene_lists.yaml'</span>, <span class="st">'w'</span>) <span class="im">as</span> f:</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    f.write(yaml)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-33" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.177022Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.176949Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.256104Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.255634Z&quot;}}" data-execution_count="16">
+<div id="cell-33" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.558811Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.558742Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.628461Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.628005Z&quot;}}" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gene_lists <span class="op">=</span> GeneListCollection(<span class="st">'gene_lists.yaml'</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>gene_lists</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <style type="text/css">
-#T_a909a .col0 {
+#T_7893e .col0 {
   text-align: left;
 }
-#T_a909a .col1 {
+#T_7893e .col1 {
   text-align: left;
 }
 </style>
 
-<table id="T_a909a" class="caption-top table table-sm table-striped small">
+<table id="T_7893e" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th id="T_a909a_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">List label</th>
-<th id="T_a909a_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Description</th>
+<th id="T_7893e_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">List label</th>
+<th id="T_7893e_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_a909a_row0_col0" class="data row0 col0">cool_genes</td>
-<td id="T_a909a_row0_col1" class="data row0 col1">A list of cool genes</td>
+<td id="T_7893e_row0_col0" class="data row0 col0">cool_genes</td>
+<td id="T_7893e_row0_col1" class="data row0 col1">A list of cool genes</td>
 </tr>
 <tr class="even">
-<td id="T_a909a_row1_col0" class="data row1 col0">target_genes</td>
-<td id="T_a909a_row1_col1" class="data row1 col1">A list of other genes</td>
+<td id="T_7893e_row1_col0" class="data row1 col0">target_genes</td>
+<td id="T_7893e_row1_col1" class="data row1 col1">A list of other genes</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div id="cell-34" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.257367Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.257267Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.270198Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.269779Z&quot;}}" data-execution_count="17">
+<div id="cell-34" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.629792Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.629670Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.640466Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.640048Z&quot;}}" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>gene_lists.get(<span class="st">'cool_genes'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
@@ -916,7 +922,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody></table>
 </div>
 </div>
-<div id="cell-35" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.271467Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.271389Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.282438Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.282100Z&quot;}}" data-execution_count="18">
+<div id="cell-35" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.641641Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.641564Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.651250Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.650910Z&quot;}}" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gene_lists.all_genes()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <table data-quarto-disable-processing="true" background:="" transparent!important;="" line-height:="" 10px!important;text-align:="" left!important;="">
@@ -934,242 +940,254 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Or from a Google Sheet using its ID and the sheet name:</p>
-<div id="cell-37" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.283822Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.283741Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.294178Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.293827Z&quot;}}" data-execution_count="19">
+<div id="cell-37" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.652500Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.652431Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.660900Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.660468Z&quot;}}" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>See which neuron genes are also SFARI genes:</p>
-<div id="cell-39" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:29.295531Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:29.295451Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:29.305635Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:29.305290Z&quot;}}" data-execution_count="20">
+<div id="cell-39" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:36.662281Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:36.662212Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:36.670755Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:36.670339Z&quot;}}" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gene_lists = GeneListCollection(google_sheet='2JSjSLuto3jqdEnnG7JqzeC_1pUZw76n7XueVAYrUOpk')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-41" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:34.896459Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:34.896375Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:34.911345Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:34.910867Z&quot;}}" data-execution_count="22">
+<div id="cell-41" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:39.969057Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:39.968929Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:39.987173Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:39.986741Z&quot;}}" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gene_lists</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <style type="text/css">
-#T_fa565 .col0 {
+#T_7e0bf .col0 {
   text-align: left;
 }
-#T_fa565 .col1 {
+#T_7e0bf .col1 {
   text-align: left;
 }
 </style>
 
-<table id="T_fa565" class="caption-top table table-sm table-striped small">
+<table id="T_7e0bf" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th id="T_fa565_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">List label</th>
-<th id="T_fa565_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Description</th>
+<th id="T_7e0bf_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">List label</th>
+<th id="T_7e0bf_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_fa565_row0_col0" class="data row0 col0">all_npx</td>
-<td id="T_fa565_row0_col1" class="data row0 col1">all NPX genes</td>
+<td id="T_7e0bf_row0_col0" class="data row0 col0">all_npx</td>
+<td id="T_7e0bf_row0_col1" class="data row0 col1">all NPX genes</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row1_col0" class="data row1 col0">neuron_genome_proteome</td>
-<td id="T_fa565_row1_col1" class="data row1 col1">Neuron proteome (whole genome)</td>
+<td id="T_7e0bf_row1_col0" class="data row1 col0">neuron_genome_proteome</td>
+<td id="T_7e0bf_row1_col1" class="data row1 col1">Neuron proteome (whole genome)</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row2_col0" class="data row2 col0">neuron_npx_proteome</td>
-<td id="T_fa565_row2_col1" class="data row2 col1">NPX neuron proteome</td>
+<td id="T_7e0bf_row2_col0" class="data row2 col0">neuron_npx_proteome</td>
+<td id="T_7e0bf_row2_col1" class="data row2 col1">NPX neuron proteome</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row3_col0" class="data row3 col0">matos_neuron</td>
-<td id="T_fa565_row3_col1" class="data row3 col1">Matos neuron genes</td>
+<td id="T_7e0bf_row3_col0" class="data row3 col0">matos_neuron</td>
+<td id="T_7e0bf_row3_col1" class="data row3 col1">Matos neuron genes</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row4_col0" class="data row4 col0">matos_common</td>
-<td id="T_fa565_row4_col1" class="data row4 col1">Matos neuron genes expressed in spermatids</td>
+<td id="T_7e0bf_row4_col0" class="data row4 col0">matos_common</td>
+<td id="T_7e0bf_row4_col1" class="data row4 col1">Matos neuron genes expressed in spermatids</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row5_col0" class="data row5 col0">hpa_brain_prot</td>
-<td id="T_fa565_row5_col1" class="data row5 col1">Brain genes form Human protein atlas</td>
+<td id="T_7e0bf_row5_col0" class="data row5 col0">hpa_brain_prot</td>
+<td id="T_7e0bf_row5_col1" class="data row5 col1">Brain genes form Human protein atlas</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row6_col0" class="data row6 col0">meritxell_spermatid_expr</td>
-<td id="T_fa565_row6_col1" class="data row6 col1"></td>
+<td id="T_7e0bf_row6_col0" class="data row6 col0">meritxell_spermatid_expr</td>
+<td id="T_7e0bf_row6_col1" class="data row6 col1"></td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row7_col0" class="data row7 col0">mult_copy</td>
-<td id="T_fa565_row7_col1" class="data row7 col1">Multi copy genes</td>
+<td id="T_7e0bf_row7_col0" class="data row7 col0">mult_copy</td>
+<td id="T_7e0bf_row7_col1" class="data row7 col1">Multi copy genes</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row8_col0" class="data row8 col0">primate_ampl_multi</td>
-<td id="T_fa565_row8_col1" class="data row8 col1">Ampliconic or multicopy in some primates</td>
+<td id="T_7e0bf_row8_col0" class="data row8 col0">primate_ampl_multi</td>
+<td id="T_7e0bf_row8_col1" class="data row8 col1">Ampliconic or multicopy in some primates</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row9_col0" class="data row9 col0">gametologs</td>
-<td id="T_fa565_row9_col1" class="data row9 col1">Gametologs in some primates</td>
+<td id="T_7e0bf_row9_col0" class="data row9 col0">gametologs</td>
+<td id="T_7e0bf_row9_col1" class="data row9 col1">Gametologs in some primates</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row10_col0" class="data row10 col0">old_cDEG</td>
-<td id="T_fa565_row10_col1" class="data row10 col1">Old cDEG</td>
+<td id="T_7e0bf_row10_col0" class="data row10 col0">old_cDEG</td>
+<td id="T_7e0bf_row10_col1" class="data row10 col1">Old cDEG</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row11_col0" class="data row11 col0">bonobo_lof</td>
-<td id="T_fa565_row11_col1" class="data row11 col1">bonobo lof relative to human ref (whole genome)</td>
+<td id="T_7e0bf_row11_col0" class="data row11 col0">bonobo_lof</td>
+<td id="T_7e0bf_row11_col1" class="data row11 col1">bonobo lof relative to human ref (whole genome)</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row12_col0" class="data row12 col0">cDEG</td>
-<td id="T_fa565_row12_col1" class="data row12 col1">The rerun cDEGs</td>
+<td id="T_7e0bf_row12_col0" class="data row12 col0">cDEG</td>
+<td id="T_7e0bf_row12_col1" class="data row12 col1">The rerun cDEGs</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row13_col0" class="data row13 col0">cDEG_alt</td>
-<td id="T_fa565_row13_col1" class="data row13 col1"></td>
+<td id="T_7e0bf_row13_col0" class="data row13 col0">cDEG_alt</td>
+<td id="T_7e0bf_row13_col1" class="data row13 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row14_col0" class="data row14 col0">Old nDEG</td>
-<td id="T_fa565_row14_col1" class="data row14 col1">old nDEG</td>
+<td id="T_7e0bf_row14_col0" class="data row14 col0">Old nDEG</td>
+<td id="T_7e0bf_row14_col1" class="data row14 col1">old nDEG</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row15_col0" class="data row15 col0">nDEG</td>
-<td id="T_fa565_row15_col1" class="data row15 col1">nDEG</td>
+<td id="T_7e0bf_row15_col0" class="data row15 col0">nDEG</td>
+<td id="T_7e0bf_row15_col1" class="data row15 col1">nDEG</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row16_col0" class="data row16 col0">hybridDEG</td>
-<td id="T_fa565_row16_col1" class="data row16 col1"></td>
+<td id="T_7e0bf_row16_col0" class="data row16 col0">cDEG_nDEG</td>
+<td id="T_7e0bf_row16_col1" class="data row16 col1">cDEG+nDEG</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row17_col0" class="data row17 col0">chromatin_genes</td>
-<td id="T_fa565_row17_col1" class="data row17 col1">chromatin genes according to biology GPT</td>
+<td id="T_7e0bf_row17_col0" class="data row17 col0">hybridDEG</td>
+<td id="T_7e0bf_row17_col1" class="data row17 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row18_col0" class="data row18 col0">circRNA</td>
-<td id="T_fa565_row18_col1" class="data row18 col1">circRNA</td>
+<td id="T_7e0bf_row18_col0" class="data row18 col0">chromatin_genes</td>
+<td id="T_7e0bf_row18_col1" class="data row18 col1">chromatin genes according to biology GPT</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row19_col0" class="data row19 col0">xi</td>
-<td id="T_fa565_row19_col1" class="data row19 col1">Microtubule-Associated Proteins (MAPs)</td>
+<td id="T_7e0bf_row19_col0" class="data row19 col0">circRNA</td>
+<td id="T_7e0bf_row19_col1" class="data row19 col1">circRNA</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row20_col0" class="data row20 col0">xi_escape</td>
-<td id="T_fa565_row20_col1" class="data row20 col1">Subject to somatic X inactivation (XI)</td>
+<td id="T_7e0bf_row20_col0" class="data row20 col0">xi</td>
+<td id="T_7e0bf_row20_col1" class="data row20 col1">Microtubule-Associated Proteins (MAPs)</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row21_col0" class="data row21 col0">xi_uncertain</td>
-<td id="T_fa565_row21_col1" class="data row21 col1">Escaping somatic X inactivation (XI)</td>
+<td id="T_7e0bf_row21_col0" class="data row21 col0">xi_escape</td>
+<td id="T_7e0bf_row21_col1" class="data row21 col1">Subject to somatic X inactivation (XI)</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row22_col0" class="data row22 col0">xi_any_evidence</td>
-<td id="T_fa565_row22_col1" class="data row22 col1">Xi escapers in hum-nean</td>
+<td id="T_7e0bf_row22_col0" class="data row22 col0">xi_uncertain</td>
+<td id="T_7e0bf_row22_col1" class="data row22 col1">Escaping somatic X inactivation (XI)</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row23_col0" class="data row23 col0">expr_mod_xi_copynr_fibrobl</td>
-<td id="T_fa565_row23_col1" class="data row23 col1">X genes uncertain XI status</td>
+<td id="T_7e0bf_row23_col0" class="data row23 col0">xi_any_evidence</td>
+<td id="T_7e0bf_row23_col1" class="data row23 col1">Xi escapers in hum-nean</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row24_col0" class="data row24 col0">expr_mod_xi_copynr_lcl</td>
-<td id="T_fa565_row24_col1" class="data row24 col1">Union of certain and uncertain XI status</td>
+<td id="T_7e0bf_row24_col0" class="data row24 col0">expr_mod_xi_copynr_fibrobl</td>
+<td id="T_7e0bf_row24_col1" class="data row24 col1">X genes uncertain XI status</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row25_col0" class="data row25 col0">expr_mod_xi_copynr</td>
-<td id="T_fa565_row25_col1" class="data row25 col1">Expression modulated by Xi copy number (Fibroblast)</td>
+<td id="T_7e0bf_row25_col0" class="data row25 col0">expr_mod_xi_copynr_lcl</td>
+<td id="T_7e0bf_row25_col1" class="data row25 col1">Union of certain and uncertain XI status</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row26_col0" class="data row26 col0">pure_hama</td>
-<td id="T_fa565_row26_col1" class="data row26 col1">Expression modulated by Xi copy number (LCL)</td>
+<td id="T_7e0bf_row26_col0" class="data row26 col0">expr_mod_xi_copynr</td>
+<td id="T_7e0bf_row26_col1" class="data row26 col1">Expression modulated by Xi copy number (Fibroblast)</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row27_col0" class="data row27 col0">hum_nean_admix</td>
-<td id="T_fa565_row27_col1" class="data row27 col1">Expression modulated by Xi copy number (Fibroblast or LCL)</td>
+<td id="T_7e0bf_row27_col0" class="data row27 col0">pure_hama</td>
+<td id="T_7e0bf_row27_col1" class="data row27 col1">Expression modulated by Xi copy number (LCL)</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row28_col0" class="data row28 col0">ari_relate_EUR</td>
-<td id="T_fa565_row28_col1" class="data row28 col1">Genes in 95% pure hamadryas regions in Gog</td>
+<td id="T_7e0bf_row28_col0" class="data row28 col0">hum_nean_admix</td>
+<td id="T_7e0bf_row28_col1" class="data row28 col1">Expression modulated by Xi copy number (Fibroblast or LCL)</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row29_col0" class="data row29 col0">ari_relate_ASIA</td>
-<td id="T_fa565_row29_col1" class="data row29 col1">Human-Neanderthal introgression</td>
+<td id="T_7e0bf_row29_col0" class="data row29 col0">ari_relate_EUR</td>
+<td id="T_7e0bf_row29_col1" class="data row29 col1">Genes in 95% pure hamadryas regions in Gog</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row30_col0" class="data row30 col0">ari_relate_AFR</td>
-<td id="T_fa565_row30_col1" class="data row30 col1"></td>
+<td id="T_7e0bf_row30_col0" class="data row30 col0">ari_relate_ASIA</td>
+<td id="T_7e0bf_row30_col1" class="data row30 col1">Human-Neanderthal introgression</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row31_col0" class="data row31 col0">ari_nonPUR</td>
-<td id="T_fa565_row31_col1" class="data row31 col1"></td>
+<td id="T_7e0bf_row31_col0" class="data row31 col0">ari_relate_AFR</td>
+<td id="T_7e0bf_row31_col1" class="data row31 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row32_col0" class="data row32 col0">ari_relate_PUR</td>
-<td id="T_fa565_row32_col1" class="data row32 col1"></td>
+<td id="T_7e0bf_row32_col0" class="data row32 col0">ari_nonPUR</td>
+<td id="T_7e0bf_row32_col1" class="data row32 col1"></td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row33_col0" class="data row33 col0">ari_ralete_only_PUR</td>
-<td id="T_fa565_row33_col1" class="data row33 col1"></td>
+<td id="T_7e0bf_row33_col0" class="data row33 col0">ari_relate_PUR</td>
+<td id="T_7e0bf_row33_col1" class="data row33 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row34_col0" class="data row34 col0">ari_all</td>
-<td id="T_fa565_row34_col1" class="data row34 col1"></td>
+<td id="T_7e0bf_row34_col0" class="data row34 col0">ari_ralete_only_PUR</td>
+<td id="T_7e0bf_row34_col1" class="data row34 col1"></td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row35_col0" class="data row35 col0">candidates</td>
-<td id="T_fa565_row35_col1" class="data row35 col1"></td>
+<td id="T_7e0bf_row35_col0" class="data row35 col0">ari_all</td>
+<td id="T_7e0bf_row35_col1" class="data row35 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row36_col0" class="data row36 col0">ech75_regions</td>
-<td id="T_fa565_row36_col1" class="data row36 col1"></td>
+<td id="T_7e0bf_row36_col0" class="data row36 col0">candidates</td>
+<td id="T_7e0bf_row36_col1" class="data row36 col1"></td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row37_col0" class="data row37 col0">ech90_regions</td>
-<td id="T_fa565_row37_col1" class="data row37 col1">Candidate for explaining human and baboon sweeps</td>
+<td id="T_7e0bf_row37_col0" class="data row37 col0">ech75_regions</td>
+<td id="T_7e0bf_row37_col1" class="data row37 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row38_col0" class="data row38 col0">linAR_all</td>
-<td id="T_fa565_row38_col1" class="data row38 col1">Overlapping human sweeps (75% ECH regions)</td>
+<td id="T_7e0bf_row38_col0" class="data row38 col0">ech90_regions</td>
+<td id="T_7e0bf_row38_col1" class="data row38 col1">Candidate for explaining human and baboon sweeps</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row39_col0" class="data row39 col0">linAR_human</td>
-<td id="T_fa565_row39_col1" class="data row39 col1">Overlapping human sweeps (90% ECH regions)</td>
+<td id="T_7e0bf_row39_col0" class="data row39 col0">linAR_all</td>
+<td id="T_7e0bf_row39_col1" class="data row39 col1">Overlapping human sweeps (75% ECH regions)</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row40_col0" class="data row40 col0">linAR_chimp</td>
-<td id="T_fa565_row40_col1" class="data row40 col1"></td>
+<td id="T_7e0bf_row40_col0" class="data row40 col0">linAR_human</td>
+<td id="T_7e0bf_row40_col1" class="data row40 col1">Overlapping human sweeps (90% ECH regions)</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row41_col0" class="data row41 col0">linAR_gorilla</td>
-<td id="T_fa565_row41_col1" class="data row41 col1"></td>
+<td id="T_7e0bf_row41_col0" class="data row41 col0">linAR_chimp</td>
+<td id="T_7e0bf_row41_col1" class="data row41 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row42_col0" class="data row42 col0">linAR_orang</td>
-<td id="T_fa565_row42_col1" class="data row42 col1"></td>
+<td id="T_7e0bf_row42_col0" class="data row42 col0">linAR_gorilla</td>
+<td id="T_7e0bf_row42_col1" class="data row42 col1"></td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row43_col0" class="data row43 col0">accel_reg_simiiformes_br</td>
-<td id="T_fa565_row43_col1" class="data row43 col1"></td>
+<td id="T_7e0bf_row43_col0" class="data row43 col0">linAR_orang</td>
+<td id="T_7e0bf_row43_col1" class="data row43 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row44_col0" class="data row44 col0">my_primate_codeml</td>
-<td id="T_fa565_row44_col1" class="data row44 col1"></td>
+<td id="T_7e0bf_row44_col0" class="data row44 col0">accel_reg_simiiformes_br</td>
+<td id="T_7e0bf_row44_col1" class="data row44 col1"></td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row45_col0" class="data row45 col0">reg_sa_pheno</td>
-<td id="T_fa565_row45_col1" class="data row45 col1">Genes with accelerated regions Simiiformes branch</td>
+<td id="T_7e0bf_row45_col0" class="data row45 col0">my_primate_codeml</td>
+<td id="T_7e0bf_row45_col1" class="data row45 col1"></td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row46_col0" class="data row46 col0">sfari_all_conf</td>
-<td id="T_fa565_row46_col1" class="data row46 col1">Primate codeml site model</td>
+<td id="T_7e0bf_row46_col0" class="data row46 col0">EHC90_ari_nonPUR</td>
+<td id="T_7e0bf_row46_col1" class="data row46 col1">Genes with accelerated regions Simiiformes branch</td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row47_col0" class="data row47 col0">intel_seiz_lang</td>
-<td id="T_fa565_row47_col1" class="data row47 col1"></td>
+<td id="T_7e0bf_row47_col0" class="data row47 col0">reg_sa_pheno</td>
+<td id="T_7e0bf_row47_col1" class="data row47 col1">Primate codeml site model</td>
 </tr>
 <tr class="odd">
-<td id="T_fa565_row48_col0" class="data row48 col0">intelect_disabil</td>
-<td id="T_fa565_row48_col1" class="data row48 col1">X-chromosome genes associated with regional SA phenotypes</td>
+<td id="T_7e0bf_row48_col0" class="data row48 col0">sfari_all_conf</td>
+<td id="T_7e0bf_row48_col1" class="data row48 col1"></td>
 </tr>
 <tr class="even">
-<td id="T_fa565_row49_col0" class="data row49 col0">xbrain</td>
-<td id="T_fa565_row49_col1" class="data row49 col1">X SFARI genes (including all confidence levels)</td>
+<td id="T_7e0bf_row49_col0" class="data row49 col0">intel_seiz_lang</td>
+<td id="T_7e0bf_row49_col1" class="data row49 col1"></td>
+</tr>
+<tr class="odd">
+<td id="T_7e0bf_row50_col0" class="data row50 col0">intelect_disabil</td>
+<td id="T_7e0bf_row50_col1" class="data row50 col1">X-chromosome genes associated with regional SA phenotypes</td>
+</tr>
+<tr class="even">
+<td id="T_7e0bf_row51_col0" class="data row51 col0">xbrain</td>
+<td id="T_7e0bf_row51_col1" class="data row51 col1">X SFARI genes (including all confidence levels)</td>
+</tr>
+<tr class="odd">
+<td id="T_7e0bf_row52_col0" class="data row52 col0">shannon_genes</td>
+<td id="T_7e0bf_row52_col1" class="data row52 col1">Intellectual disability or Seizures or Language impairment</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <p>To evaluate the significance of the overlap between the neuron genes and the SFARI gene list, we can use Fisher’s exact test. Here’s how you can do it using the <code>fisher</code> method from the <code>GeneList</code> class:</p>
-<div id="cell-44" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-04-20T07:00:34.925918Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-04-20T07:00:34.925824Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-04-20T07:00:34.944367Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-04-20T07:00:34.943948Z&quot;}}" data-execution_count="24">
+<div id="cell-44" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-16T12:31:40.001839Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-16T12:31:40.001751Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-16T12:31:40.018670Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-16T12:31:40.018188Z&quot;}}" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>sfari.fisher(neuron_genes, background<span class="op">=</span>gene_lists.all_genes())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
-<pre><code>2.9818112655286726e-83</code></pre>
+<pre><code>2.843680496702752e-83</code></pre>
 </div>
 </div>
 <p>The <code>background</code> argument is mandatory and should be a list of genes serving as background for the enrichment test. You can use the <code>gene_lists.all_genes()</code> or give your own list. If your gene lists are filtered for some property (like only chrX genes or only spermatid expressed genes), your background list should represent all genes filtered in the same way.</p>
@@ -1661,8 +1679,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../pages/cashing.html" class="pagination-link" aria-label="Caching">
-        <span class="nav-page-text">Caching</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../pages/liftover.html" class="pagination-link" aria-label="Lifting coordinates">
+        <span class="nav-page-text">Lifting coordinates</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
