@@ -1,0 +1,42 @@
+# get_chain_file { #geneinfo.lift.get_chain_file }
+
+```python
+geneinfo.lift.get_chain_file(
+    from_assembly,
+    to_assembly,
+    cache_dir=None,
+    overwrite=False,
+)
+```
+
+Path to a UCSC chain file, downloading it if it is not cached.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**from_assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   UCSC name of the source assembly, e.g. ``'hg38'``.
+
+<code>[**to_assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   UCSC name of the target assembly, e.g. ``'papAnu4'``.
+
+<code>[**cache_dir**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[PathLike](`geneinfo.lift.PathLike`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Directory for the downloaded chain files. Defaults to ``~/.cache/geneinfo/chains``.
+
+<code>[**overwrite**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Download again even if the file is cached.
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Path](`pathlib.Path`)]{.parameter-annotation}</code>
+
+:   Path to the gzipped chain file.
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+get_chain_file('hg38', 'papAnu4')
+```

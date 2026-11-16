@@ -1,7 +1,7 @@
 # Tracks { #geneinfo.widget.Tracks }
 
 ```python
-geneinfo.widget.Tracks(chroms=None, *, assembly=None, **kw)
+geneinfo.widget.Tracks(chroms=None, *, assembly=None, embed_data=False, **kw)
 ```
 
 WebGL2 genomic segment viewer rendered as a Jupyter widget.
@@ -124,9 +124,18 @@ track_configs : list of dict
     methods and :meth:`remove_track` / :meth:`clear_tracks`; do
     not mutate directly.
 track_data : dict
-    Track-id-keyed payloads consumed by the JS uploader. Maintained
-    by the ``add_*_track`` methods and :meth:`remove_track` /
+    Track-id-keyed payloads. Kept in the kernel, not synced: the
+    browser fetches the chromosome it shows, track by track, as
+    binary buffers (so drawing data needs a running kernel, unless
+    the viewer was made with ``embed_data=True``). Maintained by the
+    ``add_*_track`` methods and :meth:`remove_track` /
     :meth:`clear_tracks`; do not mutate directly.
+track_revs : dict
+    ``{track id: revision}``, bumped whenever a track's payload
+    changes; the browser refetches only tracks whose revision changed.
+embedded_data : dict
+    A synced copy of ``track_data`` with ``embed_data=True``, empty
+    otherwise.
 viewport : dict
     ``{'chrom': str, 'start': int, 'end': int}``. Use
     :meth:`set_viewport` or :meth:`zoom_to` to change it from
@@ -1224,7 +1233,7 @@ Add shaded vertical spans across all tracks.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
-<code>[**ranges**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`) \| [Iterable](`Iterable`)\[[tuple](`tuple`)\] \| [dict](`dict`)\[[str](`str`), [Iterable](`Iterable`)\[[tuple](`tuple`)\]\] \| [pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+<code>[**ranges**]{.parameter-name} [:]{.parameter-annotation-sep} [[tuple](`tuple`) \| [Iterable](`collections.abc.Iterable`)\[[tuple](`tuple`)\] \| [dict](`dict`)\[[str](`str`), [Iterable](`collections.abc.Iterable`)\[[tuple](`tuple`)\]\] \| [pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
 
 :   ``(start, end)`` pairs in base pairs, in any of three shapes:  - one pair, or an iterable of pairs, all on one chromosome; - a dict mapping chromosome name to an iterable of pairs   (``chrom`` is ignored in that case); - a DataFrame, reading the bounds from the columns named by   ``start`` and ``end`` and chromosomes as described under   ``chrom``. Rows with a missing bound are skipped.
 
@@ -1443,7 +1452,7 @@ Add thin vertical guide lines across all tracks.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
-<code>[**positions**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`) \| [Iterable](`Iterable`)\[[int](`int`)\] \| [dict](`dict`)\[[str](`str`), [Iterable](`Iterable`)\[[int](`int`)\]\] \| [pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+<code>[**positions**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`) \| [Iterable](`collections.abc.Iterable`)\[[int](`int`)\] \| [dict](`dict`)\[[str](`str`), [Iterable](`collections.abc.Iterable`)\[[int](`int`)\]\] \| [pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
 
 :   Base-pair positions, in any of three shapes:  - a number, or an iterable of numbers, all on one chromosome; - a dict mapping chromosome name to an iterable of positions   (``chrom`` is ignored in that case); - a DataFrame, reading positions from the column named by   ``pos`` and chromosomes as described under ``chrom``. Rows   with a missing position are skipped.
 
@@ -1861,10 +1870,11 @@ hide_track
 
 ```python
 geneinfo.widget.Tracks.zoom_to(
-    chrom,
+    chrom=None,
     start=None,
     end=None,
     *,
+    gene=None,
     center=None,
     window=None,
 )
@@ -1887,7 +1897,7 @@ mutually exclusive.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
-<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
 :   Chromosome name.
 
@@ -1898,6 +1908,10 @@ mutually exclusive.
 <code>[**end**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
 :   Exclusive end position in base pairs.
+
+<code>[**gene**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) \| None]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Name of gene to center on.
 
 <code>[**center**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 

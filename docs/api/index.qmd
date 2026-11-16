@@ -61,6 +61,18 @@ These functions retrieve coordinates of named genes or genes in a chromosomal re
 | [gene_coords](gene_coords.qmd#geneinfo.coords.gene_coords) | Get gene coordinates for a gene or list of genes. |
 | [gene_coords_region](gene_coords_region.qmd#geneinfo.coords.gene_coords_region) | Gets gene structure information for genes in a chromosomal region. |
 
+## Liftover
+
+These functions lift genomic intervals between assemblies using the UCSC
+liftOver tool, optionally testing that intervals map back reciprocally.
+Chain files are downloaded from UCSC and cached.
+
+
+| | |
+| --- | --- |
+| [liftover](liftover.qmd#geneinfo.lift.liftover) | Lift intervals or positions from one assembly to another, and optionally back again. |
+| [get_chain_file](get_chain_file.qmd#geneinfo.lift.get_chain_file) | Path to a UCSC chain file, downloading it if it is not cached. |
+
 ## ID conversion
 
 These functions converts between NCBI, ENSEMBL and HGCN gene identifiers.

@@ -59,12 +59,9 @@ python_functions = "test_*"
 # pixi
 
 [tool.pixi.workspace]
-channels = ["conda-forge", "munch-group"]
+channels = ["conda-forge", "munch-group", "bioconda"]
 # platforms = ["osx-arm64", "osx-64", "linux-64"]
 platforms = ["osx-arm64", "linux-64"]
-
-[tool.pixi.pypi-dependencies]
-liftover = ">=1.5.0,<2"
 
 [tool.pixi.dependencies]
 tqdm = "*"
@@ -76,13 +73,12 @@ quartodoc = "0.11.*"
 vscodenb = ">=1.0.5,<2"
 pyarrow = ">=23.0.1,<24"
 nbdime = "*"
-griffe = ">=2.0.2,<3"
-griffecli = ">=2.0.2,<3"
-griffelib = ">=2.0.2,<3"
+griffe = ">=1.7,<2"  # quartodoc 0.11 is incompatible with griffe 2
 iplot = ">=0.1.9,<0.2"
 pycirclize = ">=1.10.1,<2"
 crossrepo = ">=0.1.28,<0.2"
 matplotlib="*"
+ucsc-liftover = "*"
 
 [tool.pixi.environments]
 default = {solve-group = "default"}

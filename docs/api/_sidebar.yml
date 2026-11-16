@@ -29,6 +29,10 @@ website:
       - api/gene_coords_region.qmd
       section: Gene coordinates
     - contents:
+      - api/liftover.qmd
+      - api/get_chain_file.qmd
+      section: Liftover
+    - contents:
       - api/ensembl_id.qmd
       - api/hgcn_symbol.qmd
       - api/ensembl2symbol.qmd

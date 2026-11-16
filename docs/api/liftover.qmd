@@ -1,0 +1,108 @@
+# liftover { #geneinfo.lift.liftover }
+
+```python
+geneinfo.lift.liftover(
+    intervals,
+    from_assembly,
+    to_assembly,
+    reciprocal=False,
+    min_match=0.95,
+    chain_file=None,
+    back_chain_file=None,
+    chrom_col='chrom',
+    start_col='start',
+    end_col='end',
+    pos_col=None,
+    pos_base=0,
+    chrom_aliases=True,
+    n_jobs=None,
+    cache_dir=None,
+)
+```
+
+Lift intervals or positions from one assembly to another, and optionally back again.
+
+With ``reciprocal=True``, lifted intervals are lifted back to test that
+they map one to one: an interval is reciprocally mapped if it lifts to the
+other assembly and the lifted interval lifts back to exactly the original
+chromosome, start and end.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**intervals**]{.parameter-name} [:]{.parameter-annotation-sep} [[Union](`typing.Union`)\[[pd](`pandas`).[DataFrame](`pandas.DataFrame`), [PathLike](`geneinfo.lift.PathLike`)\]]{.parameter-annotation}</code>
+
+:   Data frame with chromosome, start and end columns (or chromosome and position columns, see ``pos_col``), or the path to a BED file. Interval coordinates are 0-based and half-open, as in BED.
+
+<code>[**from_assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   UCSC name of the assembly the intervals are in, e.g. ``'hg38'``.
+
+<code>[**to_assembly**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   UCSC name of the assembly to lift to, e.g. ``'papAnu4'``.
+
+<code>[**reciprocal**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Also lift the lifted intervals back to ``from_assembly`` and test that they map to their original coordinates.
+
+<code>[**min_match**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.95]{.parameter-default}</code>
+
+:   Minimum fraction of an interval's bases that must remap (liftOver ``-minMatch``). Used in both directions. Has no effect on positions, which either map or do not.
+
+<code>[**chain_file**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[PathLike](`geneinfo.lift.PathLike`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Chain file lifting ``from_assembly`` to ``to_assembly``, to use instead of downloading it from UCSC.
+
+<code>[**back_chain_file**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[PathLike](`geneinfo.lift.PathLike`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Chain file lifting ``to_assembly`` to ``from_assembly``, to use instead of downloading it from UCSC. Only used with ``reciprocal=True``.
+
+<code>[**chrom_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'chrom\']{.parameter-default}</code>
+
+:   Names of the coordinate columns of a data frame. Ignored for BED files, which are read with standard BED column names.
+
+<code>[**start_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'chrom\']{.parameter-default}</code>
+
+:   Names of the coordinate columns of a data frame. Ignored for BED files, which are read with standard BED column names.
+
+<code>[**end_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'chrom\']{.parameter-default}</code>
+
+:   Names of the coordinate columns of a data frame. Ignored for BED files, which are read with standard BED column names.
+
+<code>[**pos_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[str](`str`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Name of a column of single positions. If given, these positions are lifted instead of intervals, and ``start_col`` and ``end_col`` are ignored.
+
+<code>[**pos_base**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0]{.parameter-default}</code>
+
+:   Coordinate base of the positions in ``pos_col``: 0 (as BED starts) or 1 (as in VCF and GFF files). Lifted positions are reported in the same base.
+
+<code>[**chrom_aliases**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Translate chromosome names to the UCSC names used in chain files (e.g. ``'NC_000023.11'`` or ``'X'`` to ``'chrX'`` for hg38), using the UCSC chromosome alias table of ``from_assembly``. Names that are not in the table are used as given, with a warning.
+
+<code>[**n_jobs**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[int](`int`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Number of liftOver processes to run in parallel. Defaults to all available cores (``SLURM_CPUS_PER_TASK`` inside a SLURM job, otherwise the cores this process may use), but no more than fit in memory: each process loads the whole chain file, which can take close to 1 GB. Memory is the SLURM job's allocation (``SLURM_MEM_PER_NODE`` or ``SLURM_MEM_PER_CPU``) or the system's available memory. A given ``n_jobs`` is used as is. Each process gets at least 10,000 intervals, so small inputs use fewer processes. Intervals (or positions) that occur several times are lifted only once.
+
+<code>[**cache_dir**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[PathLike](`geneinfo.lift.PathLike`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Directory for downloaded chain and chromosome alias files. Defaults to ``~/.cache/geneinfo/chains``.
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[pd](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   A copy of the intervals, with the same index and row order. Added columns ``<to_assembly>_chrom``, ``<to_assembly>_start`` and ``<to_assembly>_end`` hold the interval lifted to the other assembly, with UCSC chromosome names, and the boolean column ``mapped`` is True if the interval lifted. With ``reciprocal=True``, the columns ``<from_assembly>_back_chrom``, ``<from_assembly>_back_start`` and ``<from_assembly>_back_end`` hold the lifted interval lifted back, and the boolean column ``reciprocal`` is True if it lifted back to exactly its original coordinates. With ``pos_col``, each pair of start and end columns is replaced by a single ``_pos`` column, e.g. ``<to_assembly>_pos``. Coordinates are NaN where a lift fails. An interval with ``mapped`` True and ``reciprocal`` False either did not lift back (its back coordinates are NaN) or lifted back to different coordinates.
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+df = pd.DataFrame(dict(chrom=['chrX'], start=[1_000_000], end=[1_010_000]))
+liftover(df, 'hg38', 'papAnu4')
+lifted = liftover(df, 'hg38', 'papAnu4', reciprocal=True)
+lifted.loc[lifted.reciprocal]
+
+snps = pd.DataFrame(dict(chrom=['chrX'], pos=[1_000_000]))
+liftover(snps, 'hg38', 'papAnu4', pos_col='pos', pos_base=1)
+```
