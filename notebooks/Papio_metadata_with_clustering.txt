@@ -1,0 +1,228 @@
+PGDP_ID Provider_ID Provider Genus Species Origin Sex address longitude latitude callset_index C_origin x_missing
+16066 16066_3130 Rogers Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 0 "Cynocephalus, Central Tanzania" 0.013908330972916093
+16098 16098_5026 Rogers Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 1 "Cynocephalus, Central Tanzania" 0.013825545324800254
+30877 30877_3426 "James Else" Papio anubis "Aberdare, Kenya" M "Aberdare National Park, Nyeri, Central Kenya, Kenya" 36.71245079893944 -0.41025125 2 "Anubis, Kenya" 0.015561991398502744
+30977 30977_3373 "James Else" Papio anubis "Aberdare, Kenya" F "Aberdare National Park, Nyeri, Central Kenya, Kenya" 36.71245079893944 -0.41025125 3 "Anubis, Kenya" 0.009997564323080228
+34449 34449_BZ11022 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 4 "Kindae, Zambia" 0.01349816571634216
+34474 34474_BZ11050 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 5 "Kindae, Zambia" 0.013766705938536104
+38168 38168_891096 "Jolly/Bronx Zoo" "Theropithecus " gelada captive M "SDSU Captive Wildlife Research Facility, Brookings County, South Dakota, United States" -96.79328015199039 44.3340306 6 "Gelada, Captive" 0.022163291612103397
+97074 97074 Jolly/Phillips-Conroy Papio hamadryas "Awash, Ethiopia" F "አዋሽ / Awash, Zone 3, አፋር ክልል / Afar, ኢትዮጵያ" 40.167674 8.992496 7 "Hamadryas, Ethiopia" 0.01178806053067653
+97124 97124 Jolly/Phillips-Conroy Papio hamadryas "Awash, Ethiopia" M "አዋሽ / Awash, Zone 3, አፋር ክልል / Afar, ኢትዮጵያ" 40.167674 8.992496 8 "Hamadryas, Ethiopia" 0.021821202157079268
+PD_0067 1043 Roos Theropithecus gelada captive M "SDSU Captive Wildlife Research Facility, Brookings County, South Dakota, United States" -96.79328015199039 44.3340306 9 "Gelada, Captive" 0.024995108120793155
+PD_0199 09SNF1101115 Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" F "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 10 "Anubis, Tanzania" 0.003591255098843327
+PD_0200 11SNF1101115 Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" F "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 11 "Anubis, Tanzania" 0.004100284207919234
+PD_0201 19SNM1131115 Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" M "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 12 "Anubis, Tanzania" 0.01000030103872042
+PD_0202 20SNF1131115 Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" M "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 13 "Anubis, Tanzania" 0.010041009683868294
+PD_0203 21SNF1151115 Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" F "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 14 "Anubis, Tanzania" 0.0036740407469591668
+PD_0204 03ANM1080815 Knauf/Chuma/Roos Papio anubis "Arusha, Tanzania" M "Arusha, Northern Zone, Tanzania" 36.70858481848994 -3.427534 15 "Anubis, Tanzania" 0.009412591354988965
+PD_0205 05ANF1030116 Knauf/Chuma/Roos Papio anubis "Arusha, Tanzania" F "Arusha, Northern Zone, Tanzania" 36.70858481848994 -3.427534 16 "Anubis, Tanzania" 0.004107468086474741
+PD_0206 09ANF1040116 Knauf/Chuma/Roos Papio anubis "Arusha, Tanzania" F "Arusha, Northern Zone, Tanzania" 36.70858481848994 -3.427534 17 "Anubis, Tanzania" 0.004303827433658592
+PD_0207 12ANM1050116 Knauf/Chuma/Roos Papio anubis "Arusha, Tanzania" M "Arusha, Northern Zone, Tanzania" 36.70858481848994 -3.427534 18 "Anubis, Tanzania" 0.00935101525308462
+PD_0208 04NCF1140516 Knauf/Chuma/Roos Papio anubis "Ngorongoro, Tanzania" F "Ngorongoro, Arusha, Northern Zone, Tanzania" 35.58594639295285 -2.6769531 19 "Anubis, Tanzania" 0.004139282405791985
+PD_0209 05NCF1150516 Knauf/Chuma/Roos Papio anubis "Ngorongoro, Tanzania" F "Ngorongoro, Arusha, Northern Zone, Tanzania" 35.58594639295285 -2.6769531 20 "Anubis, Tanzania" 0.004082495556257979
+PD_0210 09NCF8170516 Knauf/Chuma/Roos Papio anubis "Ngorongoro, Tanzania" F "Ngorongoro, Arusha, Northern Zone, Tanzania" 35.58594639295285 -2.6769531 21 "Anubis, Tanzania" 0.004797462517258413
+PD_0211 12NCF5210317 Knauf/Chuma/Roos Papio anubis "Ngorongoro, Tanzania" F "Ngorongoro, Arusha, Northern Zone, Tanzania" 35.58594639295285 -2.6769531 22 "Anubis, Tanzania" 0.005159735250128967
+PD_0212 18NCF8220317 Knauf/Chuma/Roos Papio anubis "Ngorongoro, Tanzania" F "Ngorongoro, Arusha, Northern Zone, Tanzania" 35.58594639295285 -2.6769531 23 "Anubis, Tanzania" 0.004238830437204007
+PD_0213 07RUF1090716 Knauf/Chuma/Roos Papio cynocephalus "Ruaha, Tanzania" F "Ruaha, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7148138 -8.8953863 24 "Cynocephalus, Central Tanzania" 0.0076169638055673
+PD_0214 09RUF1100716 Knauf/Chuma/Roos Papio cynocephalus "Ruaha, Tanzania" F "Ruaha, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7148138 -8.8953863 25 "Cynocephalus, Central Tanzania" 0.007598833064451022
+PD_0215 13RUM1130716 Knauf/Chuma/Roos Papio cynocephalus "Ruaha, Tanzania" M "Ruaha, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7148138 -8.8953863 26 "Cynocephalus, Central Tanzania" 0.014343468759706789
+PD_0216 16RUF8140716 Knauf/Chuma/Roos Papio cynocephalus "Ruaha, Tanzania" F "Ruaha, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7148138 -8.8953863 27 "Cynocephalus, Central Tanzania" 0.007876267612475592
+PD_0217 17RUM5140716 Knauf/Chuma/Roos Papio cynocephalus "Ruaha, Tanzania" M "Ruaha, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7148138 -8.8953863 28 "Cynocephalus, Central Tanzania" 0.015385815329165315
+PD_0218 02GNM1200916 Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" M "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 29 "Anubis, Tanzania" 0.010254131414348326
+PD_0219 03GNF8200916 Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 30 "Anubis, Tanzania" 0.004297669823468158
+PD_0220 08GNM1210916 Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" M "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 31 "Anubis, Tanzania" 0.008927508507764746
+PD_0221 09GNF1210916 Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 32 "Anubis, Tanzania" 0.00430451161256864
+PD_0222 10GNF1210916 Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 33 "Anubis, Tanzania" 0.0049695335131355505
+PD_0223 02UNM1220616 Knauf/Chuma/Roos Papio cynocephalus "Udzungwa, Tanzania" M "Udzungwa National Park, Iringa, Southern Highlands Zone, Tanzania" 36.72574567121126 -7.80525145 34 "Cynocephalus, Central Tanzania" 0.015104959886590504
+PD_0224 23UNF1120317 Knauf/Chuma/Roos Papio cynocephalus "Udzungwa, Tanzania" F "Udzungwa National Park, Iringa, Southern Highlands Zone, Tanzania" 36.72574567121126 -7.80525145 35 "Cynocephalus, Central Tanzania" 0.008462608938386953
+PD_0225 24UNF1150317 Knauf/Chuma/Roos Papio cynocephalus "Udzungwa, Tanzania" F "Udzungwa National Park, Iringa, Southern Highlands Zone, Tanzania" 36.72574567121126 -7.80525145 36 "Cynocephalus, Central Tanzania" 0.008542315781407576
+PD_0226 25UNF1150317 Knauf/Chuma/Roos Papio cynocephalus "Udzungwa, Tanzania" F "Udzungwa National Park, Iringa, Southern Highlands Zone, Tanzania" 36.72574567121126 -7.80525145 37 "Cynocephalus, Central Tanzania" 0.008253934370822233
+PD_0227 27UNM1160317 Knauf/Chuma/Roos Papio cynocephalus "Udzungwa, Tanzania" M "Udzungwa National Park, Iringa, Southern Highlands Zone, Tanzania" 36.72574567121126 -7.80525145 38 "Cynocephalus, Central Tanzania" 0.014567879442202619
+PD_0228 01MNM1300916 Knauf/Chuma/Roos Papio cynocephalus "Mahale, Tanzania" M "Mahale National Park, Kigoma, Western Zone, Tanzania" 29.8834256452046 -6.20329205 39 "Cynocephalus, Western Tanzania" 0.015120696001521614
+PD_0229 02MNM1300916 Knauf/Chuma/Roos Papio cynocephalus "Mahale, Tanzania" M "Mahale National Park, Kigoma, Western Zone, Tanzania" 29.8834256452046 -6.20329205 40 "Cynocephalus, Western Tanzania" 0.01566940748738032
+PD_0230 04MNM1300916 Knauf/Chuma/Roos Papio cynocephalus "Mahale, Tanzania" M "Mahale National Park, Kigoma, Western Zone, Tanzania" 29.8834256452046 -6.20329205 41 "Cynocephalus, Western Tanzania" 0.015643408688798485
+PD_0231 09MNM1011016 Knauf/Chuma/Roos Papio cynocephalus "Mahale, Tanzania" M "Mahale National Park, Kigoma, Western Zone, Tanzania" 29.8834256452046 -6.20329205 42 "Cynocephalus, Western Tanzania" 0.014806315792354438
+PD_0232 14MNF1041016 Knauf/Chuma/Roos Papio cynocephalus "Mahale, Tanzania" F "Mahale National Park, Kigoma, Western Zone, Tanzania" 29.8834256452046 -6.20329205 43 "Cynocephalus, Western Tanzania" 0.008099309937151326
+PD_0233 05KNM1121016 Knauf/Chuma/Roos Papio cynocephalus "Katavi, Tanzania" M "Katavi, Western Zone, Tanzania" 30.9278274 -6.3015493 44 "Cynocephalus, Western Tanzania" 0.014642454943397878
+PD_0234 10KNM1131016 Knauf/Chuma/Roos Papio cynocephalus "Katavi, Tanzania" M "Katavi, Western Zone, Tanzania" 30.9278274 -6.3015493 45 "Cynocephalus, Western Tanzania" 0.01595094710886518
+PD_0235 01SGM1270217 Knauf/Chuma/Roos Papio cynocephalus "Selous, Tanzania" M "Selous, Nyangayane Road, Sinza, Dar es Salaam, Coastal Zone, 131, Tanzania" 39.2352225094435 -6.7870298 46 "Cynocephalus, Central Tanzania" 0.01408040196879323
+PD_0236 04SGM2030317 Knauf/Chuma/Roos Papio cynocephalus "Selous, Tanzania" M "Selous, Nyangayane Road, Sinza, Dar es Salaam, Coastal Zone, 131, Tanzania" 39.2352225094435 -6.7870298 47 "Cynocephalus, Central Tanzania" 0.014237421028649307
+PD_0237 07SGF1050317 Knauf/Chuma/Roos Papio cynocephalus "Selous, Tanzania" F "Selous, Nyangayane Road, Sinza, Dar es Salaam, Coastal Zone, 131, Tanzania" 39.2352225094435 -6.7870298 48 "Cynocephalus, Central Tanzania" 0.00922102126017545
+PD_0238 19LMF8280815 Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 49 "Anubis, Tanzania" 0.0040941265977288
+PD_0239 20LMF5280815 Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 50 "Anubis, Tanzania" 0.0041214937541307305
+PD_0240 21LMF2290815 Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 51 "Anubis, Tanzania" 0.004867248766083336
+PD_0241 22LMF5290815 Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 52 "Anubis, Tanzania" 0.004545342588905628
+PD_0242 23LMM1081215 Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" M "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 53 "Anubis, Tanzania" 0.010851077513365436
+PD_0243 01TNF1231215 Knauf/Chuma/Roos Papio anubis "Tarangire, Tanzania" F "Tarangire, Dar es Salaam, Coastal Zone, 34588 DSM, Tanzania" 39.2107362 -6.708198 54 "Anubis, Tanzania" 0.00499929529572265
+PD_0244 04TNF1231215 Knauf/Chuma/Roos Papio anubis "Tarangire, Tanzania" F "Tarangire, Dar es Salaam, Coastal Zone, 34588 DSM, Tanzania" 39.2107362 -6.708198 55 "Anubis, Tanzania" 0.004799857143443582
+PD_0265 122 Knauf/Chuma/Roos Papio anubis "Tarangire, Tanzania" F "Tarangire, Dar es Salaam, Coastal Zone, 34588 DSM, Tanzania" 39.2107362 -6.708198 56 "Anubis, Tanzania" 0.00451729125359365
+PD_0266 123 Knauf/Chuma/Roos Papio anubis "Tarangire, Tanzania" M "Tarangire, Dar es Salaam, Coastal Zone, 34588 DSM, Tanzania" 39.2107362 -6.708198 57 "Anubis, Tanzania" 0.009323306007227666
+PD_0267 124 Knauf/Chuma/Roos Papio anubis "Tarangire, Tanzania" M "Tarangire, Dar es Salaam, Coastal Zone, 34588 DSM, Tanzania" 39.2107362 -6.708198 58 "Anubis, Tanzania" 0.009315780039217136
+PD_0268 125 Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 59 "Cynocephalus, Central Tanzania" 0.014952730079104765
+PD_0269 126 Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 60 "Cynocephalus, Central Tanzania" 0.014790237587968304
+PD_0270 127 Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 61 "Cynocephalus, Central Tanzania" 0.00922512633363574
+PD_0271 128 Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 62 "Cynocephalus, Central Tanzania" 0.00936675136801573
+PD_0272 129 Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 63 "Cynocephalus, Central Tanzania" 0.00920767977142951
+PD_0390 T13 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" F "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 64 "Papio, Senegal" 0.008127703361918329
+PD_0391 T19 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" F "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 65 "Papio, Senegal" 0.007936475356559839
+PD_0392 T44 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" F "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 66 "Papio, Senegal" 0.007723695715534829
+PD_0393 T45 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" F "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 67 "Papio, Senegal" 0.008330904498202662
+PD_0394 T63 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" F "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 68 "Papio, Senegal" 0.00801857682576563
+PD_0395 T15 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" M "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 69 "Papio, Senegal" 0.013130761641646244
+PD_0396 T27 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" M "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 70 "Papio, Senegal" 0.012235513537848092
+PD_0397 T35 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" M "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 71 "Papio, Senegal" 0.012170174451938484
+PD_0398 T37 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" M "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 72 "Papio, Senegal" 0.01253415763208416
+PD_0399 T49 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" M "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 73 "Papio, Senegal" 0.01250268540222194
+PD_0400 T51 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" M "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 74 "Papio, Senegal" 0.01164985639084678
+PD_0401 T66 Zinner/Fischer Papio papio "Niokolo-Koba, Senegal" M "Niokolo Koba, Kédougou, Sénégal" -12.7483408 13.0780807 75 "Papio, Senegal" 0.0122129356338165
+PD_0492 "1 / 30LMF5190416" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 76 "Anubis, Tanzania" 0.0046445485308626265
+PD_0493 "12 / 08SNM1091115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" M "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 77 "Anubis, Tanzania" 0.010063245498444862
+PD_0494 "18 / 24SNM5151115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" M "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 78 "Anubis, Tanzania" 0.009638028305849866
+PD_0495 "19 / 25SNF1161115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" F "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 79 "Anubis, Tanzania" 0.0042747498299815405
+PD_0496 "20 / 26SNM1181115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" M "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 80 "Anubis, Tanzania" 0.010012274169646266
+PD_0497 "21 / 27SNM1191115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" M "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 81 "Anubis, Tanzania" 0.008789646457390022
+PD_0498 "23 / 31SNM1201115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" M "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 82 "Anubis, Tanzania" 0.009414301802264085
+PD_0499 "24 / 32SNF1201115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" F "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 83 "Anubis, Tanzania" 0.004994848132807337
+PD_0500 "25 / 33SNF1201115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" F "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 84 "Anubis, Tanzania" 0.004411243522536169
+PD_0501 "26 / 37SNF1221115" Knauf/Chuma/Roos Papio anubis "Serengeti, Tanzania" F "Serengeti, Mara, Lake Zone, Tanzania" 34.74254365165897 -1.9966259 85 "Anubis, Tanzania" 0.004219673427722656
+PD_0502 "38 / 10NCM8170516" Knauf/Chuma/Roos Papio anubis "Ngorongoro, Tanzania" M "Ngorongoro, Arusha, Northern Zone, Tanzania" 35.58594639295285 -2.6769531 86 "Anubis, Tanzania" 0.009872017493086372
+PD_0503 "44 / 14RUF5130716" Knauf/Chuma/Roos Papio cynocephalus "Ruaha, Tanzania" F "Ruaha, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7148138 -8.8953863 87 "Cynocephalus, Central Tanzania" 0.008443794018360625
+PD_0504 "56 / 13GNM1210916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" M "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 88 "Anubis, Tanzania" 0.010671138460022742
+PD_0505 "57 / 19GNM2220916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" M "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 89 "Anubis, Tanzania" 0.010578090128256178
+PD_0506 "58 / 20GNF5220916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 90 "Anubis, Tanzania" 0.004290485944912651
+PD_0507 "59 / 21GNF1220916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 91 "Anubis, Tanzania" 0.004421848295641917
+PD_0508 "60 / 22GNM1220916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" M "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 92 "Anubis, Tanzania" 0.009747154842002564
+PD_0509 "61 / 23GNF1220916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 93 "Anubis, Tanzania" 0.004694151501841126
+PD_0637 "9 / 5MKM1130715" Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 94 "Cynocephalus, Central Tanzania" 0.015324581316715996
+PD_0641 "31 / 15TNF2261215" Knauf/Chuma/Roos Papio anubis "Tarangire, Tanzania" F "Tarangire, Dar es Salaam, Coastal Zone, 34588 DSM, Tanzania" 39.2107362 -6.708198 95 "Anubis, Tanzania" 0.004738965220449287
+PD_0642 "32 / 23TNM1311215" Knauf/Chuma/Roos Papio anubis "Tarangire, Tanzania" M "Tarangire, Dar es Salaam, Coastal Zone, 34588 DSM, Tanzania" 39.2107362 -6.708198 96 "Anubis, Tanzania" 0.010807290063122347
+PD_0649 "62 / 24GNF1220916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 97 "Anubis, Tanzania" 0.004656863751243495
+PD_0650 "63 / 26GNM1230916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" M "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 98 "Anubis, Tanzania" 0.010978334790634411
+PD_0651 "64 / 28GNF1230916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 99 "Anubis, Tanzania" 0.004918220094881931
+PD_0652 "65 / 30GNF1230916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 100 "Anubis, Tanzania" 0.004116362412305368
+PD_0653 "66 / 32GNF1230916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" F "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 101 "Anubis, Tanzania" 0.004714676869142573
+PD_0654 "67 / 33GNM1230916" Knauf/Chuma/Roos Papio anubis "Gombe, Tanzania" M "Gombe, Ulanga, Morogoro, Coastal Zone, Tanzania" 36.7974518 -8.8579916 102 "Anubis, Tanzania" 0.01032220721589813
+PD_0658 "79 / 08MNM1011016" Knauf/Chuma/Roos Papio cynocephalus "Mahale, Tanzania" M "Mahale National Park, Kigoma, Western Zone, Tanzania" 29.8834256452046 -6.20329205 103 "Cynocephalus, Western Tanzania" 0.015710458221983217
+PD_0659 "81 / 13MNF1031016" Knauf/Chuma/Roos Papio cynocephalus "Mahale, Tanzania" F "Mahale National Park, Kigoma, Western Zone, Tanzania" 29.8834256452046 -6.20329205 104 "Cynocephalus, Western Tanzania" 0.00815267589213509
+PD_0662 "85 / 01UGF5101016" Knauf/Chuma/Roos Papio cynocephalus "Issa Valley, Tanzania" F "Tansania, Monduli, Arusha, Northern Zone, Tanzania" 36.46530003540425 -2.8726901 105 "Cynocephalus, Western Tanzania" 0.008391112242286908
+PD_0674 "102 / 04LMF8160815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 106 "Anubis, Tanzania" 0.004449557541498872
+PD_0675 "103 / 06LMF5170815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 107 "Anubis, Tanzania" 0.0046910726967459085
+PD_0676 "104 / 07LMF5170815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 108 "Anubis, Tanzania" 0.004282275797992072
+PD_0677 "105 / 11LMF5200815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 109 "Anubis, Tanzania" 0.004440663215668245
+PD_0678 "106 / 12LMF2210815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 110 "Anubis, Tanzania" 0.004894273833030242
+PD_0679 "107 / 13LMM8210815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" M "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 111 "Anubis, Tanzania" 0.011461365101128485
+PD_0680 "108 / 14LMF5220815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 112 "Anubis, Tanzania" 0.004974664854960913
+PD_0681 "109 / 16LMM5250815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" M "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 113 "Anubis, Tanzania" 0.010977650611724364
+PD_0682 "110 / 17LMF5270815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 114 "Anubis, Tanzania" 0.004178964782574784
+PD_0683 "111 / 18LMF5270815" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 115 "Anubis, Tanzania" 0.005023583647029364
+PD_0684 "117 / 24LMM2081215" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" M "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 116 "Anubis, Tanzania" 0.01129374126816666
+PD_0685 "118 / 25LMF1081215" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 117 "Anubis, Tanzania" 0.004651390319963109
+PD_0686 "119 / 27LMF1081215" Knauf/Chuma/Roos Papio anubis "Lake Manyara, Tanzania" F "Lake Manyara, Babati, Manyara, Northern Zone, Tanzania" 35.80648832809717 -3.62220965 118 "Anubis, Tanzania" 0.004919930542157052
+PD_0687 "130 / 12MKM1150715" Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 119 "Cynocephalus, Central Tanzania" 0.015864398476744073
+PD_0688 "131 / 13MKM1150715" Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 120 "Cynocephalus, Central Tanzania" 0.015027305580300026
+PD_0689 "132 / 14MKM1160715" Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 121 "Cynocephalus, Central Tanzania" 0.016583470511204797
+PD_0690 "133 / 16MKF1160715" Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 122 "Cynocephalus, Central Tanzania" 0.016083677817414543
+PD_0691 "134 / 19MKM1170715" Knauf/Chuma/Roos Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 123 "Cynocephalus, Central Tanzania" 0.015457312025265358
+PD_0692 35221_BZ12030 Rogers/Jolly/Phillips-Conroy Papio "ursinus (grayfoot)" "Dendro Park, Zambia" M "Dendro Balla Balla Safaris, Namwala, Zambia" 26.06254995257067 -16.14543787112292 124 "Ursinus, Zambia" 0.014075612716422894
+PD_0693 35225_BZ12031 Rogers/Jolly/Phillips-Conroy Papio "ursinus (grayfoot)" "Dendro Park, Zambia" F "Dendro Balla Balla Safaris, Namwala, Zambia" 26.06254995257067 -16.14543787112292 125 "Ursinus, Zambia" 0.009635633679664697
+PD_0694 35227_BZ12032 Rogers/Jolly/Phillips-Conroy Papio "ursinus (grayfoot)" "Dendro Park, Zambia" F "Dendro Balla Balla Safaris, Namwala, Zambia" 26.06254995257067 -16.14543787112292 126 "Ursinus, Zambia" 0.009242572895841971
+PD_0695 35229_BZ12033 Rogers/Jolly/Phillips-Conroy Papio "ursinus (grayfoot)" "Dendro Park, Zambia" F "Dendro Balla Balla Safaris, Namwala, Zambia" 26.06254995257067 -16.14543787112292 127 "Ursinus, Zambia" 0.009191259477588351
+PD_0696 39876_97070 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 128 "Hamadryas, Ethiopia" 0.011959789437098644
+PD_0697 39877_97071 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 129 "Hamadryas, Ethiopia" 0.012117492675864767
+PD_0698 39878_97073 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" F "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 130 "Hamadryas, Ethiopia" 0.006825710896096486
+PD_0699 39880_97081 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 131 "Hamadryas, Ethiopia" 0.011854425884951211
+PD_0700 39881_97083 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" F "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 132 "Hamadryas, Ethiopia" 0.0065578548528125915
+PD_0701 39882_97085 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" F "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 133 "Hamadryas, Ethiopia" 0.0075078372694146025
+PD_0702 39883_97087 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 134 "Hamadryas, Ethiopia" 0.012648757599517243
+PD_0703 39884_97089 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 135 "Hamadryas, Ethiopia" 0.012037101653934098
+PD_0704 39885_97090 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 136 "Hamadryas, Ethiopia" 0.01258136597687749
+PD_0705 39887_97093 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 137 "Hamadryas, Ethiopia" 0.011972446746934536
+PD_0706 39888_97094 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 138 "Hamadryas, Ethiopia" 0.012076099851806849
+PD_0707 39889_97096 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 139 "Hamadryas, Ethiopia" 0.011837321412200005
+PD_0708 39890_97098 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" F "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 140 "Hamadryas, Ethiopia" 0.006735057190515091
+PD_0709 39891_97099 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 141 "Hamadryas, Ethiopia" 0.011144248176321115
+PD_0710 39893_97101 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" F "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 142 "Hamadryas, Ethiopia" 0.007151037967824434
+PD_0711 39894_97103 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 143 "Hamadryas, Ethiopia" 0.014055087349121446
+PD_0712 39895_97105 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 144 "Hamadryas, Ethiopia" 0.012027523149193422
+PD_0713 39896_97106 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 145 "Hamadryas, Ethiopia" 0.011672434294878374
+PD_0714 39899_97113 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 146 "Hamadryas, Ethiopia" 0.01219719951888539
+PD_0715 39900_97114 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 147 "Hamadryas, Ethiopia" 0.011665250416322867
+PD_0716 39901_97115 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 148 "Hamadryas, Ethiopia" 0.011406630788324624
+PD_0717 39902_97118 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 149 "Hamadryas, Ethiopia" 0.01242229438029127
+PD_0718 39904_97122 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 150 "Hamadryas, Ethiopia" 0.012653888941342605
+PD_0719 39905_97123 Jolly/Phillips-Conroy Papio hamadryas "Filoha, Ethiopia" M "Awash National Park in Ethiopia" 40.00000536178701 9.083582259300927 151 "Hamadryas, Ethiopia" 0.011760351284819575
+PD_0720 39955_CK_01 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 152 "Anubis, Ethiopia" 0.009098211145821787
+PD_0721 39956_CK_02 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 153 "Anubis, Ethiopia" 0.00434008891589115
+PD_0722 39957_CK_05 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 154 "Anubis, Ethiopia" 0.008785541383929733
+PD_0723 39958_RY_01 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 155 "Anubis, Ethiopia" 0.00976596976202889
+PD_0724 39959_RY_15 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 156 "Anubis, Ethiopia" 0.004477950966265874
+PD_0725 39961_CK_03 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 157 "Anubis, Ethiopia" 0.009626055174924021
+PD_0726 39962_CK_04 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 158 "Anubis, Ethiopia" 0.0043445360788064635
+PD_0727 39964_CK_06 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 159 "Anubis, Ethiopia" 0.00977828498240976
+PD_0728 39965_CK_07 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 160 "Anubis, Ethiopia" 0.008837881070548424
+PD_0729 39966_CM_01 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 161 "Anubis, Ethiopia" 0.009324332275592739
+PD_0730 39967_CM_02 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 162 "Anubis, Ethiopia" 0.004168017920014012
+PD_0731 39968_CM_03 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 163 "Anubis, Ethiopia" 0.009831650937393525
+PD_0732 39969_OP_01 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 164 "Anubis, Ethiopia" 0.009797784081346135
+PD_0733 39971_RY_02 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 165 "Anubis, Ethiopia" 0.009568926235934992
+PD_0734 39972_RY_03 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 166 "Anubis, Ethiopia" 0.009877490924366758
+PD_0735 39973_RY_04 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 167 "Anubis, Ethiopia" 0.008750306170062247
+PD_0736 39974_RY_05 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 168 "Anubis, Ethiopia" 0.004175201798569519
+PD_0737 39975_RY_07 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 169 "Anubis, Ethiopia" 0.004472819624440513
+PD_0738 39976_RY_08 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 170 "Anubis, Ethiopia" 0.004095152866093872
+PD_0739 39977_RY_09 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 171 "Anubis, Ethiopia" 0.009377014051666455
+PD_0740 39978_RY_10 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 172 "Anubis, Ethiopia" 0.009679079040452763
+PD_0741 39979_RY_11 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 173 "Anubis, Ethiopia" 0.008819750329432146
+PD_0742 39980_RY_12 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 174 "Anubis, Ethiopia" 0.009580899366860837
+PD_0743 39981_RY_13 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" M "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 175 "Anubis, Ethiopia" 0.0088276183868977
+PD_0744 39984_RY_16 "Rogers " Papio anubis "Gog Woreda, Gambella region, Ethiopia" F "Gambrella National Park, Ethiopia" 34.17906287308874 8.07396896853714 176 "Anubis, Ethiopia" 0.004665073898164074
+PD_0745 16084_5012 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 177 "Cynocephalus, Central Tanzania" 0.009306885713386507
+PD_0746 16087_5015 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 178 "Cynocephalus, Central Tanzania" 0.013185495954450104
+PD_0747 16092_5021 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 179 "Cynocephalus, Central Tanzania" 0.01570430061179278
+PD_0748 16104_9004 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 180 "Cynocephalus, Central Tanzania" 0.015281820134837979
+PD_0749 34373_BZ11016 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 181 "Kindae, Zambia" 0.013608660610314955
+PD_0750 34374_BZ11017 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 182 "Kindae, Zambia" 0.015480574108207
+PD_0751 34375_BZ11018 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 183 "Kindae, Zambia" 0.014184397163120567
+PD_0752 16049_3114 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 184 "Cynocephalus, Central Tanzania" 0.013755074897065282
+PD_0753 16103_7001 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 185 "Cynocephalus, Central Tanzania" 0.014438227538748473
+PD_0754 16071_4001 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 186 "Cynocephalus, Central Tanzania" 0.009448168658311475
+PD_0755 16075_4005 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 187 "Cynocephalus, Central Tanzania" 0.01669943883645798
+PD_0756 16080_5004 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 188 "Cynocephalus, Central Tanzania" 0.013870359043408415
+PD_0757 16082_5009 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 189 "Cynocephalus, Central Tanzania" 0.014946230379459307
+PD_0758 34424_BZ11072 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 190 "Kindae, Zambia" 0.014161477169633951
+PD_0759 34426_BZ11074 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 191 "Kindae, Zambia" 0.01618288375937154
+PD_0760 34427_BZ11075 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 192 "Kindae, Zambia" 0.00990246345458352
+PD_0761 16169_IK02 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 193 "Cynocephalus, Central Tanzania" 0.015036541995585677
+PD_0762 16170_IK03 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 194 "Cynocephalus, Central Tanzania" 0.01506904049381297
+PD_0763 15972_KZ01 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 195 "Cynocephalus, Central Tanzania" 0.013987353637026669
+PD_0764 15973_KZ03 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 196 "Cynocephalus, Central Tanzania" 0.014225789987178487
+PD_0765 15974_KZ04 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 197 "Cynocephalus, Central Tanzania" 0.009727655743066188
+PD_0766 15975_KZ05 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 198 "Cynocephalus, Central Tanzania" 0.014704031045302223
+PD_0767 15977_KZ07 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 199 "Cynocephalus, Central Tanzania" 0.01282972292122501
+PD_0768 15978_KZ08 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 200 "Cynocephalus, Central Tanzania" 0.015092644666209635
+PD_0769 15989_1005 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 201 "Cynocephalus, Central Tanzania" 0.00874072766532157
+PD_0770 16059_3124 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 202 "Cynocephalus, Central Tanzania" 0.00892203507648436
+PD_0771 16002_2004 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 203 "Cynocephalus, Central Tanzania" 0.014169345227099506
+PD_0772 16006_2008 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 204 "Cynocephalus, Central Tanzania" 0.008771857805728768
+PD_0773 16008_2010 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 205 "Cynocephalus, Central Tanzania" 0.008856011811664703
+PD_0774 16035_3003 "Rogers " Papio cynocephalus "Mikumi, Tanzania" F "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 206 "Cynocephalus, Central Tanzania" 0.009475877904168428
+PD_0775 16074_4004 "Rogers " Papio cynocephalus "Mikumi, Tanzania" M "Mikumi, Kilosa, Morogoro, Coastal Zone, Tanzania" 36.9770319 -7.4048524 207 "Cynocephalus, Central Tanzania" 0.01623830225108545
+PD_0776 34376_BZ11019 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 208 "Kindae, Zambia" 0.017012450687805058
+PD_0777 34385_BZ11029 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 209 "Kindae, Zambia" 0.015593121538909939
+PD_0778 34390_BZ11034 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 210 "Kindae, Zambia" 0.014992412455887564
+PD_0779 34391_BZ11035 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 211 "Kindae, Zambia" 0.01585242534581823
+PD_0780 34393_BZ11037 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 212 "Kindae, Zambia" 0.015694037928142057
+PD_0781 34394_BZ11038 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 213 "Kindae, Zambia" 0.010491883585590098
+PD_0782 34395_BZ11039 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 214 "Kindae, Zambia" 0.016130886162207873
+PD_0783 34396_BZ11040 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 215 "Kindae, Zambia" 0.01642645145134872
+PD_0784 34397_BZ11041 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 216 "Kindae, Zambia" 0.01579050715445886
+PD_0785 34407_BZ11053 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 217 "Kindae, Zambia" 0.015197666128902044
+PD_0786 34408_BZ11054 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 218 "Kindae, Zambia" 0.01566940748738032
+PD_0787 34410_BZ11057 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 219 "Kindae, Zambia" 0.015692669570321963
+PD_0788 34413_BZ11060 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 220 "Kindae, Zambia" 0.010074876539915682
+PD_0789 34417_BZ11064 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 221 "Kindae, Zambia" 0.010196318296449248
+PD_0790 34418_BZ11065 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 222 "Kindae, Zambia" 0.009834729742488741
+PD_0791 34419_BZ11066 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 223 "Kindae, Zambia" 0.00967223725135228
+PD_0792 34420_BZ11067 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" F "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 224 "Kindae, Zambia" 0.010119006079613795
+PD_0793 34422_BZ11070 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 225 "Kindae, Zambia" 0.014323285481860364
+PD_0794_BAB 34423_BZ11071 Rogers/Jolly/Phillips-Conroy Papio kindae "Chunga, Zambia" M "Chunga, Mumbwa District, Central Province, Zambia" 26.0052102 -15.0535569 226 "Kindae, Zambia" 0.014963676941665538

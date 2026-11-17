@@ -79,6 +79,7 @@ pycirclize = ">=1.10.1,<2"
 crossrepo = ">=0.1.28,<0.2"
 matplotlib="*"
 ucsc-liftover = "*"
+python-calamine = ">=0.9.1,<0.10"
 
 [tool.pixi.environments]
 default = {solve-group = "default"}
