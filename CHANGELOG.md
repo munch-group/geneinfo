@@ -4,6 +4,21 @@
 
 ### Widget (`geneinfo.widget.segment_viewer_gl`)
 
+**New: `Tracks.add_arc_matrix_track`**
+- Draws a window-by-window matrix (Hi-C, LD, correlations) as arcs: cell
+  `(i, j)` becomes an arc between the midpoints of windows `i` and `j`
+  (`start + k * window_size`), coloured by the cell value through a
+  continuous colormap (`palette`, `vmin`, `vmax`).
+- `triangle=` picks the upper (default), lower or both triangles;
+  `threshold=` drops low cells; NaN and diagonal cells are skipped.
+- Arcs are drawn in order of increasing value, so high values sit on top.
+- Tooltips list the arcs under the cursor, highest value first (at most
+  five), with their matrix indices and windows; `tip_fmt` keys are
+  `value, row, col, start1, end1, start2, end2, pos1, pos2, span`.
+- `colorbar()` and `legend()` accept these tracks.
+- Arc tracks can now carry one colour per arc; `add_arc_track` is
+  unchanged.
+
 **Fix: heatmaps blank when the bin count is not a multiple of 4**
 - Heatmap textures were uploaded with WebGL's default 4-byte row
   alignment, so any heatmap whose number of bins was not a multiple of 4

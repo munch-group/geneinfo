@@ -113,9 +113,10 @@ function mkEl(cls) {
     getContext: kind => (kind === 'webgl2' ? mkGL() : mk2D()),
   });
 }
+let lastRoot = null;   // root element of the most recent render()
 function mkRoot() {
   const els = {};
-  return withFallback({
+  return lastRoot = withFallback({
     innerHTML: '', style: withFallback({ setProperty() {} }), classList: { add() {}, remove() {} },
     querySelector: sel => (els[sel] ||= mkEl(sel.replace(/^\./, ''))),
     querySelectorAll: () => [], appendChild() {}, append() {}, addEventListener() {},
@@ -440,6 +441,25 @@ if (C.odd) {
   ok(fetches(k).length > 0 && errors.length === 0 && texRejects === 0
      && !drawnStarting('could not load track'),
      `rebinned 23-bin detail view uploads ${errors[0] || ''}`);
+}
+
+// ── 16. Arc-matrix track: per-arc colours upload; tooltip lists values ───
+// Matrix track 'M' (first, so it is the band under the cursor) has two arcs
+// whose apexes coincide at chr1:400,000; see test_tracks_widget.py.
+if (C.arcmatrix) {
+  m = mount('arcmatrix'); frames(); m.kernel.flush(); redraw();
+  ok(uploads > SETUP && errors.length === 0 && !drawnStarting('could not load track'),
+     `arc-matrix track uploads ${errors[0] || ''}`);
+  const W = 1200 - 96;   // canvas offsetWidth minus LABEL_W
+  const size = C.arcmatrix.state.chrom_sizes.chr1;
+  for (const fn of listeners['sv-glcanvas:mousemove'] || [])
+    fn({ offsetX: 96 + (400000 / size) * W, offsetY: 26 + 3 });
+  const tip = lastRoot.querySelector('.sv-tooltip').textContent;
+  const n = x => x.toLocaleString();   // the widget formats in the host locale
+  const want = `chr1:${n(400000)}\nM: \n`
+    + `  r 0.9000  [0, 3]  ${n(0)}–${n(200000)} ↔ ${n(600000)}–${n(800000)}\n`
+    + `  r 0.2000  [1, 2]  ${n(200000)}–${n(400000)} ↔ ${n(400000)}–${n(600000)}\nA:`;
+  ok(tip === want, `arc-matrix tooltip: highest value first ${JSON.stringify(tip)}`);
 }
 
 console.log = origLog;

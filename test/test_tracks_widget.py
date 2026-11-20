@@ -44,6 +44,26 @@ def _frames():
     return seg, pts, arcs
 
 
+def _arc_matrix():
+    """4 windows of 200 kb on chr1 (mids 100k, 300k, 500k, 700k).
+
+    Upper-triangle cells (0,3)=0.9 and (1,2)=0.2 give two arcs centred on
+    400 kb; (0,1)=0.5 one centred on 200 kb; (2,3) is NaN and (1,3)=0.1 is
+    below the threshold used in the tests. The lower triangle and diagonal
+    carry values that must be ignored with triangle='upper'.
+    """
+    m = np.full((4, 4), 7.0)
+    m[0, 1], m[0, 2], m[0, 3] = 0.5, 0.15, 0.9
+    m[1, 2], m[1, 3], m[2, 3] = 0.2, 0.1, np.nan
+    return m
+
+
+def _arc_matrix_viewer(**kw):
+    return Tracks(CHROMS).add_arc_matrix_track(
+        _arc_matrix(), 'M', chrom='chr1', window_size=200_000,
+        threshold=0.12, vmin=0.0, vmax=1.0, value_label='r', **kw)
+
+
 def _add_first_two(t, seg, pts):
     return (t.add_point_track(pts, 'P', x='pos', y='y', group_by='g')
              .add_heatmap_track(seg, 'H', individual_col='ind', value_col='v',
@@ -163,6 +183,129 @@ class TestTransportPython(unittest.TestCase):
         json.dumps(state)
 
 
+def _decode_arc_matrix(t, tid, chrom='chr1'):
+    """Return the arc-matrix groups of a track as lists of numpy arrays."""
+    out = []
+    for gid, g in t.track_data[tid][chrom].items():
+        if g == '':
+            continue
+        out.append({
+            'pos': np.frombuffer(g['pos'], '<i4').reshape(-1, 2),
+            'rgb': np.frombuffer(g['rgb'], np.uint8).reshape(-1, 3),
+            'val': np.frombuffer(g['val'], '<f4'),
+            'idx': np.frombuffer(g['idx'], '<i4').reshape(-1, 2),
+        })
+    return out
+
+
+class TestArcMatrixTrack(unittest.TestCase):
+
+    def test_geometry_values_and_indices(self):
+        t = _arc_matrix_viewer()
+        tid = t.track_configs[0]['id']
+        groups = _decode_arc_matrix(t, tid)
+        allv = {(int(r), int(c)): (tuple(p), float(v))
+                for g in groups
+                for (r, c), p, v in zip(g['idx'], g['pos'], g['val'])}
+        self.assertEqual(set(allv), {(0, 1), (0, 2), (0, 3), (1, 2)})
+        self.assertEqual(allv[(0, 3)][0], (100_000, 700_000))
+        self.assertEqual(allv[(1, 2)][0], (300_000, 500_000))
+        self.assertAlmostEqual(allv[(0, 3)][1], 0.9, places=6)
+
+    def test_drawn_low_to_high_and_each_tier_sorted(self):
+        t = _arc_matrix_viewer()
+        groups = _decode_arc_matrix(t, t.track_configs[0]['id'])
+        vals = np.concatenate([g['val'] for g in groups])
+        self.assertTrue(np.all(np.diff(vals) >= 0))
+        rng = np.random.default_rng(0)
+        big = Tracks(CHROMS).add_arc_matrix_track(
+            rng.random((60, 60)), 'B', chrom='chr1', window_size=10_000)
+        tiers = _decode_arc_matrix(big, big.track_configs[0]['id'])
+        self.assertEqual(len(tiers), Tracks._ARC_MATRIX_TIERS)
+        self.assertEqual(sum(len(g['val']) for g in tiers), 60 * 59 // 2)
+        for a, b in zip(tiers, tiers[1:]):
+            self.assertLessEqual(a['val'].max(), b['val'].min())
+        for g in tiers:
+            self.assertTrue(np.all(np.diff(g['pos'][:, 0]) >= 0))
+
+    def test_colours_follow_colormap(self):
+        import matplotlib
+        t = _arc_matrix_viewer(palette='magma')
+        cmap = matplotlib.colormaps['magma']
+        for g in _decode_arc_matrix(t, t.track_configs[0]['id']):
+            want = np.round(cmap(g['val'].astype(float))[:, :3] * 255)
+            np.testing.assert_allclose(g['rgb'], want, atol=1)
+
+    def test_triangle_and_last_window_clipped(self):
+        # 4 windows of 300 kb on chr2 (500 kb): window 1 is cut to 300-500k.
+        m = np.arange(4.0).reshape(2, 2)
+        t = Tracks(CHROMS).add_arc_matrix_track(
+            m, 'L', chrom='chr2', window_size=300_000, triangle='lower')
+        (g,) = _decode_arc_matrix(t, t.track_configs[0]['id'], 'chr2')
+        self.assertEqual(g['idx'].tolist(), [[1, 0]])
+        self.assertEqual(g['pos'].tolist(), [[150_000, 400_000]])
+        t = Tracks(CHROMS).add_arc_matrix_track(
+            m, 'F', chrom='chr2', window_size=300_000, triangle='full')
+        idx = np.concatenate([g['idx'] for g in
+                              _decode_arc_matrix(t, t.track_configs[0]['id'], 'chr2')])
+        self.assertEqual(sorted(map(tuple, idx.tolist())), [(0, 1), (1, 0)])
+
+    def test_config_and_dataframe_input(self):
+        t = Tracks(CHROMS).add_arc_matrix_track(
+            pd.DataFrame(_arc_matrix()), 'M', chrom='chr1',
+            window_size=200_000, start=0, height=40)
+        cfg = t.track_configs[0]
+        self.assertEqual(cfg['type'], 'arc')
+        self.assertEqual(cfg['matrix'], {'start': 0, 'windowSize': 200_000,
+                                         'valueLabel': 'value'})
+        self.assertEqual((cfg['height'], cfg['arcHeight']), (40, 34))
+        self.assertEqual(sum(g['nPairs'] for g in cfg['groups']), 5)
+        json.dumps(cfg)
+
+    def test_validation(self):
+        t = Tracks(CHROMS)
+        m = _arc_matrix()
+        kw = dict(chrom='chr1', window_size=200_000)
+        with self.assertRaises(KeyError):
+            t.add_arc_matrix_track(m, 'x', chrom='chrZ', window_size=10)
+        with self.assertRaises(ValueError):
+            t.add_arc_matrix_track(m[0], 'x', **kw)
+        with self.assertRaises(ValueError):
+            t.add_arc_matrix_track(m, 'x', chrom='chr1', window_size=0)
+        with self.assertRaises(ValueError):
+            # window 3 would start at 1.2 Mb, past chr1's 1 Mb end
+            t.add_arc_matrix_track(m, 'x', chrom='chr1', window_size=400_000)
+        with self.assertRaises(ValueError):
+            t.add_arc_matrix_track(m, 'x', triangle='both', **kw)
+        with self.assertRaises(TypeError):
+            t.add_arc_matrix_track(m, 'x', palette=['red', 'blue'], **kw)
+        self.assertEqual(t.track_configs, [])
+        with self.assertWarns(UserWarning):
+            t.add_arc_matrix_track(m, 'empty', threshold=100, **kw)
+        self.assertEqual(t.track_data[t.track_configs[0]['id']], {'chr1': {'0': ''}})
+
+    def test_colorbar_and_cleanup(self):
+        t = _arc_matrix_viewer()
+        fig = t.colorbar('M')
+        self.assertEqual(fig.axes[0].get_xlabel(), 'r')
+        t.legend('M')
+        t._render_legend(**t._legend_spec)
+        t.remove_track('M')
+        self.assertEqual(t._arc_key_sources, {})
+        with self.assertRaises(KeyError):
+            t.colorbar('M')
+
+    def test_fetch_is_binary(self):
+        t = _arc_matrix_viewer()
+        resp, bufs = t._cmd_fetch_track({'tid': t.track_configs[0]['id'],
+                                         'chrom': 'chr1'}, [])
+        self.assertNotIn('error', resp)
+        json.dumps(resp)
+        self.assertEqual(len(bufs), len(resp['paths']))
+        self.assertTrue(all(p[-1] in ('pos', 'rgb', 'val', 'idx')
+                            for p in resp['paths']))
+
+
 @unittest.skipUnless(shutil.which('node'), 'node is not installed')
 class TestTransportBrowser(unittest.TestCase):
 
@@ -183,7 +326,9 @@ class TestTransportBrowser(unittest.TestCase):
         hid = odd.track_configs[0]['id']
         odd._rebin_heatmap_for_view(hid, 'chr1', 100_000, 330_000)
         self.assertEqual(odd.track_data[hid]['chr1']['0']['nWin'], 23)
+        am = _arc_matrix_viewer().add_arc_track(arcs, 'A')
         cases = {
+            'arcmatrix': {'state': _state(am), 'replies': _replies(am)},
             'odd': {'state': odd_state, 'replies': odd_replies},
             'odd_rebinned': {'state': _state(odd), 'replies': _replies(odd)},
             'empty': {'state': _state(Tracks(CHROMS)), 'replies': {}},

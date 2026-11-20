@@ -1965,7 +1965,8 @@ function _forgetTid(tid) {
   }
 }
 const rawHist = {};   // tooltip: [tid][chrom][gid] = { data: Float32Array, binWidth }
-const rawArc  = {};   // tooltip: [tid][chrom][gid] = Float32Array [p1,p2,...]
+const rawArc  = {};   // tooltip: [tid][chrom][gid] = Int32Array [p1,p2,...]
+                     //   (arc-matrix tracks: { pos, val, idx } per group)
 
 // ─── GPU-resource disposal helpers ────────────────────────────────────────
 // Every slot shape owns GPU handles (WebGL buffers / textures) that the
@@ -2214,10 +2215,12 @@ function buildSegGPU(segs, yLo, yHi, color, nInd) {
 // Build instanced arc buffer: 5 floats/instance [p1, p2, r, g, b]
 // arcs: Float32Array — [p1, p2, ...] (stride 2, already sorted by p1 in Python)
 const ARC_INST_STRIDE = 20;  // 5 * float32
-function buildArcGPU(arcs, color) {
+// `rgb` (optional) is a Uint8Array with one r,g,b triple per arc, used
+// instead of the single `color` (arc-matrix tracks colour each arc by value).
+function buildArcGPU(arcs, color, rgb = null) {
   const n = (arcs.length / 2) | 0;
   if (n === 0) return null;
-  const [r, g, b] = hexRGB(color);
+  let [r, g, b] = hexRGB(color);
   const v      = mixedVerts(n * 5);
   const starts = new Int32Array(n);
   let maxLen = 0;
@@ -2227,6 +2230,7 @@ function buildArcGPU(arcs, color) {
     starts[i] = p1;
     maxLen = Math.max(maxLen, p2 - p1);
     const o = i * 5;
+    if (rgb) { r = rgb[i * 3] / 255; g = rgb[i * 3 + 1] / 255; b = rgb[i * 3 + 2] / 255; }
     v.i32[o]   = p1; v.i32[o + 1] = p2;
     v.f32[o+2] = r;  v.f32[o + 3] = g; v.f32[o + 4] = b;
   }
@@ -2930,6 +2934,14 @@ function uploadTrack(cfg, d) {
         if (b64 === '' || b64 == null) {
           rawArc[tid][ch][gid] = new Int32Array(0);
           gpuArc[tid][ch][gid] = null;
+          continue;
+        }
+        if (typeof b64 === 'object' && !(b64 instanceof ArrayBuffer)) {
+          // Arc-matrix group: { pos, rgb, val, idx } — positions plus a
+          // colour, value and (row, col) matrix index per arc.
+          const pos = b64I32(b64.pos);
+          rawArc[tid][ch][gid] = { pos, val: b64F32(b64.val), idx: b64I32(b64.idx) };
+          gpuArc[tid][ch][gid] = buildArcGPU(pos, color, b64U8(b64.rgb));
           continue;
         }
         const arr = b64I32(b64);
@@ -4406,8 +4418,11 @@ function tipDataArc(pos, chrom, cfg, localY) {
   const apexPx = Math.min(Math.max(cfg.arcHeight ?? usable, 1), usable);
   const baselineY = cfg.height - PAD_V;  // CSS y of baseline within track
   const hits = [];
+  const mx = cfg.matrix;
+  const csz = chromSizes[chrom] || Infinity;
   for (const grp of cfg.groups) {
-    const arr = rawArc?.[cfg.id]?.[chrom]?.[grp.id];
+    const ent = rawArc?.[cfg.id]?.[chrom]?.[grp.id];
+    const arr = ent?.pos ?? ent;
     if (!arr || arr.length < 2) continue;
     const n = (arr.length / 2) | 0;
     // Arcs are stored sorted by p1. Candidates: every record whose p1 ≤ pos.
@@ -4425,7 +4440,17 @@ function tipDataArc(pos, chrom, cfg, localY) {
       const dist = 4 * t * (1 - t) * apexPx;
       const curveY = baselineY - dist;
       if (Math.abs(localY - curveY) <= TIP_ARC_TOL) {
-        hits.push({ group: grp.name, pos1: p1, pos2: p2, span });
+        const hit = { group: grp.name, pos1: p1, pos2: p2, span };
+        if (mx && ent.val) {
+          const row = ent.idx[i * 2], col = ent.idx[i * 2 + 1];
+          const s1 = mx.start + row * mx.windowSize, s2 = mx.start + col * mx.windowSize;
+          Object.assign(hit, {
+            value: ent.val[i], row, col,
+            start1: s1, end1: Math.min(s1 + mx.windowSize, csz),
+            start2: s2, end2: Math.min(s2 + mx.windowSize, csz),
+          });
+        }
+        hits.push(hit);
       }
     }
   }
@@ -4482,6 +4507,24 @@ function defaultFmtHeatmap(d) {
   if (d.nInd > 1) return `${d.group} [${d.individual}/${d.nInd}]: ${n}`;
   return d.group === 'all' ? n : `${d.group}: ${n}`;
 }
+// Arc-matrix tooltips: highest values first, at most TIP_ARC_MATRIX_MAX
+// arcs (dense matrices can put hundreds of arcs under the cursor), one per
+// line.
+const TIP_ARC_MATRIX_MAX = 5;
+function fmtArcMatrix(items, fmtOne) {
+  const sorted = [...items].sort((a, b) => b.value - a.value);
+  const shown = sorted.slice(0, TIP_ARC_MATRIX_MAX).map(fmtOne).filter(s => s !== null);
+  if (!shown.length) return null;
+  const more = sorted.length - TIP_ARC_MATRIX_MAX;
+  return '\n  ' + shown.join('\n  ') + (more > 0 ? `\n  (+${more} more)` : '');
+}
+
+function defaultFmtArcMatrix(d, label) {
+  const win = (s, e) => `${s.toLocaleString()}–${e.toLocaleString()}`;
+  return `${label} ${d.value.toPrecision(4)}  [${d.row}, ${d.col}]  `
+       + `${win(d.start1, d.end1)} ↔ ${win(d.start2, d.end2)}`;
+}
+
 function defaultFmtArc(items, nGroups) {
   return items.map(d => {
     const span = d.span.toLocaleString();
@@ -4560,6 +4603,12 @@ function tipForTrack(pos, chrom, cfg, localY) {
       data = tipDataArc(pos, chrom, cfg, localY);
       keys = 'group, pos1, pos2, span';
       if (!data) return null;
+      if (cfg.matrix) {
+        keys = 'value, row, col, start1, end1, start2, end2, pos1, pos2, span';
+        const one = cfg.tipFmt ? d => fmtTip(cfg.tipFmt, d)
+                               : d => defaultFmtArcMatrix(d, cfg.matrix.valueLabel);
+        return fmtArcMatrix(data, one) ?? `keys: ${keys}`;
+      }
       if (cfg.tipFmt) {
         const parts = data.map(d => fmtTip(cfg.tipFmt, d)).filter(s => s !== null);
         return parts.length ? parts.join(', ') : `keys: ${keys}`;
@@ -5112,6 +5161,9 @@ class Tracks(anywidget.AnyWidget):
         Vertical bars with multi-resolution LOD.
     :meth:`add_arc_track`
         Arcs linking pairs of genomic positions.
+    :meth:`add_arc_matrix_track`
+        Arcs between the windows of a window-by-window matrix, coloured by
+        the cell values.
     :meth:`add_ucsc_track`
         A UCSC Genome Browser track fetched by name and drawn as a point,
         line, histogram, fill, segment or heatmap track.
@@ -5435,6 +5487,8 @@ class Tracks(anywidget.AnyWidget):
         self.viewport = {'chrom': first, 'start': 0, 'end': self.chrom_sizes[first]}
         self._heatmap_sources: dict[str, dict] = {}
         self._heatmap_global:  dict[str, dict] = {}
+        # Colour-scale specs of add_arc_matrix_track tracks, for colorbar().
+        self._arc_key_sources: dict[str, dict] = {}
         # Monotonic so remove_track doesn't let a new track reuse a freed id.
         self._next_tid_index: int = 0
         # Source of track_revs values; monotonic across the widget's life.
@@ -5995,6 +6049,7 @@ class Tracks(anywidget.AnyWidget):
         for tid in tids:
             self._heatmap_sources.pop(tid, None)
             self._heatmap_global.pop(tid, None)
+            self._arc_key_sources.pop(tid, None)
         with self.hold_sync():
             self.track_configs = configs
             self._set_track_data(new_data)
@@ -6220,6 +6275,7 @@ class Tracks(anywidget.AnyWidget):
         """
         self._heatmap_sources.clear()
         self._heatmap_global.clear()
+        self._arc_key_sources.clear()
         with self.hold_sync():
             self.track_configs = []
             self._set_track_data({})
@@ -6573,29 +6629,8 @@ class Tracks(anywidget.AnyWidget):
                 arcs_out[chrom][gid] = self._pack_i32(arr)
                 group_counts[gid] += len(lo)
 
-        # Resolve height / arc_height so the two are always consistent:
-        #   * height    = total track band in CSS px
-        #   * arc_height = apex CSS px above the baseline (the usable band is
-        #                  height - PAD, where PAD = 2 * PAD_V in the renderer)
-        # Whichever is omitted is derived from the other; if both are given and
-        # the apex would overflow the band it is clamped (with a warning) so the
-        # on-screen result matches the requested numbers predictably.
-        PAD = 6  # 2 * PAD_V, matches the JS renderer's usable-band inset
-        if height is None and arc_height is None:
-            height, arc_height = 60, 54
-        elif height is None:
-            arc_height = int(arc_height)
-            height = arc_height + PAD          # size the band to fit the apex
-        elif arc_height is None:
-            arc_height = max(8, height - PAD)   # fill the band
-        elif arc_height > height - PAD:
-            warnings.warn(
-                f"add_arc_track: arc_height={arc_height} exceeds the usable band "
-                f"(height - {PAD} = {height - PAD}); clamping arc_height to "
-                f"{height - PAD}.",
-                stacklevel=2,
-            )
-            arc_height = height - PAD
+        height, arc_height = self._resolve_arc_height(
+            height, arc_height, 'add_arc_track')
         cfg = {
             'id': tid, 'type': 'arc', 'name': name, 'height': int(height),
             'arcHeight': int(arc_height),
@@ -6612,6 +6647,280 @@ class Tracks(anywidget.AnyWidget):
         }
 
         return self._commit_track(tid, arcs_out, cfg)
+
+    @staticmethod
+    def _resolve_arc_height(
+        height: int | None,
+        arc_height: int | None,
+        caller: str,
+    ) -> tuple[int, int]:
+        """Resolve an arc track's ``(height, arc_height)`` consistently.
+
+        * ``height``     = total track band in CSS px
+        * ``arc_height`` = apex CSS px above the baseline (the usable band is
+          ``height - PAD``, where ``PAD = 2 * PAD_V`` in the renderer)
+
+        Whichever is omitted is derived from the other; if both are given and
+        the apex would overflow the band it is clamped (with a warning) so the
+        on-screen result matches the requested numbers predictably.
+        """
+        PAD = 6  # 2 * PAD_V, matches the JS renderer's usable-band inset
+        if height is None and arc_height is None:
+            height, arc_height = 60, 54
+        elif height is None:
+            arc_height = int(arc_height)
+            height = arc_height + PAD          # size the band to fit the apex
+        elif arc_height is None:
+            arc_height = max(8, height - PAD)   # fill the band
+        elif arc_height > height - PAD:
+            warnings.warn(
+                f"{caller}: arc_height={arc_height} exceeds the usable band "
+                f"(height - {PAD} = {height - PAD}); clamping arc_height to "
+                f"{height - PAD}.",
+                stacklevel=3,
+            )
+            arc_height = height - PAD
+        return int(height), int(arc_height)
+
+    # ── add_arc_matrix_track ─────────────────────────────────────────────────
+    # Arcs are split into this many value-ranked tiers, drawn lowest first, so
+    # high values end up on top. Each tier stays sorted by left endpoint, which
+    # the renderer's viewport culling needs (it bisects the start positions).
+    _ARC_MATRIX_TIERS = 16
+    # Above this many arcs, warn that drawing and hovering will be slow.
+    _ARC_MATRIX_WARN = 1_000_000
+
+    def add_arc_matrix_track(
+        self,
+        matrix: Any,
+        name: str,
+        *,
+        chrom: str,
+        window_size: int,
+        start: int = 0,
+        triangle: str = 'upper',
+        threshold: float | None = None,
+        palette: Any = 'viridis',
+        vmin: float | None = None,
+        vmax: float | None = None,
+        value_label: str | None = None,
+        height: int | None = None,
+        arc_height: int | None = None,
+        alpha: float = 0.9,
+        line_width: float = 1.5,
+        tip_fmt: str | None = None,
+        tip_label: str | None = None,
+    ) -> 'Tracks':
+        """Add an arc track from a window-by-window matrix.
+
+        Row and column ``k`` of ``matrix`` both stand for the genomic window
+        ``[start + k * window_size, start + (k + 1) * window_size)`` on
+        ``chrom`` (the last window is cut at the chromosome end). Each kept
+        cell ``(i, j)`` is drawn as one arc between the midpoints of windows
+        ``i`` and ``j``, coloured by the cell value through a continuous
+        colormap. Useful for Hi-C contact maps, linkage-disequilibrium or
+        correlation matrices between windows, and similar data.
+
+        Arcs are drawn in order of increasing value, so the highest values
+        are on top where arcs overlap.
+
+        Parameters
+        ----------
+        matrix : numpy.ndarray or pandas.DataFrame
+            2-D numeric matrix. It need not be square: rows and columns are
+            both read as windows counted from ``start``. ``NaN`` and
+            infinite cells are skipped, as are diagonal cells (an arc from a
+            window to itself has no length).
+        name : str
+            Track display label shown in the left panel.
+        chrom : str
+            Chromosome the matrix covers; must be one of the viewer's
+            chromosomes.
+        window_size : int
+            Window width in base pairs.
+        start : int, default 0
+            Position where window 0 begins.
+        triangle : {'upper', 'lower', 'full'}, default ``'upper'``
+            Which cells to draw: ``'upper'`` keeps ``i < j``, ``'lower'``
+            keeps ``i > j``, ``'full'`` keeps both. For a symmetric matrix
+            ``'upper'`` draws each pair once; ``'full'`` would draw every arc
+            twice.
+        threshold : float, optional
+            Skip cells with a value below ``threshold``. An n-by-n matrix
+            gives up to n*(n-1)/2 arcs, so thresholding is usually needed for
+            more than a few hundred windows.
+        palette : str or matplotlib.colors.Colormap, default ``'viridis'``
+            Continuous colormap (name or instance) for the cell values.
+        vmin, vmax : float, optional
+            Colour-scale range; inferred from the drawn cells when omitted.
+            Values outside it get the end colours.
+        value_label : str, optional
+            Name for the values in the default tooltip and as the default
+            title of :meth:`colorbar` / :meth:`legend`. Defaults to
+            ``'value'``.
+        height, arc_height : int, optional
+            Track height and arc apex height in CSS pixels, as in
+            :meth:`add_arc_track`.
+        alpha : float, default 0.9
+            Line opacity (0..1).
+        line_width : float, default 1.5
+            Stroke width in CSS pixels.
+        tip_fmt : str, optional
+            Python format string for tooltips. Available keys:
+            ``{value}``, ``{row}``, ``{col}`` (matrix indices),
+            ``{start1}``, ``{end1}`` (row window), ``{start2}``, ``{end2}``
+            (column window), ``{pos1}``, ``{pos2}`` (the drawn arc ends,
+            left one first) and ``{span}``.
+        tip_label : str, optional
+            Heading shown above the tooltip body. Defaults to
+            ``f'{name}:'``.
+
+        Returns
+        -------
+        Tracks
+            ``self``, to support fluent chaining.
+
+        Raises
+        ------
+        KeyError
+            If ``chrom`` is not one of the viewer's chromosomes.
+        ValueError
+            If ``matrix`` is not 2-D, ``window_size`` or ``start`` is
+            invalid, the windows run past the chromosome end, or
+            ``triangle`` is not one of the allowed values.
+        TypeError
+            If ``palette`` is not a colormap name or ``Colormap``.
+
+        Examples
+        --------
+        >>> m = np.random.default_rng(1).random((200, 200))
+        >>> v.add_arc_matrix_track(m, 'LD', chrom='chr3', window_size=50_000,
+        ...                        threshold=0.95)
+        """
+        if isinstance(matrix, pd.DataFrame):
+            mat = matrix.to_numpy(dtype=np.float64)
+        else:
+            mat = np.asarray(matrix, dtype=np.float64)
+        if mat.ndim != 2:
+            raise ValueError(
+                f"add_arc_matrix_track: matrix must be 2-D, got {mat.ndim}-D")
+        chrom = str(chrom)
+        if chrom not in self.chrom_sizes:
+            raise KeyError(
+                f"add_arc_matrix_track: unknown chromosome {chrom!r}")
+        csz = int(self.chrom_sizes[chrom])
+        if int(window_size) != window_size or window_size <= 0:
+            raise ValueError(
+                f"add_arc_matrix_track: window_size must be a positive "
+                f"integer, got {window_size!r}")
+        if int(start) != start or start < 0:
+            raise ValueError(
+                f"add_arc_matrix_track: start must be a non-negative "
+                f"integer, got {start!r}")
+        w, start = int(window_size), int(start)
+        n_win = max(mat.shape)
+        if n_win and start + (n_win - 1) * w >= csz:
+            raise ValueError(
+                f"add_arc_matrix_track: {n_win} windows of {w:,} bp from "
+                f"{start:,} run past the end of {chrom} ({csz:,} bp)")
+        if triangle not in ('upper', 'lower', 'full'):
+            raise ValueError(
+                f"add_arc_matrix_track: triangle must be 'upper', 'lower' or "
+                f"'full', got {triangle!r}")
+
+        keep = np.isfinite(mat)
+        if threshold is not None:
+            keep &= mat >= threshold
+        rows, cols = np.nonzero(keep)
+        del keep
+        sel = {'upper': rows < cols, 'lower': rows > cols,
+               'full': rows != cols}[triangle]
+        rows, cols = rows[sel], cols[sel]
+        vals = mat[rows, cols]
+        n = len(vals)
+        if n == 0:
+            warnings.warn(
+                f"add_arc_matrix_track: no cells to draw for {name!r} "
+                f"(all are NaN, on the diagonal, outside the triangle or "
+                f"below the threshold).",
+                stacklevel=2,
+            )
+        elif n > self._ARC_MATRIX_WARN:
+            warnings.warn(
+                f"add_arc_matrix_track: drawing {n:,} arcs for {name!r}; "
+                f"drawing and tooltips may be slow. Pass threshold= to keep "
+                f"fewer cells.",
+                stacklevel=2,
+            )
+
+        # Colour scale. _build_heatmap_lut resolves the palette and infers
+        # vmin/vmax; a dict or list palette resolves to discrete mode, which
+        # has no meaning for matrix values.
+        if not isinstance(palette, (str, mcolors.Colormap)):
+            raise TypeError(
+                f"add_arc_matrix_track: palette must be a colormap name or "
+                f"Colormap, got {type(palette).__name__}")
+        scale_vals = vals if n else np.array([0.0, 1.0])
+        lut_info = _build_heatmap_lut(pd.Series(scale_vals), palette, vmin, vmax)
+        cmap = lut_info['palette_ref']
+        v_lo, v_hi = lut_info['vmin'], lut_info['vmax']
+        frac = np.clip((vals - v_lo) / (v_hi - v_lo), 0.0, 1.0)
+        rgb_u8 = np.clip(np.round(cmap(frac)[:, :3] * 255.0), 0, 255
+                         ).astype(np.uint8)
+
+        # Window midpoints; the last window is cut at the chromosome end.
+        win_lo = start + np.arange(n_win, dtype=np.float64) * w
+        win_hi = np.minimum(win_lo + w, csz)
+        mid = 0.5 * (win_lo + win_hi)
+        p_row, p_col = mid[rows], mid[cols]
+        lo = np.minimum(p_row, p_col)
+        hi = np.maximum(p_row, p_col)
+
+        tid = self._tid()
+        n_tiers = max(1, min(self._ARC_MATRIX_TIERS, n))
+        tiers = np.array_split(np.argsort(vals, kind='stable'), n_tiers)
+        chrom_out: dict[str, Any] = {}
+        groups_cfg = []
+        for ti, idx in enumerate(tiers):
+            gid = str(ti)
+            if len(idx):
+                idx = idx[np.argsort(lo[idx], kind='stable')]
+                pos = np.empty(len(idx) * 2, dtype=np.float64)
+                pos[0::2], pos[1::2] = lo[idx], hi[idx]
+                rc = np.empty(len(idx) * 2, dtype=np.int64)
+                rc[0::2], rc[1::2] = rows[idx], cols[idx]
+                chrom_out[gid] = {
+                    'pos': self._pack_i32(pos),
+                    'rgb': self._pack_u8(rgb_u8[idx].ravel()),
+                    'val': self._pack_f32(vals[idx]),
+                    'idx': self._pack_i32(rc),
+                }
+            else:
+                chrom_out[gid] = ''
+            groups_cfg.append({
+                'id': gid, 'name': f'tier {ti}', 'nPairs': int(len(idx)),
+                'color': mcolors.to_hex(cmap(0.5)),
+            })
+
+        height, arc_height = self._resolve_arc_height(
+            height, arc_height, 'add_arc_matrix_track')
+        label = value_label if value_label is not None else 'value'
+        cfg = {
+            'id': tid, 'type': 'arc', 'name': name, 'height': height,
+            'arcHeight': arc_height,
+            'alpha': float(max(0.0, min(1.0, alpha))),
+            'lineWidth': float(max(0.5, line_width)),
+            'groups': groups_cfg,
+            'matrix': {'start': start, 'windowSize': w, 'valueLabel': label},
+            **(({'tipFmt': tip_fmt} if tip_fmt is not None else {})),
+            'tipLabel': tip_label if tip_label is not None else f'{name}:',
+        }
+        # Lets colorbar() / legend() draw a key for this track.
+        self._arc_key_sources[tid] = {
+            'mode': 'continuous', 'vmin': v_lo, 'vmax': v_hi,
+            'palette_ref': cmap, 'value_col': label,
+        }
+        return self._commit_track(tid, {chrom: chrom_out}, cfg)
 
     # ── add_heatmap_track ────────────────────────────────────────────────────
     def add_heatmap_track(
@@ -6934,24 +7243,28 @@ class Tracks(anywidget.AnyWidget):
     _KEY_GAP_IN     = 0.08   # inches between swatch and its label
 
     def _resolve_heatmap_src(self, track_name: str) -> dict:
-        """Look up a value-mode heatmap source by track name.
+        """Look up the colour key of a track by name.
 
-        Raises ``KeyError`` when the name is unknown and ``ValueError``
-        when the track exists but is in density mode (no palette).
+        Finds value-mode heatmaps and :meth:`add_arc_matrix_track` tracks.
+        Raises ``KeyError`` when no such track is named ``track_name`` and
+        ``ValueError`` when it is a heatmap in density mode (no palette).
         """
-        tid = None
         for cfg in self.track_configs:
-            if cfg.get('type') == 'heatmap' and cfg.get('name') == track_name:
-                tid = cfg['id']
-                break
-        if tid is None:
-            raise KeyError(f"no heatmap track named {track_name!r}")
-        src = self._heatmap_sources.get(tid)
-        if src is None or src.get('mode', 'density') == 'density':
-            raise ValueError(
-                f"track {track_name!r} is in density mode; no palette to show"
-            )
-        return src
+            if cfg.get('name') != track_name:
+                continue
+            tid = cfg['id']
+            if cfg.get('type') == 'arc' and tid in self._arc_key_sources:
+                return self._arc_key_sources[tid]
+            if cfg.get('type') != 'heatmap':
+                continue
+            src = self._heatmap_sources.get(tid)
+            if src is None or src.get('mode', 'density') == 'density':
+                raise ValueError(
+                    f"track {track_name!r} is in density mode; no palette to show"
+                )
+            return src
+        raise KeyError(
+            f"no heatmap or arc-matrix track named {track_name!r}")
 
     @staticmethod
     def _key_fg_color() -> str:
@@ -7126,12 +7439,14 @@ class Tracks(anywidget.AnyWidget):
 
         Continuous tracks render as a small colorbar; discrete tracks
         as a stacked swatch/label legend. Density-mode tracks have no
-        palette and raise :class:`ValueError`.
+        palette and raise :class:`ValueError`. Tracks added with
+        :meth:`add_arc_matrix_track` render as a colorbar.
 
         Parameters
         ----------
         track_name : str
-            Name of a heatmap track added via :meth:`add_heatmap_track`.
+            Name of a heatmap track added via :meth:`add_heatmap_track`,
+            or of a track added via :meth:`add_arc_matrix_track`.
         ax : matplotlib.axes.Axes, optional
             Target axes. When omitted, a small figure is created at
             ``figsize`` (small by default — ~30% of the legacy size).
@@ -7154,7 +7469,7 @@ class Tracks(anywidget.AnyWidget):
         Raises
         ------
         KeyError
-            If no heatmap track is named ``track_name``.
+            If no heatmap or arc-matrix track is named ``track_name``.
         ValueError
             If the named track is in density mode (no palette).
         """
@@ -7218,7 +7533,8 @@ class Tracks(anywidget.AnyWidget):
         Parameters
         ----------
         *track_names : str
-            Names of value-mode heatmap tracks, in left-to-right order.
+            Names of value-mode heatmap tracks or
+            :meth:`add_arc_matrix_track` tracks, in left-to-right order.
         orientation : {'horizontal', 'vertical'}, default ``'horizontal'``
             Colorbar orientation for continuous keys.
         align : {'right', 'center', 'left'}, default ``'right'``
