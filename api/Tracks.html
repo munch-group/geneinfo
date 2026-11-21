@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-cb61c712ca1a7fe70a83faed8e4da2d7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -586,6 +586,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
   <ul class="collapse">
+  <li><a href="#geneinfo.widget.Tracks.add_arc_matrix_track" id="toc-geneinfo.widget.Tracks.add_arc_matrix_track" class="nav-link" data-scroll-target="#geneinfo.widget.Tracks.add_arc_matrix_track">add_arc_matrix_track</a></li>
   <li><a href="#geneinfo.widget.Tracks.add_arc_track" id="toc-geneinfo.widget.Tracks.add_arc_track" class="nav-link" data-scroll-target="#geneinfo.widget.Tracks.add_arc_track">add_arc_track</a></li>
   <li><a href="#geneinfo.widget.Tracks.add_fill_track" id="toc-geneinfo.widget.Tracks.add_fill_track" class="nav-link" data-scroll-target="#geneinfo.widget.Tracks.add_fill_track">add_fill_track</a></li>
   <li><a href="#geneinfo.widget.Tracks.add_gene_track" id="toc-geneinfo.widget.Tracks.add_gene_track" class="nav-link" data-scroll-target="#geneinfo.widget.Tracks.add_gene_track">add_gene_track</a></li>
@@ -644,7 +645,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="track-types" class="level2 doc-section doc-section-track-types">
 <h2 class="doc-section doc-section-track-types anchored" data-anchor-id="track-types">Track types</h2>
-<p>:meth:<code>add_segment_track</code> Instanced GPU rectangles with automatic level-of-detail (LOD) density fallback when zoomed out. :meth:<code>add_heatmap_track</code> R8 texture rendering; handles 10 k+ individuals at 60 fps. :meth:<code>add_gene_track</code> Exon blocks plus intron connectors (drawn on the 2D overlay). :meth:<code>add_point_track</code> Point cloud (<code>gl.POINTS</code>). :meth:<code>add_line_track</code> Connected polyline per group (<code>gl.LINE_STRIP</code>). :meth:<code>add_fill_track</code> Fill-between two curves with optional pos/neg colour split. :meth:<code>add_histogram_track</code> Vertical bars with multi-resolution LOD. :meth:<code>add_arc_track</code> Arcs linking pairs of genomic positions. :meth:<code>add_ucsc_track</code> A UCSC Genome Browser track fetched by name and drawn as a point, line, histogram, fill, segment or heatmap track.</p>
+<p>:meth:<code>add_segment_track</code> Instanced GPU rectangles with automatic level-of-detail (LOD) density fallback when zoomed out. :meth:<code>add_heatmap_track</code> R8 texture rendering; handles 10 k+ individuals at 60 fps. :meth:<code>add_gene_track</code> Exon blocks plus intron connectors (drawn on the 2D overlay). :meth:<code>add_point_track</code> Point cloud (<code>gl.POINTS</code>). :meth:<code>add_line_track</code> Connected polyline per group (<code>gl.LINE_STRIP</code>). :meth:<code>add_fill_track</code> Fill-between two curves with optional pos/neg colour split. :meth:<code>add_histogram_track</code> Vertical bars with multi-resolution LOD. :meth:<code>add_arc_track</code> Arcs linking pairs of genomic positions. :meth:<code>add_arc_matrix_track</code> Arcs between the windows of a window-by-window matrix, coloured by the cell values. :meth:<code>add_ucsc_track</code> A UCSC Genome Browser track fetched by name and drawn as a point, line, histogram, fill, segment or heatmap track.</p>
 <p>Point and line tracks accept <code>y_scale='log'</code> for a base-10 log y-axis.</p>
 </section>
 <section id="toolbar" class="level2 doc-section doc-section-toolbar">
@@ -680,121 +681,262 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
+<td><a href="#geneinfo.widget.Tracks.add_arc_matrix_track">add_arc_matrix_track</a></td>
+<td>Add an arc track from a window-by-window matrix.</td>
+</tr>
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.add_arc_track">add_arc_track</a></td>
 <td>Add an arc track connecting pairs of positions on the same chromosome.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.add_fill_track">add_fill_track</a></td>
 <td>Add a fill-between track.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.add_gene_track">add_gene_track</a></td>
 <td>Add a gene / exon annotation track.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.add_heatmap_track">add_heatmap_track</a></td>
 <td>Add a heatmap track — one row per individual, GPU texture rendering.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.add_histogram_track">add_histogram_track</a></td>
 <td>Add a histogram track — vertical bars centred on each <code>x</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.add_line_track">add_line_track</a></td>
 <td>Add a line track — one connected polyline per group.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.add_point_track">add_point_track</a></td>
 <td>Add a point track — point cloud rendered with <code>gl.POINTS</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.add_segment_track">add_segment_track</a></td>
 <td>Add a segment track rendered with GPU-instanced rectangles.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.add_spans">add_spans</a></td>
 <td>Add shaded vertical spans across all tracks.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.add_ucsc_track">add_ucsc_track</a></td>
 <td>Fetch a UCSC track and add it as a widget track of the given kind.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.add_vlines">add_vlines</a></td>
 <td>Add thin vertical guide lines across all tracks.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.added_tracks">added_tracks</a></td>
 <td>Return the display names of all tracks, in display order.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.clear_spans">clear_spans</a></td>
 <td>Remove all vertical spans.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.clear_tracks">clear_tracks</a></td>
 <td>Remove every track from the viewer.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.clear_vlines">clear_vlines</a></td>
 <td>Remove all vertical marker lines.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.colorbar">colorbar</a></td>
 <td>Build a compact matplotlib key for a value-mode heatmap.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.hide_track">hide_track</a></td>
 <td>Hide tracks without removing them.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.legend">legend</a></td>
 <td>Arm a legend strip to appear above the widget on display.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.remove_track">remove_track</a></td>
 <td>Remove tracks by display name, or a single track by index.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.select_tracks">select_tracks</a></td>
 <td>Show only the listed tracks, in the order listed.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.set_viewport">set_viewport</a></td>
 <td>Move the viewport to a new chromosome and base-pair window.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#geneinfo.widget.Tracks.show_track">show_track</a></td>
 <td>Show tracks hidden with :meth:<code>hide_track</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#geneinfo.widget.Tracks.zoom_to">zoom_to</a></td>
 <td>Zoom the viewport to a chromosome, range, or centred window.</td>
 </tr>
 </tbody>
 </table>
-<section id="geneinfo.widget.Tracks.add_arc_track" class="level3">
-<h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_arc_track">add_arc_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_arc_track(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<section id="geneinfo.widget.Tracks.add_arc_matrix_track" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_arc_matrix_track">add_arc_matrix_track</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_arc_matrix_track(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    matrix,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    pos1<span class="op">=</span><span class="st">'pos1'</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    pos2<span class="op">=</span><span class="st">'pos2'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    arc_height<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.9</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    line_width<span class="op">=</span><span class="fl">1.5</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Add an arc track connecting pairs of positions on the same chromosome.</p>
-<p>Each record is drawn as a quadratic-Bezier curve from <code>pos1</code> to <code>pos2</code> with a fixed apex height above the track baseline, clamped so the apex never leaves the track band. Useful for splice junctions, Hi-C interactions, structural-variant links, and similar pairwise-coordinate data.</p>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    chrom,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    window_size,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    triangle<span class="op">=</span><span class="st">'upper'</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    threshold<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="st">'viridis'</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    vmax<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    value_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    arc_height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    height_by_span<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.9</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    line_width<span class="op">=</span><span class="fl">1.5</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add an arc track from a window-by-window matrix.</p>
+<p>Row and column <code>k</code> of <code>matrix</code> both stand for the genomic window <code>[start + k * window_size, start + (k + 1) * window_size)</code> on <code>chrom</code> (the last window is cut at the chromosome end). Each kept cell <code>(i, j)</code> is drawn as one arc between the midpoints of windows <code>i</code> and <code>j</code>, coloured by the cell value through a continuous colormap. Useful for Hi-C contact maps, linkage-disequilibrium or correlation matrices between windows, and similar data.</p>
+<p>Arcs are drawn in order of increasing value, so the highest values are on top where arcs overlap.</p>
 <section id="parameters-1" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<dl>
+<dt><code><span class="parameter-name"><strong>matrix</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>numpy</code>.<code>ndarray</code> or <code>pandas</code>.<code>DataFrame</code></span></code></dt>
+<dd>
+<p>2-D numeric matrix. It need not be square: rows and columns are both read as windows counted from <code>start</code>. <code>NaN</code> and infinite cells are skipped, as are diagonal cells (an arc from a window to itself has no length).</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>name</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
+<dd>
+<p>Track display label shown in the left panel.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>chrom</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
+<dd>
+<p>Chromosome the matrix covers; must be one of the viewer’s chromosomes.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>window_size</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span></code></dt>
+<dd>
+<p>Window width in base pairs.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>start</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0</span></code></dt>
+<dd>
+<p>Position where window 0 begins.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>triangle</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">('upper', 'lower', 'full')</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'upper'</span></code></dt>
+<dd>
+<p>Which cells to draw: <code>'upper'</code> keeps <code>i &lt; j</code>, <code>'lower'</code> keeps <code>i &gt; j</code>, <code>'full'</code> keeps both. For a symmetric matrix <code>'upper'</code> draws each pair once; <code>'full'</code> would draw every arc twice.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>threshold</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Skip cells with a value below <code>threshold</code>. An n-by-n matrix gives up to n*(n-1)/2 arcs, so thresholding is usually needed for more than a few hundred windows.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>palette</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> or <code>matplotlib</code>.<code>colors</code>.<code>Colormap</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default"><code>\'viridis\'</code></span></code></dt>
+<dd>
+<p>Continuous colormap (name or instance) for the cell values.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>vmin</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour-scale range; inferred from the drawn cells when omitted. Values outside it get the end colours.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>vmax</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Colour-scale range; inferred from the drawn cells when omitted. Values outside it get the end colours.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>value_label</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Name for the values in the default tooltip and as the default title of :meth:<code>colorbar</code> / :meth:<code>legend</code>. Defaults to <code>'value'</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>height</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Track height and arc apex height in CSS pixels, as in :meth:<code>add_arc_track</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>arc_height</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Track height and arc apex height in CSS pixels, as in :meth:<code>add_arc_track</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>height_by_span</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">False</span></code></dt>
+<dd>
+<p>Scale arc heights with their span so shorter arcs nest under longer ones, as in :meth:<code>add_arc_track</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>alpha</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.9</span></code></dt>
+<dd>
+<p>Line opacity (0..1).</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>line_width</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">1.5</span></code></dt>
+<dd>
+<p>Stroke width in CSS pixels.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>tip_fmt</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Python format string for tooltips. Available keys: <code>{value}</code>, <code>{row}</code>, <code>{col}</code> (matrix indices), <code>{start1}</code>, <code>{end1}</code> (row window), <code>{start2}</code>, <code>{end2}</code> (column window), <code>{pos1}</code>, <code>{pos2}</code> (the drawn arc ends, left one first) and <code>{span}</code>.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>tip_label</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Heading shown above the tooltip body. Defaults to <code>f'{name}:'</code>.</p>
+</dd>
+</dl>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<dl>
+<dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
+<dd>
+<p><code>self</code>, to support fluent chaining.</p>
+</dd>
+</dl>
+</section>
+<section id="raises" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h4>
+<dl>
+<dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
+<dd>
+<p>If <code>chrom</code> is not one of the viewer’s chromosomes.</p>
+</dd>
+<dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>ValueError</code></span></code></dt>
+<dd>
+<p>If <code>matrix</code> is not 2-D, <code>window_size</code> or <code>start</code> is invalid, the windows run past the chromosome end, or <code>triangle</code> is not one of the allowed values.</p>
+</dd>
+<dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>TypeError</code></span></code></dt>
+<dd>
+<p>If <code>palette</code> is not a colormap name or <code>Colormap</code>.</p>
+</dd>
+</dl>
+</section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> m <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>).random((<span class="dv">200</span>, <span class="dv">200</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> v.add_arc_matrix_track(m, <span class="st">'LD'</span>, chrom<span class="op">=</span><span class="st">'chr3'</span>, window_size<span class="op">=</span><span class="dv">50_000</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>...                        threshold<span class="op">=</span><span class="fl">0.95</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="geneinfo.widget.Tracks.add_arc_track" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_arc_track">add_arc_track</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_arc_track(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    pos1<span class="op">=</span><span class="st">'pos1'</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    pos2<span class="op">=</span><span class="st">'pos2'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    arc_height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    height_by_span<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.9</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    line_width<span class="op">=</span><span class="fl">1.5</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add an arc track connecting pairs of positions on the same chromosome.</p>
+<p>Each record is drawn as a quadratic-Bezier curve from <code>pos1</code> to <code>pos2</code> with a fixed apex height above the track baseline, clamped so the apex never leaves the track band. Useful for splice junctions, Hi-C interactions, structural-variant links, and similar pairwise-coordinate data.</p>
+<section id="parameters-2" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -832,6 +974,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <dd>
 <p>Apex height above the baseline in CSS pixels — how tall the arcs are drawn. When omitted it fills the usable band (<code>height - 6</code>, where 6 = <code>2 * PAD_V</code>). If both <code>height</code> and <code>arc_height</code> are given and the apex would overflow the band, <code>arc_height</code> is clamped to <code>height - 6</code> (with a warning) so the arcs never leave the track.</p>
 </dd>
+<dt><code><span class="parameter-name"><strong>height_by_span</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>bool</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">False</span></code></dt>
+<dd>
+<p>Scale each arc’s height with its span, so shorter arcs nest under longer ones. <code>arc_height</code> is then the height of an arc spanning the reference span: the longest arc on the chromosome, or the visible range when that is shorter. Zoomed out, the longest arc fills the track; zoomed in, an arc as wide as the view does, and arcs wider than the view are drawn at full height.</p>
+</dd>
 <dt><code><span class="parameter-name"><strong>alpha</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>float</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">0.9</span></code></dt>
 <dd>
 <p>Line opacity (0..1).</p>
@@ -850,8 +996,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -862,37 +1008,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_fill_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_fill_track">add_fill_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_fill_track(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    y_lo<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    y_hi<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    color_pos<span class="op">=</span><span class="st">'C0'</span>,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    color_neg<span class="op">=</span><span class="st">'C3'</span>,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    baseline<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    step<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'envelope'</span>,</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    y_range_per_zoom<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    y_range_per_lod<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_fill_track(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    y_lo<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    y_hi<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    color_pos<span class="op">=</span><span class="st">'C0'</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    color_neg<span class="op">=</span><span class="st">'C3'</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    baseline<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    step<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'envelope'</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    y_range_per_zoom<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    y_range_per_lod<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a fill-between track.</p>
 <p>Either supply <code>y</code> (fill from a single curve to <code>baseline</code>) or both <code>y_lo</code> and <code>y_hi</code> (fill between two curves). When <code>baseline</code> is set, the area above and below it can be drawn in distinct colours.</p>
 <p>A missing value (<code>NaN</code> in <code>y</code>, or in either <code>y_lo</code> or <code>y_hi</code>) breaks the fill, as in matplotlib: nothing is filled between the samples on either side of it. Positions that simply have no row are bridged, so add <code>NaN</code> rows where the fill should break. When zoomed out, a bin whose samples are all <code>NaN</code> is a gap; other bins aggregate their non-<code>NaN</code> samples.</p>
-<section id="parameters-2" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
+<section id="parameters-3" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -988,8 +1134,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-1" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<section id="returns-2" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -997,8 +1143,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="raises" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h4>
+<section id="raises-1" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>TypeError</code></span></code></dt>
 <dd>
@@ -1013,29 +1159,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_gene_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_gene_track">add_gene_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_gene_track(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    genes_data<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    exons_df<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Genes'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    collapse<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    label_padding<span class="op">=</span><span class="dv">0</span>,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    highlight<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    highlight_color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    highlight_fill_color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    highlight_spine_color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    highlight_outline_color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    highlight_label_color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    highlight_halo_color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_gene_track(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    genes_data<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    exons_df<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Genes'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    collapse<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    label_padding<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    highlight<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    highlight_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    highlight_fill_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    highlight_spine_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    highlight_outline_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    highlight_label_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    highlight_halo_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a gene / exon annotation track.</p>
-<section id="parameters-3" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
+<section id="parameters-4" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>genes_data</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>dict</code> or <code>pandas</code>.<code>DataFrame</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
@@ -1107,8 +1253,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-2" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
+<section id="returns-3" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-3">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -1116,8 +1262,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="raises-1" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h4>
+<section id="raises-2" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-2">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>ValueError</code></span></code></dt>
 <dd>
@@ -1128,33 +1274,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_heatmap_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_heatmap_track">add_heatmap_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_heatmap_track(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="st">'start'</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="st">'end'</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    individual_col<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    sort_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    value_col<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    vmax<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span><span class="dv">1000</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.5</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    shade<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    group_col<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_heatmap_track(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="st">'start'</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="st">'end'</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    individual_col<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    sort_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    value_col<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    vmax<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.5</span>,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    shade<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    group_col<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a heatmap track — one row per individual, GPU texture rendering.</p>
-<section id="parameters-4" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<section id="parameters-5" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1242,8 +1388,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-3" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-3">Returns</h4>
+<section id="returns-4" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-4">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -1251,8 +1397,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="raises-2" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-2">Raises</h4>
+<section id="raises-3" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-3">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>ValueError</code></span></code></dt>
 <dd>
@@ -1263,28 +1409,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_histogram_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_histogram_track">add_histogram_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_histogram_track(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    bin_width<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'mean'</span>,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_histogram_track(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    bin_width<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'mean'</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a histogram track — vertical bars centred on each <code>x</code>.</p>
-<section id="parameters-5" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1352,8 +1498,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-4" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-4">Returns</h4>
+<section id="returns-5" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-5">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -1361,8 +1507,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="raises-3" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-3">Raises</h4>
+<section id="raises-4" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-4">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>ValueError</code></span></code></dt>
 <dd>
@@ -1373,38 +1519,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_line_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_line_track">add_line_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_line_track(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    y_scale<span class="op">=</span><span class="st">'linear'</span>,</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    step<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    lw<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    ls<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    linestyle<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'mean'</span>,</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    y_range_per_zoom<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    y_range_per_lod<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_line_track(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    y_scale<span class="op">=</span><span class="st">'linear'</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    step<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    lw<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    ls<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    linestyle<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'mean'</span>,</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    y_range_per_zoom<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    y_range_per_lod<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a line track — one connected polyline per group.</p>
 <p>A missing <code>y</code> value (<code>NaN</code>) breaks the line, as in matplotlib: the line stops at the last sample before it and resumes at the next sample after it. Positions that simply have no row are bridged, so add <code>NaN</code> rows where the line should break. When zoomed out, a bin whose samples are all <code>NaN</code> is a gap; other bins aggregate their non-<code>NaN</code> samples.</p>
-<section id="parameters-6" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<section id="parameters-7" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1508,8 +1654,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-5" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-5">Returns</h4>
+<section id="returns-6" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-6">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -1517,8 +1663,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="raises-4" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-4">Raises</h4>
+<section id="raises-5" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-5">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>TypeError</code></span></code></dt>
 <dd>
@@ -1537,40 +1683,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_point_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_point_track">add_point_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_point_track(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    value_col<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    n_bins<span class="op">=</span><span class="dv">70</span>,</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    vmax<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    y_scale<span class="op">=</span><span class="st">'linear'</span>,</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    point_size<span class="op">=</span><span class="dv">3</span>,</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    size<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    marker<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'mean'</span>,</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    y_range_per_zoom<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    y_range_per_lod<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_point_track(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'pos'</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    value_col<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    n_bins<span class="op">=</span><span class="dv">70</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    vmin<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    vmax<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">60</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    y_range<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    y_scale<span class="op">=</span><span class="st">'linear'</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    point_size<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    size<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    marker<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">=</span><span class="st">'mean'</span>,</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    y_range_per_zoom<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    y_range_per_lod<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a point track — point cloud rendered with <code>gl.POINTS</code>.</p>
-<section id="parameters-7" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
+<section id="parameters-8" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1686,8 +1832,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-6" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-6">Returns</h4>
+<section id="returns-7" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-7">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -1695,8 +1841,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="raises-5" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-5">Raises</h4>
+<section id="raises-6" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-6">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>TypeError</code></span></code></dt>
 <dd>
@@ -1715,26 +1861,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_segment_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_segment_track">add_segment_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_segment_track(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="st">'start'</span>,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="st">'end'</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    individual_col<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_segment_track(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="st">'start'</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="st">'end'</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    individual_col<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">1024</span>, <span class="dv">4096</span>),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    tip_fmt<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    tip_label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add a segment track rendered with GPU-instanced rectangles.</p>
-<section id="parameters-8" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
+<section id="parameters-9" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>df</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1794,8 +1940,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-7" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-7">Returns</h4>
+<section id="returns-8" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-8">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -1806,25 +1952,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_spans" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_spans">add_spans</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_spans(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    ranges,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="st">'start'</span>,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="st">'end'</span>,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.1</span>,</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    edgecolor<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    edgewidth<span class="op">=</span><span class="fl">0.0</span>,</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    dash<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    replace<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_spans(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    ranges,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="st">'start'</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="st">'end'</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    edgecolor<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    edgewidth<span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    dash<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    replace<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add shaded vertical spans across all tracks.</p>
-<section id="parameters-9" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
+<section id="parameters-10" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>ranges</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>tuple</code> | <code>Iterable</code>[<code>tuple</code>] | <code>dict</code>[<code>str</code>, <code>Iterable</code>[<code>tuple</code>]] | <code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -1880,8 +2026,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="returns-8" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-8">Returns</h4>
+<section id="returns-9" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-9">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -1889,8 +2035,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dd>
 </dl>
 </section>
-<section id="raises-6" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-6">Raises</h4>
+<section id="raises-7" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-7">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>TypeError</code></span></code></dt>
 <dd>
@@ -1905,24 +2051,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="geneinfo.widget.Tracks.add_ucsc_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_ucsc_track">add_ucsc_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_ucsc_track(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    ucsc_track<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    kind<span class="op">=</span><span class="st">'line'</span>,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'start'</span>,</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    step<span class="op">=</span>_UCSC_STEP_DEFAULT,</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    start_col<span class="op">=</span><span class="st">'start'</span>,</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    end_col<span class="op">=</span><span class="st">'end'</span>,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_ucsc_track(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    ucsc_track<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    kind<span class="op">=</span><span class="st">'line'</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    assembly<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'start'</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    step<span class="op">=</span>_UCSC_STEP_DEFAULT,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    start_col<span class="op">=</span><span class="st">'start'</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    end_col<span class="op">=</span><span class="st">'end'</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    zoom_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    density_windows<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Fetch a UCSC track and add it as a widget track of the given kind.</p>
 <p>Thin wrapper around :func:<code>geneinfo.ucsc.get_track</code> that forwards the fetched DataFrame to :meth:<code>add_point_track</code>, :meth:<code>add_line_track</code>, :meth:<code>add_histogram_track</code>, :meth:<code>add_fill_track</code>, :meth:<code>add_segment_track</code> or :meth:<code>add_heatmap_track</code> depending on <code>kind</code>. For the quantitative kinds the adapter auto-detects which source column holds the numeric signal and renames it to <code>'value'</code>, so the user never needs to know the track’s native schema. The interval kinds (<code>'segment'</code>, <code>'heatmap'</code>) draw each record’s <code>start</code>-<code>end</code> span and need no numeric column.</p>
 <p>If the auto-detected column is wrong for your purposes, fetch the track yourself and pass the DataFrame to the underlying <code>add_*</code> method::</p>
@@ -1931,8 +2077,8 @@ df = get_track('trackName', 'hg38',
                chrom='chr1', start=..., end=...,
                value_column='pValue')
 Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
-<section id="parameters-10" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
+<section id="parameters-11" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>ucsc_track</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> | None</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
@@ -1996,8 +2142,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-9" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-9">Returns</h4>
+<section id="returns-10" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-10">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2005,8 +2151,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="raises-7" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-7">Raises</h4>
+<section id="raises-8" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-8">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>ValueError</code></span></code></dt>
 <dd>
@@ -2025,23 +2171,23 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.add_vlines" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.add_vlines">add_vlines</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_vlines(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    positions,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    pos<span class="op">=</span><span class="st">'pos'</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.3</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    dash<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    replace<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.add_vlines(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    positions,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    pos<span class="op">=</span><span class="st">'pos'</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    group_by<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    color_map<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.3</span>,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    dash<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    replace<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Add thin vertical guide lines across all tracks.</p>
-<section id="parameters-11" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
+<section id="parameters-12" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-12">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>positions</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>int</code> | <code>Iterable</code>[<code>int</code>] | <code>dict</code>[<code>str</code>, <code>Iterable</code>[<code>int</code>]] | <code>pandas</code>.<code>DataFrame</code></span></code></dt>
 <dd>
@@ -2089,8 +2235,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-10" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-10">Returns</h4>
+<section id="returns-11" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-11">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2098,8 +2244,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="raises-8" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-8">Raises</h4>
+<section id="raises-9" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-9">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>TypeError</code></span></code></dt>
 <dd>
@@ -2114,11 +2260,11 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.added_tracks" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.added_tracks">added_tracks</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.added_tracks()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.added_tracks()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Return the display names of all tracks, in display order.</p>
 <p>Hidden tracks (see :meth:<code>hide_track</code>) are included, in the position they will take when shown again.</p>
-<section id="returns-11" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-11">Returns</h4>
+<section id="returns-12" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-12">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">list of str</span></code></dt>
 <dd>
@@ -2129,10 +2275,10 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.clear_spans" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.clear_spans">clear_spans</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.clear_spans()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.clear_spans()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Remove all vertical spans.</p>
-<section id="returns-12" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-12">Returns</h4>
+<section id="returns-13" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-13">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2143,10 +2289,10 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.clear_tracks" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.clear_tracks">clear_tracks</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.clear_tracks()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.clear_tracks()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Remove every track from the viewer.</p>
-<section id="returns-13" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-13">Returns</h4>
+<section id="returns-14" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-14">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2157,10 +2303,10 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.clear_vlines" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.clear_vlines">clear_vlines</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.clear_vlines()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.clear_vlines()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Remove all vertical marker lines.</p>
-<section id="returns-14" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-14">Returns</h4>
+<section id="returns-15" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-15">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2171,23 +2317,23 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.colorbar" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.colorbar">colorbar</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.colorbar(</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    track_name,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    orientation<span class="op">=</span><span class="st">'horizontal'</span>,</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    dpi<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.colorbar(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    track_name,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    orientation<span class="op">=</span><span class="st">'horizontal'</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    dpi<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Build a compact matplotlib key for a value-mode heatmap.</p>
-<p>Continuous tracks render as a small colorbar; discrete tracks as a stacked swatch/label legend. Density-mode tracks have no palette and raise :class:<code>ValueError</code>.</p>
-<section id="parameters-12" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-12">Parameters</h4>
+<p>Continuous tracks render as a small colorbar; discrete tracks as a stacked swatch/label legend. Density-mode tracks have no palette and raise :class:<code>ValueError</code>. Tracks added with :meth:<code>add_arc_matrix_track</code> render as a colorbar.</p>
+<section id="parameters-13" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-13">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>track_name</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
 <dd>
-<p>Name of a heatmap track added via :meth:<code>add_heatmap_track</code>.</p>
+<p>Name of a heatmap track added via :meth:<code>add_heatmap_track</code>, or of a track added via :meth:<code>add_arc_matrix_track</code>.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>ax</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>matplotlib</code>.<code>axes</code>.<code>Axes</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
@@ -2211,8 +2357,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-15" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-15">Returns</h4>
+<section id="returns-16" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-16">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>matplotlib</code>.<code>figure</code>.<code>Figure</code></span></code></dt>
 <dd>
@@ -2220,12 +2366,12 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="raises-9" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-9">Raises</h4>
+<section id="raises-10" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-10">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
 <dd>
-<p>If no heatmap track is named <code>track_name</code>.</p>
+<p>If no heatmap or arc-matrix track is named <code>track_name</code>.</p>
 </dd>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>ValueError</code></span></code></dt>
 <dd>
@@ -2236,11 +2382,11 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.hide_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.hide_track">hide_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.hide_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.hide_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Hide tracks without removing them.</p>
 <p>A name hides every track with that name; an index hides the one track at that position. The track disappears from the view, but its data stays in the widget (in Python and in the browser), so :meth:<code>show_track</code> brings it back instantly, in its original position, without re-sending or re-building anything. Hiding a hidden track does nothing.</p>
-<section id="parameters-13" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-13">Parameters</h4>
+<section id="parameters-14" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-14">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>name_or_index</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> or <code>int</code></span></code></dt>
 <dd>
@@ -2248,8 +2394,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-16" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-16">Returns</h4>
+<section id="returns-17" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-17">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2257,8 +2403,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="raises-10" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-10">Raises</h4>
+<section id="raises-11" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-11">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
 <dd>
@@ -2273,15 +2419,15 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.legend" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.legend">legend</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.legend(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>track_names,</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    orientation<span class="op">=</span><span class="st">'horizontal'</span>,</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    align<span class="op">=</span><span class="st">'right'</span>,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    gap<span class="op">=</span><span class="fl">0.1</span>,</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    dpi<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.legend(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>track_names,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    orientation<span class="op">=</span><span class="st">'horizontal'</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    align<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    gap<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    dpi<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Arm a legend strip to appear above the widget on display.</p>
 <p>Records which value-mode heatmap tracks to summarise and how to lay them out. The legend is <em>not</em> rendered until the widget itself is displayed (i.e.&nbsp;when <code>self</code> is a cell’s last expression, or <code>display(self)</code> is called). Returns <code>self</code> so the call chains naturally:</p>
 <blockquote class="blockquote">
@@ -2292,12 +2438,12 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </blockquote>
 </blockquote>
 <p>Validation happens up-front: unknown names raise :class:<code>KeyError</code> and density-mode tracks raise :class:<code>ValueError</code>.</p>
-<section id="parameters-14" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-14">Parameters</h4>
+<section id="parameters-15" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-15">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name">*<strong>track_names</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">()</span></code></dt>
 <dd>
-<p>Names of value-mode heatmap tracks, in left-to-right order.</p>
+<p>Names of value-mode heatmap tracks or :meth:<code>add_arc_matrix_track</code> tracks, in left-to-right order.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>orientation</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">('horizontal', 'vertical')</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'horizontal'</span></code></dt>
 <dd>
@@ -2325,8 +2471,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-17" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-17">Returns</h4>
+<section id="returns-18" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-18">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2337,47 +2483,14 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.remove_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.remove_track">remove_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.remove_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.remove_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Remove tracks by display name, or a single track by index.</p>
-<section id="parameters-15" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-15">Parameters</h4>
+<section id="parameters-16" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-16">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>name_or_index</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> or <code>int</code></span></code></dt>
 <dd>
 <p>When a string, every track with that display <code>name</code> is removed. When an integer, the one track at that position in :attr:<code>track_configs</code> (negative indices count from the end, like a Python list).</p>
-</dd>
-</dl>
-</section>
-<section id="returns-18" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-18">Returns</h4>
-<dl>
-<dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
-<dd>
-<p><code>self</code>, for fluent chaining.</p>
-</dd>
-</dl>
-</section>
-<section id="raises-11" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-11">Raises</h4>
-<dl>
-<dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
-<dd>
-<p>If no track matches.</p>
-</dd>
-</dl>
-</section>
-</section>
-<section id="geneinfo.widget.Tracks.select_tracks" class="level3">
-<h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.select_tracks">select_tracks</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.select_tracks(<span class="op">*</span>names)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Show only the listed tracks, in the order listed.</p>
-<p>A shortcut for hiding every track, then showing the listed ones, except that the shown tracks are also reordered to follow <code>names</code>. The remaining tracks stay hidden, after the shown ones and in their existing order, so their data is kept and a later :meth:<code>show_track</code> or :meth:<code>select_tracks</code> restores them instantly.</p>
-<section id="parameters-16" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-16">Parameters</h4>
-<dl>
-<dt><code><span class="parameter-name">*<strong>names</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">str, int, or iterable of str or int</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">()</span></code></dt>
-<dd>
-<p>Tracks to show, as separate arguments (<code>select_tracks('a', 'b')</code>), as one list (<code>select_tracks(['a', 'b'])</code>), or a mix. Each entry is a display name, which selects every track with that name (in their existing order), or a positional index into :attr:<code>track_configs</code> as it is before the call. A track listed twice is placed at its first mention. No entries (an empty call or an empty list) hides every track.</p>
 </dd>
 </dl>
 </section>
@@ -2395,6 +2508,39 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
 <dd>
+<p>If no track matches.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="geneinfo.widget.Tracks.select_tracks" class="level3">
+<h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.select_tracks">select_tracks</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.select_tracks(<span class="op">*</span>names)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Show only the listed tracks, in the order listed.</p>
+<p>A shortcut for hiding every track, then showing the listed ones, except that the shown tracks are also reordered to follow <code>names</code>. The remaining tracks stay hidden, after the shown ones and in their existing order, so their data is kept and a later :meth:<code>show_track</code> or :meth:<code>select_tracks</code> restores them instantly.</p>
+<section id="parameters-17" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-17">Parameters</h4>
+<dl>
+<dt><code><span class="parameter-name">*<strong>names</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">str, int, or iterable of str or int</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">()</span></code></dt>
+<dd>
+<p>Tracks to show, as separate arguments (<code>select_tracks('a', 'b')</code>), as one list (<code>select_tracks(['a', 'b'])</code>), or a mix. Each entry is a display name, which selects every track with that name (in their existing order), or a positional index into :attr:<code>track_configs</code> as it is before the call. A track listed twice is placed at its first mention. No entries (an empty call or an empty list) hides every track.</p>
+</dd>
+</dl>
+</section>
+<section id="returns-20" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-20">Returns</h4>
+<dl>
+<dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
+<dd>
+<p><code>self</code>, for fluent chaining.</p>
+</dd>
+</dl>
+</section>
+<section id="raises-13" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-13">Raises</h4>
+<dl>
+<dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
+<dd>
 <p>If any entry matches no track. The viewer is left unchanged.</p>
 </dd>
 </dl>
@@ -2406,10 +2552,10 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.set_viewport" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.set_viewport">set_viewport</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.set_viewport(chrom, start, end)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.set_viewport(chrom, start, end)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Move the viewport to a new chromosome and base-pair window.</p>
-<section id="parameters-17" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-17">Parameters</h4>
+<section id="parameters-18" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-18">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>chrom</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span></code></dt>
 <dd>
@@ -2425,8 +2571,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-20" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-20">Returns</h4>
+<section id="returns-21" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-21">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2434,8 +2580,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="raises-13" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-13">Raises</h4>
+<section id="raises-14" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-14">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
 <dd>
@@ -2446,11 +2592,11 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.show_track" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.show_track">show_track</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.show_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.show_track(name_or_index)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Show tracks hidden with :meth:<code>hide_track</code>.</p>
 <p>A name shows every track with that name; an index shows the one track at that position. The track reappears in the position it had before it was hidden. Showing a visible track does nothing.</p>
-<section id="parameters-18" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-18">Parameters</h4>
+<section id="parameters-19" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-19">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>name_or_index</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code> or <code>int</code></span></code></dt>
 <dd>
@@ -2458,8 +2604,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-21" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-21">Returns</h4>
+<section id="returns-22" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-22">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>
@@ -2467,8 +2613,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="raises-14" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-14">Raises</h4>
+<section id="raises-15" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-15">Raises</h4>
 <dl>
 <dt><code><span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>KeyError</code></span></code></dt>
 <dd>
@@ -2483,15 +2629,15 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </section>
 <section id="geneinfo.widget.Tracks.zoom_to" class="level3">
 <h3 class="anchored" data-anchor-id="geneinfo.widget.Tracks.zoom_to">zoom_to</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.zoom_to(</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    gene<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    center<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>geneinfo.widget.Tracks.zoom_to(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    chrom<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    end<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    gene<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    center<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Zoom the viewport to a chromosome, range, or centred window.</p>
 <p>Supports three calling styles:</p>
 <ul>
@@ -2500,8 +2646,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 <li><code>zoom_to('chrX', center=150_000, window=1_000_000)</code> — centre on <code>center</code> with the given window width. <code>window</code> defaults to <code>1_000_000</code> bp when omitted.</li>
 </ul>
 <p>The <code>start</code>/<code>end</code> and <code>center</code>/<code>window</code> styles are mutually exclusive.</p>
-<section id="parameters-19" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-19">Parameters</h4>
+<section id="parameters-20" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-20">Parameters</h4>
 <dl>
 <dt><code><span class="parameter-name"><strong>chrom</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
@@ -2529,8 +2675,8 @@ Tracks('hg38').add_line_track(df, 'My track', x='start', y='value')</code></pre>
 </dd>
 </dl>
 </section>
-<section id="returns-22" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-22">Returns</h4>
+<section id="returns-23" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-23">Returns</h4>
 <dl>
 <dt><code><span class="parameter-name"></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Tracks</code></span></code></dt>
 <dd>

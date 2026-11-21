@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-cb61c712ca1a7fe70a83faed8e4da2d7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -599,17 +599,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    to_assembly,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    reciprocal<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    min_match<span class="op">=</span><span class="fl">0.95</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    chain_file<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    back_chain_file<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    chrom_col<span class="op">=</span><span class="st">'chrom'</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    start_col<span class="op">=</span><span class="st">'start'</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    end_col<span class="op">=</span><span class="st">'end'</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    pos_col<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    pos_base<span class="op">=</span><span class="dv">0</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    chrom_aliases<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    cache_dir<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    assembly_over<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    chain_file<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    back_chain_file<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    chrom_col<span class="op">=</span><span class="st">'chrom'</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    start_col<span class="op">=</span><span class="st">'start'</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    end_col<span class="op">=</span><span class="st">'end'</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    pos_col<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    pos_base<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    chrom_aliases<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    cache_dir<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lift intervals or positions from one assembly to another, and optionally back again.</p>
 <p>With <code>reciprocal=True</code>, lifted intervals are lifted back to test that they map one to one: an interval is reciprocally mapped if it lifts to the other assembly and the lifted interval lifts back to exactly the original chromosome, start and end.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
@@ -635,13 +636,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <dd>
 <p>Minimum fraction of an interval’s bases that must remap (liftOver <code>-minMatch</code>). Used in both directions. Has no effect on positions, which either map or do not.</p>
 </dd>
-<dt><code><span class="parameter-name"><strong>chain_file</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>PathLike</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dt><code><span class="parameter-name"><strong>assembly_over</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>Union</code>[<code>str</code>, <code>Sequence</code>[<code>str</code>]]]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
-<p>Chain file lifting <code>from_assembly</code> to <code>to_assembly</code>, to use instead of downloading it from UCSC.</p>
+<p>UCSC name of an intermediate assembly, for when UCSC has no chain file between <code>from_assembly</code> and <code>to_assembly</code>. Intervals are then lifted from <code>from_assembly</code> to <code>assembly_over</code> and on to <code>to_assembly</code>, and back the same way with <code>reciprocal=True</code>. A list of names lifts through several assemblies in turn. Each step applies <code>min_match</code>, so intervals that change in an intermediate step can be lost.</p>
 </dd>
-<dt><code><span class="parameter-name"><strong>back_chain_file</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>PathLike</code>]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dt><code><span class="parameter-name"><strong>chain_file</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>Union</code>[<code>PathLike</code>, <code>Sequence</code>[<code>PathLike</code>]]]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>
-<p>Chain file lifting <code>to_assembly</code> to <code>from_assembly</code>, to use instead of downloading it from UCSC. Only used with <code>reciprocal=True</code>.</p>
+<p>Chain file lifting <code>from_assembly</code> to <code>to_assembly</code>, to use instead of downloading it from UCSC. With <code>assembly_over</code>, a list of chain files, one for each step.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>back_chain_file</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>Optional</code>[<code>Union</code>[<code>PathLike</code>, <code>Sequence</code>[<code>PathLike</code>]]]</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>Chain file lifting <code>to_assembly</code> to <code>from_assembly</code>, to use instead of downloading it from UCSC. With <code>assembly_over</code>, a list of chain files, one for each step. Only used with <code>reciprocal=True</code>.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>chrom_col</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"><code>str</code></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'chrom'</span></code></dt>
 <dd>
@@ -693,8 +698,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>lifted <span class="op">=</span> liftover(df, <span class="st">'hg38'</span>, <span class="st">'papAnu4'</span>, reciprocal<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>lifted.loc[lifted.reciprocal]</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>snps <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(chrom<span class="op">=</span>[<span class="st">'chrX'</span>], pos<span class="op">=</span>[<span class="dv">1_000_000</span>]))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>liftover(snps, <span class="st">'hg38'</span>, <span class="st">'papAnu4'</span>, pos_col<span class="op">=</span><span class="st">'pos'</span>, pos_base<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># no direct chain from T2T (hs1) to baboon: go through hg38</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>liftover(df, <span class="st">'hs1'</span>, <span class="st">'papAnu4'</span>, assembly_over<span class="op">=</span><span class="st">'hg38'</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>snps <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(chrom<span class="op">=</span>[<span class="st">'chrX'</span>], pos<span class="op">=</span>[<span class="dv">1_000_000</span>]))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>liftover(snps, <span class="st">'hg38'</span>, <span class="st">'papAnu4'</span>, pos_col<span class="op">=</span><span class="st">'pos'</span>, pos_base<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>
