@@ -462,6 +462,27 @@ if (C.arcmatrix) {
   ok(tip === want, `arc-matrix tooltip: highest value first ${JSON.stringify(tip)}`);
 }
 
+// ── 17. height_by_span: arcs nest, so each height hits one arc ───────────
+// Same matrix; the longest arc (0,3: 600 kb) is the reference span, so the
+// 200 kb arc (1,2) peaks at 1/3 of the 54 px apex, 18 px above the baseline.
+if (C.arcnest) {
+  m = mount('arcnest'); frames(); m.kernel.flush(); redraw();
+  ok(errors.length === 0 && !drawnStarting('could not load track'),
+     `height_by_span track uploads ${errors[0] || ''}`);
+  const W = 1200 - 96, size = C.arcnest.state.chrom_sizes.chr1;
+  const n = x => x.toLocaleString();
+  const hover = y => {
+    for (const fn of listeners['sv-glcanvas:mousemove'] || [])
+      fn({ offsetX: 96 + (400000 / size) * W, offsetY: 26 + y });
+    return lastRoot.querySelector('.sv-tooltip').textContent;
+  };
+  const top = hover(3), low = hover(57 - 18);
+  ok(top === `chr1:${n(400000)}\nM: \n  r 0.9000  [0, 3]  ${n(0)}–${n(200000)} ↔ ${n(600000)}–${n(800000)}`,
+     `nested: apex of the long arc hits only it ${JSON.stringify(top)}`);
+  ok(low === `chr1:${n(400000)}\nM: \n  r 0.2000  [1, 2]  ${n(200000)}–${n(400000)} ↔ ${n(400000)}–${n(600000)}`,
+     `nested: the short arc sits lower ${JSON.stringify(low)}`);
+}
+
 console.log = origLog;
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED');
 process.exit(fails ? 1 : 0);

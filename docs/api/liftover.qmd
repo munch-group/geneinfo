@@ -7,6 +7,7 @@ geneinfo.lift.liftover(
     to_assembly,
     reciprocal=False,
     min_match=0.95,
+    assembly_over=None,
     chain_file=None,
     back_chain_file=None,
     chrom_col='chrom',
@@ -49,13 +50,17 @@ chromosome, start and end.
 
 :   Minimum fraction of an interval's bases that must remap (liftOver ``-minMatch``). Used in both directions. Has no effect on positions, which either map or do not.
 
-<code>[**chain_file**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[PathLike](`geneinfo.lift.PathLike`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+<code>[**assembly_over**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[Union](`typing.Union`)\[[str](`str`), [Sequence](`typing.Sequence`)\[[str](`str`)\]\]\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Chain file lifting ``from_assembly`` to ``to_assembly``, to use instead of downloading it from UCSC.
+:   UCSC name of an intermediate assembly, for when UCSC has no chain file between ``from_assembly`` and ``to_assembly``. Intervals are then lifted from ``from_assembly`` to ``assembly_over`` and on to ``to_assembly``, and back the same way with ``reciprocal=True``. A list of names lifts through several assemblies in turn. Each step applies ``min_match``, so intervals that change in an intermediate step can be lost.
 
-<code>[**back_chain_file**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[PathLike](`geneinfo.lift.PathLike`)\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+<code>[**chain_file**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[Union](`typing.Union`)\[[PathLike](`geneinfo.lift.PathLike`), [Sequence](`typing.Sequence`)\[[PathLike](`geneinfo.lift.PathLike`)\]\]\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
-:   Chain file lifting ``to_assembly`` to ``from_assembly``, to use instead of downloading it from UCSC. Only used with ``reciprocal=True``.
+:   Chain file lifting ``from_assembly`` to ``to_assembly``, to use instead of downloading it from UCSC. With ``assembly_over``, a list of chain files, one for each step.
+
+<code>[**back_chain_file**]{.parameter-name} [:]{.parameter-annotation-sep} [[Optional](`typing.Optional`)\[[Union](`typing.Union`)\[[PathLike](`geneinfo.lift.PathLike`), [Sequence](`typing.Sequence`)\[[PathLike](`geneinfo.lift.PathLike`)\]\]\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Chain file lifting ``to_assembly`` to ``from_assembly``, to use instead of downloading it from UCSC. With ``assembly_over``, a list of chain files, one for each step. Only used with ``reciprocal=True``.
 
 <code>[**chrom_col**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'chrom\']{.parameter-default}</code>
 
@@ -102,6 +107,9 @@ df = pd.DataFrame(dict(chrom=['chrX'], start=[1_000_000], end=[1_010_000]))
 liftover(df, 'hg38', 'papAnu4')
 lifted = liftover(df, 'hg38', 'papAnu4', reciprocal=True)
 lifted.loc[lifted.reciprocal]
+
+# no direct chain from T2T (hs1) to baboon: go through hg38
+liftover(df, 'hs1', 'papAnu4', assembly_over='hg38')
 
 snps = pd.DataFrame(dict(chrom=['chrX'], pos=[1_000_000]))
 liftover(snps, 'hg38', 'papAnu4', pos_col='pos', pos_base=1)

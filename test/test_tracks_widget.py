@@ -260,6 +260,12 @@ class TestArcMatrixTrack(unittest.TestCase):
                                          'valueLabel': 'value'})
         self.assertEqual((cfg['height'], cfg['arcHeight']), (40, 34))
         self.assertEqual(sum(g['nPairs'] for g in cfg['groups']), 5)
+        self.assertIs(cfg['heightBySpan'], False)
+        t.add_arc_matrix_track(_arc_matrix(), 'N', chrom='chr1',
+                               window_size=200_000, height_by_span=True)
+        t.add_arc_track(_frames()[2], 'A', height_by_span=True)
+        self.assertEqual([c['heightBySpan'] for c in t.track_configs],
+                         [False, True, True])
         json.dumps(cfg)
 
     def test_validation(self):
@@ -327,8 +333,10 @@ class TestTransportBrowser(unittest.TestCase):
         odd._rebin_heatmap_for_view(hid, 'chr1', 100_000, 330_000)
         self.assertEqual(odd.track_data[hid]['chr1']['0']['nWin'], 23)
         am = _arc_matrix_viewer().add_arc_track(arcs, 'A')
+        nest = _arc_matrix_viewer(height_by_span=True)
         cases = {
             'arcmatrix': {'state': _state(am), 'replies': _replies(am)},
+            'arcnest': {'state': _state(nest), 'replies': _replies(nest)},
             'odd': {'state': odd_state, 'replies': odd_replies},
             'odd_rebinned': {'state': _state(odd), 'replies': _replies(odd)},
             'empty': {'state': _state(Tracks(CHROMS)), 'replies': {}},

@@ -44,6 +44,9 @@ culling uses sorted attribute-pointer offsets.
     Vertical bars with multi-resolution LOD.
 :meth:`add_arc_track`
     Arcs linking pairs of genomic positions.
+:meth:`add_arc_matrix_track`
+    Arcs between the windows of a window-by-window matrix, coloured by
+    the cell values.
 :meth:`add_ucsc_track`
     A UCSC Genome Browser track fetched by name and drawn as a point,
     line, histogram, fill, segment or heatmap track.
@@ -174,6 +177,7 @@ theme : dict
 
 | Name | Description |
 | --- | --- |
+| [add_arc_matrix_track](#geneinfo.widget.Tracks.add_arc_matrix_track) | Add an arc track from a window-by-window matrix. |
 | [add_arc_track](#geneinfo.widget.Tracks.add_arc_track) | Add an arc track connecting pairs of positions on the same chromosome. |
 | [add_fill_track](#geneinfo.widget.Tracks.add_fill_track) | Add a fill-between track. |
 | [add_gene_track](#geneinfo.widget.Tracks.add_gene_track) | Add a gene / exon annotation track. |
@@ -198,6 +202,147 @@ theme : dict
 | [show_track](#geneinfo.widget.Tracks.show_track) | Show tracks hidden with :meth:`hide_track`. |
 | [zoom_to](#geneinfo.widget.Tracks.zoom_to) | Zoom the viewport to a chromosome, range, or centred window. |
 
+### add_arc_matrix_track { #geneinfo.widget.Tracks.add_arc_matrix_track }
+
+```python
+geneinfo.widget.Tracks.add_arc_matrix_track(
+    matrix,
+    name,
+    *,
+    chrom,
+    window_size,
+    start=0,
+    triangle='upper',
+    threshold=None,
+    palette='viridis',
+    vmin=None,
+    vmax=None,
+    value_label=None,
+    height=None,
+    arc_height=None,
+    height_by_span=False,
+    alpha=0.9,
+    line_width=1.5,
+    tip_fmt=None,
+    tip_label=None,
+)
+```
+
+Add an arc track from a window-by-window matrix.
+
+Row and column ``k`` of ``matrix`` both stand for the genomic window
+``[start + k * window_size, start + (k + 1) * window_size)`` on
+``chrom`` (the last window is cut at the chromosome end). Each kept
+cell ``(i, j)`` is drawn as one arc between the midpoints of windows
+``i`` and ``j``, coloured by the cell value through a continuous
+colormap. Useful for Hi-C contact maps, linkage-disequilibrium or
+correlation matrices between windows, and similar data.
+
+Arcs are drawn in order of increasing value, so the highest values
+are on top where arcs overlap.
+
+#### Parameters {.doc-section .doc-section-parameters}
+
+<code>[**matrix**]{.parameter-name} [:]{.parameter-annotation-sep} [[numpy](`numpy`).[ndarray](`numpy.ndarray`) or [pandas](`pandas`).[DataFrame](`pandas.DataFrame`)]{.parameter-annotation}</code>
+
+:   2-D numeric matrix. It need not be square: rows and columns are both read as windows counted from ``start``. ``NaN`` and infinite cells are skipped, as are diagonal cells (an arc from a window to itself has no length).
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Track display label shown in the left panel.
+
+<code>[**chrom**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
+
+:   Chromosome the matrix covers; must be one of the viewer's chromosomes.
+
+<code>[**window_size**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation}</code>
+
+:   Window width in base pairs.
+
+<code>[**start**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0]{.parameter-default}</code>
+
+:   Position where window 0 begins.
+
+<code>[**triangle**]{.parameter-name} [:]{.parameter-annotation-sep} [(\'upper\', \'lower\', \'full\')]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'upper\']{.parameter-default}</code>
+
+:   Which cells to draw: ``'upper'`` keeps ``i < j``, ``'lower'`` keeps ``i > j``, ``'full'`` keeps both. For a symmetric matrix ``'upper'`` draws each pair once; ``'full'`` would draw every arc twice.
+
+<code>[**threshold**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Skip cells with a value below ``threshold``. An n-by-n matrix gives up to n*(n-1)/2 arcs, so thresholding is usually needed for more than a few hundred windows.
+
+<code>[**palette**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`) or [matplotlib](`matplotlib`).[colors](`matplotlib.colors`).[Colormap](`matplotlib.colors.Colormap`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [``\'viridis\'``]{.parameter-default}</code>
+
+:   Continuous colormap (name or instance) for the cell values.
+
+<code>[**vmin**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour-scale range; inferred from the drawn cells when omitted. Values outside it get the end colours.
+
+<code>[**vmax**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Colour-scale range; inferred from the drawn cells when omitted. Values outside it get the end colours.
+
+<code>[**value_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Name for the values in the default tooltip and as the default title of :meth:`colorbar` / :meth:`legend`. Defaults to ``'value'``.
+
+<code>[**height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Track height and arc apex height in CSS pixels, as in :meth:`add_arc_track`.
+
+<code>[**arc_height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Track height and arc apex height in CSS pixels, as in :meth:`add_arc_track`.
+
+<code>[**height_by_span**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Scale arc heights with their span so shorter arcs nest under longer ones, as in :meth:`add_arc_track`.
+
+<code>[**alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.9]{.parameter-default}</code>
+
+:   Line opacity (0..1).
+
+<code>[**line_width**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [1.5]{.parameter-default}</code>
+
+:   Stroke width in CSS pixels.
+
+<code>[**tip_fmt**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Python format string for tooltips. Available keys: ``{value}``, ``{row}``, ``{col}`` (matrix indices), ``{start1}``, ``{end1}`` (row window), ``{start2}``, ``{end2}`` (column window), ``{pos1}``, ``{pos2}`` (the drawn arc ends, left one first) and ``{span}``.
+
+<code>[**tip_label**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
+
+:   Heading shown above the tooltip body. Defaults to ``f'{name}:'``.
+
+#### Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [[Tracks](`geneinfo.widget.segment_viewer_gl.Tracks`)]{.parameter-annotation}</code>
+
+:   ``self``, to support fluent chaining.
+
+#### Raises {.doc-section .doc-section-raises}
+
+<code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
+
+:   If ``chrom`` is not one of the viewer's chromosomes.
+
+<code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
+
+:   If ``matrix`` is not 2-D, ``window_size`` or ``start`` is invalid, the windows run past the chromosome end, or ``triangle`` is not one of the allowed values.
+
+<code>[:]{.parameter-annotation-sep} [[TypeError](`TypeError`)]{.parameter-annotation}</code>
+
+:   If ``palette`` is not a colormap name or ``Colormap``.
+
+#### Examples {.doc-section .doc-section-examples}
+
+```python
+>>> m = np.random.default_rng(1).random((200, 200))
+>>> v.add_arc_matrix_track(m, 'LD', chrom='chr3', window_size=50_000,
+...                        threshold=0.95)
+```
+
 ### add_arc_track { #geneinfo.widget.Tracks.add_arc_track }
 
 ```python
@@ -212,6 +357,7 @@ geneinfo.widget.Tracks.add_arc_track(
     palette=None,
     height=None,
     arc_height=None,
+    height_by_span=False,
     alpha=0.9,
     line_width=1.5,
     tip_fmt=None,
@@ -264,6 +410,10 @@ similar pairwise-coordinate data.
 <code>[**arc_height**]{.parameter-name} [:]{.parameter-annotation-sep} [[int](`int`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
 :   Apex height above the baseline in CSS pixels — how tall the arcs are drawn. When omitted it fills the usable band (``height - 6``, where 6 = ``2 * PAD_V``). If both ``height`` and ``arc_height`` are given and the apex would overflow the band, ``arc_height`` is clamped to ``height - 6`` (with a warning) so the arcs never leave the track.
+
+<code>[**height_by_span**]{.parameter-name} [:]{.parameter-annotation-sep} [[bool](`bool`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [False]{.parameter-default}</code>
+
+:   Scale each arc's height with its span, so shorter arcs nest under longer ones. ``arc_height`` is then the height of an arc spanning the reference span: the longest arc on the chromosome, or the visible range when that is shorter. Zoomed out, the longest arc fills the track; zoomed in, an arc as wide as the view does, and arcs wider than the view are drawn at full height.
 
 <code>[**alpha**]{.parameter-name} [:]{.parameter-annotation-sep} [[float](`float`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [0.9]{.parameter-default}</code>
 
@@ -1589,13 +1739,14 @@ Build a compact matplotlib key for a value-mode heatmap.
 
 Continuous tracks render as a small colorbar; discrete tracks
 as a stacked swatch/label legend. Density-mode tracks have no
-palette and raise :class:`ValueError`.
+palette and raise :class:`ValueError`. Tracks added with
+:meth:`add_arc_matrix_track` render as a colorbar.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
 <code>[**track_name**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation}</code>
 
-:   Name of a heatmap track added via :meth:`add_heatmap_track`.
+:   Name of a heatmap track added via :meth:`add_heatmap_track`, or of a track added via :meth:`add_arc_matrix_track`.
 
 <code>[**ax**]{.parameter-name} [:]{.parameter-annotation-sep} [[matplotlib](`matplotlib`).[axes](`matplotlib.axes`).[Axes](`matplotlib.axes.Axes`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [None]{.parameter-default}</code>
 
@@ -1627,7 +1778,7 @@ palette and raise :class:`ValueError`.
 
 <code>[:]{.parameter-annotation-sep} [[KeyError](`KeyError`)]{.parameter-annotation}</code>
 
-:   If no heatmap track is named ``track_name``.
+:   If no heatmap or arc-matrix track is named ``track_name``.
 
 <code>[:]{.parameter-annotation-sep} [[ValueError](`ValueError`)]{.parameter-annotation}</code>
 
@@ -1703,7 +1854,7 @@ and density-mode tracks raise :class:`ValueError`.
 
 <code>[***track_names**]{.parameter-name} [:]{.parameter-annotation-sep} [[str](`str`)]{.parameter-annotation} [ = ]{.parameter-default-sep} [()]{.parameter-default}</code>
 
-:   Names of value-mode heatmap tracks, in left-to-right order.
+:   Names of value-mode heatmap tracks or :meth:`add_arc_matrix_track` tracks, in left-to-right order.
 
 <code>[**orientation**]{.parameter-name} [:]{.parameter-annotation-sep} [(\'horizontal\', \'vertical\')]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'horizontal\']{.parameter-default}</code>
 

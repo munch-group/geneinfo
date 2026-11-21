@@ -19,6 +19,14 @@
 - Arc tracks can now carry one colour per arc; `add_arc_track` is
   unchanged.
 
+**New: `height_by_span` for arc tracks**
+- `add_arc_track(..., height_by_span=True)` and
+  `add_arc_matrix_track(..., height_by_span=True)` scale each arc's height
+  with its span, so shorter arcs nest under longer ones. The full
+  `arc_height` goes to the longest arc on the chromosome, or to an arc as
+  wide as the view when zoomed in further than that; arcs wider than the
+  view are drawn at full height. Tooltips follow the scaled curves.
+
 **Fix: heatmaps blank when the bin count is not a multiple of 4**
 - Heatmap textures were uploaded with WebGL's default 4-byte row
   alignment, so any heatmap whose number of bins was not a multiple of 4

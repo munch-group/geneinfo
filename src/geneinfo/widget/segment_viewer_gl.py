@@ -1719,6 +1719,7 @@ uniform int   uVSi;
 uniform float uVS, uVE, uXL;   // genomic viewport -> NDC-x
 uniform float uTT, uTB;        // track top / bottom in NDC
 uniform float uApexFrac;       // apex position within band, 0=baseline 1=top
+uniform float uSpanRef;        // > 0: apex scaled by span / uSpanRef (capped at 1)
 uniform float uHalfPxX, uHalfPxY; // half stroke width in NDC along x/y
 flat out vec3 vColor;
 // Map a viewport-relative genomic offset to NDC-x using the same formula as
@@ -1736,7 +1737,9 @@ void main() {
   float cx  = gxToNDC(0.5 * (p1 + p2));
   // Baseline sits at track bottom (uTB); apex offset toward uTT.
   // Clamp apex so it stays inside the usable band.
-  float apexY = mix(uTB, uTT, clamp(uApexFrac, 0.0, 1.0));
+  float spanFrac = uSpanRef > 0.0
+    ? clamp(float(iP2 - iP1) / uSpanRef, 0.0, 1.0) : 1.0;
+  float apexY = mix(uTB, uTT, clamp(uApexFrac * spanFrac, 0.0, 1.0));
   vec2 P1 = vec2(p1x,   uTB);
   vec2 C  = vec2(cx,  2.0 * apexY - uTB);  // quadratic Bezier control point
                                            // placed so the curve apex lies
@@ -1859,6 +1862,7 @@ function initGlPrograms() {
     uTT:       gl.getUniformLocation(arcProg, 'uTT'),
     uTB:       gl.getUniformLocation(arcProg, 'uTB'),
     uApexFrac: gl.getUniformLocation(arcProg, 'uApexFrac'),
+    uSpanRef:  gl.getUniformLocation(arcProg, 'uSpanRef'),
     uHalfPxX:  gl.getUniformLocation(arcProg, 'uHalfPxX'),
     uHalfPxY:  gl.getUniformLocation(arcProg, 'uHalfPxY'),
     uAlpha:    gl.getUniformLocation(arcProg, 'uAlpha'),
@@ -3063,7 +3067,21 @@ function drawRects(gpuData, vs, ve, tt, tb, minDx) {
 // colour) from gpuData.buf. Viewport culling mirrors drawRects: bisect
 // the sorted `starts` array, then widen by `maxLen` on the low side so
 // arcs that start before `vs` but still cross the viewport stay in.
-function drawArcs(gpuData, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY) {
+// With cfg.heightBySpan, the span that gets the full arc height: the longest
+// arc on the chromosome, or the visible range if that is shorter, so arcs
+// nest by span when zoomed out and short arcs stay visible when zoomed in.
+// 0 means every arc gets the full height.
+function arcSpanRef(cfg, ch, range) {
+  if (!cfg.heightBySpan) return 0;
+  let maxLen = 0;
+  for (const grp of cfg.groups) {
+    const slot = gpuArc[cfg.id]?.[ch]?.[grp.id];
+    if (slot) maxLen = Math.max(maxLen, slot.maxLen);
+  }
+  return Math.max(1, Math.min(maxLen || range, range));
+}
+
+function drawArcs(gpuData, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY, spanRef = 0) {
   if (!gpuData || gpuData.count === 0) return;
   const lo = Math.max(0, bisect(gpuData.starts, vs - gpuData.maxLen) - 1);
   const hi = Math.min(gpuData.count, bisect(gpuData.starts, ve) + 1);
@@ -3078,6 +3096,7 @@ function drawArcs(gpuData, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY) {
   gl.uniform1f(aLoc.uTT, tt);
   gl.uniform1f(aLoc.uTB, tb);
   gl.uniform1f(aLoc.uApexFrac, apexFrac);
+  gl.uniform1f(aLoc.uSpanRef, spanRef);
   gl.uniform1f(aLoc.uHalfPxX, halfPxX);
   gl.uniform1f(aLoc.uHalfPxY, halfPxY);
   gl.uniform1f(aLoc.uAlpha, alpha);
@@ -4190,10 +4209,11 @@ function _renderFrame() {
       const alpha = cfg.alpha ?? 0.9;
       const halfPxX = lw * 0.5 * (2.0 / W_css);
       const halfPxY = lw * 0.5 * (2.0 / totalH_css);
+      const spanRef = arcSpanRef(cfg, ch, ve - vs);
       for (const grp of cfg.groups) {
         const slot = gpuArc[cfg.id]?.[ch]?.[grp.id];
         if (!slot) continue;
-        drawArcs(slot, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY);
+        drawArcs(slot, vs, ve, tt, tb, apexFrac, alpha, halfPxX, halfPxY, spanRef);
       }
     }
 
@@ -4409,7 +4429,7 @@ function tipDataSegment(pos, chrom, cfg, localY) {
 // Arc hit-test: an arc [p1, p2] with symmetric quadratic Bezier in x has
 // x(t) linear, so t(pos) = (pos - p1)/(p2 - p1) closes the curve exactly.
 // The curve's CSS-y at pos is (baseline - 4*t*(1-t)*apexPx) within the
-// track band. We accept a hit when pos ∈ [p1, p2] and the cursor is
+// track band (apexPx scaled per arc by arcSpanRef with heightBySpan). We accept a hit when pos ∈ [p1, p2] and the cursor is
 // within TIP_ARC_TOL CSS px of the curve there.
 const TIP_ARC_TOL = 4;
 function tipDataArc(pos, chrom, cfg, localY) {
@@ -4417,6 +4437,7 @@ function tipDataArc(pos, chrom, cfg, localY) {
   const usable = Math.max(1, cfg.height - 2 * PAD_V);
   const apexPx = Math.min(Math.max(cfg.arcHeight ?? usable, 1), usable);
   const baselineY = cfg.height - PAD_V;  // CSS y of baseline within track
+  const spanRef = arcSpanRef(cfg, chrom, vp.end - vp.start);
   const hits = [];
   const mx = cfg.matrix;
   const csz = chromSizes[chrom] || Infinity;
@@ -4437,7 +4458,7 @@ function tipDataArc(pos, chrom, cfg, localY) {
       const span = p2 - p1;
       if (span <= 0) continue;
       const t = (pos - p1) / span;
-      const dist = 4 * t * (1 - t) * apexPx;
+      const dist = 4 * t * (1 - t) * apexPx * (spanRef > 0 ? Math.min(span / spanRef, 1) : 1);
       const curveY = baselineY - dist;
       if (Math.abs(localY - curveY) <= TIP_ARC_TOL) {
         const hit = { group: grp.name, pos1: p1, pos2: p2, span };
@@ -6530,6 +6551,7 @@ class Tracks(anywidget.AnyWidget):
         palette: Any = None,
         height: int | None = None,
         arc_height: int | None = None,
+        height_by_span: bool = False,
         alpha: float = 0.9,
         line_width: float = 1.5,
         tip_fmt: str | None = None,
@@ -6574,6 +6596,14 @@ class Tracks(anywidget.AnyWidget):
             ``arc_height`` are given and the apex would overflow the band,
             ``arc_height`` is clamped to ``height - 6`` (with a warning) so
             the arcs never leave the track.
+        height_by_span : bool, default False
+            Scale each arc's height with its span, so shorter arcs nest
+            under longer ones. ``arc_height`` is then the height of an arc
+            spanning the reference span: the longest arc on the chromosome,
+            or the visible range when that is shorter. Zoomed out, the
+            longest arc fills the track; zoomed in, an arc as wide as the
+            view does, and arcs wider than the view are drawn at full
+            height.
         alpha : float, default 0.9
             Line opacity (0..1).
         line_width : float, default 1.5
@@ -6634,6 +6664,7 @@ class Tracks(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': 'arc', 'name': name, 'height': int(height),
             'arcHeight': int(arc_height),
+            'heightBySpan': bool(height_by_span),
             'alpha': float(max(0.0, min(1.0, alpha))),
             'lineWidth': float(max(0.5, line_width)),
             'groups': [
@@ -6706,6 +6737,7 @@ class Tracks(anywidget.AnyWidget):
         value_label: str | None = None,
         height: int | None = None,
         arc_height: int | None = None,
+        height_by_span: bool = False,
         alpha: float = 0.9,
         line_width: float = 1.5,
         tip_fmt: str | None = None,
@@ -6761,6 +6793,9 @@ class Tracks(anywidget.AnyWidget):
         height, arc_height : int, optional
             Track height and arc apex height in CSS pixels, as in
             :meth:`add_arc_track`.
+        height_by_span : bool, default False
+            Scale arc heights with their span so shorter arcs nest under
+            longer ones, as in :meth:`add_arc_track`.
         alpha : float, default 0.9
             Line opacity (0..1).
         line_width : float, default 1.5
@@ -6908,6 +6943,7 @@ class Tracks(anywidget.AnyWidget):
         cfg = {
             'id': tid, 'type': 'arc', 'name': name, 'height': height,
             'arcHeight': arc_height,
+            'heightBySpan': bool(height_by_span),
             'alpha': float(max(0.0, min(1.0, alpha))),
             'lineWidth': float(max(0.5, line_width)),
             'groups': groups_cfg,
